@@ -1,0 +1,24 @@
+{
+  "name": "recognize",
+  "version": "1.0.0",
+  "description": "Image recognition in nextcloud",
+  "main": "src/classifier.js",
+  "directories": {
+    "lib": "lib",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/marcelklehr/recognize"
+  },
+  "author": "Marcel Klehr <mklehr@gmx.net>",
+  "license": "MIT",
+  "dependencies": {
+    "@tensorflow-models/mobilenet": "^2.1.0",
+    "@tensorflow/tfjs": "^3.4.0",
+    "@tensorflow/tfjs-node": "^3.4.0"
+  }
+}

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<info xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance"
+	  xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+	<id>recognize</id>
+	<name>Recognize</name>
+	<summary>Image recognition for your photos</summary>
+	<description><![CDATA[
+
+]]></description>
+	<version>1.0.0</version>
+	<licence>agpl</licence>
+	<author mail="mklehr@gmx.net">Marcel Klehr</author>
+	<category>organization</category>
+	<website>https://github.com/marcelklehr/recognize</website>
+	<bugs>https://github.com/marcelklehr/recognize/issues</bugs>
+	<repository type="git">https://github.com/marcelklehr/recognize.git</repository>
+
+	<dependencies>
+		<php min-version="7.3" />
+		<nextcloud min-version="20" max-version="21" />
+	</dependencies>
+	<background-jobs>
+		<job>OCA\Recognize\BackgroundJobs\ClassifyJob</job>
+	</background-jobs>
+
+	<settings>
+		<admin>OCA\Recognize\Settings\AdminSettings</admin>
+		<admin-section>OCA\Recognize\Settings\AdminSection</admin-section>
+	</settings>
+</info>
