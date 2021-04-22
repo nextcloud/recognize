@@ -8,6 +8,9 @@
 
 This app goes through your photo collection and adds fitting tags, automatically categorizing your photos.
 
+### Categories
+This is the [list of recognized things and which categories they are currently mapped to](https://github.com/marcelklehr/recognize/blob/master/src/classes.js). 
+
 ## Install
 
 ### Requirements
