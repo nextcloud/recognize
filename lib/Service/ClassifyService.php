@@ -90,7 +90,7 @@ class ClassifyService {
                     $tags[] = $this->getTag($r['className'])->getId();
                 }
             }
-            if (count($tags) === 1 && $result[0]['probability'] > 0.35 && $result[0]['probability']['className'] !== 'other') {
+            if (count($tags) === 1 && $result[0]['probability'] > 0.35 && $result[0]['className'] !== 'other') {
                 $tags[] = $this->getTag($result[0]['className'])->getId();
             }
             try {
