@@ -1,5 +1,9 @@
 
 # Nextcloud Recognize
+
+
+![](https://github.com/marcelklehr/recognize/raw/master/screenshots/screenshot.png)
+
 > Image recognition for Nextcloud
 
 This app goes through your photo collection and adds useful tags automatically categorizing your photos.
