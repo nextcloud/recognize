@@ -6,7 +6,7 @@
 
 > Image recognition for Nextcloud
 
-This app goes through your photo collection and adds useful tags automatically categorizing your photos.
+This app goes through your photo collection and adds fitting tags, automatically categorizing your photos.
 
 ## Install
 
