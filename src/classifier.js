@@ -31,10 +31,10 @@ const paths = process.argv.slice(2)
 
 async function main() {
     const results = []
-    const mobilenet = await mobilenet.load({version: 2, alpha: .75});
+    const net = await mobilenet.load({version: 2, alpha: .75});
     for (const path of paths) {
         const image = await readImageJs(path);
-        const result = await mobilenet.classify(image);
+        const result = await net.classify(image);
         image.dispose()
         results.push(result.map(r => ({probability: r.probability, className: classMapper[r.className]})))
     }
