@@ -106,7 +106,7 @@ class ClassifyJob extends TimedJob {
                     continue;
                 }
                 $mimeType = $node->getMimetype();
-                if ($mimeType === 'image/png' || $mimeType === 'image/bmp' || $mimeType === 'image/jpeg') {
+                if ($mimeType === 'image/jpeg') {
                     $this->logger->warning('Found '.$node->getPath());
                     $results[] = $node;
                 }
