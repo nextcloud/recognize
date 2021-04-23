@@ -27,7 +27,9 @@ async function readImageJs(path) {
 async function classify(path) {
     const image = await readImageJs(path);
     const mobilenetModel = await mobilenet.load({version: 2, alpha: 1});
-    return await mobilenetModel.classify(image);
+    const result = await mobilenetModel.classify(image);
+    image.dispose()
+    return result
 }
 
 if (process.argv.length < 3) throw new Error('Incorrect arguments: node classify.js ...<IMAGE_FILES>');
