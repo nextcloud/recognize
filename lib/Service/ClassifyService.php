@@ -59,6 +59,8 @@ class ClassifyService {
 
 	    $this->logger->warning('Classifying '.var_export($paths, true));
 
+        $recognizedTag = $this->getProcessedTag();
+
 	    $command = array_merge([
 	        __DIR__.'/../../vendor/bin/node',
             __DIR__.'/../../src/classifier.js'
@@ -67,39 +69,45 @@ class ClassifyService {
 		$proc = new Process($command, __DIR__);
 	    $proc->setTimeout(count($paths)* self::IMAGE_TIMEOUT);
 	    try {
-            $proc->mustRun();
-            $out = $proc->getOutput();
-            $this->logger->warning('Output: '.$out);
-            $results = json_decode(utf8_encode($out), true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
+            $proc->start();
+            $iterator = $proc->getIterator($proc::ITER_SKIP_ERR);
+
+            $i = 0;
+            foreach ($iterator as $data) {
+                // decode json
+                $this->logger->warning('Output: '.$data);
+                try {
+                    // decode json
+                    $result = json_decode(utf8_encode($data), true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
+
+                    // Collect tags
+                    $tags = [$recognizedTag->getId()];
+                    foreach($result as $r) {
+                        if ($r['probability'] > 0.50 && $r['className'] !== 'other') {
+                            $tags[] = $this->getTag($r['className'])->getId();
+                        }
+                    }
+                    if (count($tags) === 1 && $result[0]['probability'] > 0.35 && $result[0]['className'] !== 'other') {
+                        $tags[] = $this->getTag($result[0]['className'])->getId();
+                    }
+
+                    // assign tags
+                    $this->objectMapper->assignTags($files[$i]->getId(), 'files', $tags);
+
+                } catch (InvalidPathException $e) {
+                    $this->logger->warning('File with invalid path encountered');
+                } catch (NotFoundException $e) {
+                    $this->logger->warning('File to tag was not found');
+                } catch (\JsonException $e) {
+                    $this->logger->warning('JSON exception');
+                    $this->logger->warning($e->getMessage());
+                }
+                $i++;
+            }
         }catch(ProcessTimedOutException $e) {
 	        $this->logger->warning('Classifier process timeout');
 	        $this->logger->warning($proc->getErrorOutput());
 	        return;
-        } catch (\JsonException $e) {
-            $this->logger->warning('JSON exception');
-            $this->logger->warning($e->getMessage());
-            return;
-        }
-
-        $recognizedTag = $this->getProcessedTag();
-        $this->logger->warning('Results: '.var_export($results, true));
-        foreach($results as $i => $result) {
-            $tags = [$recognizedTag->getId()];
-            foreach($result as $r) {
-                if ($r['probability'] > 0.50 && $r['className'] !== 'other') {
-                    $tags[] = $this->getTag($r['className'])->getId();
-                }
-            }
-            if (count($tags) === 1 && $result[0]['probability'] > 0.35 && $result[0]['className'] !== 'other') {
-                $tags[] = $this->getTag($result[0]['className'])->getId();
-            }
-            try {
-                $this->objectMapper->assignTags($files[$i]->getId(), 'files', $tags);
-            } catch (InvalidPathException $e) {
-                $this->logger->warning('File with invalid path encountered');
-            } catch (NotFoundException $e) {
-                $this->logger->warning('File to tag was not found');
-            }
         }
 	}
 

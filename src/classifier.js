@@ -31,14 +31,13 @@ const paths = process.argv.slice(2)
 
 async function main() {
     const results = []
-    const net = await mobilenet.load({version: 2, alpha: .75});
+    const net = await mobilenet.load({version: 2, alpha: .5});
     for (const path of paths) {
         const image = await readImageJs(path);
         const result = await net.classify(image);
         image.dispose()
-        results.push(result.map(r => ({probability: r.probability, className: classMapper[r.className]})))
+        console.log(JSON.stringify(result.map(r => ({probability: r.probability, className: classMapper[r.className]}))))
     }
-    console.log(JSON.stringify(results))
 }
 
 tensorflow.setBackend('wasm')
