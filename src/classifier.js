@@ -19,17 +19,10 @@ async function readImageNative(path) {
 }
 
 async function readImageJs(path) {
-    const imageBuffer = await fs.readFile(path)
+    let imageBuffer = await fs.readFile(path)
     const imageData = jpeg.decode(imageBuffer, {useTArray: true, formatAsRGBA: false})
+    imageBuffer = null
     return tensorflow.tensor(imageData.data, [imageData.height, imageData.width, 3])
-}
-
-async function classify(path) {
-    const image = await readImageJs(path);
-    const mobilenetModel = await mobilenet.load({version: 2, alpha: 1});
-    const result = await mobilenetModel.classify(image);
-    image.dispose()
-    return result
 }
 
 if (process.argv.length < 3) throw new Error('Incorrect arguments: node classify.js ...<IMAGE_FILES>');
@@ -38,8 +31,11 @@ const paths = process.argv.slice(2)
 
 async function main() {
     const results = []
+    const mobilenet = await mobilenet.load({version: 2, alpha: .75});
     for (const path of paths) {
-        const result = await classify(path)
+        const image = await readImageJs(path);
+        const result = await mobilenet.classify(image);
+        image.dispose()
         results.push(result.map(r => ({probability: r.probability, className: classMapper[r.className]})))
     }
     console.log(JSON.stringify(results))

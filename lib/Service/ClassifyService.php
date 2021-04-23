@@ -21,7 +21,7 @@ use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 
 class ClassifyService {
-    public const IMAGE_TIMEOUT = 10;
+    public const IMAGE_TIMEOUT = 17; // 17s
     public const RECOGNIZED_TAG = 'Tagged by recognize';
 
 	/**
