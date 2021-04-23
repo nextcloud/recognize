@@ -31,7 +31,7 @@ const paths = process.argv.slice(2)
 
 async function main() {
     const results = []
-    const net = await mobilenet.load({version: 2, alpha: .5});
+    const net = await mobilenet.load({version: 2, alpha: .75});
     for (const path of paths) {
         const image = await readImageJs(path);
         const result = await net.classify(image);
