@@ -1,5 +1,7 @@
 const mobilenet = require('@tensorflow-models/mobilenet');
-const tensorflow = require('@tensorflow/tfjs-node');
+const tensorflow = require('@tensorflow/tfjs')
+require('@tensorflow/tfjs-backend-wasm')
+const jpeg = require('jpeg-js')
 const fs = require('fs/promises');
 const categories = require('./classes')
 
@@ -10,14 +12,20 @@ for (const category in categories) {
     })
 }
 
-async function readImage(path) {
+async function readImageNative(path) {
     const imageBuffer = await fs.readFile(path)
     const tfimage = tensorflow.node.decodeImage(imageBuffer)
     return tfimage
 }
 
+async function readImageJs(path) {
+    const imageBuffer = await fs.readFile(path)
+    const imageData = jpeg.decode(imageBuffer, {useTArray: true, formatAsRGBA: false})
+    return tensorflow.tensor(imageData.data, [imageData.height, imageData.width, 3])
+}
+
 async function classify(path) {
-    const image = await readImage(path);
+    const image = await readImageJs(path);
     const mobilenetModel = await mobilenet.load({version: 2, alpha: 1});
     return await mobilenetModel.classify(image);
 }
@@ -35,4 +43,9 @@ async function main() {
     console.log(JSON.stringify(results))
 }
 
-main()
+tensorflow.setBackend('wasm')
+    .then(() => main())
+    .catch(e =>
+        tensorflow.setBackend('cpu')
+        .then(() => main())
+    );
