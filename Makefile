@@ -7,7 +7,7 @@ source_dir=$(build_dir)/source
 sign_dir=$(build_dir)/sign
 package_name=$(app_name)
 cert_dir=$(HOME)/.nextcloud/certificates
-version+=4.2.0-rc.1
+version+=1.0.0
 
 all: dev-setup build-js-production composer-no-dev
 
@@ -67,20 +67,17 @@ clean-dev:
 appstore:
 	mkdir -p $(sign_dir)
 	rsync -a \
-	--include=/js \
 	--include=/vendor \
 	--include=/CHANGELOG.md \
 	--include=/README.md \
 	--include=/composer.json \
 	--include=/composer.lock \
 	--include=/vendor \
-	--include=/tests \
 	--include=/templates \
 	--include=/package.json \
 	--include=/package-lock.json \
 	--include=/src \
 	--include=/lib \
-	--include=/l10n \
 	--include=/img \
 	--include=/appinfo \
 	--exclude=**/*.map \

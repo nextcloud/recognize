@@ -5,7 +5,9 @@
 	<name>Recognize</name>
 	<summary>Image recognition for your photos</summary>
 	<description><![CDATA[
+This app goes through your photo collection and adds fitting tags, automatically categorizing your photos.
 
+This is still experimental and currently only works for photos that don't reside in external storage.
 ]]></description>
 	<version>1.0.0</version>
 	<licence>agpl</licence>

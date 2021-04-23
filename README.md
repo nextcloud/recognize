@@ -17,6 +17,9 @@ This is the [list of recognized things and which categories they are currently m
 
 - php 7.3 and above
 
+### One click
+
+Go to "Apps" in your nextcloud, search for "recognize" and click install.
 
 ### Manual install
 
