@@ -7,7 +7,7 @@ source_dir=$(build_dir)/source
 sign_dir=$(build_dir)/sign
 package_name=$(app_name)
 cert_dir=$(HOME)/.nextcloud/certificates
-version+=1.0.0
+version+=1.1.0
 
 all: dev-setup build-js-production composer-no-dev
 
@@ -65,8 +65,8 @@ clean-dev:
 	rm -rf node_modules
 
 appstore:
-	rm vendor/nodejs/nodejs/bin/npm
-	rm vendor/nodejs/nodejs/bin/npx
+	rm -f vendor/nodejs/nodejs/bin/npm
+	rm -f vendor/nodejs/nodejs/bin/npx
 	mkdir -p $(sign_dir)
 	rsync -a \
 	--include=/vendor \

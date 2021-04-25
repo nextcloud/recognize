@@ -60,8 +60,13 @@ async function main() {
                 if (result.probability < 0. || !result.rule) {
                     return false
                 }
-                // we adjust the threshold, because it's slightly too high for smaller values (we're not using the same model as the original authors of rules.yml)
-                if (result.probability < Math.pow(result.rule.threshold, 1.5)) {
+                // we adjust the threshold, because it's slightly too high for lower values
+                // and slightly too low for higher values
+                // (we're not using the same model as the original authors of rules.yml)
+                const threshold = result.rule.threshold <= 0.4
+                    ? 2 * Math.pow(result.rule.threshold, 2)
+                    : Math.tanh(result.rule.threshold) + 0.15
+                if (result.probability < threshold) {
                     return false
                 }
                 return true
