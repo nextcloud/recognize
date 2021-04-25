@@ -7,7 +7,7 @@ source_dir=$(build_dir)/source
 sign_dir=$(build_dir)/sign
 package_name=$(app_name)
 cert_dir=$(HOME)/.nextcloud/certificates
-version+=1.2.0
+version+=1.2.1
 
 node_version=v14.9.0
 
@@ -89,6 +89,7 @@ appstore:
 	--include=/lib \
 	--include=/img \
 	--include=/appinfo \
+	--exclude=**/.bin \
 	--exclude=**/*.map \
 	--exclude=/* \
 	$(project_dir)/ $(sign_dir)/$(app_name)

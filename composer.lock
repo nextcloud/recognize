@@ -4,69 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "00862197cdd0eff6eda06ee339d4ea31",
+    "content-hash": "b5d2b9f33d75d645d110be38747fd796",
     "packages": [
-        {
-            "name": "mouf/nodejs-installer",
-            "version": "v1.0.14",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/thecodingmachine/nodejs-installer.git",
-                "reference": "8b26f6893698f057b2c97b6bbf1a0cd12c2343e9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/thecodingmachine/nodejs-installer/zipball/8b26f6893698f057b2c97b6bbf1a0cd12c2343e9",
-                "reference": "8b26f6893698f057b2c97b6bbf1a0cd12c2343e9",
-                "shasum": ""
-            },
-            "require": {
-                "composer-plugin-api": "^1.0 || ^2.0",
-                "ext-openssl": "*",
-                "php": ">=5.3.0"
-            },
-            "require-dev": {
-                "composer/composer": "^1.7",
-                "phpunit/phpunit": "^7.4"
-            },
-            "type": "composer-plugin",
-            "extra": {
-                "class": [
-                    "Mouf\\NodeJsInstaller\\NodeJsPlugin"
-                ],
-                "mouf": {
-                    "logo": "node-js.png"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Mouf\\NodeJsInstaller\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "David Négrier",
-                    "email": "d.negrier@thecodingmachine.com",
-                    "homepage": "http://mouf-php.com"
-                }
-            ],
-            "description": "An installer package that let's you install NodeJS and NPM as a Composer dependency.",
-            "homepage": "http://mouf-php.com/packages/mouf/nodejs-installer",
-            "keywords": [
-                "installer",
-                "nodejs",
-                "npm"
-            ],
-            "support": {
-                "issues": "https://github.com/thecodingmachine/nodejs-installer/issues",
-                "source": "https://github.com/thecodingmachine/nodejs-installer/tree/v1.0.14"
-            },
-            "time": "2020-11-04T08:03:55+00:00"
-        },
         {
             "name": "symfony/polyfill-php80",
             "version": "v1.22.1",
