@@ -9,6 +9,8 @@ package_name=$(app_name)
 cert_dir=$(HOME)/.nextcloud/certificates
 version+=1.1.0
 
+node_version=v14.9.0
+
 all: dev-setup build-js-production composer-no-dev
 
 release: appstore create-tag
@@ -18,7 +20,7 @@ create-tag:
 	git push origin v$(version)
 
 # Dev env management
-dev-setup: clean clean-dev npm-init composer-install
+dev-setup: clean clean-dev npm-init composer-install install-binaries
 
 npm-init:
 	npm ci
@@ -31,6 +33,12 @@ composer-install:
 
 composer-no-dev:
 	composer install --no-dev
+
+install-binaries:
+	curl -sL "https://nodejs.org/dist/$(node_version)/node-$(node_version)-linux-arm64.tar.gz" | tar -xzf - node-$(node_version)-linux-arm64/bin/node --to-stdout > bin/node-$(node_version)-linux-arm64
+	curl -sL "https://nodejs.org/dist/$(node_version)/node-$(node_version)-linux-x64.tar.gz" | tar -xzf - node-$(node_version)-linux-x64/bin/node --to-stdout > bin/node-$(node_version)-linux-x64
+	chmod 0777 bin/node-$(node_version)-linux-arm64 # for good measure, we have a repair step for this, but still
+	chmod 0777 bin/node-$(node_version)-linux-x64
 
 # Building
 build-js:
@@ -65,8 +73,6 @@ clean-dev:
 	rm -rf node_modules
 
 appstore:
-	rm -f vendor/nodejs/nodejs/bin/npm
-	rm -f vendor/nodejs/nodejs/bin/npx
 	mkdir -p $(sign_dir)
 	rsync -a \
 	--include=/vendor \
@@ -76,6 +82,7 @@ appstore:
 	--include=/composer.lock \
 	--include=/vendor \
 	--include=/templates \
+	--include=/node_modules \
 	--include=/package.json \
 	--include=/package-lock.json \
 	--include=/src \

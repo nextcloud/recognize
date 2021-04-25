@@ -1,8 +1,7 @@
 {
     "require": {
         "symfony/process": "^5.2",
-      "ext-json": "*",
-        "mouf/nodejs-installer": "~1.0"
+        "ext-json": "*"
     },
     "require-dev": {
         "christophwurst/nextcloud": "^21.0"
@@ -10,15 +9,6 @@
     "autoload": {
         "psr-4": {
             "OCA\\Recognize\\": "lib/"
-        }
-    },
-    "extra": {
-        "mouf": {
-            "nodejs": {
-                "version": "~14",
-                "targetDir": "vendor/nodejs/nodejs",
-                "forceLocal": true
-            }
         }
     }
 }

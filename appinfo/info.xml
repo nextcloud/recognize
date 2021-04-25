@@ -13,6 +13,8 @@ This is still experimental and currently only works for photos that don't reside
 	<licence>agpl</licence>
 	<author mail="mklehr@gmx.net">Marcel Klehr</author>
 	<category>organization</category>
+	<category>search</category>
+	<category>multimedia</category>
 	<website>https://github.com/marcelklehr/recognize</website>
 	<bugs>https://github.com/marcelklehr/recognize/issues</bugs>
 	<repository type="git">https://github.com/marcelklehr/recognize.git</repository>
@@ -30,4 +32,13 @@ This is still experimental and currently only works for photos that don't reside
 		<admin>OCA\Recognize\Settings\AdminSettings</admin>
 		<admin-section>OCA\Recognize\Settings\AdminSection</admin-section>
 	</settings>
+
+	<repair-steps>
+		<post-migration>
+			<step>OCA\Recognize\Migration\RegisterBinary</step>
+		</post-migration>
+		<install>
+			<step>OCA\Recognize\Migration\RegisterBinary</step>
+		</install>
+	</repair-steps>
 </info>

@@ -41,12 +41,17 @@ class ClassifyService {
      * @var ISystemTagObjectMapper
      */
     private $objectMapper;
+    /**
+     * @var \OCP\IConfig
+     */
+    private $config;
 
-    public function __construct(LoggerInterface $logger, IRootFolder $rootFolder, ISystemTagManager $tagManager, ISystemTagObjectMapper $objectMapper) {
+    public function __construct(LoggerInterface $logger, IRootFolder $rootFolder, ISystemTagManager $tagManager, ISystemTagObjectMapper $objectMapper, \OCP\IConfig $config) {
 		$this->logger = $logger;
 		$this->rootFolder = $rootFolder;
 		$this->tagManager = $tagManager;
         $this->objectMapper = $objectMapper;
+        $this->config = $config;
     }
 
     /**
@@ -63,9 +68,10 @@ class ClassifyService {
         $recognizedTag = $this->getProcessedTag();
 
 	    $command = array_merge([
-	        __DIR__.'/../../vendor/bin/node',
-            __DIR__.'/../../src/classifier.js'
+	        $this->config->getAppValue('recognize', 'node_binary'),
+            dirname(__DIR__, 2) . '/src/classifier.js'
         ], $paths);
+
         $this->logger->debug('Running '.var_export($command, true));
 		$proc = new Process($command, __DIR__);
 	    $proc->setTimeout(count($paths)* self::IMAGE_TIMEOUT);
@@ -73,8 +79,10 @@ class ClassifyService {
             $proc->start();
 
             $i = 0;
+            $errOut = '';
             foreach ($proc as $type => $data) {
                 if ($type !== $proc::OUT) {
+                    $errOut .= $data;
                     $this->logger->debug('Classifier process output: '.$data);
                     continue;
                 }
@@ -100,6 +108,9 @@ class ClassifyService {
                     $this->logger->warning($e->getMessage());
                 }
                 $i++;
+            }
+            if ($i !== count($files)) {
+                $this->logger->warning('Classifier process output: '.$errOut);
             }
         }catch(ProcessTimedOutException $e) {
 	        $this->logger->warning('Classifier process timeout');
