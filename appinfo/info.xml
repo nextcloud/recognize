@@ -16,6 +16,7 @@ This is still experimental and currently only works for photos that don't reside
 	<website>https://github.com/marcelklehr/recognize</website>
 	<bugs>https://github.com/marcelklehr/recognize/issues</bugs>
 	<repository type="git">https://github.com/marcelklehr/recognize.git</repository>
+	<screenshot small-thumbnail="https://raw.githubusercontent.com/marcelklehr/recognize/master/screenshots/screenshot_small.png">https://raw.githubusercontent.com/marcelklehr/recognize/master/screenshots/screenshot.png</screenshot>
 
 	<dependencies>
 		<php min-version="7.3" />
