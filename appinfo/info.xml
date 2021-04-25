@@ -9,7 +9,7 @@ This app goes through your photo collection and adds fitting tags, automatically
 
 This is still experimental and currently only works for photos that don't reside in external storage.
 ]]></description>
-	<version>1.1.0</version>
+	<version>1.2.0</version>
 	<licence>agpl</licence>
 	<author mail="mklehr@gmx.net">Marcel Klehr</author>
 	<category>organization</category>
