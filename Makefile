@@ -65,6 +65,8 @@ clean-dev:
 	rm -rf node_modules
 
 appstore:
+	rm vendor/nodejs/nodejs/bin/npm
+	rm vendor/nodejs/nodejs/bin/npx
 	mkdir -p $(sign_dir)
 	rsync -a \
 	--include=/vendor \
