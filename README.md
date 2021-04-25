@@ -36,8 +36,7 @@ Go to "Apps" in your nextcloud, search for "recognize" and click install.
 cd /path/to/nextcloud/apps/
 git clone https://github.com/marcelklehr/recognize.git
 cd recognize
-composer install
-npm install
+make
 ```
 
 ## Maintainers
