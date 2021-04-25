@@ -18,6 +18,7 @@ use OCP\SystemTag\ISystemTagObjectMapper;
 use OCP\SystemTag\TagNotFoundException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
+use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Process\Process;
 
 class ClassifyService {
@@ -57,7 +58,7 @@ class ClassifyService {
             return $file->getStorage()->getLocalFile($file->getInternalPath());
         }, $files);
 
-	    $this->logger->warning('Classifying '.var_export($paths, true));
+	    $this->logger->debug('Classifying '.var_export($paths, true));
 
         $recognizedTag = $this->getProcessedTag();
 
@@ -65,33 +66,29 @@ class ClassifyService {
 	        __DIR__.'/../../vendor/bin/node',
             __DIR__.'/../../src/classifier.js'
         ], $paths);
-        $this->logger->warning('Running '.var_export($command, true));
+        $this->logger->debug('Running '.var_export($command, true));
 		$proc = new Process($command, __DIR__);
 	    $proc->setTimeout(count($paths)* self::IMAGE_TIMEOUT);
 	    try {
             $proc->start();
-            $iterator = $proc->getIterator($proc::ITER_SKIP_ERR);
 
             $i = 0;
-            foreach ($iterator as $data) {
-                // decode json
-                $this->logger->warning('Output: '.$data);
+            foreach ($proc as $type => $data) {
+                if ($type !== $proc::OUT) {
+                    $this->logger->debug('Classifier process output: '.$data);
+                    continue;
+                }
+                $this->logger->debug('Result for '.$files[$i]->getName().' = '.$data);
                 try {
                     // decode json
-                    $result = json_decode(utf8_encode($data), true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
+                    $tags = json_decode(utf8_encode($data), true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
 
-                    // Collect tags
-                    $tags = [$recognizedTag->getId()];
-                    foreach($result as $r) {
-                        if ($r['probability'] > 0.50 && $r['className'] !== 'other') {
-                            $tags[] = $this->getTag($r['className'])->getId();
-                        }
-                    }
-                    if (count($tags) === 1 && $result[0]['probability'] > 0.35 && $result[0]['className'] !== 'other') {
-                        $tags[] = $this->getTag($result[0]['className'])->getId();
-                    }
 
                     // assign tags
+                    $tags = array_map(function ($tag) {
+                        return $this->getTag($tag)->getId();
+                    }, $tags);
+                    $tags[] = $recognizedTag->getId();
                     $this->objectMapper->assignTags($files[$i]->getId(), 'files', $tags);
 
                 } catch (InvalidPathException $e) {
@@ -108,6 +105,10 @@ class ClassifyService {
 	        $this->logger->warning('Classifier process timeout');
 	        $this->logger->warning($proc->getErrorOutput());
 	        return;
+        }catch(RuntimeException $e) {
+            $this->logger->warning('Classifier process could not be started');
+            $this->logger->warning($proc->getErrorOutput());
+            return;
         }
 	}
 

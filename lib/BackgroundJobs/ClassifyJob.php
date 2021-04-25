@@ -95,7 +95,7 @@ class ClassifyJob extends TimedJob {
      * @throws \OCP\Files\NotFoundException|\OCP\Files\InvalidPathException
      */
     protected function findImagesInFolder(Folder $folder, &$results = []):array {
-        $this->logger->warning('Searching '.$folder->getInternalPath());
+        $this->logger->debug('Searching '.$folder->getInternalPath());
         $nodes = $folder->getDirectoryListing();
         foreach ($nodes as $node) {
             if ($node instanceof Folder) {
@@ -107,7 +107,7 @@ class ClassifyJob extends TimedJob {
                 }
                 $mimeType = $node->getMimetype();
                 if ($mimeType === 'image/jpeg') {
-                    $this->logger->warning('Found '.$node->getPath());
+                    $this->logger->debug('Found '.$node->getPath());
                     $results[] = $node;
                 }
             }

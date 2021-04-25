@@ -1,20 +1,29 @@
 const mobilenet = require('@tensorflow-models/mobilenet');
-const tensorflow = require('@tensorflow/tfjs')
+const tf = require('@tensorflow/tfjs')
 require('@tensorflow/tfjs-backend-wasm')
 const jpeg = require('jpeg-js')
-const fs = require('fs/promises');
-const categories = require('./classes')
+const fs = require('fs/promises')
+const fsSync = require('fs')
+const YAML = require('yaml')
+const _ = require('lodash')
+const rules = YAML.parse(fsSync.readFileSync(__dirname + '/rules.yml').toString('utf8'))
 
-const classMapper = {}
-for (const category in categories) {
-    categories[category].forEach(label => {
-        classMapper[label] = category
-    })
+function findRule(className) {
+    const rule = rules[className]
+    if (!rule) {
+        return
+    }
+
+    if (rule.see) {
+        return findRule(rule.see)
+    }
+
+    return rule
 }
 
 async function readImageNative(path) {
     const imageBuffer = await fs.readFile(path)
-    const tfimage = tensorflow.node.decodeImage(imageBuffer)
+    const tfimage = tf.node.decodeImage(imageBuffer)
     return tfimage
 }
 
@@ -22,7 +31,7 @@ async function readImageJs(path) {
     let imageBuffer = await fs.readFile(path)
     const imageData = jpeg.decode(imageBuffer, {useTArray: true, formatAsRGBA: false})
     imageBuffer = null
-    return tensorflow.tensor(imageData.data, [imageData.height, imageData.width, 3])
+    return tf.tensor(imageData.data, [imageData.height, imageData.width, 3])
 }
 
 if (process.argv.length < 3) throw new Error('Incorrect arguments: node classify.js ...<IMAGE_FILES>');
@@ -30,19 +39,46 @@ if (process.argv.length < 3) throw new Error('Incorrect arguments: node classify
 const paths = process.argv.slice(2)
 
 async function main() {
-    const results = []
-    const net = await mobilenet.load({version: 2, alpha: .75});
+    const model = await mobilenet.load({version: 2, alpha: 1/*modelUrl: "https://tfhub.dev/google/tfjs-model/imagenet/nasnet_mobile/classification/3/default/1/model.json?tfjs-format=file", inputRange: [0, 1]*/})
     for (const path of paths) {
         const image = await readImageJs(path);
-        const result = await net.classify(image);
+        const results = await model.classify(image);
         image.dispose()
-        console.log(JSON.stringify(result.map(r => ({probability: r.probability, className: classMapper[r.className]}))))
+
+        const labels = []
+        results
+            .map(result => ({
+                ...result,
+                className: result.className.split(',')[0].toLowerCase(),
+            }))
+            .map(result => ({
+                ...result,
+                rule: findRule(result.className),
+            }))
+            .filter(result => {
+                console.error(result)
+                if (result.probability < 0. || !result.rule) {
+                    return false
+                }
+                // we adjust the threshold, because it's slightly too high for smaller values (we're not using the same model as the original authors of rules.yml)
+                if (result.probability < Math.pow(result.rule.threshold, 1.5)) {
+                    return false
+                }
+                return true
+            })
+            .forEach((result) => {
+                labels.push(result.rule.label || result.className)
+                if (result.rule.categories) {
+                    labels.push(...result.rule.categories)
+                }
+            })
+        console.log(JSON.stringify(_.uniq(labels)))
     }
 }
 
-tensorflow.setBackend('wasm')
+tf.setBackend('wasm')
     .then(() => main())
     .catch(e =>
-        tensorflow.setBackend('cpu')
+        tf.setBackend('cpu')
         .then(() => main())
     );

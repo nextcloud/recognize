@@ -21,6 +21,8 @@
     "@tensorflow-models/mobilenet": "^2.1.0",
     "@tensorflow/tfjs": "^3.4.0",
     "@tensorflow/tfjs-backend-wasm": "^3.5.0",
-    "jpeg-js": "^0.4.3"
+    "jpeg-js": "^0.4.3",
+    "lodash": "^4.17.21",
+    "yaml": "^1.10.2"
   }
 }
