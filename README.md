@@ -6,7 +6,7 @@
 
 > Image recognition for Nextcloud
 
-This app goes through your photo collection and adds fitting tags, automatically categorizing your photos.
+This app goes through your photo collection and adds fitting tags, automatically categorizing your photos. Tagging works via the Nextcloud's Collaborative Tags.
 
 ### Categories
 This is the [list of recognized things and which categories they are currently mapped to](https://github.com/marcelklehr/recognize/blob/master/src/classes.js). 
@@ -16,6 +16,9 @@ This is the [list of recognized things and which categories they are currently m
 ### Requirements
 
 - php 7.3 and above
+- Porcessor
+  - x86 64bit
+  - ARM 64bit 
 
 ### One click
 
