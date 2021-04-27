@@ -62,8 +62,12 @@ class RegisterBinary implements IRepairStep
                 }
             }
         } else {
-            $output->warning('Can only run node.js on linux arm64 and linux x64');
-            return;
+            $binaryPath = $binaryDir . 'node-' . self::VERSION . '-linux-armv7l';
+            $version = $this->testBinary($binaryPath);
+
+            if ($version === null) {
+                $output->warning('Failed to read version from node binary');
+            }
         }
 
         // Write the app config
