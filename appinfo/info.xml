@@ -8,6 +8,13 @@
 This app goes through your photo collection and adds fitting tags, automatically categorizing your photos.
 
 This is still experimental and currently only works for photos that don't reside in external storage.
+
+Requirements:
+- php 7.3 and above
+- Processor
+  - x86 64bit
+  - ARM 64bit
+  - ARMv7 (32bit)
 ]]></description>
 	<version>1.2.2</version>
 	<licence>agpl</licence>
@@ -41,4 +48,8 @@ This is still experimental and currently only works for photos that don't reside
 			<step>OCA\Recognize\Migration\RegisterBinary</step>
 		</install>
 	</repair-steps>
+
+	<commands>
+		<command>OCA\Recognize\Command\Classify</command>
+	</commands>
 </info>
