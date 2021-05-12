@@ -80,7 +80,7 @@ class ClassifyJob extends TimedJob {
         do {
             $user = array_pop($users);
             if (!$user) {
-                $this->logger->warning('No users left, whose photos could be classified ');
+                $this->logger->debug('No users left, whose photos could be classified ');
                 return;
             }
             $images = $this->findImagesInFolder($this->rootFolder->getUserFolder($user));
