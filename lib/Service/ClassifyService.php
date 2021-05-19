@@ -117,7 +117,7 @@ class ClassifyService {
                     $i++;
                 }
             }
-            if ($i !== count($files)) {
+            if ($i !== count($files)-1) {
                 $this->logger->warning('Classifier process output: '.$errOut);
             }
         }catch(ProcessTimedOutException $e) {
@@ -214,7 +214,7 @@ class ClassifyService {
                 $output->writeln($process->getErrorOutput());
                 continue;
             }
-            if ($i[$j] !== count($chunks[$j])) {
+            if ($i[$j] !== count($chunks[$j])-1) {
                 $output->writeln('Classifier process output: ' . $errOut[$j]);
                 $return = 1;
             }
