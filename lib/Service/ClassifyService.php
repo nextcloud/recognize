@@ -163,7 +163,7 @@ class ClassifyService {
                         $output->writeln('Classifier process output: ' . $data);
                         return;
                     }
-                    $this->logger->debug('Result for ' . $chunk[$i[$j]]->getName() . ' = ' . $data);
+                    $output->writeln('Result for ' . $chunk[$i[$j]]->getName() . ' = ' . $data);
                     try {
                         // decode json
                         $tags = json_decode(utf8_encode($data), true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
