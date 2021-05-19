@@ -78,7 +78,7 @@ jobs:
         working-directory: apps/${{ env.APP_NAME }}
         run: |
           composer install --ignore-platform-req=php
-          make install-binaries
+          make all
 
       - name: Set up Nextcloud and install app
         if: ${{ matrix.databases != 'pgsql'}}
