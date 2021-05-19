@@ -129,8 +129,8 @@ class ClassifyService {
      * @param int $threads
      * @return void
      */
-    public function classifyParallel(array $files, int $threads, OutputInterface $output): void {
-        $chunks = array_chunk($files, $threads);
+    public function classifyParallel(array $files, int $threads, OutputInterface $output): int {
+        $chunks = array_chunk($files, count($files)/$threads);
 
         $recognizedTag = $this->getProcessedTag();
 
@@ -191,6 +191,7 @@ class ClassifyService {
                 continue;
             }
         }
+        $return = 0;
         foreach ($proc as $j => $process) {
             try {
                 $process->wait();
@@ -201,8 +202,10 @@ class ClassifyService {
             }
             if ($i[$j] !== count($chunks[$j])) {
                 $output->writeln('Classifier process output: ' . $errOut[$j]);
+                $return = 1;
             }
         }
+        return $return;
     }
 
 	public function getTag($name) : ISystemTag {
