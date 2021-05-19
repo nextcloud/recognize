@@ -75,7 +75,7 @@ class ClassifyService {
 
         $this->logger->debug('Running '.var_export($command, true));
 		$proc = new Process($command, __DIR__);
-	    $proc->setTimeout(count($paths)* self::IMAGE_TIMEOUT);
+	    $proc->setTimeout(count($paths) * self::IMAGE_TIMEOUT);
 	    try {
             $proc->start();
 
@@ -87,28 +87,35 @@ class ClassifyService {
                     $this->logger->debug('Classifier process output: '.$data);
                     continue;
                 }
-                $this->logger->debug('Result for '.$files[$i]->getName().' = '.$data);
-                try {
-                    // decode json
-                    $tags = json_decode(utf8_encode($data), true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
+                $lines = explode("\n", $data);
+                foreach($lines as $result) {
+                    if (trim($result) === '') {
+                        continue;
+                    }
+                    $this->logger->debug('Result for ' . $files[$i]->getName() . ' = ' . $result);
+                    try {
+                        // decode json
+                        $tags = json_decode(utf8_encode($result), true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
 
 
-                    // assign tags
-                    $tags = array_map(function ($tag) {
-                        return $this->getTag($tag)->getId();
-                    }, $tags);
-                    $tags[] = $recognizedTag->getId();
-                    $this->objectMapper->assignTags($files[$i]->getId(), 'files', $tags);
+                        // assign tags
+                        $tags = array_map(function ($tag) {
+                            return $this->getTag($tag)->getId();
+                        }, $tags);
+                        $tags[] = $recognizedTag->getId();
+                        $this->objectMapper->assignTags($files[$i]->getId(), 'files', $tags);
 
-                } catch (InvalidPathException $e) {
-                    $this->logger->warning('File with invalid path encountered');
-                } catch (NotFoundException $e) {
-                    $this->logger->warning('File to tag was not found');
-                } catch (\JsonException $e) {
-                    $this->logger->warning('JSON exception');
-                    $this->logger->warning($e->getMessage());
+                    } catch (InvalidPathException $e) {
+                        $this->logger->warning('File with invalid path encountered');
+                    } catch (NotFoundException $e) {
+                        $this->logger->warning('File to tag was not found');
+                    } catch (\JsonException $e) {
+                        $this->logger->warning('JSON exception');
+                        $this->logger->warning($e->getMessage());
+                        $this->logger->warning($result);
+                    }
+                    $i++;
                 }
-                $i++;
             }
             if ($i !== count($files)) {
                 $this->logger->warning('Classifier process output: '.$errOut);
@@ -165,6 +172,9 @@ class ClassifyService {
                     }
                     $lines = explode("\n", $data);
                     foreach($lines as $result) {
+                        if (trim($result) === '') {
+                            continue;
+                        }
                         $output->writeln('Result for ' . $chunk[$i[$j]]->getName() . ' = ' . $result);
                         try {
                             // decode json
