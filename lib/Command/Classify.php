@@ -100,7 +100,7 @@ class Classify extends Command {
                 }
 
                 $output->writeln('Classifying photos of user '.$user);
-                $this->classifier->classifyParallel($images, $processors);
+                $this->classifier->classifyParallel($images, $processors, $output);
             }
 
 

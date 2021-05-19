@@ -104,8 +104,3 @@ jobs:
       - name: Run classifier
         run: |
           ./occ recognize:classify
-
-      - name: Compare exports
-        run: |
-          diff export.json export2.json
-

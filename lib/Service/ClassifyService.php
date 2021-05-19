@@ -17,6 +17,7 @@ use OCP\SystemTag\ISystemTagManager;
 use OCP\SystemTag\ISystemTagObjectMapper;
 use OCP\SystemTag\TagNotFoundException;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Process\Process;
@@ -128,7 +129,7 @@ class ClassifyService {
      * @param int $threads
      * @return void
      */
-    public function classifyParallel(array $files, int $threads = 4): void {
+    public function classifyParallel(array $files, int $threads, OutputInterface $output): void {
         $chunks = array_chunk($files, $threads);
 
         $recognizedTag = $this->getProcessedTag();
@@ -143,23 +144,23 @@ class ClassifyService {
                     return $file->getStorage()->getLocalFile($file->getInternalPath());
                 }, $chunk);
 
-                $this->logger->debug('Classifying '.var_export($paths, true));
+                $output->writeln('Classifying '.var_export($paths, true));
 
                 $command = array_merge([
                     $this->config->getAppValue('recognize', 'node_binary'),
                     dirname(__DIR__, 2) . '/src/classifier.js'
                 ], $paths);
 
-                $this->logger->debug('Running ' . var_export($command, true));
+                $output->writeln('Running ' . var_export($command, true));
                 $proc[$j] = new Process($command, __DIR__);
                 $proc[$j]->setTimeout(count($paths) * self::IMAGE_TIMEOUT);
 
                 $i[$j] = 0;
                 $errOut[$j] = '';
-                $proc[$j]->start(function ($type, $data) use ($i, $proc, $errOut, $chunk, $recognizedTag, $j){
+                $proc[$j]->start(function ($type, $data) use ($i, $proc, $errOut, $chunk, $recognizedTag, $j, $output){
                     if ($type !== $proc[$j]::OUT) {
                         $errOut[$j] .= $data;
-                        $this->logger->debug('Classifier process output: ' . $data);
+                        $output->writeln('Classifier process output: ' . $data);
                         return;
                     }
                     $this->logger->debug('Result for ' . $chunk[$i[$j]]->getName() . ' = ' . $data);
@@ -175,18 +176,18 @@ class ClassifyService {
                         $this->objectMapper->assignTags($chunk[$i[$j]]->getId(), 'files', $tags);
 
                     } catch (InvalidPathException $e) {
-                        $this->logger->warning('File with invalid path encountered');
+                        $output->writeln('File with invalid path encountered');
                     } catch (NotFoundException $e) {
-                        $this->logger->warning('File to tag was not found');
+                        $output->writeln('File to tag was not found');
                     } catch (\JsonException $e) {
-                        $this->logger->warning('JSON exception');
-                        $this->logger->warning($e->getMessage());
+                        $output->writeln('JSON exception');
+                        $output->writeln($e->getMessage());
                     }
                     $i[$j]++;
                 });
             } catch (RuntimeException $e) {
-                $this->logger->warning('Classifier process could not be started');
-                $this->logger->warning($proc[$j]->getErrorOutput());
+                $output->writeln('Classifier process could not be started');
+                $output->writeln($proc[$j]->getErrorOutput());
                 continue;
             }
         }
@@ -194,12 +195,12 @@ class ClassifyService {
             try {
                 $process->wait();
             } catch (ProcessTimedOutException $e) {
-                $this->logger->warning('Classifier process timeout');
-                $this->logger->warning($process->getErrorOutput());
+                $output->writeln('Classifier process timeout');
+                $output->writeln($process->getErrorOutput());
                 continue;
             }
             if ($i[$j] !== count($chunks[$j])) {
-                $this->logger->warning('Classifier process output: ' . $errOut[$j]);
+                $output->writeln('Classifier process output: ' . $errOut[$j]);
             }
         }
     }
