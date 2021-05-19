@@ -163,27 +163,31 @@ class ClassifyService {
                         $output->writeln('Classifier process output: ' . $data);
                         return;
                     }
-                    $output->writeln('Result for ' . $chunk[$i[$j]]->getName() . ' = ' . $data);
-                    try {
-                        // decode json
-                        $tags = json_decode(utf8_encode($data), true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
+                    $lines = explode("\n", $data);
+                    foreach($lines as $result) {
+                        $output->writeln('Result for ' . $chunk[$i[$j]]->getName() . ' = ' . $result);
+                        try {
+                            // decode json
+                            $tags = json_decode(utf8_encode($result), true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
 
-                        // assign tags
-                        $tags = array_map(function ($tag) {
-                            return $this->getTag($tag)->getId();
-                        }, $tags);
-                        $tags[] = $recognizedTag->getId();
-                        $this->objectMapper->assignTags($chunk[$i[$j]]->getId(), 'files', $tags);
+                            // assign tags
+                            $tags = array_map(function ($tag) {
+                                return $this->getTag($tag)->getId();
+                            }, $tags);
+                            $tags[] = $recognizedTag->getId();
+                            $this->objectMapper->assignTags($chunk[$i[$j]]->getId(), 'files', $tags);
 
-                    } catch (InvalidPathException $e) {
-                        $output->writeln('File with invalid path encountered');
-                    } catch (NotFoundException $e) {
-                        $output->writeln('File to tag was not found');
-                    } catch (\JsonException $e) {
-                        $output->writeln('JSON exception');
-                        $output->writeln($e->getMessage());
+                        } catch (InvalidPathException $e) {
+                            $output->writeln('File with invalid path encountered');
+                        } catch (NotFoundException $e) {
+                            $output->writeln('File to tag was not found');
+                        } catch (\JsonException $e) {
+                            $output->writeln('JSON exception');
+                            $output->writeln($e->getMessage());
+                            $output->writeln($result);
+                        }
+                        $i[$j]++;
                     }
-                    $i[$j]++;
                 });
             } catch (RuntimeException $e) {
                 $output->writeln('Classifier process could not be started');
