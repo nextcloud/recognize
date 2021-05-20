@@ -7,7 +7,7 @@ source_dir=$(build_dir)/source
 sign_dir=$(build_dir)/sign
 package_name=$(app_name)
 cert_dir=$(HOME)/.nextcloud/certificates
-version+=1.2.2
+version+=1.3.0
 
 node_version=v14.9.0
 
@@ -69,6 +69,7 @@ stylelint-fix:
 
 # Cleaning
 clean:
+	rm -rf bin
 	rm -rf js
 	rm -rf $(sign_dir)
 
