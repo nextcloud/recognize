@@ -145,6 +145,7 @@ class ClassifyService {
         $return = 0;
         $errOut = [];
         $proc = [];
+        $i = [];
         array_walk($chunks, function($chunk, $j) use ($output, $recognizedTag, &$proc, &$errOut, &$i, &$return){
             try {
                 $paths = array_map(static function($file) {
@@ -162,9 +163,8 @@ class ClassifyService {
                 $proc[$j] = new Process($command, __DIR__);
                 $proc[$j]->setTimeout(count($paths) * self::IMAGE_TIMEOUT);
 
-                $i = 0;
                 $errOut[$j] = '';
-                $proc[$j]->start(function ($type, $data) use ($i, $proc, $errOut, $chunk, $recognizedTag, $j, $output, &$return){
+                $proc[$j]->start(function ($type, $data) use (&$i, &$proc, &$errOut, $chunk, $recognizedTag, &$j, $output, &$return){
                     if ($type !== $proc[$j]::OUT) {
                         $errOut[$j] .= $data;
                         $output->writeln('Classifier process output: ' . $data);
@@ -175,7 +175,7 @@ class ClassifyService {
                         if (trim($result) === '') {
                             continue;
                         }
-                        $output->writeln('Result for ' . $chunk[$i]->getName() . ' = ' . $result);
+                        $output->writeln('Result for ' . $chunk[$i[$j]]->getName() . ' = ' . $result);
                         try {
                             // decode json
                             $tags = json_decode(utf8_encode($result), true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
@@ -185,7 +185,7 @@ class ClassifyService {
                                 return $this->getTag($tag)->getId();
                             }, $tags);
                             $tags[] = $recognizedTag->getId();
-                            $this->objectMapper->assignTags($chunk[$i]->getId(), 'files', $tags);
+                            $this->objectMapper->assignTags($chunk[$i[$j]]->getId(), 'files', $tags);
                         } catch (InvalidPathException $e) {
                             $output->writeln('File with invalid path encountered');
                             $return = 1;
@@ -198,7 +198,7 @@ class ClassifyService {
                             $output->writeln($result);
                             $return = 1;
                         }
-                        $i++;
+                        $i[$j]++;
                     }
                 });
             } catch (RuntimeException $e) {
@@ -214,6 +214,11 @@ class ClassifyService {
             } catch (ProcessTimedOutException $e) {
                 $output->writeln('Classifier process timeout');
                 $output->writeln($process->getErrorOutput());
+                $return = 1;
+                continue;
+            }
+            if ($i[$j] !== count($chunks[$j])) {
+                $output->writeln('Classifier process output: ' . $errOut[$j]);
                 $return = 1;
             }
         }
