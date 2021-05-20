@@ -145,7 +145,7 @@ class ClassifyService {
         $i = [];
         $errOut = [];
         $proc = [];
-        array_map(function($chunk, $j) use ($output, $recognizedTag, &$proc, &$errOut, &$i){
+        array_walk($chunks, function($chunk, $j) use ($output, $recognizedTag, &$proc, &$errOut, &$i){
             try {
                 $paths = array_map(static function($file) {
                     return $file->getStorage()->getLocalFile($file->getInternalPath());
@@ -202,7 +202,7 @@ class ClassifyService {
                 $output->writeln('Classifier process could not be started');
                 $output->writeln($proc[$j]->getErrorOutput());
             }
-        }, $chunks);
+        });
         $return = 0;
         foreach ($proc as $j => $process) {
             try {
