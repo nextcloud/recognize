@@ -142,10 +142,10 @@ class ClassifyService {
         $recognizedTag = $this->getProcessedTag();
 
 
-        $i = [];
+        $return = 0;
         $errOut = [];
         $proc = [];
-        array_walk($chunks, function($chunk, $j) use ($output, $recognizedTag, &$proc, &$errOut, &$i){
+        array_walk($chunks, function($chunk, $j) use ($output, $recognizedTag, &$proc, &$errOut, &$i, &$return){
             try {
                 $paths = array_map(static function($file) {
                     return $file->getStorage()->getLocalFile($file->getInternalPath());
@@ -162,9 +162,9 @@ class ClassifyService {
                 $proc[$j] = new Process($command, __DIR__);
                 $proc[$j]->setTimeout(count($paths) * self::IMAGE_TIMEOUT);
 
-                $i[$j] = 0;
+                $i = 0;
                 $errOut[$j] = '';
-                $proc[$j]->start(function ($type, $data) use ($i, $proc, $errOut, $chunk, $recognizedTag, $j, $output){
+                $proc[$j]->start(function ($type, $data) use ($i, $proc, $errOut, $chunk, $recognizedTag, $j, $output, &$return){
                     if ($type !== $proc[$j]::OUT) {
                         $errOut[$j] .= $data;
                         $output->writeln('Classifier process output: ' . $data);
@@ -175,7 +175,7 @@ class ClassifyService {
                         if (trim($result) === '') {
                             continue;
                         }
-                        $output->writeln('Result for ' . $chunk[$i[$j]]->getName() . ' = ' . $result);
+                        $output->writeln('Result for ' . $chunk[$i]->getName() . ' = ' . $result);
                         try {
                             // decode json
                             $tags = json_decode(utf8_encode($result), true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
@@ -185,35 +185,35 @@ class ClassifyService {
                                 return $this->getTag($tag)->getId();
                             }, $tags);
                             $tags[] = $recognizedTag->getId();
-                            $this->objectMapper->assignTags($chunk[$i[$j]]->getId(), 'files', $tags);
+                            $this->objectMapper->assignTags($chunk[$i]->getId(), 'files', $tags);
                         } catch (InvalidPathException $e) {
                             $output->writeln('File with invalid path encountered');
+                            $return = 1;
                         } catch (NotFoundException $e) {
                             $output->writeln('File to tag was not found');
+                            $return = 1;
                         } catch (\JsonException $e) {
                             $output->writeln('JSON exception');
                             $output->writeln($e->getMessage());
                             $output->writeln($result);
+                            $return = 1;
                         }
-                        $i[$j]++;
+                        $i++;
                     }
                 });
             } catch (RuntimeException $e) {
                 $output->writeln('Classifier process could not be started');
                 $output->writeln($proc[$j]->getErrorOutput());
+                $return = 1;
             }
         });
-        $return = 0;
+
         foreach ($proc as $j => $process) {
             try {
                 $process->wait();
             } catch (ProcessTimedOutException $e) {
                 $output->writeln('Classifier process timeout');
                 $output->writeln($process->getErrorOutput());
-                continue;
-            }
-            if ($i[$j] !== count($chunks[$j])) {
-                $output->writeln('Classifier process output: ' . $errOut[$j]);
                 $return = 1;
             }
         }
