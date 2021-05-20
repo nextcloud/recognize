@@ -163,6 +163,7 @@ class ClassifyService {
                 $proc[$j] = new Process($command, __DIR__);
                 $proc[$j]->setTimeout(count($paths) * self::IMAGE_TIMEOUT);
 
+                $i[$j] = 0;
                 $errOut[$j] = '';
                 $proc[$j]->start(function ($type, $data) use (&$i, &$proc, &$errOut, $chunk, $recognizedTag, &$j, $output, &$return){
                     if ($type !== $proc[$j]::OUT) {
