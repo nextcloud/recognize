@@ -117,7 +117,7 @@ class ClassifyService {
                     $i++;
                 }
             }
-            if ($i !== count($files)-1) {
+            if ($i !== count($files)) {
                 $this->logger->warning('Classifier process output: '.$errOut);
             }
         }catch(ProcessTimedOutException $e) {
@@ -145,7 +145,7 @@ class ClassifyService {
         $i = [];
         $errOut = [];
         $proc = [];
-        foreach($chunks as $j => $chunk) {
+        array_map(function($chunk, $j) use ($output, $recognizedTag, &$proc, &$errOut, &$i){
             try {
                 $paths = array_map(static function($file) {
                     return $file->getStorage()->getLocalFile($file->getInternalPath());
@@ -186,7 +186,6 @@ class ClassifyService {
                             }, $tags);
                             $tags[] = $recognizedTag->getId();
                             $this->objectMapper->assignTags($chunk[$i[$j]]->getId(), 'files', $tags);
-
                         } catch (InvalidPathException $e) {
                             $output->writeln('File with invalid path encountered');
                         } catch (NotFoundException $e) {
@@ -202,9 +201,8 @@ class ClassifyService {
             } catch (RuntimeException $e) {
                 $output->writeln('Classifier process could not be started');
                 $output->writeln($proc[$j]->getErrorOutput());
-                continue;
             }
-        }
+        }, $chunks);
         $return = 0;
         foreach ($proc as $j => $process) {
             try {
@@ -214,7 +212,7 @@ class ClassifyService {
                 $output->writeln($process->getErrorOutput());
                 continue;
             }
-            if ($i[$j] !== count($chunks[$j])-1) {
+            if ($i[$j] !== count($chunks[$j])) {
                 $output->writeln('Classifier process output: ' . $errOut[$j]);
                 $return = 1;
             }
