@@ -20,6 +20,7 @@ This is the [list of recognized things and which categories they are currently m
   - x86 64bit
   - ARM 64bit
   - ARMv7 (32bit)
+- ~2GB of free RAM (so, depending on your server load, you should probably have 4GB RAM)  
 
 ### One click
 

@@ -15,6 +15,7 @@ Requirements:
   - x86 64bit
   - ARM 64bit
   - ARMv7 (32bit)
+- ~2GB of free RAM
 ]]></description>
 	<version>1.3.1</version>
 	<licence>agpl</licence>
