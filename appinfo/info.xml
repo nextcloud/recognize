@@ -16,6 +16,9 @@ Requirements:
   - ARM 64bit
   - ARMv7 (32bit)
 - ~2GB of free RAM
+
+The app does not send any sensitive data to cloud providers or similar services. All image processing is done on your nextcloud machine, using Tensorflow.js running in Node.js, which comes bundled with this app.
+
 ]]></description>
 	<version>1.3.1</version>
 	<licence>agpl</licence>

@@ -8,6 +8,9 @@
 
 This app goes through your photo collection and adds fitting tags, automatically categorizing your photos. Tagging works via the Nextcloud's Collaborative Tags.
 
+### Privacy
+This app does not send any sensitive data to cloud providers or similar services. All image processing is done on your nextcloud machine, using Tensorflow.js running in Node.js, which comes bundled with this app.
+
 ### Categories
 This is the [list of recognized things and which categories they are currently mapped to](https://github.com/marcelklehr/recognize/blob/master/src/rules.yml). I'm happy to accept pull requests for this file to fine tune predictions.
 
