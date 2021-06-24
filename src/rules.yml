@@ -777,7 +777,7 @@ black swan:
   see: bird
 
 echidna:
-  threshold: 0.2
+  threshold: 0.4
   categories:
     - animal
 
@@ -870,7 +870,7 @@ hermit crab:
 
 lobster:
   label: lobster
-  threshold: 0.75
+  threshold: 0.85
   categories:
     - animal
     - cooking
@@ -972,6 +972,7 @@ killer whale:
 
 dugong:
   label: water
+  threshold: 0.21
 
 sea lion:
   threshold: 0.21
@@ -980,7 +981,7 @@ sea lion:
 
 dog:
   label: dog
-  threshold: 0.2
+  threshold: 0.5
   priority: 5
   categories:
     - animal
@@ -2350,6 +2351,7 @@ tobacco shop:
 
 breakwater:
   label: water
+  threshold: 0.5
 
 bullet train:
   label: train
@@ -2359,6 +2361,7 @@ bullet train:
 
 butcher shop:
   label: butcher
+  threshold: 0.4
   categories:
     - shop
 
@@ -2452,7 +2455,7 @@ cleaver:
 
 cliff dwelling:
   label: building
-  threshold: 0.3
+  threshold: 0.75
 
 clog:
   label: shoe
@@ -2548,7 +2551,7 @@ dam:
 
 stone wall:
   label: wall
-  threshold: 0.3
+  threshold: 0.6
   categories:
     - architecture
 
@@ -2656,6 +2659,7 @@ entertainment center:
 
 espresso maker:
   label: coffee
+  threshold: 0.3
 
 face powder:
   see: ignore
@@ -2810,7 +2814,7 @@ lampshade:
 
 laptop:
   label: computer
-  threshold: 0.2
+  threshold: 0.55
 
 lawn mower:
   label: outdoor
@@ -2977,7 +2981,7 @@ motor scooter:
 
 mountain tent:
   label: camping
-  threshold: 0.26
+  threshold: 0.35
   categories:
     - outdoor
 
@@ -2989,7 +2993,7 @@ moving van:
 
 notebook:
   label: computer
-  threshold: 0.2
+  threshold: 0.45
 
 obelisk:
   label: tower
@@ -3011,7 +3015,7 @@ organ:
 
 oxcart:
   label: cart
-  threshold: 0.3
+  threshold: 0.6
   categories:
     - cow
     - farm
@@ -3161,7 +3165,7 @@ pillow:
 
 plane:
   label: aircraft
-  threshold: 0.3
+  threshold: 0.7
   categories:
     - vehicle
 
@@ -3235,7 +3239,7 @@ thresher:
 
 tractor:
   label: tractor
-  threshold: 0.34
+  threshold: 0.7
   categories:
     - farm
     - vehicle
@@ -3343,7 +3347,7 @@ ski:
 
 sleeping bag:
   label: camping
-  threshold: 0.26
+  threshold: 0.4
 
 sliding door:
   label: building
@@ -3351,7 +3355,7 @@ sliding door:
 
 snorkel:
   label: diving
-  threshold: 0.2
+  threshold: 0.3
 
 snowmobile:
   label: snowmobile
@@ -3521,7 +3525,7 @@ typewriter keyboard:
 
 viaduct:
   label: building
-  threshold: 0.5
+  threshold: 0.9
   categories:
     - architecture
 
@@ -3565,7 +3569,7 @@ wine bottle:
     - drinks
 
 wok:
-  threshold: 0.2
+  threshold: 0.35
   categories:
     - cooking
     - kitchen
@@ -4009,7 +4013,6 @@ ear:
   see: ignore
 
 sunglasses:
-  label: sunglasses
   priority: 2
   threshold: 0.22
   categories:
@@ -4027,7 +4030,7 @@ packet:
 
 swing:
   label: moment
-  threshold: 0.15
+  threshold: 0.3
 
 web site:
   label: info
