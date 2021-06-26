@@ -10,20 +10,26 @@
 		<figure v-if="!loading && success" class="icon-checkmark success" />
 		<SettingsSection
 			:title="t('bookmarks', 'Status')">
-      <p v-if="count >= 0">Classified images: {{count}}</p>
-      <p v-else><span class="icon-loading-small"></span>&nbsp;&nbsp;&nbsp;&nbsp;Counting classified images</p>
-      <p>The app is installed and will classify up to 100 images every 10 minutes.</p>
+			<p v-if="count >= 0">
+				Classified images: {{ count }}
+			</p>
+			<p v-else>
+				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Counting classified images
+			</p>
+			<p>The app is installed and will classify up to 100 images every 10 minutes.</p>
 		</SettingsSection>
 		<SettingsSection
 			:title="t('bookmarks', 'Manual operation') ">
 			<p>To trigger a full classification run manually, run the following command on the terminal.</p>
-      <p>&nbsp;</p>
-      <pre><code>occ recognize:classify</code></pre>
+			<p>&nbsp;</p>
+			<pre><code>occ recognize:classify</code></pre>
 		</SettingsSection>
 		<SettingsSection
 			:title="t('bookmarks', 'Reset')">
 			<p>Click the below button to remove all tags from all images that have been classified so far.</p>
-      <button @click="onReset" class="button">Reset tags for classified images</button>
+			<button class="button" @click="onReset">
+				Reset tags for classified images
+			</button>
 		</SettingsSection>
 	</div>
 </template>
@@ -40,15 +46,9 @@ export default {
 			loading: false,
 			success: false,
 			error: '',
-      count: -1
+			count: -1,
 		}
 	},
-  async created() {
-    await this.getCount()
-    setInterval(() => {
-      this.getCount()
-    }, 60*10000)
-  },
 
 	watch: {
 		error(error) {
@@ -56,23 +56,29 @@ export default {
 			OC.Notification.showTemporary(error)
 		},
 	},
+	async created() {
+		await this.getCount()
+		setInterval(() => {
+			this.getCount()
+		}, 60 * 10000)
+	},
 	methods: {
-    async onReset() {
-      this.loading = true
-      await axios.get('/index.php/apps/recognize/admin/reset')
-      await this.getCount()
-      this.loading = false
-      this.success = true
-      setTimeout(() => {
-        this.success = false
-      }, 3000)
-    },
-    async getCount() {
-      const resp = await axios.get('/index.php/apps/recognize/admin/count')
-      const {count} = resp.data
-      this.count = count
-    }
-  }
+		async onReset() {
+			this.loading = true
+			await axios.get('/index.php/apps/recognize/admin/reset')
+			await this.getCount()
+			this.loading = false
+			this.success = true
+			setTimeout(() => {
+				this.success = false
+			}, 3000)
+		},
+		async getCount() {
+			const resp = await axios.get('/index.php/apps/recognize/admin/count')
+			const { count } = resp.data
+			this.count = count
+		},
+	},
 }
 </script>
 <style>
