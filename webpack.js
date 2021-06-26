@@ -5,15 +5,7 @@ const webpackConfig = require('@nextcloud/webpack-vue-config')
 const config = {
 	entry: {
 		admin: path.join(__dirname, 'src', 'admin.js'),
-	},
-	module: {
-		rules: [
-			{
-				test: /\.vue$/,
-				loader: 'vue-loader',
-			},
-		],
-	},
+	}
 }
 
 const mergedConfigs = merge(config, webpackConfig)
