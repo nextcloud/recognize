@@ -12,10 +12,6 @@ use OCP\Files\File;
 use OCP\Files\InvalidPathException;
 use OCP\Files\IRootFolder;
 use OCP\Files\NotFoundException;
-use OCP\SystemTag\ISystemTag;
-use OCP\SystemTag\ISystemTagManager;
-use OCP\SystemTag\ISystemTagObjectMapper;
-use OCP\SystemTag\TagNotFoundException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
@@ -24,7 +20,6 @@ use Symfony\Component\Process\Process;
 
 class ClassifyService {
     public const IMAGE_TIMEOUT = 17; // 17s
-    public const RECOGNIZED_TAG = 'Tagged by recognize';
 
 	/**
 	 * @var LoggerInterface
@@ -35,24 +30,19 @@ class ClassifyService {
      */
     private $rootFolder;
     /**
-     * @var ISystemTagManager
+     * @var \OCA\Recognize\Service\TagManager
      */
     private $tagManager;
-    /**
-     * @var ISystemTagObjectMapper
-     */
-    private $objectMapper;
     /**
      * @var \OCP\IConfig
      */
     private $config;
 
-    public function __construct(LoggerInterface $logger, IRootFolder $rootFolder, ISystemTagManager $tagManager, ISystemTagObjectMapper $objectMapper, \OCP\IConfig $config) {
+    public function __construct(LoggerInterface $logger, IRootFolder $rootFolder, \OCP\IConfig $config, \OCA\Recognize\Service\TagManager $tagManager) {
 		$this->logger = $logger;
 		$this->rootFolder = $rootFolder;
-		$this->tagManager = $tagManager;
-        $this->objectMapper = $objectMapper;
         $this->config = $config;
+        $this->tagManager = $tagManager;
     }
 
     /**
@@ -65,8 +55,6 @@ class ClassifyService {
         }, $files);
 
 	    $this->logger->debug('Classifying '.var_export($paths, true));
-
-        $recognizedTag = $this->getProcessedTag();
 
 	    $command = array_merge([
 	        $this->config->getAppValue('recognize', 'node_binary'),
@@ -99,12 +87,7 @@ class ClassifyService {
 
 
                         // assign tags
-                        $tags = array_map(function ($tag) {
-                            return $this->getTag($tag)->getId();
-                        }, $tags);
-                        $tags[] = $recognizedTag->getId();
-                        $this->objectMapper->assignTags($files[$i]->getId(), 'files', $tags);
-
+                        $this->tagManager->assignTags($files[$i]->getId(), $tags);
                     } catch (InvalidPathException $e) {
                         $this->logger->warning('File with invalid path encountered');
                     } catch (NotFoundException $e) {
@@ -139,14 +122,11 @@ class ClassifyService {
     public function classifyParallel(array $files, int $threads, OutputInterface $output): int {
         $chunks = array_chunk($files, count($files)/$threads);
 
-        $recognizedTag = $this->getProcessedTag();
-
-
         $return = 0;
         $errOut = [];
         $proc = [];
         $i = [];
-        array_walk($chunks, function($chunk, $j) use ($output, $recognizedTag, &$proc, &$errOut, &$i, &$return){
+        array_walk($chunks, function($chunk, $j) use ($output, &$proc, &$errOut, &$i, &$return){
             try {
                 $paths = array_map(static function($file) {
                     return $file->getStorage()->getLocalFile($file->getInternalPath());
@@ -165,7 +145,7 @@ class ClassifyService {
 
                 $i[$j] = 0;
                 $errOut[$j] = '';
-                $proc[$j]->start(function ($type, $data) use (&$i, &$proc, &$errOut, $chunk, $recognizedTag, &$j, $output, &$return){
+                $proc[$j]->start(function ($type, $data) use (&$i, &$proc, &$errOut, $chunk, &$j, $output, &$return){
                     if ($type !== $proc[$j]::OUT) {
                         $errOut[$j] .= $data;
                         $output->writeln('Classifier process output: ' . $data);
@@ -182,11 +162,7 @@ class ClassifyService {
                             $tags = json_decode(utf8_encode($result), true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
 
                             // assign tags
-                            $tags = array_map(function ($tag) {
-                                return $this->getTag($tag)->getId();
-                            }, $tags);
-                            $tags[] = $recognizedTag->getId();
-                            $this->objectMapper->assignTags($chunk[$i[$j]]->getId(), 'files', $tags);
+                            $this->tagManager->assignTags($chunk[$i[$j]]->getId(), $tags);
                         } catch (InvalidPathException $e) {
                             $output->writeln('File with invalid path encountered');
                             $return = 1;
@@ -224,23 +200,5 @@ class ClassifyService {
             }
         }
         return $return;
-    }
-
-	public function getTag($name) : ISystemTag {
-        try {
-            $tag = $this->tagManager->getTag($name, true, true);
-        }catch(TagNotFoundException $e) {
-            $tag = $this->tagManager->createTag($name, true, true);
-        }
-        return $tag;
-    }
-
-    public function getProcessedTag() {
-        try {
-            $tag = $this->tagManager->getTag(self::RECOGNIZED_TAG, false, false);
-        }catch(TagNotFoundException $e) {
-            $tag = $this->tagManager->createTag(self::RECOGNIZED_TAG, false, false);
-        }
-        return $tag;
     }
 }

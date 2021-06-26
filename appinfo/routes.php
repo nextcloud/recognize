@@ -19,5 +19,10 @@ namespace OCA\Recognize\AppInfo;
  * it's instantiated in there
  */
 return [
-	'routes' => [],
+	'routes' => [
+
+        //internal ADMIN API
+        ['name' => 'admin#reset', 'url' => '/admin/reset', 'verb' => 'GET'],
+        ['name' => 'admin#count', 'url' => '/admin/count', 'verb' => 'GET']
+    ],
 ];

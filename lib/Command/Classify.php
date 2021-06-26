@@ -38,7 +38,7 @@ class Classify extends Command {
      */
     private $objectMapper;
 
-    public function __construct(\OCA\Recognize\Service\ClassifyService $classifier, \OCP\Files\IRootFolder $rootFolder, \Psr\Log\LoggerInterface $logger, \OCP\IUserManager $userManager, ISystemTagObjectMapper $objectMapper)
+    public function __construct(\OCA\Recognize\Service\ClassifyService $classifier, \OCP\Files\IRootFolder $rootFolder, \Psr\Log\LoggerInterface $logger, \OCP\IUserManager $userManager, ISystemTagObjectMapper $objectMapper, \OCA\Recognize\Service\TagManager $tagManager)
     {
         parent::__construct();
         $this->classifier = $classifier;
@@ -46,7 +46,7 @@ class Classify extends Command {
         $this->logger = $logger;
         $this->userManager = $userManager;
 
-        $this->recognizedTag = $this->classifier->getProcessedTag();
+        $this->recognizedTag = $tagManager->getProcessedTag();
         $this->objectMapper = $objectMapper;
     }
 
@@ -98,11 +98,9 @@ class Classify extends Command {
                 if (count($images) === 0) {
                     continue;
                 }
-
                 $output->writeln('Classifying photos of user '.$user);
                 return $this->classifier->classifyParallel($images, $processors, $output);
             }
-
 
         } catch (\Exception $ex) {
             $output->writeln('<error>Failed to classify images</error>');
