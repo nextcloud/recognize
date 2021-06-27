@@ -11,7 +11,8 @@
 		<SettingsSection
 			:title="t('bookmarks', 'Status')">
 			<p v-if="count >= 0">
-				Classified images: {{ count }}
+				Classified images: {{ count }}<br/>
+        Unrecognized images: {{countMissed}}
 			</p>
 			<p v-else>
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Counting classified images
@@ -47,6 +48,7 @@ export default {
 			success: false,
 			error: '',
 			count: -1,
+      countMissed: -1
 		}
 	},
 
@@ -60,7 +62,7 @@ export default {
 		await this.getCount()
 		setInterval(() => {
 			this.getCount()
-		}, 60 * 10000)
+		}, 60 * 1000)
 	},
 	methods: {
 		async onReset() {
@@ -74,9 +76,12 @@ export default {
 			}, 3000)
 		},
 		async getCount() {
-			const resp = await axios.get('/index.php/apps/recognize/admin/count')
+			let resp = await axios.get('/index.php/apps/recognize/admin/count')
 			const { count } = resp.data
+      resp = await axios.get('/index.php/apps/recognize/admin/countMissed')
+      const { count: countMissed } = resp.data
 			this.count = count
+			this.countMissed = countMissed
 		},
 	},
 }

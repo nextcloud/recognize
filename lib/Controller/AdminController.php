@@ -28,4 +28,9 @@ class AdminController extends Controller
         $count = count($this->tagManager->findClassifiedFiles());
         return new JSONResponse(['count' => $count]);
     }
+
+    public function countMissed() {
+        $count = count($this->tagManager->findMissedClassifications());
+        return new JSONResponse(['count' => $count]);
+    }
 }
