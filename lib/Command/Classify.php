@@ -81,7 +81,7 @@ class Classify extends Command {
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $processors = $input->getOption('processors');
-
+        $returns = [];
         try {
 
             $users = [];
@@ -99,7 +99,7 @@ class Classify extends Command {
                     continue;
                 }
                 $output->writeln('Classifying photos of user '.$user);
-                return $this->classifier->classifyParallel($images, $processors, $output);
+                $returns[] = $this->classifier->classifyParallel($images, $processors, $output);
             }
 
         } catch (\Exception $ex) {
@@ -107,6 +107,8 @@ class Classify extends Command {
             $output->writeln($ex->getMessage());
             return 1;
         }
+
+        return array_sum($returns) > 0;
     }
 
     /**

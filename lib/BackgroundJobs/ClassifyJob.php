@@ -57,7 +57,7 @@ class ClassifyJob extends TimedJob {
     private $userManager;
 
     public function __construct(
-        IConfig $settings, ClassifyService $classifier, ITimeFactory $timeFactory, ISystemTagObjectMapper $objectMapper, IRootFolder $rootFolder, \Psr\Log\LoggerInterface $logger, \OCP\IUserManager $userManager
+        IConfig $settings, ClassifyService $classifier, ITimeFactory $timeFactory, ISystemTagObjectMapper $objectMapper, IRootFolder $rootFolder, \Psr\Log\LoggerInterface $logger, \OCP\IUserManager $userManager, \OCA\Recognize\Service\TagManager $tagManager
     ) {
 		parent::__construct($timeFactory);
 		$this->settings = $settings;
@@ -66,7 +66,7 @@ class ClassifyJob extends TimedJob {
 		$this->classifier = $classifier;
         $this->objectMapper = $objectMapper;
         $this->rootFolder = $rootFolder;
-        $this->recognizedTag = $this->classifier->getProcessedTag();
+        $this->recognizedTag = $tagManager->getProcessedTag();
         $this->logger = $logger;
         $this->userManager = $userManager;
     }

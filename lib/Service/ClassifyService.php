@@ -26,10 +26,6 @@ class ClassifyService {
 	 */
 	private $logger;
     /**
-     * @var IRootFolder
-     */
-    private $rootFolder;
-    /**
      * @var \OCA\Recognize\Service\TagManager
      */
     private $tagManager;
@@ -38,9 +34,8 @@ class ClassifyService {
      */
     private $config;
 
-    public function __construct(LoggerInterface $logger, IRootFolder $rootFolder, \OCP\IConfig $config, \OCA\Recognize\Service\TagManager $tagManager) {
+    public function __construct(LoggerInterface $logger, \OCP\IConfig $config, \OCA\Recognize\Service\TagManager $tagManager) {
 		$this->logger = $logger;
-		$this->rootFolder = $rootFolder;
         $this->config = $config;
         $this->tagManager = $tagManager;
     }
@@ -117,7 +112,7 @@ class ClassifyService {
     /**
      * @param File[] $files
      * @param int $threads
-     * @return void
+     * @return int
      */
     public function classifyParallel(array $files, int $threads, OutputInterface $output): int {
         $chunks = array_chunk($files, count($files)/$threads);
