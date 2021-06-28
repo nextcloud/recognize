@@ -57,37 +57,36 @@ async function main() {
 					rule: findRule(result.className),
 				}))
 
-
 			results
 				.filter(result => {
-				console.error(result)
-				if (result.probability < 0.0 || !result.rule) {
-					return false
-				}
-				// we adjust the threshold, because it's slightly too low
-				// with this function lower values will get raised more than higher values
-				// (we're not using the same model as the original authors of rules.yml)
-				// const threshold = Math.tanh(result.rule.threshold ** 1.8) + 0.21
-				const threshold = result.rule.threshold
-				if (result.probability < threshold) {
-					return false
-				}
-				return true
-			})
-			.forEach((result) => {
-				if (result.rule.label) {
-					labels.push(result.rule.label)
-				}
-				if (result.rule.categories) {
-					labels.push(...result.rule.categories)
-				}
-			})
+					console.error(result)
+					if (result.probability < 0.0 || !result.rule) {
+						return false
+					}
+					// we adjust the threshold, because it's slightly too low
+					// with this function lower values will get raised more than higher values
+					// (we're not using the same model as the original authors of rules.yml)
+					// const threshold = Math.tanh(result.rule.threshold ** 1.8) + 0.21
+					const threshold = result.rule.threshold
+					if (result.probability < threshold) {
+						return false
+					}
+					return true
+				})
+				.forEach((result) => {
+					if (result.rule.label) {
+						labels.push(result.rule.label)
+					}
+					if (result.rule.categories) {
+						labels.push(...result.rule.categories)
+					}
+				})
 
 			const cat_probabilities = {}
 			const cat_thresholds = {}
 			const cat_count = {}
 			results.forEach(result => {
-				if(result.rule) {
+				if (result.rule) {
 					let categories = []
 					if (result.rule.label) {
 						categories.push(result.rule.label)
@@ -106,7 +105,7 @@ async function main() {
 							cat_count[category] = 0
 						}
 						cat_probabilities[category] += result.probability
-						cat_thresholds[category] = cat_thresholds[category] < result.rule.threshold? result.rule.threshold : cat_thresholds[category]
+						cat_thresholds[category] = cat_thresholds[category] < result.rule.threshold ? result.rule.threshold : cat_thresholds[category]
 						cat_count[category]++
 					})
 				}
