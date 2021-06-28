@@ -1,12 +1,13 @@
-
-# Nextcloud Recognize
-
+# Recognize for Nextcloud
 
 ![](https://github.com/marcelklehr/recognize/raw/master/screenshots/screenshot.png)
 
 > Image recognition for Nextcloud
 
-This app goes through your photo collection and adds fitting tags, automatically categorizing your photos. Tagging works via the Nextcloud's Collaborative Tags.
+This app goes through your photo collection and adds fitting tags, automatically categorizing your photos. Tagging works via Nextcloud's Collaborative Tags.
+
+### Accuracy
+The app has been calibrated to make as few false positives as possible, but currently only recognizes about 50% of testing images.
 
 ### Privacy
 This app does not send any sensitive data to cloud providers or similar services. All image processing is done on your nextcloud machine, using Tensorflow.js running in Node.js, which comes bundled with this app.
