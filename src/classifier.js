@@ -43,11 +43,11 @@ async function main() {
 	for (const path of paths) {
 		try {
 			const image = await readImageJs(path)
-			const results = await model.classify(image)
+			let results = await model.classify(image, 7)
 			image.dispose()
 
 			const labels = []
-			results
+			results = results
 				.map(result => ({
 					...result,
 					className: result.className.split(',')[0].toLowerCase(),
@@ -56,28 +56,72 @@ async function main() {
 					...result,
 					rule: findRule(result.className),
 				}))
+
+
+			results
 				.filter(result => {
-					console.error(result)
-					if (result.probability < 0.0 || !result.rule) {
-						return false
-					}
-					// we adjust the threshold, because it's slightly too low
-					// with this function lower values will get raised more than higher values
-					// (we're not using the same model as the original authors of rules.yml)
-					const threshold = Math.tanh(result.rule.threshold ** 1.6) + 0.21
-					if (result.probability < threshold) {
-						return false
-					}
-					return true
-				})
-				.forEach((result) => {
+				console.error(result)
+				if (result.probability < 0.0 || !result.rule) {
+					return false
+				}
+				// we adjust the threshold, because it's slightly too low
+				// with this function lower values will get raised more than higher values
+				// (we're not using the same model as the original authors of rules.yml)
+				// const threshold = Math.tanh(result.rule.threshold ** 1.8) + 0.21
+				const threshold = result.rule.threshold
+				if (result.probability < threshold) {
+					return false
+				}
+				return true
+			})
+			.forEach((result) => {
+				if (result.rule.label) {
+					labels.push(result.rule.label)
+				}
+				if (result.rule.categories) {
+					labels.push(...result.rule.categories)
+				}
+			})
+
+			const cat_probabilities = {}
+			const cat_thresholds = {}
+			const cat_count = {}
+			results.forEach(result => {
+				if(result.rule) {
+					let categories = []
 					if (result.rule.label) {
-						labels.push(result.rule.label)
+						categories.push(result.rule.label)
 					}
 					if (result.rule.categories) {
-						labels.push(...result.rule.categories)
+						categories = _.uniq(categories.concat(result.rule.categories))
 					}
+					categories.forEach(category => {
+						if (!(category in cat_probabilities)) {
+							cat_probabilities[category] = 0
+						}
+						if (!(category in cat_thresholds)) {
+							cat_thresholds[category] = 0
+						}
+						if (!(category in cat_count)) {
+							cat_count[category] = 0
+						}
+						cat_probabilities[category] += result.probability
+						cat_thresholds[category] = cat_thresholds[category] < result.rule.threshold? result.rule.threshold : cat_thresholds[category]
+						cat_count[category]++
+					})
+				}
+			})
+			Object.entries(cat_probabilities)
+				.filter(([category, probability]) => {
+					if (cat_count[category] <= 1) {
+						return false
+					}
+					return probability >= cat_thresholds[category] ** 2 + 0.15
 				})
+				.forEach(([category]) => {
+					labels.push(category)
+				})
+
 			console.log(JSON.stringify(_.uniq(labels)))
 		} catch (e) {
 			console.error(e)

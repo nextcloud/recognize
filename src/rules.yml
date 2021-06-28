@@ -145,7 +145,7 @@ rapeseed:
 
 fashion:
   label: portrait
-  threshold: 0.5
+  threshold: 0.2
   categories:
     - portrait
 
@@ -662,7 +662,7 @@ harvestman:
 
 scorpion:
   label: scorpion
-  threshold: 0.4
+  threshold: 0.8
   categories:
     - animal
 
@@ -791,7 +791,7 @@ wallaby:
     - animal
 
 koala:
-  threshold: 0.2
+  threshold: 0.4
   categories:
     - animal
 
@@ -1988,13 +1988,16 @@ three-toed sloth:
 
 ape:
   label: ape
-  threshold: 0.65
+  threshold: 0.7
   priority: 2
   categories:
     - animal
 
 orangutan:
-  see: ape
+  label: ape
+  threshold: 0.85
+  categories:
+    - animal
 
 gorilla:
   see: ape
@@ -2092,6 +2095,7 @@ tusker:
 
 panda:
   label: panda
+  threshold: 0.4
   priority: 2
   categories:
     - animal
@@ -2236,6 +2240,7 @@ assault rifle:
   threshold: 0.8
 
 backpack:
+  label: backpack
   threshold: 0.61
 
 bakery:
@@ -2280,7 +2285,7 @@ chiton:
 
 living:
   label: living
-  threshold: 0.67
+  threshold: 0.75
 
 bathtub:
   see: living
@@ -2314,7 +2319,7 @@ bicycle-built-for-two:
 
 shelter:
   label: shelter
-  threshold: 0.4
+  threshold: 0.75
   categories:
     - outdoor
     - architecture
@@ -2551,7 +2556,7 @@ dam:
 
 stone wall:
   label: wall
-  threshold: 0.6
+  threshold: 0.75
   categories:
     - architecture
 
@@ -2899,7 +2904,7 @@ medicine chest:
 
 megalith:
   label: rocks
-  threshold: 0.2
+  threshold: 0.4
 
 microphone:
   threshold: 0.64
@@ -2955,7 +2960,7 @@ mosque:
 
 bike:
   label: bike
-  threshold: 0.6
+  threshold: 0.65
   categories:
     - vehicle
 
@@ -3128,6 +3133,7 @@ pier:
     - water
 
 piggy bank:
+  label: piggy bank
   threshold: 0.5
 
 bottle:
@@ -3139,6 +3145,7 @@ sunscreen:
   threshold: 0.6
 
 screen:
+  label: screen
   threshold: 0.3
 
 perfume:
@@ -3261,11 +3268,11 @@ restaurant:
 
 revolver:
   label: weapon
-  threshold: 0.5
+  threshold: 0.8
 
 rifle:
   label: weapon
-  threshold: 0.6
+  threshold: 0.7
 
 rocking chair:
   label: furniture
@@ -3325,7 +3332,7 @@ basket:
 
 crate:
   label: basket
-  threshold: 0.52
+  threshold: 0.65
   priority: -1
 
 shopping basket:
@@ -3455,7 +3462,7 @@ submarine:
 
 suspension bridge:
   label: bridge
-  threshold: 0.65
+  threshold: 0.85
   categories:
     - architecture
 
@@ -3885,7 +3892,7 @@ alp:
 
 cliff:
   label: landscape
-  threshold: 0.2
+  threshold: 0.15
 
 promontory:
   see: cliff
@@ -4106,6 +4113,7 @@ portrait:
     - people
 
 shower cap:
+  threshold: 0.3
   label: portrait
   categories:
     - people
@@ -4124,6 +4132,7 @@ oxygen mask:
 
 gasmask:
   label: portrait
+  threshold: 0.1
   categories:
     - people
 
@@ -4150,7 +4159,7 @@ safety pin:
 
 safe:
   label: safe
-  threshold: 0.32
+  threshold: 0.6
 
 beaker:
   label: cup
@@ -4159,6 +4168,7 @@ beaker:
     - beverage
 
 cup:
+  label: cup
   threshold: 0.3
 
 whiskey jug:
@@ -4166,6 +4176,7 @@ whiskey jug:
   threshold: 0.3
 
 bucket:
+  label: bucket
   threshold: 0.6
 
 baby:
@@ -4236,6 +4247,7 @@ volcano:
   see: ignore
 
 radio telescope:
+  label: radio telescope
   threshold: 0.97
 
 thimble:
@@ -4350,6 +4362,7 @@ balance beam:
   see: ignore
 
 balloon:
+  label: balloon
   threshold: 0.91
 
 display:
@@ -4510,7 +4523,7 @@ military uniform:
 
 park bench:
   label: bench
-  threshold: 0.52
+  threshold: 0.7
 
 parking meter:
   label: parking
@@ -4606,12 +4619,14 @@ whistle:
   see: fashion
 
 umbrella:
+  label: umbrella
   threshold: 0.8
 
 vending machine:
   see: ignore
 
 stage:
+  label: stage
   threshold: 0.5
 
 tick:
@@ -4646,6 +4661,7 @@ horse cart:
     - vehicle
 
 mailbox:
+  label: mailbox
   threshold: 0.5
 
 apron:
@@ -4665,6 +4681,7 @@ fart machine:
   see: ignore
 
 gallery:
+  label: gallery
   threshold: 0.5
 
 beach:
@@ -4673,6 +4690,7 @@ beach:
     - water
 
 park:
+  label: park
   threshold: 0.5
   categories:
     - outdoor
