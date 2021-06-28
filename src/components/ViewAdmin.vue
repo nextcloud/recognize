@@ -11,11 +11,11 @@
 		<SettingsSection
 			:title="t('bookmarks', 'Status')">
 			<p v-if="count >= 0">
-				Classified images: {{ count }}<br/>
+				Processed images: {{ count }}<br/>
         Unrecognized images: {{countMissed}}
 			</p>
 			<p v-else>
-				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Counting classified images
+				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Counting images
 			</p>
 			<p>The app is installed and will classify up to 100 images every 10 minutes.</p>
 		</SettingsSection>
