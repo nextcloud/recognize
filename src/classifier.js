@@ -29,7 +29,7 @@ async function readImageNative(path) {
 
 async function readImageJs(path) {
 	let imageBuffer = await fs.readFile(path)
-	const imageData = jpeg.decode(imageBuffer, { useTArray: true, formatAsRGBA: false })
+	const imageData = jpeg.decode(imageBuffer, { useTArray: true, formatAsRGBA: false, maxMemoryUsageInMB: 1024})
 	imageBuffer = null
 	return tf.tensor(imageData.data, [imageData.height, imageData.width, 3])
 }
