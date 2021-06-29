@@ -90,6 +90,7 @@ appstore:
 	--include=/package.json \
 	--include=/package-lock.json \
 	--include=/src \
+	--include=/js \
 	--include=/lib \
 	--include=/img \
 	--include=/appinfo \
