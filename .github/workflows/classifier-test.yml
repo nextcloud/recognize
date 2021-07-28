@@ -23,7 +23,6 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install app
-        working-directory: apps/${{ env.APP_NAME }}
         run: |
           make all
 
