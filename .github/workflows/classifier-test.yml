@@ -1,0 +1,32 @@
+name: Classifier test
+
+on:
+  pull_request:
+  push:
+
+env:
+  APP_NAME: recognize
+
+jobs:
+  classifier:
+    runs-on: ubuntu-latest
+
+    name: Test classifier
+
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+
+      - name: Checkout app
+        uses: actions/checkout@v2
+
+      - name: Install app
+        working-directory: apps/${{ env.APP_NAME }}
+        run: |
+          npm ci
+
+      - name: Run classifier tests
+        run: |
+          node test/tests.js
