@@ -54,7 +54,7 @@ const labels = uniq(flatten(Object.entries(rules)
         results.push({matches: matchCount, misses: missCount})
     }
 
-    const result = results.reduce(({matches1, misses1}, {matches2, misses2}) => {
+    const result = results.reduce(({matches:matches1, misses:misses1}, {matches:matches2, misses:misses2}) => {
         return {matches: matches1+matches2, misses: misses1+misses2}
     }, {matches: 0, misses: 0})
     const matchRate = result.matches/labels.length*PHOTOS_PER_LABEL
