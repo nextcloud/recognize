@@ -27,5 +27,7 @@ jobs:
           make all
 
       - name: Run classifier tests
+        env:
+          FLICKR_API_KEY: ${{ secrets.FLICKR_API_KEY }}
         run: |
           node test/tests.js
