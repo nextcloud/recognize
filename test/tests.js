@@ -9,7 +9,7 @@ const glob = require('fast-glob');
 
 const rules = YAML.parse(fsSync.readFileSync(__dirname + '/../src/rules.yml').toString('utf8'))
 
-const PHOTOS_PER_LABEL = 500
+const PHOTOS_PER_LABEL = 50
 const PHOTOS_OLDER_THAN = 1627464319 // 2021-07-28; for determinism
 const flickr = new Flickr(process.env.FLICKR_API_KEY);
 
