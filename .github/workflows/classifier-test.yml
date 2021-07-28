@@ -25,7 +25,7 @@ jobs:
       - name: Install app
         working-directory: apps/${{ env.APP_NAME }}
         run: |
-          npm ci
+          make all
 
       - name: Run classifier tests
         run: |
