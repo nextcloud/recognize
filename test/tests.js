@@ -24,7 +24,8 @@ const labels = uniq(flatten(Object.entries(rules)
 ;(async function() {
 	const results = await Parallel.map(labels, async label => {
 		// First we calculate the true positive rate
-        let tpr
+		let tpr = 0
+		let tnr = 0
 
 		try {
 			const urls = await findPhotos(label)
@@ -46,15 +47,13 @@ const labels = uniq(flatten(Object.entries(rules)
 			const matchCount = matches.filter((item, i) => files[i] === item).length
 			tpr = matchCount / files.length
 
-            console.log('Processed photos for label "' + label + '"')
+			console.log('Processed photos for label "' + label + '"')
 
+			const rule = Object.values(rules).find((rule) => rule.label === label)
 
-
-        let tnr = 0
-
-		if (rules[label].categories) {
+			if (rule.categories) {
 			// If we have categories, we calculate false positive rate
-				for (const category of rules[label].categories) {
+				for (const category of rule.categories) {
 					const urls = await findPhotos(category + ' -' + label)
 					await Promise.all(
 						urls.map(url => download(url, 'temp_images/-' + label))
@@ -73,34 +72,34 @@ const labels = uniq(flatten(Object.entries(rules)
 					.map((labels, i) => labels.includes(label) ? files[i] : labels)
 
 				const matchCount = matches.filter((item, i) => files[i] === item).length
-				tnr = 1- (matchCount / (files.length))
+				tnr = 1 - (matchCount / (files.length))
 
-                console.log('Processed photos for label "' + label + '"')
+				console.log('Processed photos for label "' + label + '"')
+			}
+
+		} catch (e) {
+			console.log(e)
 		}
 
-        } catch (e) {
-            console.log(e)
-        }
+		console.log({ tpr, tnr })
 
-		console.log({tpr, tnr})
-
-		return {tpr, tnr}
+		return { tpr, tnr }
 	}, 20)
 
 	const sum = results.reduce((acc, val) => {
-		return {tpr: acc.tpr+val.tpr, tnr: acc.tnr+val.tnr}
-	}, {tpr:0, tnr:0})
+		return { tpr: acc.tpr + val.tpr, tnr: acc.tnr + val.tnr }
+	}, { tpr: 0, tnr: 0 })
 
-    const averageTPR = sum.tpr/results.length
-    const averageTNR = sum.tnr/results.length
-    const balancedAccuracy =  (averageTPR+averageTNR)/2
+	const averageTPR = sum.tpr / results.length
+	const averageTNR = sum.tnr / results.length
+	const balancedAccuracy = (averageTPR + averageTNR) / 2
 
-	console.log({ averageTPR, averageTNR, balancedAccuracy})
+	console.log({ averageTPR, averageTNR, balancedAccuracy })
 
 	const worstLabels = Object.fromEntries(
 		results
 			.map((result, i) => [labels[i], result])
-			.filter(([, result]) => (result.tpr+result.tnr) < balancedAccuracy)
+			.filter(([, result]) => (result.tpr + result.tnr) < balancedAccuracy)
 	)
 
 	console.log({ worstLabels })
