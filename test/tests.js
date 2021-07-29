@@ -6,6 +6,7 @@ const flatten = require('lodash/flatten')
 const uniq = require('lodash/uniq')
 const execa = require('execa')
 const glob = require('fast-glob');
+const Parallel = require('async-parallel')
 
 const rules = YAML.parse(fsSync.readFileSync(__dirname + '/../src/rules.yml').toString('utf8'))
 
@@ -24,7 +25,7 @@ const labels = uniq(flatten(Object.entries(rules)
 
 ;(async function() {
     const results = []
-    for (const label of labels) {
+    await Parallel.each(labels, async label => {
         try {
             const urls = await findPhotos(label)
             await Promise.all(
@@ -32,14 +33,14 @@ const labels = uniq(flatten(Object.entries(rules)
             )
         }catch(e) {
             console.log(e)
-            continue
+            return
         }
 
         const files = await glob(['temp_images/'+label+'/*'])
         if (!files.length) {
             console.log('No photos found for label "'+label+'"')
             results.push({matches: 0, misses: 0})
-            continue
+            return
         }
         const {stdout} = await execa('node', [__dirname+'/../src/classifier.js'].concat(files))
         const predictions = stdout.split('\n')
@@ -58,7 +59,7 @@ const labels = uniq(flatten(Object.entries(rules)
         console.log({matches: matchCount, misses: missCount})
 
         results.push({matches: matchCount, misses: missCount})
-    }
+    }, 10)
     const result = results.reduce((acc, val) => {
         return {matches: acc.matches+val.matches, misses: acc.misses+val.misses}
     }, {matches: 0, misses: 0})
