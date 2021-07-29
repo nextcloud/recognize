@@ -25,10 +25,16 @@ const labels = uniq(flatten(Object.entries(rules)
 ;(async function() {
     const results = []
     for (const label of labels) {
-        const urls = await findPhotos(label)
-        await Promise.all(
-            urls.map(url => download(url, 'temp_images/'+label))
-        )
+        try {
+            const urls = await findPhotos(label)
+            await Promise.all(
+                urls.map(url => download(url, 'temp_images/' + label))
+            )
+        }catch(e) {
+            console.log(e)
+            continue
+        }
+
         const files = await glob(['temp_images/'+label+'/*'])
         if (!files.length) {
             console.log('No photos found for label "'+label+'"')
