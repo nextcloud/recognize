@@ -24,8 +24,7 @@ const labels = uniq(flatten(Object.entries(rules)
     )))
 
 ;(async function() {
-    const results = []
-    await Parallel.each(labels, async label => {
+    const results = await Parallel.map(labels, async label => {
         try {
             const urls = await findPhotos(label)
             await Promise.all(
@@ -39,8 +38,7 @@ const labels = uniq(flatten(Object.entries(rules)
         const files = await glob(['temp_images/'+label+'/*'])
         if (!files.length) {
             console.log('No photos found for label "'+label+'"')
-            results.push({matches: 0, misses: 0})
-            return
+            return 0
         }
         const {stdout} = await execa('node', [__dirname+'/../src/classifier.js'].concat(files))
         const predictions = stdout.split('\n')
@@ -56,20 +54,26 @@ const labels = uniq(flatten(Object.entries(rules)
             .filter(Boolean)
 
         console.log('Processed photos for label "'+label+'"')
-        console.log({matches: matchCount, misses: missCount})
+        console.log(matchCount/PHOTOS_PER_LABEL)
 
-        results.push({matches: matchCount, misses: missCount})
-    }, 10)
-    const result = results.reduce((acc, val) => {
-        return {matches: acc.matches+val.matches, misses: acc.misses+val.misses}
-    }, {matches: 0, misses: 0})
+        return matchCount/PHOTOS_PER_LABEL
+    }, 20)
+
     const averageMatchRate = results.reduce((acc, val) => {
-        return acc+(val.matches/PHOTOS_PER_LABEL)
+        return acc+val
     }, 0) / results.length
-    console.log(result)
-    const overallMatchRate = result.matches/(results.length*PHOTOS_PER_LABEL)
-    console.log({overallMatchRate, averageMatchRate})
-    if (overallMatchRate < 0.5) {
+
+    console.log({averageMatchRate})
+
+    const worstLabels = Object.fromEntries(
+        results
+            .map((rate, i) => [labels[i], rate])
+            .filter(([, rate]) => rate < averageMatchRate)
+    )
+
+    console.log({worstLabels})
+
+    if (averageMatchRate < 0.5) {
         process.exit(1)
     }
 })()
