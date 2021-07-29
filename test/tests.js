@@ -16,10 +16,8 @@ const flickr = new Flickr(process.env.FLICKR_API_KEY);
 
 const labels = uniq(flatten(Object.entries(rules)
     .map(([key, entry]) =>
-        entry.label?
-            entry.categories?
-                [entry.label].concat(entry.categories)
-                : [entry.label]
+        entry.label ?
+            [entry.label]
             : []
     )))
 
