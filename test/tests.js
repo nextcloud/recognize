@@ -87,7 +87,7 @@ const labels = uniq(flatten(Object.entries(rules)
 		console.log({ tpr, tnr })
 
 		return { tpr, tnr }
-	}, 20)
+	}, 10)
 
 	const sum = results.reduce((acc, val) => {
 		return { tpr: acc.tpr + val.tpr, tnr: acc.tnr + (val.tnr > -1? val.tnr : 0) }
