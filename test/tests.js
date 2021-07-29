@@ -80,7 +80,8 @@ function findPhotos(label) {
         per_page: PHOTOS_PER_LABEL,
         media: 'photos',
         content_type: 1,
-        max_upload_date: PHOTOS_OLDER_THAN
+        max_upload_date: PHOTOS_OLDER_THAN,
+        sort: 'relevance',
     }).then(function (res) {
         if (res.body.stat === 'ok') {
             return res.body.photos.photo.map(photo => `https://live.staticflickr.com/${photo.server}/${photo.id}_${photo.secret}.jpg`)
