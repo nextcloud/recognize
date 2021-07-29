@@ -35,8 +35,7 @@ const labels = uniq(flatten(Object.entries(rules)
 
 			const files = await glob(['temp_images/' + label + '/*'])
 			if (!files.length) {
-				console.log('No photos found for label "' + label + '"')
-				return 0
+				throw new Error('No photos found for label "' + label + '"')
 			}
 			const { stdout } = await execa('node', [__dirname + '/../src/classifier.js'].concat(files))
 			const predictions = stdout.split('\n')
