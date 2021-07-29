@@ -46,8 +46,6 @@ const labels = uniq(flatten(Object.entries(rules)
 			const matchCount = matches.filter((item, i) => files[i] === item).length
 			tpr = matchCount / files.length
 
-			console.log('Processed photos for label "' + label + '"')
-
 			const rule = Object.values(rules).find((rule) => rule.label === label)
 
 			if (rule.categories) {
@@ -71,11 +69,10 @@ const labels = uniq(flatten(Object.entries(rules)
 
 				const matchCount = matches.filter((item, i) => files[i] === item).length
 				tnr = 1 - (matchCount / (files.length))
-
-				console.log('Processed photos for label "' + label + '"')
 			}
-
+			console.log('Processed photos for label "' + label + '"')
 		} catch (e) {
+			console.log('Error processing photos for label "' + label + '"')
 			console.log(e)
 		}
 
