@@ -42,9 +42,9 @@ const labels = uniq(flatten(Object.entries(rules)
             continue
         }
         const {stdout} = await execa('node', [__dirname+'/../src/classifier.js'].concat(files))
-        const results = stdout.split('\n')
+        const predictions = stdout.split('\n')
             .map(line => JSON.parse(line))
-        const matches = results
+        const matches = predictions
             .map((labels, i) => labels.includes(label)? files[i] : labels)
 
         const matchCount = matches.filter((item, i) => files[i] === item).length
@@ -54,18 +54,21 @@ const labels = uniq(flatten(Object.entries(rules)
             .map((labels, i) => labels? [files[i], labels] : null)
             .filter(Boolean)
 
-        console.log('Missed photos for label "'+label+'"')
-        console.log(misses)
+        console.log('Processed photos for label "'+label+'"')
+        console.log({matches: matchCount, misses: missCount})
 
         results.push({matches: matchCount, misses: missCount})
     }
-
-    const result = results.reduce(({matches:matches1, misses:misses1}, {matches:matches2, misses:misses2}) => {
-        return {matches: matches1+matches2, misses: misses1+misses2}
+    const result = results.reduce((acc, val) => {
+        return {matches: acc.matches+val.matches, misses: acc.misses+val.misses}
     }, {matches: 0, misses: 0})
-    const matchRate = result.matches/labels.length*PHOTOS_PER_LABEL
-    console.log({matchRate})
-    if (matchRate < 0.5) {
+    const averageMatchRate = results.reduce((acc, val) => {
+        return acc+(val.matches/PHOTOS_PER_LABEL)
+    }, 0) / results.length
+    console.log(result)
+    const overallMatchRate = result.matches/(results.length*PHOTOS_PER_LABEL)
+    console.log({overallMatchRate, averageMatchRate})
+    if (overallMatchRate < 0.5) {
         process.exit(1)
     }
 })()
