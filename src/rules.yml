@@ -110,6 +110,9 @@ lakeside:
 cardoon:
   label: flower
   threshold: 0.2
+  categories:
+    - plant
+    - nature
 
 window:
   label: window
@@ -830,6 +833,7 @@ nematode:
 conch:
   label: shell
   threshold: 0.6
+  context: beach
 
 snail:
   label: snail
@@ -2180,6 +2184,8 @@ instrument:
   label: instrument
   threshold: 1
   priority: -2
+  categories:
+    - music
 
 accordion:
   see: instrument
@@ -2234,14 +2240,17 @@ tank:
 weapon:
   label: weapon
   threshold: 0.3
+  context: war
 
 assault rifle:
   label: weapon
   threshold: 0.8
+  context: war
 
 backpack:
   label: backpack
   threshold: 0.61
+  context: travel
 
 bakery:
   threshold: 0.62
@@ -2475,6 +2484,7 @@ cocktail shaker:
 candle:
   label: candle
   threshold: 0.82
+  context: dinner
 
 coffee:
   label: coffee
@@ -2537,6 +2547,7 @@ cornet:
 helmet:
   label: helmet
   threshold: 0.59
+  context: bike
 
 crash helmet:
   see: helmet
@@ -2905,6 +2916,8 @@ medicine chest:
 megalith:
   label: rocks
   threshold: 0.4
+  categories:
+    - nature
 
 microphone:
   threshold: 0.64
@@ -3269,10 +3282,12 @@ restaurant:
 revolver:
   label: weapon
   threshold: 0.8
+  context: war
 
 rifle:
   label: weapon
   threshold: 0.7
+  context: war
 
 rocking chair:
   label: furniture
@@ -3363,6 +3378,8 @@ sliding door:
 snorkel:
   label: diving
   threshold: 0.3
+  categories:
+    - water
 
 snowmobile:
   label: snowmobile
