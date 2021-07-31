@@ -10,7 +10,7 @@ const Parallel = require('async-parallel')
 
 const rules = YAML.parse(fsSync.readFileSync(__dirname + '/../src/rules.yml').toString('utf8'))
 
-const PHOTOS_PER_LABEL = 100
+const PHOTOS_PER_LABEL = 50
 const PHOTOS_OLDER_THAN = 1627464319 // 2021-07-28; for determinism
 const flickr = new Flickr(process.env.FLICKR_API_KEY)
 
@@ -25,7 +25,7 @@ const labels = uniq(flatten(Object.entries(rules)
 	const results = await Parallel.map(labels, async label => {
 		// First we calculate the true positive rate
 		let tpr = 0
-		let tnr = 0
+		let tnr = -1
 
 		try {
 			const urls = await findPhotos(label)
@@ -48,10 +48,18 @@ const labels = uniq(flatten(Object.entries(rules)
 
 			const rule = Object.values(rules).find((rule) => rule.label === label)
 
-			if (rule.categories) {
+			if (rule.categories || rule.context) {
 			// If we have categories, we calculate false positive rate
-				for (const category of rule.categories) {
-					const urls = await findPhotos(category + ' -' + label)
+				if (rule.categories) {
+					for (const category of rule.categories) {
+						const urls = await findPhotos(category + ' -' + label)
+						await Promise.all(
+							urls.map(url => download(url, 'temp_images/-' + label))
+						)
+					}
+				}
+				if (rule.context) {
+					const urls = await findPhotos(rule.context + ' -' + label)
 					await Promise.all(
 						urls.map(url => download(url, 'temp_images/-' + label))
 					)
@@ -82,11 +90,11 @@ const labels = uniq(flatten(Object.entries(rules)
 	}, 20)
 
 	const sum = results.reduce((acc, val) => {
-		return { tpr: acc.tpr + val.tpr, tnr: acc.tnr + val.tnr }
+		return { tpr: acc.tpr + val.tpr, tnr: acc.tnr + (val.tnr > -1? val.tnr : 0) }
 	}, { tpr: 0, tnr: 0 })
 
 	const averageTPR = sum.tpr / results.length
-	const averageTNR = sum.tnr / results.length
+	const averageTNR = sum.tnr / results.filter(val => val.tnr > -1).length
 	const balancedAccuracy = (averageTPR + averageTNR) / 2
 
 	console.log({ averageTPR, averageTNR, balancedAccuracy })
@@ -94,7 +102,7 @@ const labels = uniq(flatten(Object.entries(rules)
 	const worstLabels = Object.fromEntries(
 		results
 			.map((result, i) => [labels[i], result])
-			.filter(([, result]) => (result.tpr + result.tnr) < balancedAccuracy)
+			.filter(([, result]) => (result.tpr + (result.tnr > -1? result.tnr : 0))/2 < balancedAccuracy)
 	)
 
 	console.log({ worstLabels })
