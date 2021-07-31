@@ -90,7 +90,7 @@ const labels = uniq(flatten(Object.entries(rules)
 	}, 20)
 
 	const sum = results.reduce((acc, val) => {
-		return { tpr: acc.tpr + val.tpr, tnr: acc.tnr + val.tnr > -1? val.tnr : 0 }
+		return { tpr: acc.tpr + val.tpr, tnr: acc.tnr + (val.tnr > -1? val.tnr : 0) }
 	}, { tpr: 0, tnr: 0 })
 
 	const averageTPR = sum.tpr / results.length
@@ -102,7 +102,7 @@ const labels = uniq(flatten(Object.entries(rules)
 	const worstLabels = Object.fromEntries(
 		results
 			.map((result, i) => [labels[i], result])
-			.filter(([, result]) => (result.tpr + result.tnr > -1? result.tnr : 0)/2 < balancedAccuracy)
+			.filter(([, result]) => (result.tpr + (result.tnr > -1? result.tnr : 0))/2 < balancedAccuracy)
 	)
 
 	console.log({ worstLabels })
