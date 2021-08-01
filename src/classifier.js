@@ -1,7 +1,9 @@
+const path = require('path')
 const fsSync = require('fs')
 const YAML = require('yaml')
 const _ = require('lodash')
 const tf = require('@tensorflow/tfjs')
+require('@tensorflow/tfjs-node')
 require('@tensorflow/tfjs-backend-wasm')
 const rules = YAML.parse(fsSync.readFileSync(__dirname + '/rules.yml').toString('utf8'))
 
@@ -29,7 +31,10 @@ const paths = process.argv.slice(2)
 
 async function main() {
 	const model = await EfficientNetCheckPointFactory.create(
-		EfficientNetCheckPoint.B3
+		EfficientNetCheckPoint.B3,
+		{
+			localModelRootDirectory: path.resolve(__dirname, '..', "model")
+		}
 	);
 
 	for (const path of paths) {
@@ -121,9 +126,9 @@ async function main() {
 	}
 }
 
-tf.setBackend('wasm')
+tf.setBackend('cpu')
 	.then(() => main())
 	.catch(e =>
-		tf.setBackend('cpu')
+		tf.setBackend('wasm')
 			.then(() => main())
 	)

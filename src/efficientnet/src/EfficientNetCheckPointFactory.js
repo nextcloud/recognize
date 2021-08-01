@@ -20,7 +20,7 @@ class EfficientNetCheckPointFactory {
             const { localModelRootDirectory, locale } = options || {};
             let modelPath = `${defaultModelsUrl}${checkPoint}/${modelFileName}`;
             if (localModelRootDirectory) {
-                modelPath = tf.io.fileSystem(`${localModelRootDirectory}/B${checkPoint}/${modelFileName}`);
+                modelPath = `file://${localModelRootDirectory}/${modelFileName}`;
             }
             const model = new EfficientnetModel_1.default(modelPath, inputLayerImageSize[checkPoint], locale);
             yield model.load();
