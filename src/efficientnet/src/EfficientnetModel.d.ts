@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import * as tf from "@tensorflow/tfjs-node-gpu";
+import * as tf from "@tensorflow/tfjs-node";
 import { io } from "@tensorflow/tfjs-core";
 import { EfficientNetLableLanguage, EfficientNetLanguageProvider } from "./EfficientNetLanguageProvider";
 import EfficientNetResult from "./EfficientNetResult";

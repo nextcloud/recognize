@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const tf = require("@tensorflow/tfjs");
+const tf = require("@tensorflow/tfjs-node");
 const Jimp = require("jimp");
 const cliProgress = require("cli-progress");
 const EfficientNetLanguageProvider_1 = require("./EfficientNetLanguageProvider");
