@@ -32,7 +32,7 @@ const labels = uniq(flatten(Object.entries(rules)
 
 			await Promise.all(matchingRules.map(async rule => {
 				if (rule.categories) {
-					const urls = await findPhotos(rule.categories.join(' ') + ' -' + label)
+					const urls = await findPhotos(rule.categories.join(' ') + ' ' + label)
 					await Promise.all(
 						urls.map(url => download(url, 'temp_images/' + label))
 					)
