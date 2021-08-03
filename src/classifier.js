@@ -125,7 +125,7 @@ async function main() {
 	}
 }
 
-tf.setBackend('cpu')
+tf.setBackend('tensorflow')
 	.then(() => main())
 	.catch(e =>
 		tf.setBackend('wasm')
