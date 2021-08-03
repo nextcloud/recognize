@@ -96,6 +96,7 @@ tiger:
 
 seashore:
   label: seashore
+  context: nature
   threshold: 0.6
   categories:
     - beach
@@ -103,6 +104,7 @@ seashore:
 
 lakeside:
   label: lakeside
+  context: nature
   threshold: 0.35
   categories:
     - water
@@ -128,6 +130,7 @@ bannister:
 
 window shade:
   label: building
+  context: nature stones
   threshold: 0.7
   categories:
     - architecture
@@ -413,7 +416,7 @@ bald eagle bird:
 vulture bird:
   see: bird
 
-great grey owl bird:
+great grey owl:
   label: owl
   threshold: 0.3
   categories:
@@ -833,7 +836,7 @@ nematode:
 conch:
   label: shell
   threshold: 0.6
-  context: beach
+  context: flotsam
 
 snail:
   label: snail
@@ -2182,6 +2185,7 @@ puffer:
 
 instrument:
   label: instrument
+  context: tool
   threshold: 1
   priority: -2
   categories:
@@ -2308,6 +2312,7 @@ beacon:
 beer:
   label: drinks
   threshold: 0.4
+  context: party
   categories:
     - beverage
 
@@ -2459,6 +2464,7 @@ china cabinet:
 
 church:
   label: church
+  context: nature stones
   threshold: 0.4
   categories:
     - building
@@ -2469,6 +2475,7 @@ cleaver:
 
 cliff dwelling:
   label: building
+  context: nature stones
   threshold: 0.75
 
 clog:
@@ -2516,6 +2523,7 @@ combination lock:
 computer keyboard:
   label: keyboard
   threshold: 0.27
+  context: screen
   categories:
     - computer
 
@@ -2653,6 +2661,7 @@ drum:
 dutch oven:
   label: cooking
   threshold: 0.2
+  context: food
   categories:
     - kitchen
 
@@ -3240,6 +3249,7 @@ printer:
 
 prison:
   label: building
+  context: nature stones
   threshold: 0.7
   categories:
     - architecture
@@ -3549,6 +3559,7 @@ typewriter keyboard:
 
 viaduct:
   label: building
+  context: nature stones
   threshold: 0.9
   categories:
     - architecture
@@ -3989,6 +4000,7 @@ arabian camel:
 
 tile roof:
   label: building
+  context: nature stones
   threshold: 0.6
   categories:
     - architecture
@@ -4216,6 +4228,7 @@ diaper:
 
 patio:
   label: building
+  context: nature stones
   threshold: 0.5
 
 scoreboard:
@@ -4242,6 +4255,7 @@ horizontal bar:
 
 vault:
   label: building
+  context: nature stones
   threshold: 0.6
 
 office:
