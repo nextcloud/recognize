@@ -3462,6 +3462,7 @@ steel drum:
 stove:
   label: cooking
   threshold: 0.46
+  context: food
   categories:
     - kitchen
 
