@@ -112,7 +112,7 @@ const labels = uniq(flatten(Object.entries(rules)
 	const worstLabels = Object.fromEntries(
 		results
 			.map((result, i) => [labels[i], result])
-			.filter(([, result]) => (result.tpr + (result.tnr > -1? result.tnr : 0))/2 < balancedAccuracy)
+			.filter(([, result]) => (result.tpr < 0.5 || result.tnr < 0.5))
 	)
 
 	console.log({ worstLabels })
