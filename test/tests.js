@@ -37,7 +37,7 @@ const labels = uniq(flatten(Object.entries(rules)
 						urls.map(url => download(url, 'temp_images/' + label))
 					)
 				}else{
-					const urls = await findPhotos(rule.categories.join(' ') + ' ' + label)
+					const urls = await findPhotos(label)
 					await Promise.all(
 						urls.map(url => download(url, 'temp_images/' + label))
 					)
