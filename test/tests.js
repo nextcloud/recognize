@@ -46,24 +46,25 @@ const labels = uniq(flatten(Object.entries(rules)
 			const matchCount = matches.filter((item, i) => files[i] === item).length
 			tpr = matchCount / files.length
 
-			const rule = Object.values(rules).find((rule) => rule.label === label)
+			const matchingRules = Object.values(rules).filter((rule) => rule.label === label)
 
-			if (rule.categories || rule.context) {
-			// If we have categories, we calculate false positive rate
-				if (rule.categories) {
-					for (const category of rule.categories) {
-						const urls = await findPhotos(category + ' -' + label)
+			if (matchingRules.some(rule => rule.categories || rule.context)) {
+			    // If we have rules or categories, we calculate false positive rate
+
+				await Promise.all(matchingRules.map(async rule => {
+					if (rule.context) {
+						const urls = await findPhotos(rule.context + ' -' + label)
+						await Promise.all(
+							urls.map(url => download(url, 'temp_images/-' + label))
+						)
+					} else if (rule.categories) {
+						const urls = await findPhotos(rule.categories.join(' ') + ' -' + label)
 						await Promise.all(
 							urls.map(url => download(url, 'temp_images/-' + label))
 						)
 					}
-				}
-				if (rule.context) {
-					const urls = await findPhotos(rule.context + ' -' + label)
-					await Promise.all(
-						urls.map(url => download(url, 'temp_images/-' + label))
-					)
-				}
+				}))
+
 
 				const files = await glob(['temp_images/-' + label + '/*'])
 				if (!files.length) {
