@@ -30,7 +30,7 @@ const paths = process.argv.slice(2)
 
 async function main() {
 	const model = await EfficientNetCheckPointFactory.create(
-		EfficientNetCheckPoint.B3,
+		EfficientNetCheckPoint.B0,
 		{
 			localModelRootDirectory: path.resolve(__dirname, '..', "model")
 		}
