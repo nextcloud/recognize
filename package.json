@@ -25,12 +25,12 @@
   "dependencies": {
     "@nextcloud/axios": "^1.6.0",
     "@nextcloud/vue": "^4.0.2",
-    "@tensorflow-models/mobilenet": "^2.1.0",
-    "@tensorflow/tfjs": "^3.4.0",
+    "@tensorflow/tfjs": "^3.8.0",
     "@tensorflow/tfjs-backend-wasm": "^3.5.0",
-    "flickr-sdk": "^3.10.0",
+    "@tensorflow/tfjs-node": "^3.8.0",
     "jpeg-js": "^0.4.3",
     "lodash": "^4.17.21",
+    "node-efficientnet": "^2.0.3",
     "vue": "^2.6.12",
     "yaml": "^1.10.2"
   },

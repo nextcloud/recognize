@@ -9,7 +9,7 @@ package_name=$(app_name)
 cert_dir=$(HOME)/.nextcloud/certificates
 version+=1.4.2
 
-node_version=v14.9.0
+node_version=v14.17.4
 
 all: dev-setup build-js-production composer-no-dev
 
