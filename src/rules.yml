@@ -3932,6 +3932,7 @@ geyser:
 sandbar:
   label: beach
   threshold: 0.39
+  context: nature
   categories:
     - sand
 
@@ -4717,6 +4718,8 @@ gallery:
 
 beach:
   priority: 1
+  label: beach
+  context: nature
   categories:
     - water
 
