@@ -28,16 +28,18 @@ const labels = uniq(flatten(Object.entries(rules)
 		let tnr = -1
 
 		try {
-			const matchingRules = Object.values(rules).filter((rule) => rule.label === label)
+			const matchingRules = Object.entries(rules)
+				.map(([className, value]) => ({...value, className}))
+				.filter((rule) => rule.label === label)
 
 			await Promise.all(matchingRules.map(async rule => {
 				if (rule.categories) {
-					const urls = await findPhotos(rule.categories.join(' ') + ' ' + label)
+					const urls = await findPhotos(rule.categories.join(' ') + ' ' + label+' '+rule.className)
 					await Promise.all(
 						urls.map(url => download(url, 'temp_images/' + label))
 					)
 				}else{
-					const urls = await findPhotos(label)
+					const urls = await findPhotos(label+' '+rule.className)
 					await Promise.all(
 						urls.map(url => download(url, 'temp_images/' + label))
 					)
@@ -62,12 +64,12 @@ const labels = uniq(flatten(Object.entries(rules)
 
 				await Promise.all(matchingRules.map(async rule => {
 					if (rule.context) {
-						const urls = await findPhotos(rule.context + ' -' + label)
+						const urls = await findPhotos(rule.context + ' -' + label+ ' -'+rule.className)
 						await Promise.all(
 							urls.map(url => download(url, 'temp_images/-' + label))
 						)
 					} else if (rule.categories) {
-						const urls = await findPhotos(rule.categories.join(' ') + ' -' + label)
+						const urls = await findPhotos(rule.categories.join(' ') + ' -' + label+ ' -'+rule.className)
 						await Promise.all(
 							urls.map(url => download(url, 'temp_images/-' + label))
 						)
