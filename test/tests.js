@@ -69,7 +69,7 @@ const labels = uniq(flatten(Object.entries(rules)
 							urls.map(url => download(url, 'temp_images/-' + label))
 						)
 					} else if (rule.categories) {
-						const urls = await findPhotos(rule.categories.join(' ') + ' -' + label+ ' -'+rule.className.split(' ').map(s => '-'+s).join(' '))
+						const urls = await findPhotos(rule.categories.join(' ') + ' -' + label+ ' '+rule.className.split(' ').map(s => '-'+s).join(' '))
 						await Promise.all(
 							urls.map(url => download(url, 'temp_images/-' + label))
 						)
@@ -125,6 +125,7 @@ const labels = uniq(flatten(Object.entries(rules)
 })()
 
 function findPhotos(label) {
+	console.log('FLICKR search: '+label)
 	return flickr.photos.search({
 		text: label,
 		per_page: PHOTOS_PER_LABEL,
