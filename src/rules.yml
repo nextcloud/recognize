@@ -263,6 +263,7 @@ liner:
 
 pirate:
   label: ship
+  context: water float cliffs
   threshold: 0.23
   categories:
     - water
@@ -270,6 +271,7 @@ pirate:
 
 ship:
   label: ship
+  context: water float cliffs
   threshold: 0.3
   categories:
     - water
@@ -602,10 +604,12 @@ american alligator:
 
 triceratops:
   label: animal
+  context: nature
   threshold: 0.5
 
 snake:
   label: animal
+  context: nature
   threshold: 0.9
 
 thunder snake:
@@ -661,6 +665,7 @@ sidewinder snake:
 
 trilobite:
   label: animal
+  context: nature
   threshold: 0.5
 
 harvestman:
@@ -789,6 +794,7 @@ echidna:
 
 platypus:
   label: animal
+  context: nature
   threshold: 0.7
 
 wallaby:
@@ -899,6 +905,7 @@ crayfish:
 isopod:
   threshold: 0.75
   label: animal
+  context: nature
 
 white stork:
   see: bird
@@ -1691,6 +1698,7 @@ sloth bear:
 
 mongoose:
   label: animal
+  context: nature
   threshold: 0.5
 
 meerkat:
@@ -1838,26 +1846,32 @@ angora:
 
 hamster:
   label: animal
+  context: nature
   threshold: 0.5
 
 porcupine:
   label: animal
+  context: nature
   threshold: 0.5
 
 fox squirrel:
   label: animal
+  context: nature
   threshold: 0.5
 
 marmot:
   label: animal
+  context: nature
   threshold: 0.4
 
 beaver:
   label: animal
+  context: nature
   threshold: 0.4
 
 guinea pig:
   label: animal
+  context: nature
   threshold: 0.4
 
 sorrel:
@@ -1909,6 +1923,7 @@ water buffalo:
 
 bison:
   label: animal
+  context: nature
   threshold: 0.5
 
 ram:
@@ -1926,6 +1941,7 @@ bighorn:
 
 ibex:
   label: animal
+  context: nature
   threshold: 0.4
   categories:
     - wildlife
@@ -1960,14 +1976,17 @@ weasel:
 
 mink:
   label: animal
+  context: nature
   threshold: 0.5
 
 polecat:
   label: animal
+  context: nature
   threshold: 0.5
 
 black-footed ferret:
   label: animal
+  context: nature
   threshold: 0.8
 
 otter:
@@ -1987,10 +2006,12 @@ badger:
 
 armadillo:
   label: animal
+  context: nature
   threshold: 0.4
 
 three-toed sloth:
   label: animal
+  context: nature
   threshold: 0.4
 
 ape:
@@ -2077,6 +2098,7 @@ indri:
 
 fossa:
   label: animal
+  context: nature
   threshold: 0.15
 
 elephant:
@@ -2540,6 +2562,7 @@ confectionery:
 
 container ship:
   label: ship
+  context: water float
   threshold: 0.84
   categories:
     - water
@@ -3338,6 +3361,7 @@ school bus:
 
 schooner:
   label: ship
+  context: water float
   threshold: 0.24
   categories:
     - water
@@ -3624,6 +3648,7 @@ worm fence:
 
 wreck:
   label: ship
+  context: water float cliffs
   threshold: 0.46
   categories:
     - water
@@ -3914,6 +3939,7 @@ eggnog:
 
 alp:
   label: alpine
+  context: landscape
   threshold: 0.4
   categories:
     - landscape
@@ -3998,6 +4024,7 @@ knot:
 
 arabian camel:
   label: animal
+  context: nature
   threshold: 0.7
 
 tile roof:
