@@ -21,10 +21,12 @@ This is the [list of recognized things and which categories they are currently m
 ### Requirements
 
 - php 7.3 and above
+- App "collaborative tags" enabled
 - Processor
   - x86 64bit
   - ARM 64bit
   - ARMv7 (32bit)
+- System with glibc (usually the norm)
 - ~2GB of free RAM (so, depending on your server load, you should probably have 4GB RAM)  
 
 ### One click

@@ -11,11 +11,13 @@ This is still experimental and currently only works for photos that don't reside
 
 Requirements:
 - php 7.3 and above
+- App "collaborative tags" enabled
 - Processor
   - x86 64bit
   - ARM 64bit
   - ARMv7 (32bit)
-- ~2GB of free RAM
+- System with glibc (usually the norm)
+- ~2GB of free RAM (so, depending on your server load, you should probably have 4GB RAM)
 
 The app does not send any sensitive data to cloud providers or similar services. All image processing is done on your nextcloud machine, using Tensorflow.js running in Node.js, which comes bundled with this app.
 
