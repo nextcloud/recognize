@@ -498,7 +498,7 @@ terrapin:
 
 box turtle:
   label: turtle
-  threshold: 0.19
+  threshold: 0.3
   categories:
     - reptile
     - animal
@@ -2612,19 +2612,20 @@ dial telephone:
   threshold: 0.25
 
 clock:
-  see: display
+  threshold: 0.6
+  label: clock
 
 analog clock:
-  see: display
+  see: clock
 
 wall clock:
-  see: display
+  see: clock
 
 digital clock:
-  see: display
+  see: clock
 
 digital watch:
-  see: display
+  see: clock
 
 oscilloscope:
   see: display
@@ -2835,7 +2836,7 @@ honeycomb:
 
 jack-o'-lantern:
   label: pumpkin
-  threshold: 0.2
+  threshold: 0.25
   categories:
     - vegetables
 
@@ -3078,7 +3079,7 @@ paddle:
 
 paddlewheel:
   label: boat
-  threshold: 0.15
+  threshold: 0.2
   categories:
     - vehicle
     - water
@@ -3410,7 +3411,7 @@ sliding door:
 
 snorkel:
   label: diving
-  threshold: 0.3
+  threshold: 0.4
   categories:
     - water
 
@@ -3716,7 +3717,7 @@ ice lolly:
 
 chocolate sauce:
   label: dessert
-  threshold: 0.1
+  threshold: 0.3
   categories:
     - food
 
@@ -3787,6 +3788,7 @@ artichoke:
 
 bell pepper:
   label: vegetables
+  threshold: 0.15
   categories:
     - food
 
@@ -3847,7 +3849,7 @@ lemon:
 
 fig:
   label: fruit
-  threshold: 0.11
+  threshold: 0.2
   categories:
     - food
 
@@ -3877,7 +3879,7 @@ custard apple:
 
 pomegranate:
   label: fruit
-  threshold: 0.15
+  threshold: 0.23
   categories:
     - food
 
@@ -3894,7 +3896,7 @@ dough:
 
 meat loaf:
   label: meat
-  threshold: 0.2
+  threshold: 0.3
   categories:
     - cooking
     - food
@@ -4658,7 +4660,7 @@ barrel:
 
 scuba diver:
   label: diving
-  threshold: 0.2
+  threshold: 0.3
   categories:
     - water
 

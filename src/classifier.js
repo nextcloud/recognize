@@ -39,7 +39,7 @@ async function main() {
 	for (const path of paths) {
 		try {
 			let results = (await model.inference(path, {
-				topK: 7
+				topK: 5
 			})).result
 
 			const labels = []
@@ -60,12 +60,8 @@ async function main() {
 					if (result.precision < 0.0 || !result.rule) {
 						return false
 					}
-					// we adjust the threshold, because it's slightly too low
-					// with this function lower values will get raised more than higher values
-					// (we're not using the same model as the original authors of rules.yml)
-					// const threshold = Math.tanh(result.rule.threshold ** 1.8) + 0.21
 					const threshold = result.rule.threshold
-					if (result.precision < threshold) {
+					if (result.precision < Math.tanh(threshold*0.9)/0.8) {
 						return false
 					}
 					return true
@@ -89,9 +85,9 @@ async function main() {
 						categories.push(result.rule.label)
 					}
 					if (result.rule.categories) {
-						categories = _.uniq(categories.concat(result.rule.categories))
+						categories = categories.concat(result.rule.categories)
 					}
-					categories.forEach(category => {
+					_.uniq(categories).forEach(category => {
 						if (!(category in cat_probabilities)) {
 							cat_probabilities[category] = 0
 						}
@@ -101,7 +97,7 @@ async function main() {
 						if (!(category in cat_count)) {
 							cat_count[category] = 0
 						}
-						cat_probabilities[category] += result.precision
+						cat_probabilities[category] += result.precision - 0.1
 						cat_thresholds[category] = cat_thresholds[category] < result.rule.threshold ? result.rule.threshold : cat_thresholds[category]
 						cat_count[category]++
 					})
