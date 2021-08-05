@@ -38,9 +38,9 @@ async function main() {
 
 	for (const path of paths) {
 		try {
-			let results = (await model.inference(path, {
-				topK: 5
-			})).result
+			let results = await model.inference(path, {
+				topK: 7
+			})
 
 			const labels = []
 			results = results
@@ -61,7 +61,7 @@ async function main() {
 						return false
 					}
 					const threshold = result.rule.threshold
-					if (result.precision < threshold) {
+					if (result.probability < threshold) {
 						return false
 					}
 					return true
@@ -92,13 +92,13 @@ async function main() {
 							cat_probabilities[category] = 0
 						}
 						if (!(category in cat_thresholds)) {
-							cat_thresholds[category] = 0
+							cat_thresholds[category] = 1
 						}
 						if (!(category in cat_count)) {
 							cat_count[category] = 0
 						}
-						cat_probabilities[category] += result.precision
-						cat_thresholds[category] = cat_thresholds[category] < result.rule.threshold ? result.rule.threshold : cat_thresholds[category]
+						cat_probabilities[category] += result.probability
+						cat_thresholds[category] += result.rule.threshold**2
 						cat_count[category]++
 					})
 				}
@@ -108,7 +108,7 @@ async function main() {
 					if (cat_count[category] <= 1) {
 						return false
 					}
-					return probability >= cat_thresholds[category] ** 2 + 0.15
+					return probability >= (cat_thresholds[category]/cat_count[category])**(1/2)
 				})
 				.forEach(([category]) => {
 					labels.push(category)
