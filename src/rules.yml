@@ -3900,7 +3900,8 @@ meat loaf:
     - food
 
 pizza:
-  threshold: 0.2
+  threshold: 0.4
+  label: pizza
   categories:
     - food
 
