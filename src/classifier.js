@@ -46,6 +46,7 @@ async function main() {
 			results = results
 				.map(result => ({
 					...result,
+					precision: result.precision/100,
 					className: result.label.split(',')[0].toLowerCase(),
 				}))
 				.map(result => ({
