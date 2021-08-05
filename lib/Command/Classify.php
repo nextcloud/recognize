@@ -12,6 +12,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Classify extends Command {
+    const ARG_MAX = 2097152;
 
     /**
      * @var \OCA\Recognize\Service\ClassifyService
@@ -99,7 +100,7 @@ class Classify extends Command {
                     continue;
                 }
                 $output->writeln('Classifying photos of user '.$user);
-                $returns[] = $this->classifier->classifyParallel($images, $processors, $output);
+                $returns[] = $this->classifier->classifyParallel(array_slice($images, 0, self::ARG_MAX), $processors, $output);
             }
 
         } catch (\Exception $ex) {
