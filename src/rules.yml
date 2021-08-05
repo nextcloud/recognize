@@ -96,6 +96,7 @@ tiger:
 
 seashore:
   label: seashore
+  context: nature
   threshold: 0.6
   categories:
     - beach
@@ -103,6 +104,7 @@ seashore:
 
 lakeside:
   label: lakeside
+  context: nature
   threshold: 0.35
   categories:
     - water
@@ -128,6 +130,7 @@ bannister:
 
 window shade:
   label: building
+  context: nature stones
   threshold: 0.7
   categories:
     - architecture
@@ -260,6 +263,7 @@ liner:
 
 pirate:
   label: ship
+  context: water float cliffs
   threshold: 0.23
   categories:
     - water
@@ -267,6 +271,7 @@ pirate:
 
 ship:
   label: ship
+  context: water float cliffs
   threshold: 0.3
   categories:
     - water
@@ -413,7 +418,7 @@ bald eagle bird:
 vulture bird:
   see: bird
 
-great grey owl bird:
+great grey owl:
   label: owl
   threshold: 0.3
   categories:
@@ -599,10 +604,12 @@ american alligator:
 
 triceratops:
   label: animal
+  context: nature
   threshold: 0.5
 
 snake:
   label: animal
+  context: nature
   threshold: 0.9
 
 thunder snake:
@@ -658,6 +665,7 @@ sidewinder snake:
 
 trilobite:
   label: animal
+  context: nature
   threshold: 0.5
 
 harvestman:
@@ -786,6 +794,7 @@ echidna:
 
 platypus:
   label: animal
+  context: nature
   threshold: 0.7
 
 wallaby:
@@ -833,7 +842,7 @@ nematode:
 conch:
   label: shell
   threshold: 0.6
-  context: beach
+  context: flotsam
 
 snail:
   label: snail
@@ -878,7 +887,6 @@ lobster:
   categories:
     - animal
     - cooking
-    - water
 
 american lobster:
   see: lobster
@@ -896,6 +904,7 @@ crayfish:
 isopod:
   threshold: 0.75
   label: animal
+  context: nature
 
 white stork:
   see: bird
@@ -1688,6 +1697,7 @@ sloth bear:
 
 mongoose:
   label: animal
+  context: nature
   threshold: 0.5
 
 meerkat:
@@ -1835,26 +1845,32 @@ angora:
 
 hamster:
   label: animal
+  context: nature
   threshold: 0.5
 
 porcupine:
   label: animal
+  context: nature
   threshold: 0.5
 
 fox squirrel:
   label: animal
+  context: nature
   threshold: 0.5
 
 marmot:
   label: animal
+  context: nature
   threshold: 0.4
 
 beaver:
   label: animal
+  context: nature
   threshold: 0.4
 
 guinea pig:
   label: animal
+  context: nature
   threshold: 0.4
 
 sorrel:
@@ -1906,6 +1922,7 @@ water buffalo:
 
 bison:
   label: animal
+  context: nature
   threshold: 0.5
 
 ram:
@@ -1923,6 +1940,7 @@ bighorn:
 
 ibex:
   label: animal
+  context: nature
   threshold: 0.4
   categories:
     - wildlife
@@ -1957,14 +1975,17 @@ weasel:
 
 mink:
   label: animal
+  context: nature
   threshold: 0.5
 
 polecat:
   label: animal
+  context: nature
   threshold: 0.5
 
 black-footed ferret:
   label: animal
+  context: nature
   threshold: 0.8
 
 otter:
@@ -1984,10 +2005,12 @@ badger:
 
 armadillo:
   label: animal
+  context: nature
   threshold: 0.4
 
 three-toed sloth:
   label: animal
+  context: nature
   threshold: 0.4
 
 ape:
@@ -2074,6 +2097,7 @@ indri:
 
 fossa:
   label: animal
+  context: nature
   threshold: 0.15
 
 elephant:
@@ -2182,6 +2206,7 @@ puffer:
 
 instrument:
   label: instrument
+  context: tool
   threshold: 1
   priority: -2
   categories:
@@ -2308,6 +2333,7 @@ beacon:
 beer:
   label: drinks
   threshold: 0.4
+  context: party
   categories:
     - beverage
 
@@ -2459,6 +2485,7 @@ china cabinet:
 
 church:
   label: church
+  context: nature stones
   threshold: 0.4
   categories:
     - building
@@ -2469,6 +2496,7 @@ cleaver:
 
 cliff dwelling:
   label: building
+  context: nature stones
   threshold: 0.75
 
 clog:
@@ -2516,6 +2544,7 @@ combination lock:
 computer keyboard:
   label: keyboard
   threshold: 0.27
+  context: screen
   categories:
     - computer
 
@@ -2532,6 +2561,7 @@ confectionery:
 
 container ship:
   label: ship
+  context: water float
   threshold: 0.84
   categories:
     - water
@@ -2653,6 +2683,7 @@ drum:
 dutch oven:
   label: cooking
   threshold: 0.2
+  context: food
   categories:
     - kitchen
 
@@ -3240,6 +3271,7 @@ printer:
 
 prison:
   label: building
+  context: nature stones
   threshold: 0.7
   categories:
     - architecture
@@ -3328,6 +3360,7 @@ school bus:
 
 schooner:
   label: ship
+  context: water float
   threshold: 0.24
   categories:
     - water
@@ -3452,6 +3485,7 @@ steel drum:
 stove:
   label: cooking
   threshold: 0.46
+  context: food
   categories:
     - kitchen
 
@@ -3549,6 +3583,7 @@ typewriter keyboard:
 
 viaduct:
   label: building
+  context: nature stones
   threshold: 0.9
   categories:
     - architecture
@@ -3612,6 +3647,7 @@ worm fence:
 
 wreck:
   label: ship
+  context: water float cliffs
   threshold: 0.46
   categories:
     - water
@@ -3902,6 +3938,7 @@ eggnog:
 
 alp:
   label: alpine
+  context: landscape
   threshold: 0.4
   categories:
     - landscape
@@ -3921,6 +3958,7 @@ geyser:
 sandbar:
   label: beach
   threshold: 0.39
+  context: nature
   categories:
     - sand
 
@@ -3985,10 +4023,12 @@ knot:
 
 arabian camel:
   label: animal
+  context: nature
   threshold: 0.7
 
 tile roof:
   label: building
+  context: nature stones
   threshold: 0.6
   categories:
     - architecture
@@ -4216,6 +4256,7 @@ diaper:
 
 patio:
   label: building
+  context: nature stones
   threshold: 0.5
 
 scoreboard:
@@ -4242,6 +4283,7 @@ horizontal bar:
 
 vault:
   label: building
+  context: nature stones
   threshold: 0.6
 
 office:
@@ -4703,6 +4745,8 @@ gallery:
 
 beach:
   priority: 1
+  label: beach
+  context: nature
   categories:
     - water
 
