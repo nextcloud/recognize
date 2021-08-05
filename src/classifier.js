@@ -46,8 +46,8 @@ async function main() {
 			results = results
 				.map(result => ({
 					...result,
-					precision: result.precision/100,
-					className: result.label.split(',')[0].toLowerCase(),
+					probability: result.probability,
+					className: result.className.split(',')[0].toLowerCase(),
 				}))
 				.map(result => ({
 					...result,
@@ -57,11 +57,11 @@ async function main() {
 			results
 				.filter(result => {
 					console.error(result)
-					if (result.precision < 0.0 || !result.rule) {
+					if (result.probability < 0.0 || !result.rule) {
 						return false
 					}
 					const threshold = result.rule.threshold
-					if (result.precision < Math.tanh(threshold*0.9)/0.8) {
+					if (result.precision < threshold) {
 						return false
 					}
 					return true
@@ -97,7 +97,7 @@ async function main() {
 						if (!(category in cat_count)) {
 							cat_count[category] = 0
 						}
-						cat_probabilities[category] += result.precision - 0.1
+						cat_probabilities[category] += result.precision
 						cat_thresholds[category] = cat_thresholds[category] < result.rule.threshold ? result.rule.threshold : cat_thresholds[category]
 						cat_count[category]++
 					})
