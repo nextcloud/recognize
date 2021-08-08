@@ -81,7 +81,7 @@ class Classify extends Command {
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $processors = $input->getOption('processors');
+        $processors = (int) $input->getOption('processors');
         $returns = [];
         try {
 

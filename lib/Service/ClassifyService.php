@@ -115,7 +115,7 @@ class ClassifyService {
      * @return int
      */
     public function classifyParallel(array $files, int $threads, OutputInterface $output): int {
-        $chunks = array_chunk($files, count($files)/$threads);
+        $chunks = array_chunk($files, ceil(count($files)/$threads));
 
         $return = 0;
         $errOut = [];
