@@ -97,8 +97,8 @@ async function main() {
 						if (!(category in cat_count)) {
 							cat_count[category] = 0
 						}
-						cat_probabilities[category] += result.probability
-						cat_thresholds[category] += result.rule.threshold**2
+						cat_probabilities[category] += result.probability**2
+						cat_thresholds[category] = Math.max(cat_thresholds[category], result.rule.threshold)
 						cat_count[category]++
 					})
 				}
@@ -108,7 +108,7 @@ async function main() {
 					if (cat_count[category] <= 1) {
 						return false
 					}
-					return probability >= (cat_thresholds[category]/cat_count[category])**(1/2)
+					return probability**(1/2) >= cat_thresholds[category]
 				})
 				.forEach(([category]) => {
 					labels.push(category)

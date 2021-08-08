@@ -22,7 +22,7 @@ class EfficientNetCheckPointFactory {
             if (localModelRootDirectory) {
                 modelPath = `file://${localModelRootDirectory}/${modelFileName}`;
             }
-            const model = new EfficientnetModel_1.default(modelPath, inputLayerImageSize[checkPoint], locale);
+            const model = new EfficientnetModel_1.default(modelPath, 512, locale);
             yield model.load();
             return model;
         });
