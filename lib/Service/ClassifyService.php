@@ -51,14 +51,16 @@ class ClassifyService {
 
 	    $this->logger->debug('Classifying '.var_export($paths, true));
 
-	    $command = array_merge([
+	    $command = [
 	        $this->config->getAppValue('recognize', 'node_binary'),
-            dirname(__DIR__, 2) . '/src/classifier.js'
-        ], $paths);
+            dirname(__DIR__, 2) . '/src/classifier.js',
+            '-'
+        ];
 
         $this->logger->debug('Running '.var_export($command, true));
 		$proc = new Process($command, __DIR__);
 	    $proc->setTimeout(count($paths) * self::IMAGE_TIMEOUT);
+        $proc->setInput(implode("\n", $paths));
 	    try {
             $proc->start();
 
@@ -129,14 +131,16 @@ class ClassifyService {
 
                 $output->writeln('Classifying '.var_export($paths, true));
 
-                $command = array_merge([
+                $command =[
                     $this->config->getAppValue('recognize', 'node_binary'),
-                    dirname(__DIR__, 2) . '/src/classifier.js'
-                ], $paths);
+                    dirname(__DIR__, 2) . '/src/classifier.js',
+                    '-'
+                ];
 
                 $output->writeln('Running ' . var_export($command, true));
                 $proc[$j] = new Process($command, __DIR__);
                 $proc[$j]->setTimeout(count($paths) * self::IMAGE_TIMEOUT);
+                $proc[$j]->setInput(implode("\n", $paths));
 
                 $i[$j] = 0;
                 $errOut[$j] = '';

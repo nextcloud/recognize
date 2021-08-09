@@ -100,7 +100,7 @@ class Classify extends Command {
                     continue;
                 }
                 $output->writeln('Classifying photos of user '.$user);
-                $returns[] = $this->classifier->classifyParallel(array_slice($images, 0, self::ARG_MAX), $processors, $output);
+                $returns[] = $this->classifier->classifyParallel($images, $processors, $output);
             }
 
         } catch (\Exception $ex) {

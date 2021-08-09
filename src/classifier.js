@@ -24,9 +24,9 @@ function findRule(className) {
 	return rule
 }
 
-if (process.argv.length < 3) throw new Error('Incorrect arguments: node classify.js ...<IMAGE_FILES>')
+if (process.argv.length < 3) throw new Error('Incorrect arguments: node classify.js ...<IMAGE_FILES> | node classify.js -')
 
-const paths = process.argv.slice(2)
+const paths = process.argv[2] === '-' ? fsSync.readFileSync(process.stdin.fd).toString('utf8').split('\n') :  process.argv.slice(2)
 
 async function main() {
 	const model = await EfficientNetCheckPointFactory.create(
