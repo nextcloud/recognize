@@ -2,53 +2,41 @@
 
 namespace OCA\Recognize\Command;
 
-use OCP\Files\File;
-use OCP\Files\Folder;
+use OCA\Recognize\Service\ClassifyService;
+use OCA\Recognize\Service\ImagesFinderService;
+use OCP\Files\IRootFolder;
 use OCP\IUser;
-use OCP\SystemTag\ISystemTagObjectMapper;
+use OCP\IUserManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Classify extends Command {
-    const ARG_MAX = 2097152;
-
     /**
-     * @var \OCA\Recognize\Service\ClassifyService
+     * @var ClassifyService
      */
     private $classifier;
     /**
-     * @var \OCP\Files\IRootFolder
+     * @var ImagesFinderService
+     */
+    private $imagesFinder;
+    /**
+     * @var IRootFolder
      */
     private $rootFolder;
     /**
-     * @var \Psr\Log\LoggerInterface
-     */
-    private $logger;
-    /**
-     * @var \OCP\IUserManager
+     * @var IUserManager
      */
     private $userManager;
-    /**
-     * @var \OCP\SystemTag\ISystemTag
-     */
-    private $recognizedTag;
-    /**
-     * @var ISystemTagObjectMapper
-     */
-    private $objectMapper;
 
-    public function __construct(\OCA\Recognize\Service\ClassifyService $classifier, \OCP\Files\IRootFolder $rootFolder, \Psr\Log\LoggerInterface $logger, \OCP\IUserManager $userManager, ISystemTagObjectMapper $objectMapper, \OCA\Recognize\Service\TagManager $tagManager)
+    public function __construct(ClassifyService $classifier, IRootFolder $rootFolder, IUserManager $userManager, ImagesFinderService $imagesFinder)
     {
         parent::__construct();
         $this->classifier = $classifier;
         $this->rootFolder = $rootFolder;
-        $this->logger = $logger;
         $this->userManager = $userManager;
-
-        $this->recognizedTag = $tagManager->getProcessedTag();
-        $this->objectMapper = $objectMapper;
+        $this->imagesFinder = $imagesFinder;
     }
 
     /**
@@ -95,7 +83,7 @@ class Classify extends Command {
                     $output->writeln('No users left, whose photos could be classified');
                     return 0;
                 }
-                $images = $this->findImagesInFolder($this->rootFolder->getUserFolder($user));
+                $images = $this->imagesFinder->findImagesInFolder($this->rootFolder->getUserFolder($user));
                 if (count($images) === 0) {
                     continue;
                 }
@@ -110,29 +98,5 @@ class Classify extends Command {
         }
 
         return array_sum($returns) > 0;
-    }
-
-    /**
-     * @throws \OCP\Files\NotFoundException|\OCP\Files\InvalidPathException
-     */
-    protected function findImagesInFolder(Folder $folder, &$results = []):array {
-        $this->logger->debug('Searching '.$folder->getInternalPath());
-        $nodes = $folder->getDirectoryListing();
-        foreach ($nodes as $node) {
-            if ($node instanceof Folder) {
-                $this->findImagesInFolder($node, $results);
-            }
-            else if ($node instanceof File) {
-                if ($this->objectMapper->haveTag([$node->getId()], 'files', $this->recognizedTag->getId())) {
-                    continue;
-                }
-                $mimeType = $node->getMimetype();
-                if ($mimeType === 'image/jpeg') {
-                    $this->logger->debug('Found '.$node->getPath());
-                    $results[] = $node;
-                }
-            }
-        }
-        return $results;
     }
 }
