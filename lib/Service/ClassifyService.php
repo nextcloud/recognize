@@ -7,10 +7,10 @@
 
 namespace OCA\Recognize\Service;
 
-use OCA\Recognize\Exception\FileNotFoundError;
+use OCA\Recognize\Service\TagManager;
 use OCP\Files\File;
+use OCP\IConfig;
 use OCP\Files\InvalidPathException;
-use OCP\Files\IRootFolder;
 use OCP\Files\NotFoundException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -21,21 +21,21 @@ use Symfony\Component\Process\Process;
 class ClassifyService {
     public const IMAGE_TIMEOUT = 17; // 17s
 
-	/**
-	 * @var LoggerInterface
-	 */
-	private $logger;
     /**
-     * @var \OCA\Recognize\Service\TagManager
+     * @var LoggerInterface
+     */
+    private $logger;
+    /**
+     * @var TagManager
      */
     private $tagManager;
     /**
-     * @var \OCP\IConfig
+     * @var IConfig
      */
     private $config;
 
-    public function __construct(LoggerInterface $logger, \OCP\IConfig $config, \OCA\Recognize\Service\TagManager $tagManager) {
-		$this->logger = $logger;
+    public function __construct(LoggerInterface $logger, IConfig $config, TagManager $tagManager) {
+        $this->logger = $logger;
         $this->config = $config;
         $this->tagManager = $tagManager;
     }
@@ -44,24 +44,24 @@ class ClassifyService {
      * @param File[] $files
      * @return void
      */
-	public function classify(array $files): void {
-	    $paths = array_map(static function($file) {
+    public function classify(array $files): void {
+        $paths = array_map(static function($file) {
             return $file->getStorage()->getLocalFile($file->getInternalPath());
         }, $files);
 
-	    $this->logger->debug('Classifying '.var_export($paths, true));
+        $this->logger->debug('Classifying '.var_export($paths, true));
 
-	    $command = [
-	        $this->config->getAppValue('recognize', 'node_binary'),
+        $command = [
+            $this->config->getAppValue('recognize', 'node_binary'),
             dirname(__DIR__, 2) . '/src/classifier.js',
             '-'
         ];
 
         $this->logger->debug('Running '.var_export($command, true));
-		$proc = new Process($command, __DIR__);
-	    $proc->setTimeout(count($paths) * self::IMAGE_TIMEOUT);
+        $proc = new Process($command, __DIR__);
+        $proc->setTimeout(count($paths) * self::IMAGE_TIMEOUT);
         $proc->setInput(implode("\n", $paths));
-	    try {
+        try {
             $proc->start();
 
             $i = 0;
@@ -101,15 +101,15 @@ class ClassifyService {
                 $this->logger->warning('Classifier process output: '.$errOut);
             }
         }catch(ProcessTimedOutException $e) {
-	        $this->logger->warning('Classifier process timeout');
-	        $this->logger->warning($proc->getErrorOutput());
-	        return;
+            $this->logger->warning('Classifier process timeout');
+            $this->logger->warning($proc->getErrorOutput());
+            return;
         }catch(RuntimeException $e) {
             $this->logger->warning('Classifier process could not be started');
             $this->logger->warning($proc->getErrorOutput());
             return;
         }
-	}
+    }
 
     /**
      * @param File[] $files
