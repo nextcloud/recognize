@@ -59,8 +59,10 @@ class EfficientNetModel {
         return image;
     }
     async predict(tensor, topK) {
-            const objectArray = this.model.predict(tensor);
-            return await getTopKClasses(objectArray, topK)
+        const logits = this.model.predict(tensor);
+        const results = await getTopKClasses(logits, topK)
+        logits.dispose()
+        return results
     }
     async inference(imgPath, options) {
         const { topK = NUM_OF_CHANNELS } = options || {};
