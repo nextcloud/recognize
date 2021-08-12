@@ -1,27 +1,23 @@
 const tf = require("@tensorflow/tfjs-node");
 const Jimp = require("jimp");
-const cliProgress = require("cli-progress");
-const EfficientNetLanguageProvider_1 = require("./EfficientNetLanguageProvider");
-const EfficientNetResult_1 = require("./EfficientNetResult");
 const {IMAGENET_CLASSES} = require('./classes');
 const NUM_OF_CHANNELS = 3;
 class EfficientNetModel {
-    constructor(modelPath, imageSize, local) {
-        this.modelPath = modelPath;
-        this.imageSize = imageSize;
-        this.languageProvider = new EfficientNetLanguageProvider_1.EfficientNetLanguageProvider(local);
+    constructor(modelPath, imageSize) {
+        this.modelPath = modelPath
+        this.imageSize = imageSize
     }
+
+    static async create(localModelRootDirectory) {
+        const modelFileName = "model.json";
+        const modelPath = `file://${localModelRootDirectory}/${modelFileName}`;
+        const model = new EfficientNetModel(modelPath, 512);
+        await model.load();
+        return model
+    }
+
     async load() {
-        await this.languageProvider.load();
-        const bar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
-        bar.start(100, 0);
-        const model = await tf.loadGraphModel(this.modelPath, {
-            onProgress: (p) => {
-                bar.update(p * 100);
-            },
-        });
-        bar.stop();
-        this.model = model;
+        this.model = await tf.loadGraphModel(this.modelPath);
     }
     async createTensor(image) {
         const values = new Float32Array(this.imageSize * this.imageSize * NUM_OF_CHANNELS);
@@ -105,4 +101,4 @@ async function getTopKClasses(logits, topK) {
     return topClassesAndProbs;
 }
 
-exports.default = EfficientNetModel;
+module.exports = EfficientNetModel;

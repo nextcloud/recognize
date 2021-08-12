@@ -2,14 +2,16 @@ const path = require('path')
 const fsSync = require('fs')
 const YAML = require('yaml')
 const _ = require('lodash')
-const tf = require('@tensorflow/tfjs-node')
+let tf
+if (process.env.RECOGNIZE_BACKEND === 'gpu') {
+	tf = require('@tensorflow/tfjs-node-gpu')
+}else{
+	tf = require('@tensorflow/tfjs-node')
+}
 require('@tensorflow/tfjs-backend-wasm')
 const rules = YAML.parse(fsSync.readFileSync(__dirname + '/rules.yml').toString('utf8'))
 
-const {
-	EfficientNetCheckPointFactory,
-	EfficientNetCheckPoint
-} = require("./efficientnet");
+const EfficientNet = require('./efficientnet/EfficientnetModel')
 
 function findRule(className) {
 	const rule = rules[className]
@@ -29,12 +31,7 @@ if (process.argv.length < 3) throw new Error('Incorrect arguments: node classify
 const paths = process.argv[2] === '-' ? fsSync.readFileSync(process.stdin.fd).toString('utf8').split('\n') :  process.argv.slice(2)
 
 async function main() {
-	const model = await EfficientNetCheckPointFactory.create(
-		EfficientNetCheckPoint.B3,
-		{
-			localModelRootDirectory: path.resolve(__dirname, '..', "model")
-		}
-	);
+	const model = await EfficientNet.create(path.resolve(__dirname, '..', "model"));
 
 	for (const path of paths) {
 		try {

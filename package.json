@@ -28,9 +28,9 @@
     "@tensorflow/tfjs": "^3.8.0",
     "@tensorflow/tfjs-backend-wasm": "^3.5.0",
     "@tensorflow/tfjs-node": "^3.8.0",
-    "jpeg-js": "^0.4.3",
+    "@tensorflow/tfjs-node-gpu": "^3.8.0",
+    "jimp": "^0.16.1",
     "lodash": "^4.17.21",
-    "node-efficientnet": "^2.0.3",
     "vue": "^2.6.12",
     "yaml": "^1.10.2"
   },
