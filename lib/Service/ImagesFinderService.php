@@ -18,6 +18,8 @@ use Psr\Log\LoggerInterface;
 
 class ImagesFinderService
 {
+    public const FORMATS = ['image/jpeg', 'image/png', 'image/bmp', 'image/tiff'];
+
     /**
      * @var LoggerInterface
      */
@@ -52,10 +54,11 @@ class ImagesFinderService
                     continue;
                 }
                 $mimeType = $node->getMimetype();
-                if ($mimeType === 'image/jpeg') {
-                    $this->logger->debug('Found '.$node->getPath());
-                    $results[] = $node;
+                if (!in_array($mimeType, self::FORMATS)) {
+                    continue;
                 }
+                $this->logger->debug('Found '.$node->getPath());
+                $results[] = $node;
             }
         }
         return $results;
