@@ -682,7 +682,7 @@ scorpion:
 
 spider:
   label: spider
-  threshold: 0.1
+  threshold: 0.2
   categories:
     - animal
 
@@ -977,7 +977,7 @@ albatross:
 
 whale:
   label: whale
-  threshold: 0.1
+  threshold: 0.2
   categories:
     - animal
     - water
@@ -1715,7 +1715,7 @@ meerkat:
 
 beetle:
   label: beetle
-  threshold: 0.2
+  threshold: 0.3
   categories:
     - animal
 
@@ -2045,7 +2045,7 @@ gibbon:
 
 monkey:
   label: monkey
-  threshold: 0.2
+  threshold: 0.3
   priority: 2
   categories:
     - animal
@@ -2643,7 +2643,7 @@ wall clock:
   see: clock
 
 digital clock:
-  threshold: 0.5
+  threshold: 0.65
   label: clock
 
 digital watch:
@@ -2781,7 +2781,7 @@ frying pan:
 
 garbage truck:
   label: truck
-  threshold: 0.1
+  threshold: 0.2
 
 go-kart:
   label: vehicle
@@ -2858,7 +2858,7 @@ honeycomb:
 
 jack-o'-lantern:
   label: pumpkin
-  threshold: 0.4
+  threshold: 0.9
   categories:
     - vegetables
 
@@ -3093,7 +3093,7 @@ organ:
 
 oxcart:
   label: cart
-  threshold: 0.1
+  threshold: 0.3
   categories:
     - cow
     - farm
@@ -3284,7 +3284,7 @@ pop bottle:
 
 pot:
   label: plant
-  threshold: 0.01
+  threshold: 0.03
   categories:
     - nature
 
@@ -3523,7 +3523,7 @@ strainer:
   threshold: 0.1
 
 streetcar:
-  threshold: 0.7
+  threshold: 0.8
   categories:
     - train
     - vehicle
@@ -3596,7 +3596,7 @@ trimaran:
 
 trolleybus:
   label: bus
-  threshold: 0.1
+  threshold: 0.2
   categories:
     - vehicle
 
@@ -3802,7 +3802,7 @@ broccoli:
 
 cauliflower:
   label: vegetables
-  threshold: 0.1
+  threshold: 0.3
   categories:
     - food
 
@@ -3946,7 +3946,7 @@ burrito:
 
 red wine:
   label: wine
-  threshold: 0.1
+  threshold: 0.3
   categories:
     - beverage
     - drinks
