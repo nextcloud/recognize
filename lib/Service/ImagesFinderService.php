@@ -44,6 +44,10 @@ class ImagesFinderService
      */
     public function findImagesInFolder(Folder $folder, &$results = []):array {
         $this->logger->debug('Searching '.$folder->getInternalPath());
+        if ($folder->nodeExists('.noimage') || $folder->nodeExists('.nomedia')) {
+            $this->logger->debug('Passing '.$folder->getInternalPath());
+            return $results;
+        }
         $nodes = $folder->getDirectoryListing();
         foreach ($nodes as $node) {
             if ($node instanceof Folder) {
