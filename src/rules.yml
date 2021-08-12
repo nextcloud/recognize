@@ -144,7 +144,7 @@ daisy:
 
 rapeseed:
   label: field
-  threshold: 0.1
+  threshold: 0.2
   categories:
     - farm
     - landscape
@@ -841,7 +841,7 @@ flatworm:
 
 nematode:
   label: worm
-  threshold: 0.8
+  threshold: 0.95
   priority: -3
 
 conch:
@@ -983,7 +983,11 @@ whale:
     - water
 
 grey whale:
-  see: whale
+  label: whale
+  threshold: 0.5
+  categories:
+    - animal
+    - water
 
 killer whale:
   see: whale
@@ -2096,7 +2100,7 @@ titi:
 
 spider monkey:
   label: monkey
-  threshold: 0.3
+  threshold: 0.45
   priority: 2
   categories:
     - animal
@@ -2118,7 +2122,7 @@ fossa:
 elephant:
   label: elephant
   priority: 2
-  threshold: 0.1
+  threshold: 0.2
   categories:
     - animal
     - wildlife
@@ -2249,7 +2253,7 @@ airliner:
 
 airship:
   label: aircraft
-  threshold: 0.2
+  threshold: 0.6
   categories:
     - airport
     - vehicle
@@ -4616,7 +4620,7 @@ military uniform:
 
 park bench:
   label: bench
-  threshold: 0.8
+  threshold: 0.9
 
 parking meter:
   label: parking
@@ -4702,7 +4706,7 @@ throne:
 
 traffic light:
   label: traffic
-  threshold: 0.2
+  threshold: 0.3
 
 turnstile:
   label: public transport
@@ -4713,7 +4717,7 @@ whistle:
 
 umbrella:
   label: umbrella
-  threshold: 0.1
+  threshold: 0.2
 
 vending machine:
   see: ignore
