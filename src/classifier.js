@@ -53,10 +53,7 @@ async function main() {
 						return false
 					}
 					const threshold = result.rule.threshold
-					if (result.probability < threshold) {
-						return false
-					}
-					return true
+					return result.probability >= threshold
 				})
 				.forEach((result) => {
 					if (result.rule.label) {
@@ -66,7 +63,6 @@ async function main() {
 						labels.push(...result.rule.categories)
 					}
 				})
-
 			const cat_probabilities = {}
 			const cat_thresholds = {}
 			const cat_count = {}
@@ -84,7 +80,7 @@ async function main() {
 							cat_probabilities[category] = 0
 						}
 						if (!(category in cat_thresholds)) {
-							cat_thresholds[category] = 1
+							cat_thresholds[category] = 0
 						}
 						if (!(category in cat_count)) {
 							cat_count[category] = 0
