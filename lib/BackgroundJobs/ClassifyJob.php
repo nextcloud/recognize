@@ -18,7 +18,7 @@ use Psr\Log\LoggerInterface;
 
 class ClassifyJob extends TimedJob {
     public const BATCH_SIZE = 100; // 100 images
-    public const INTERVAL = 10 * 60; // 10 minutes
+    public const INTERVAL = 20 * 60; // 10 minutes
 
     /**
      * @var ClassifyService
