@@ -7,7 +7,7 @@
 
 namespace OCA\Recognize\Service;
 
-use OCA\Recognize\Service\TagManager;
+use OCP\AppFramework\Services\IAppConfig;
 use OCP\Files\File;
 use OCP\IConfig;
 use OCP\Files\InvalidPathException;

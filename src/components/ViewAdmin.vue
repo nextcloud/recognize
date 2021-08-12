@@ -5,11 +5,11 @@
   -->
 
 <template>
-	<div id="bookmarks">
+	<div id="recognize">
 		<figure v-if="loading" class="icon-loading loading" />
 		<figure v-if="!loading && success" class="icon-checkmark success" />
 		<SettingsSection
-			:title="t('bookmarks', 'Status')">
+			:title="t('recognize', 'Status')">
 			<p v-if="count >= 0">
 				Processed images: {{ count }}<br>
 				Unrecognized images: {{ countMissed }}
@@ -20,13 +20,21 @@
 			<p>The app is installed and will classify up to 100 images every 10 minutes.</p>
 		</SettingsSection>
 		<SettingsSection
-			:title="t('bookmarks', 'Manual operation') ">
+			:title="t('recognize', 'Manual operation') ">
 			<p>To trigger a full classification run manually, run the following command on the terminal.</p>
 			<p>&nbsp;</p>
 			<pre><code>occ recognize:classify</code></pre>
 		</SettingsSection>
 		<SettingsSection
-			:title="t('bookmarks', 'Reset')">
+			:title="t('recognize', 'GPU Acceleration')">
+			<p>
+				To make use of GPU acceleration you need <a href="https://www.nvidia.com/Download/index.aspx?lang=en-us"> NVIDIA® GPU drivers >450.x</a>,
+				<a href="https://developer.nvidia.com/cuda-toolkit-archive">CUDA® Toolkit 11.2</a>
+				and <a href="https://developer.nvidia.com/rdp/cudnn-download">cuDNN SDK 8.1.0</a>.
+			</p>
+		</SettingsSection>
+		<SettingsSection
+			:title="t('recognize', 'Reset')">
 			<p>Click the below button to remove all tags from all images that have been classified so far.</p>
 			<button class="button" @click="onReset">
 				Reset tags for classified images
@@ -39,6 +47,8 @@
 import SettingsSection from '@nextcloud/vue/dist/Components/SettingsSection'
 import axios from '@nextcloud/axios'
 
+const SETTINGS = ['tensorflow.gpu']
+
 export default {
 	name: 'ViewAdmin',
 	components: { SettingsSection },
@@ -49,6 +59,8 @@ export default {
 			error: '',
 			count: -1,
 			countMissed: -1,
+			settings: SETTINGS.reduce((obj, key) => ({ ...obj, [key]: '' }), {}),
+			timeout: null,
 		}
 	},
 
@@ -59,11 +71,24 @@ export default {
 		},
 	},
 	async created() {
-		await this.getCount()
+		this.getCount()
 		setInterval(() => {
 			this.getCount()
 		}, 60 * 1000)
+
+		try {
+			for (const setting of SETTINGS) {
+				this.settings[setting] = await this.getValue(setting)
+				if (['true', 'false'].includes(this.settings[setting])) {
+					this.settings[setting] = (this.settings[setting] === 'true')
+				}
+			}
+		} catch (e) {
+			this.error = this.t('recognize', 'Failed to load settings')
+			throw e
+		}
 	},
+
 	methods: {
 		async onReset() {
 			this.loading = true
@@ -83,6 +108,60 @@ export default {
 			this.count = count
 			this.countMissed = countMissed
 		},
+		onChange() {
+			if (this.timeout) {
+				clearTimeout(this.timeout)
+			}
+			setTimeout(() => {
+				this.submit()
+			}, 1000)
+		},
+
+		async submit() {
+			this.loading = true
+			for (const setting in this.settings) {
+				await this.setValue(setting, this.settings[setting])
+			}
+			this.loading = false
+			this.success = true
+			setTimeout(() => {
+				this.success = false
+			}, 3000)
+		},
+		async setValue(setting, value) {
+			try {
+				await new Promise((resolve, reject) =>
+					OCP.AppConfig.setValue('recognize', setting, value, {
+						success: resolve,
+						error: reject,
+					})
+				)
+			} catch (e) {
+				this.error = this.t('recognize', 'Failed to save settings')
+				throw e
+			}
+		},
+
+		async getValue(setting) {
+			try {
+				const resDocument = await new Promise((resolve, reject) =>
+					OCP.AppConfig.getValue('recognize', setting, null, {
+						success: resolve,
+						error: reject,
+					})
+				)
+				if (resDocument.querySelector('status').textContent !== 'ok') {
+					this.error = this.t('recognize', 'Failed to load settings')
+					console.error('Failed request', resDocument)
+					return
+				}
+				const dataEl = resDocument.querySelector('data')
+				return dataEl.firstElementChild.textContent
+			} catch (e) {
+				this.error = this.t('recognize', 'Failed to load settings')
+				throw e
+			}
+		},
 	},
 }
 </script>
@@ -95,21 +174,29 @@ figure[class^='icon-'] {
 	position: relative;
 }
 
-#bookmarks .loading,
-#bookmarks .success {
+#recognize .loading,
+#recognize .success {
 	position: absolute;
 	top: 20px;
 	right: 20px;
 }
 
-#bookmarks label {
+#recognize label {
 	margin-top: 10px;
-	display: block;
+	display: flex;
 }
 
-#bookmarks input {
+#recognize label > * {
+	padding: 6px 0;
+}
+
+#recognize input[type=text], #recognize input[type=password] {
 	width: 50%;
 	min-width: 300px;
 	display: block;
+}
+
+#recognize a:link, #recognize a:visited, #recognize a:hover {
+	text-decoration: underline;
 }
 </style>

@@ -2,12 +2,7 @@ const path = require('path')
 const fsSync = require('fs')
 const YAML = require('yaml')
 const _ = require('lodash')
-let tf
-if (process.env.RECOGNIZE_BACKEND === 'gpu') {
-	tf = require('@tensorflow/tfjs-node-gpu')
-}else{
-	tf = require('@tensorflow/tfjs-node')
-}
+const tf = require('@tensorflow/tfjs-node-gpu')
 require('@tensorflow/tfjs-backend-wasm')
 const rules = YAML.parse(fsSync.readFileSync(__dirname + '/rules.yml').toString('utf8'))
 
@@ -28,15 +23,15 @@ function findRule(className) {
 
 if (process.argv.length < 3) throw new Error('Incorrect arguments: node classify.js ...<IMAGE_FILES> | node classify.js -')
 
-const paths = process.argv[2] === '-' ? fsSync.readFileSync(process.stdin.fd).toString('utf8').split('\n') :  process.argv.slice(2)
+const paths = process.argv[2] === '-' ? fsSync.readFileSync(process.stdin.fd).toString('utf8').split('\n') : process.argv.slice(2)
 
 async function main() {
-	const model = await EfficientNet.create(path.resolve(__dirname, '..', "model"));
+	const model = await EfficientNet.create(path.resolve(__dirname, '..', 'model'))
 
 	for (const path of paths) {
 		try {
 			let results = await model.inference(path, {
-				topK: 7
+				topK: 7,
 			})
 
 			const labels = []
@@ -94,7 +89,7 @@ async function main() {
 						if (!(category in cat_count)) {
 							cat_count[category] = 0
 						}
-						cat_probabilities[category] += result.probability**2
+						cat_probabilities[category] += result.probability ** 2
 						cat_thresholds[category] = Math.max(cat_thresholds[category], result.rule.threshold)
 						cat_count[category]++
 					})
@@ -105,7 +100,7 @@ async function main() {
 					if (cat_count[category] <= 1) {
 						return false
 					}
-					return probability**(1/2) >= cat_thresholds[category]
+					return probability ** (1 / 2) >= cat_thresholds[category]
 				})
 				.forEach(([category]) => {
 					labels.push(category)
