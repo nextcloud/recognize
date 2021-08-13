@@ -2,7 +2,7 @@
 
 namespace OCA\Recognize\Command;
 
-use OCA\Recognize\Service\ClassifyService;
+use OCA\Recognize\Service\ClassifyImagenetService;
 use OCA\Recognize\Service\ImagesFinderService;
 use OCP\Files\IRootFolder;
 use OCP\IUser;
@@ -14,7 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Classify extends Command {
     /**
-     * @var ClassifyService
+     * @var ClassifyImagenetService
      */
     private $classifier;
     /**
@@ -30,7 +30,7 @@ class Classify extends Command {
      */
     private $userManager;
 
-    public function __construct(ClassifyService $classifier, IRootFolder $rootFolder, IUserManager $userManager, ImagesFinderService $imagesFinder)
+    public function __construct(ClassifyImagenetService $classifier, IRootFolder $rootFolder, IUserManager $userManager, ImagesFinderService $imagesFinder)
     {
         parent::__construct();
         $this->classifier = $classifier;

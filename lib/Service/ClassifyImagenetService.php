@@ -7,7 +7,6 @@
 
 namespace OCA\Recognize\Service;
 
-use OCP\AppFramework\Services\IAppConfig;
 use OCP\Files\File;
 use OCP\IConfig;
 use OCP\Files\InvalidPathException;
@@ -18,8 +17,8 @@ use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Process\Process;
 
-class ClassifyService {
-    public const IMAGE_TIMEOUT = 10;
+class ClassifyImagenetService {
+    public const IMAGE_TIMEOUT = 17; // 17s
 
     /**
      * @var LoggerInterface
@@ -53,7 +52,7 @@ class ClassifyService {
 
         $command = [
             $this->config->getAppValue('recognize', 'node_binary'),
-            dirname(__DIR__, 2) . '/src/classifier.js',
+            dirname(__DIR__, 2) . '/src/classifier_imagenet.js',
             '-'
         ];
 
@@ -133,7 +132,7 @@ class ClassifyService {
 
                 $command =[
                     $this->config->getAppValue('recognize', 'node_binary'),
-                    dirname(__DIR__, 2) . '/src/classifier.js',
+                    dirname(__DIR__, 2) . '/src/classifier_imagenet.js',
                     '-'
                 ];
 

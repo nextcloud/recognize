@@ -50,7 +50,7 @@ const labels = uniq(flatten(Object.entries(rules)
 			if (!files.length) {
 				throw new Error('No photos found for label "' + label + '"')
 			}
-			const { stdout } = await execa('node', [__dirname + '/../src/classifier.js'].concat(files))
+			const { stdout } = await execa('node', [__dirname + '/../src/classifier_imagenet.js'].concat(files))
 			const predictions = stdout.split('\n')
 				.map(line => JSON.parse(line))
 			const matches = predictions
@@ -81,7 +81,7 @@ const labels = uniq(flatten(Object.entries(rules)
 				if (!files.length) {
 					throw new Error('No photos found for label -"' + label + '"')
 				}
-				const { stdout } = await execa('node', [__dirname + '/../src/classifier.js'].concat(files))
+				const { stdout } = await execa('node', [__dirname + '/../src/classifier_imagenet.js'].concat(files))
 				const predictions = stdout.split('\n')
 					.map(line => JSON.parse(line))
 				const matches = predictions

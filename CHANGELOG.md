@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Improve classification
-- classifier.js: Catch errors
+- classifier_imagenet.js: Catch errors
 
 ## v1.3.1
 
