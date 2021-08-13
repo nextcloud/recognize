@@ -7,7 +7,7 @@
 
 namespace OCA\Recognize\BackgroundJobs;
 
-use OCA\Recognize\Service\ClassifyService;
+use OCA\Recognize\Service\ClassifyImagenetService;
 use OCA\Recognize\Service\ImagesFinderService;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\TimedJob;
@@ -21,7 +21,7 @@ class ClassifyJob extends TimedJob {
     public const INTERVAL = 20 * 60; // 10 minutes
 
     /**
-     * @var ClassifyService
+     * @var ClassifyImagenetService
      */
     private $classifier;
     /**
@@ -46,7 +46,7 @@ class ClassifyJob extends TimedJob {
     private $userManager;
 
     public function __construct(
-        ClassifyService $classifier, ITimeFactory $timeFactory, IRootFolder $rootFolder, LoggerInterface $logger, IUserManager $userManager, ImagesFinderService $imagesFinder
+        ClassifyImagenetService $classifier, ITimeFactory $timeFactory, IRootFolder $rootFolder, LoggerInterface $logger, IUserManager $userManager, ImagesFinderService $imagesFinder
     ) {
         parent::__construct($timeFactory);
 

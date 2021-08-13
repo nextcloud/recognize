@@ -2,7 +2,7 @@
   "name": "recognize",
   "version": "1.5.0-rc2",
   "description": "Image recognition in nextcloud",
-  "main": "src/classifier.js",
+  "main": "src/classifier_imagenet.js",
   "directories": {
     "lib": "lib",
     "test": "tests"
@@ -28,6 +28,7 @@
     "@tensorflow/tfjs": "^3.8.0",
     "@tensorflow/tfjs-backend-wasm": "^3.5.0",
     "@tensorflow/tfjs-node-gpu": "^3.8.0",
+    "@vladmandic/face-api": "^1.4.1",
     "lodash": "^4.17.21",
     "vue": "^2.6.12",
     "yaml": "^1.10.2"
