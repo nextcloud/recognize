@@ -10,7 +10,7 @@ const Parallel = require('async-parallel')
 
 const rules = YAML.parse(fsSync.readFileSync(__dirname + '/../src/rules.yml').toString('utf8'))
 
-const PHOTOS_PER_LABEL = 30
+const PHOTOS_PER_LABEL = 50
 const PHOTOS_OLDER_THAN = 1627464319 // 2021-07-28; for determinism
 const flickr = new Flickr(process.env.FLICKR_API_KEY)
 
@@ -99,7 +99,7 @@ const labels = uniq(flatten(Object.entries(rules)
 		console.log({ tpr, tnr })
 
 		return { tpr, tnr }
-	}, 3)
+	}, 5)
 
 	const sum = results.reduce((acc, val) => {
 		return { tpr: acc.tpr + val.tpr, tnr: acc.tnr + (val.tnr > -1? val.tnr : 0) }
