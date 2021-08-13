@@ -144,7 +144,7 @@ daisy:
 
 rapeseed:
   label: field
-  threshold: 0.2
+  threshold: 0.3
   categories:
     - farm
     - landscape
@@ -984,7 +984,7 @@ whale:
 
 grey whale:
   label: whale
-  threshold: 0.5
+  threshold: 0.6
   categories:
     - animal
     - water
@@ -1953,7 +1953,7 @@ bighorn:
 ibex:
   label: animal
   context: nature
-  threshold: 0.1
+  threshold: 0.3
   categories:
     - wildlife
 
@@ -2110,7 +2110,7 @@ squirrel monkey:
 
 indri:
   label: lemur
-  threshold: 0.2
+  threshold: 0.3
   categories:
     - monkey
 
@@ -2253,7 +2253,7 @@ airliner:
 
 airship:
   label: aircraft
-  threshold: 0.6
+  threshold: 0.7
   categories:
     - airport
     - vehicle
@@ -2647,7 +2647,7 @@ wall clock:
   see: clock
 
 digital clock:
-  threshold: 0.65
+  threshold: 1
   label: clock
 
 digital watch:
@@ -3043,7 +3043,7 @@ tandem bicycle:
 
 mountain bike:
   label: bike
-  threshold: 0.5
+  threshold: 0.7
   categories:
     - vehicle
 
@@ -3090,7 +3090,8 @@ ocarina:
   see: instrument
 
 odometer:
-  see: display
+  label: display
+  threshold: 0.3
 
 organ:
   see: instrument
@@ -3429,7 +3430,7 @@ shovel:
   see: tool
 
 ski:
-  threshold: 0.1
+  threshold: 0.25
   categories:
     - snow
 
@@ -3455,7 +3456,7 @@ snowmobile:
 
 snowplow:
   label: snow
-  threshold: 0.1
+  threshold: 0.2
 
 plow:
   label: farm
@@ -3743,7 +3744,7 @@ ice cream:
 
 ice lolly:
   label: dessert
-  threshold: 0.1
+  threshold: 0.2
   categories:
     - food
 
@@ -4148,7 +4149,7 @@ menu:
 
 envelope:
   label: office
-  threshold: 0.1
+  threshold: 0.2
 
 slide rule:
   label: office
@@ -4464,7 +4465,7 @@ balloon:
 
 display:
   label: display
-  threshold: 0.16
+  threshold: 0.2
 
 stopwatch:
   see: display
