@@ -19,7 +19,7 @@ use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Process\Process;
 
 class ClassifyService {
-    public const IMAGE_TIMEOUT = 6;
+    public const IMAGE_TIMEOUT = 10;
 
     /**
      * @var LoggerInterface
