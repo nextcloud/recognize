@@ -22,10 +22,7 @@ class EfficientNetModel {
 	}
 
 	async predict(tensor, topK) {
-		const logits = this.model.predict(tensor)
-		const results = await getTopKClasses(logits, topK)
-		logits.dispose()
-		return results
+		return this.model.predict(tensor)
 	}
 
 	async inference(imgPath, options) {
@@ -35,34 +32,35 @@ class EfficientNetModel {
 		const normalizationConstant = (inputMax - inputMin) / 255.0
 		let image = await tf.node.decodeImage(fs.readFileSync(imgPath), 3)
 
-		// Normalize the image from [0, 255] to [inputMin, inputMax].
-		const normalized = tf.add(
-			tf.mul(tf.cast(image, 'float32'), normalizationConstant),
-			inputMin)
+		const logits = tf.tidy(() => {
+			// Normalize the image from [0, 255] to [inputMin, inputMax].
+			const normalized = tf.add(
+				tf.mul(tf.cast(image, 'float32'), normalizationConstant),
+				inputMin)
 
-		// Resize the image to
-		let resized = normalized
-		if (image.shape[0] !== this.imageSize || image.shape[1] !== this.imageSize) {
-			const alignCorners = true
-			resized = tf.image.resizeBilinear(
-				normalized, [this.imageSize, this.imageSize], alignCorners)
-		}
+			// Resize the image to
+			let resized = normalized
+			if (image.shape[0] !== this.imageSize || image.shape[1] !== this.imageSize) {
+				const alignCorners = true
+				resized = tf.image.resizeBilinear(
+					normalized, [this.imageSize, this.imageSize], alignCorners)
+			}
 
-		// Reshape so we can pass it to predict.
-		image = tf.reshape(resized, [-1, this.imageSize, this.imageSize, 3])
+			// Reshape so we can pass it to predict.
+			image = tf.reshape(resized, [-1, this.imageSize, this.imageSize, 3])
 
-		const prediction = await this.predict(image, topK)
-		image.dispose()
+			return this.predict(image, topK)
+		})
+		const values = await tf.softmax(logits)
+		const prediction = getTopKClasses(await values.data(), topK)
+		logits.dispose()
+		values.dispose()
 		return prediction
 	}
 
 }
 
-async function getTopKClasses(logits, topK) {
-	const softmax = tf.softmax(logits)
-	const values = await softmax.data()
-	softmax.dispose()
-
+function getTopKClasses(values, topK) {
 	const valuesAndIndices = []
 	for (let i = 0; i < values.length; i++) {
 		valuesAndIndices.push({ value: values[i], index: i })
