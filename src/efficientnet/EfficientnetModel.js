@@ -21,7 +21,7 @@ class EfficientNetModel {
 		this.model = await tf.loadGraphModel(this.modelPath)
 	}
 
-	async predict(tensor, topK) {
+	predict(tensor, topK) {
 		return this.model.predict(tensor)
 	}
 
