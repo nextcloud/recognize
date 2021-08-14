@@ -30,7 +30,7 @@ class EfficientNetModel {
 		const inputMax = 1
 		const inputMin = -1
 		const normalizationConstant = (inputMax - inputMin) / 255.0
-		let image = await tf.node.decodeImage(fs.readFileSync(imgPath), 3)
+		const image = await tf.node.decodeImage(fs.readFileSync(imgPath), 3)
 
 		const logits = tf.tidy(() => {
 			// Normalize the image from [0, 255] to [inputMin, inputMax].
@@ -47,14 +47,15 @@ class EfficientNetModel {
 			}
 
 			// Reshape so we can pass it to predict.
-			image = tf.reshape(resized, [-1, this.imageSize, this.imageSize, 3])
+			const reshaped = tf.reshape(resized, [-1, this.imageSize, this.imageSize, 3])
 
-			return this.predict(image, topK)
+			return this.predict(reshaped, topK)
 		})
 		const values = await tf.softmax(logits)
 		const prediction = getTopKClasses(await values.data(), topK)
 		logits.dispose()
 		values.dispose()
+		image.dispose()
 		return prediction
 	}
 
