@@ -43,11 +43,12 @@ class ClassifyFacesService {
      * @param File[] $files
      * @return void
      */
-    public function classify(array $files): void {
+    public function classify(array $faces, array $files): void {
         $paths = array_map(static function($file) {
             return $file->getStorage()->getLocalFile($file->getInternalPath());
         }, $files);
 
+        $this->logger->debug('Reference faces '.var_export($faces, true));
         $this->logger->debug('Classifying '.var_export($paths, true));
 
         $command = [
@@ -59,7 +60,7 @@ class ClassifyFacesService {
         $this->logger->debug('Running '.var_export($command, true));
         $proc = new Process($command, __DIR__);
         $proc->setTimeout(count($paths) * self::IMAGE_TIMEOUT);
-        $proc->setInput(implode("\n", $paths));
+        $proc->setInput(json_encode($faces)."\n\n".implode("\n", $paths));
         try {
             $proc->start();
 
