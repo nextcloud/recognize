@@ -115,14 +115,16 @@ class ClassifyFacesService {
      * @param int $threads
      * @return int
      */
-    public function classifyParallel(array $files, int $threads, OutputInterface $output): int {
+    public function classifyParallel(array $faces, array $files, int $threads, OutputInterface $output): int {
         $chunks = array_chunk($files, ceil(count($files)/$threads));
+
+        $output->writeln('Looking for faces: '.var_export($faces, true));
 
         $return = 0;
         $errOut = [];
         $proc = [];
         $i = [];
-        array_walk($chunks, function($chunk, $j) use ($output, &$proc, &$errOut, &$i, &$return){
+        array_walk($chunks, function($chunk, $j) use ($output, &$proc, &$errOut, &$i, &$return, $faces){
             try {
                 $paths = array_map(static function($file) {
                     return $file->getStorage()->getLocalFile($file->getInternalPath());
@@ -139,7 +141,7 @@ class ClassifyFacesService {
                 $output->writeln('Running ' . var_export($command, true));
                 $proc[$j] = new Process($command, __DIR__);
                 $proc[$j]->setTimeout(count($paths) * self::IMAGE_TIMEOUT);
-                $proc[$j]->setInput(implode("\n", $paths));
+                $proc[$j]->setInput(json_encode($faces) . "\n\n" . implode("\n", $paths));
 
                 $i[$j] = 0;
                 $errOut[$j] = '';
