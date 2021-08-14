@@ -1,7 +1,6 @@
 const path = require('path')
 const fsSync = require('fs')
 const _ = require('lodash')
-const Jimp = require('jimp')
 const tf = require('@tensorflow/tfjs-node-gpu')
 require('@tensorflow/tfjs-backend-wasm')
 const faceapi = require('@vladmandic/face-api/dist/face-api.node-gpu.js')
@@ -19,6 +18,7 @@ if (process.argv[2] === '-') {
 }
 
 const facesDefinition = JSON.parse(facesDefinitionJSON)
+console.error(facesDefinition)
 
 async function main() {
 	await faceapi.nets.ssdMobilenetv1.loadFromDisk(path.resolve(__dirname, '..', 'node_modules/@vladmandic/face-api/model'))
@@ -29,6 +29,7 @@ async function main() {
 	for (const person in facesDefinition) {
 		const tensor = await tf.node.decodeImage(fsSync.readFileSync(facesDefinition[person]), 3)
 		const result = await faceapi.detectSingleFace(tensor).withFaceLandmarks().withFaceDescriptor()
+		tensor.dispose()
 		if (!result) {
 			continue
 		}
@@ -45,6 +46,7 @@ async function main() {
 		try {
 			const tensor = await tf.node.decodeImage(fsSync.readFileSync(path), 3)
 			const results = await faceapi.detectAllFaces(tensor).withFaceLandmarks().withFaceDescriptors()
+			tensor.dispose()
 			const labels = results
 				.map(result => faceMatcher.findBestMatch(result.descriptor).label)
 				.filter(label => label !== 'unknown')
@@ -64,27 +66,3 @@ tf.setBackend('tensorflow')
 		tf.setBackend('wasm')
 			.then(() => main())
 	})
-
-async function createTensor(image) {
-	const NUM_OF_CHANNELS = 3
-	const values = new Float32Array(image.bitmap.width * image.bitmap.height * NUM_OF_CHANNELS)
-	let i = 0
-	image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y) => {
-		const pixel = Jimp.intToRGBA(image.getPixelColor(x, y))
-		pixel.r = ((pixel.r - 1) / 127.0) >> 0
-		pixel.g = ((pixel.g - 1) / 127.0) >> 0
-		pixel.b = ((pixel.b - 1) / 127.0) >> 0
-		values[i * NUM_OF_CHANNELS + 0] = pixel.r
-		values[i * NUM_OF_CHANNELS + 1] = pixel.g
-		values[i * NUM_OF_CHANNELS + 2] = pixel.b
-		i++
-	})
-	const outShape = [
-		image.bitmap.height,
-		image.bitmap.width,
-		NUM_OF_CHANNELS,
-	]
-	const imageTensor = tf.tensor3d(values, outShape, 'float32')
-	// imageTensor = imageTensor.expandDims(0)
-	return imageTensor
-}
