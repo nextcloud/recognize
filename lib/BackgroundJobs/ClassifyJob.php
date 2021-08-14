@@ -18,12 +18,12 @@ use Psr\Log\LoggerInterface;
 
 class ClassifyJob extends TimedJob {
     public const BATCH_SIZE = 100; // 100 images
-    public const INTERVAL = 20 * 60; // 10 minutes
+    public const INTERVAL = 30 * 60; // 30 minutes
 
     /**
      * @var ClassifyImagenetService
      */
-    private $classifier;
+    private $imagenet;
     /**
      * @var ImagesFinderService
      */
@@ -44,18 +44,28 @@ class ClassifyJob extends TimedJob {
      * @var IUserManager
      */
     private $userManager;
+    /**
+     * @var \OCA\Recognize\Service\ClassifyFacesService
+     */
+    private $facenet;
+    /**
+     * @var \OCA\Recognize\Service\ReferenceFacesFinderService
+     */
+    private $referenceFacesFinder;
 
     public function __construct(
-        ClassifyImagenetService $classifier, ITimeFactory $timeFactory, IRootFolder $rootFolder, LoggerInterface $logger, IUserManager $userManager, ImagesFinderService $imagesFinder
+        \OCA\Recognize\Service\ClassifyFacesService $facenet, ClassifyImagenetService $imagenet, ITimeFactory $timeFactory, IRootFolder $rootFolder, LoggerInterface $logger, IUserManager $userManager, ImagesFinderService $imagesFinder, \OCA\Recognize\Service\ReferenceFacesFinderService $referenceFacesFinder
     ) {
         parent::__construct($timeFactory);
 
         $this->setInterval(self::INTERVAL);
-        $this->classifier = $classifier;
+        $this->imagenet = $imagenet;
         $this->rootFolder = $rootFolder;
         $this->logger = $logger;
         $this->userManager = $userManager;
         $this->imagesFinder = $imagesFinder;
+        $this->facenet = $facenet;
+        $this->referenceFacesFinder = $referenceFacesFinder;
     }
 
     protected function run($argument) {
@@ -75,6 +85,8 @@ class ClassifyJob extends TimedJob {
         $images = array_slice($images, 0, self::BATCH_SIZE);
 
         $this->logger->warning('Classifying photos of user '.$user);
-        $this->classifier->classify($images);
+        $this->imagenet->classify($images);
+        $faces = $this->referenceFacesFinder->findReferenceFacesForUser($user);
+        $this->facenet->classify($faces, $images);
     }
 }
