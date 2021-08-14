@@ -3,6 +3,7 @@
 namespace OCA\Recognize\Command;
 
 use OCA\Recognize\Service\ClassifyImagenetService;
+use OCA\Recognize\Service\ClassifyFacesService;
 use OCA\Recognize\Service\ImagesFinderService;
 use OCP\Files\IRootFolder;
 use OCP\IUser;
@@ -16,7 +17,11 @@ class Classify extends Command {
     /**
      * @var ClassifyImagenetService
      */
-    private $classifier;
+    private $imagenet;
+    /**
+     * @var ClassifyFacesService
+     */
+    private $facenet;
     /**
      * @var ImagesFinderService
      */
@@ -29,14 +34,20 @@ class Classify extends Command {
      * @var IUserManager
      */
     private $userManager;
+    /**
+     * @var \OCA\Recognize\Service\ReferenceFacesFinderService
+     */
+    private $referenceFacesFinder;
 
-    public function __construct(ClassifyImagenetService $classifier, IRootFolder $rootFolder, IUserManager $userManager, ImagesFinderService $imagesFinder)
+    public function __construct(ClassifyFacesService $facenet, ClassifyImagenetService $imagenet, IRootFolder $rootFolder, IUserManager $userManager, ImagesFinderService $imagesFinder, \OCA\Recognize\Service\ReferenceFacesFinderService $referenceFacesFinder)
     {
         parent::__construct();
-        $this->classifier = $classifier;
+        $this->facenet = $facenet;
+        $this->imagenet = $imagenet;
         $this->rootFolder = $rootFolder;
         $this->userManager = $userManager;
         $this->imagesFinder = $imagesFinder;
+        $this->referenceFacesFinder = $referenceFacesFinder;
     }
 
     /**
@@ -88,7 +99,13 @@ class Classify extends Command {
                     continue;
                 }
                 $output->writeln('Classifying photos of user '.$user);
-                $returns[] = $this->classifier->classifyParallel($images, $processors, $output);
+                $returns[] = $this->imagenet->classifyParallel($images, $processors, $output);
+
+                $faces = $this->referenceFacesFinder->findReferenceFacesForUser($user);
+                if (count($faces) === 0) {
+                    continue;
+                }
+                $returns[] = $this->facenet->classifyParallel($faces, $images, $processors, $output);
             }
 
         } catch (\Exception $ex) {
