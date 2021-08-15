@@ -1,6 +1,6 @@
 const tf = require('@tensorflow/tfjs-node-gpu')
-const Jimp = require('jimp')
 const { IMAGENET_CLASSES } = require('./classes')
+const fs = require('fs')
 const NUM_OF_CHANNELS = 3
 class EfficientNetModel {
 
@@ -21,68 +21,47 @@ class EfficientNetModel {
 		this.model = await tf.loadGraphModel(this.modelPath)
 	}
 
-	async createTensor(image) {
-		const values = new Float32Array(this.imageSize * this.imageSize * NUM_OF_CHANNELS)
-		let i = 0
-		image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y) => {
-			const pixel = Jimp.intToRGBA(image.getPixelColor(x, y))
-			pixel.r = ((pixel.r - 1) / 127.0) >> 0
-			pixel.g = ((pixel.g - 1) / 127.0) >> 0
-			pixel.b = ((pixel.b - 1) / 127.0) >> 0
-			values[i * NUM_OF_CHANNELS + 0] = pixel.r
-			values[i * NUM_OF_CHANNELS + 1] = pixel.g
-			values[i * NUM_OF_CHANNELS + 2] = pixel.b
-			i++
-		})
-		const outShape = [
-			this.imageSize,
-			this.imageSize,
-			NUM_OF_CHANNELS,
-		]
-		let imageTensor = tf.tensor3d(values, outShape, 'float32')
-		imageTensor = imageTensor.expandDims(0)
-		return imageTensor
-	}
-
-	async cropAndResize(image) {
-		const width = image.bitmap.width
-		const height = image.bitmap.height
-		const cropPadding = 32
-		const paddedCenterCropSize = ((this.imageSize / (this.imageSize + cropPadding))
-            * Math.min(height, width))
-            >> 0
-		const offsetHeight = ((height - paddedCenterCropSize + 1) / 2) >> 0
-		const offsetWidth = (((width - paddedCenterCropSize + 1) / 2) >> 0) + 1
-		await image.crop(offsetWidth, offsetHeight, paddedCenterCropSize, paddedCenterCropSize)
-		await image.resize(this.imageSize, this.imageSize, Jimp.RESIZE_BICUBIC)
-		return image
-	}
-
-	async predict(tensor, topK) {
-		const logits = this.model.predict(tensor)
-		const results = await getTopKClasses(logits, topK)
-		logits.dispose()
-		return results
+	predict(tensor, topK) {
+		return this.model.predict(tensor)
 	}
 
 	async inference(imgPath, options) {
 		const { topK = NUM_OF_CHANNELS } = options || {}
-		// @ts-ignore
-		let image = await Jimp.read(imgPath)
-		image = await this.cropAndResize(image)
-		const tensor = await this.createTensor(image)
-		const prediction = await this.predict(tensor, topK)
-		tensor.dispose()
+		const inputMax = 1
+		const inputMin = -1
+		const normalizationConstant = (inputMax - inputMin) / 255.0
+		const image = await tf.node.decodeImage(fs.readFileSync(imgPath), 3)
+
+		const logits = tf.tidy(() => {
+			// Normalize the image from [0, 255] to [inputMin, inputMax].
+			const normalized = tf.add(
+				tf.mul(tf.cast(image, 'float32'), normalizationConstant),
+				inputMin)
+
+			// Resize the image to
+			let resized = normalized
+			if (image.shape[0] !== this.imageSize || image.shape[1] !== this.imageSize) {
+				const alignCorners = true
+				resized = tf.image.resizeBilinear(
+					normalized, [this.imageSize, this.imageSize], alignCorners)
+			}
+
+			// Reshape so we can pass it to predict.
+			const reshaped = tf.reshape(resized, [-1, this.imageSize, this.imageSize, 3])
+
+			return this.predict(reshaped, topK)
+		})
+		const values = await tf.softmax(logits)
+		const prediction = getTopKClasses(await values.data(), topK)
+		logits.dispose()
+		values.dispose()
+		image.dispose()
 		return prediction
 	}
 
 }
 
-async function getTopKClasses(logits, topK) {
-	const softmax = tf.softmax(logits)
-	const values = await softmax.data()
-	softmax.dispose()
-
+function getTopKClasses(values, topK) {
 	const valuesAndIndices = []
 	for (let i = 0; i < values.length; i++) {
 		valuesAndIndices.push({ value: values[i], index: i })
