@@ -10,7 +10,7 @@ const Parallel = require('async-parallel')
 
 const rules = YAML.parse(fsSync.readFileSync(__dirname + '/../src/rules.yml').toString('utf8'))
 
-const PHOTOS_PER_LABEL = 35
+const PHOTOS_PER_LABEL = 50
 const PHOTOS_OLDER_THAN = 1627464319 // 2021-07-28; for determinism
 const flickr = new Flickr(process.env.FLICKR_API_KEY)
 
@@ -34,12 +34,12 @@ const labels = uniq(flatten(Object.entries(rules)
 
 			await Promise.all(matchingRules.map(async rule => {
 				if (rule.categories) {
-					const urls = await findPhotos(rule.categories.join(' ') + ' ' + label+' '+rule.className)
+					const urls = await findPhotos(rule.categories.join(' ') + ' ' + label+' '+rule.className, Math.ceil(PHOTOS_PER_LABEL/matchingRules.length))
 					await Promise.all(
 						urls.map(url => download(url, 'temp_images/' + label))
 					)
 				}else{
-					const urls = await findPhotos(label+' '+rule.className)
+					const urls = await findPhotos(label+' '+rule.className, Math.ceil(PHOTOS_PER_LABEL/matchingRules.length))
 					await Promise.all(
 						urls.map(url => download(url, 'temp_images/' + label))
 					)
@@ -64,12 +64,12 @@ const labels = uniq(flatten(Object.entries(rules)
 
 				await Promise.all(matchingRules.map(async rule => {
 					if (rule.context) {
-						const urls = await findPhotos(rule.context + ' -' + label+ ' '+rule.className.split(' ').map(s => '-'+s).join(' '))
+						const urls = await findPhotos(rule.context + ' -' + label+ ' '+rule.className.split(' ').map(s => '-'+s).join(' '), Math.ceil(PHOTOS_PER_LABEL/matchingRules.length))
 						await Promise.all(
 							urls.map(url => download(url, 'temp_images/-' + label))
 						)
 					} else if (rule.categories) {
-						const urls = await findPhotos(rule.categories.join(' ') + ' -' + label+ ' '+rule.className.split(' ').map(s => '-'+s).join(' '))
+						const urls = await findPhotos(rule.categories.join(' ') + ' -' + label+ ' '+rule.className.split(' ').map(s => '-'+s).join(' '), Math.ceil(PHOTOS_PER_LABEL/matchingRules.length))
 						await Promise.all(
 							urls.map(url => download(url, 'temp_images/-' + label))
 						)
@@ -124,11 +124,11 @@ const labels = uniq(flatten(Object.entries(rules)
 	}
 })()
 
-function findPhotos(label) {
+function findPhotos(label, amount = PHOTOS_PER_LABEL) {
 	console.log('FLICKR search: '+label)
 	return flickr.photos.search({
 		text: label,
-		per_page: PHOTOS_PER_LABEL,
+		per_page: amount,
 		media: 'photos',
 		content_type: 1,
 		max_upload_date: PHOTOS_OLDER_THAN,
