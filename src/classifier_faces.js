@@ -40,7 +40,7 @@ async function main() {
 		return
 	}
 
-	const faceMatcher = new faceapi.FaceMatcher(Object.values(faceDescriptors))
+	const faceMatcher = new faceapi.FaceMatcher(Object.values(faceDescriptors), 0.4) // default is 0.6
 
 	for (const path of paths) {
 		try {
