@@ -51,6 +51,10 @@ async function main() {
 				.map(result => faceMatcher.findBestMatch(result.descriptor).label)
 				.filter(label => label !== 'unknown')
 
+			if (results.length) {
+				labels.push('people')
+			}
+
 			console.log(JSON.stringify(_.uniq(labels)))
 		} catch (e) {
 			console.error(e)
