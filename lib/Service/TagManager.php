@@ -62,13 +62,19 @@ class TagManager
     public function findMissedClassifications(): array
     {
         $missed = array_keys(array_filter($this->objectMapper->getTagIdsForObjects($this->findClassifiedFiles(), 'files'), static function($tags) {
-            return count($tags) === 1;
+            return count(array_filter($tags, function ($tag) {
+                $tag = $this->tagManager->getTagsByIds($tag)[0];
+                return $tag->getName() !== 'Unrecognized' && $tag->getName() !== self::RECOGNIZED_TAG;
+            })) === 0;
         }));
         $unrecognized = $this->objectMapper->getObjectIdsForTags($this->getTag('Unrecognized')->getId(), 'files');
+        foreach($unrecognized as $id) {
+            $this->objectMapper->unassignTags($id, 'files', [$this->getTag('Unrecognized')->getId()]);
+        }
         foreach($missed as $id) {
             $this->objectMapper->assignTags($id, 'files', [$this->getTag('Unrecognized')->getId()]);
         }
-        return array_merge($missed, $unrecognized);
+        return $missed;
     }
 
     public function resetClassifications(): void
