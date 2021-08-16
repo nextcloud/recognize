@@ -1587,7 +1587,7 @@ pembroke:
   categories:
     - animal
 
-cardigan:
+cardigan dog:
   label: dog
   priority: 5
   threshold: 0.1
