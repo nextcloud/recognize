@@ -119,7 +119,7 @@ const labels = uniq(flatten(Object.entries(rules)
 
 	console.log({ worstLabels })
 
-	if (balancedAccuracy < 0.5) {
+	if (balancedAccuracy < 0.8) {
 		process.exit(1)
 	}
 })()
