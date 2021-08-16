@@ -12,9 +12,12 @@ use OCA\Recognize\Service\ImagesFinderService;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\TimedJob;
 use OCP\Files\IRootFolder;
+use OCP\Files\NotFoundException;
 use OCP\IUser;
 use OCP\IUserManager;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
+use Symfony\Component\Process\Exception\RuntimeException;
 
 class ClassifyJob extends TimedJob {
     public const BATCH_SIZE = 100; // 100 images
@@ -85,8 +88,13 @@ class ClassifyJob extends TimedJob {
         $images = array_slice($images, 0, self::BATCH_SIZE);
 
         $this->logger->warning('Classifying photos of user '.$user);
-        $this->imagenet->classify($images);
-        $faces = $this->referenceFacesFinder->findReferenceFacesForUser($user);
-        $this->facenet->classify($faces, $images);
+        try {
+            $this->imagenet->classify($images);
+            $faces = $this->referenceFacesFinder->findReferenceFacesForUser($user);
+            $this->facenet->classify($faces, $images);
+        }catch(\Exception $e) {
+            $this->logger->warning('Classifier process errored');
+            $this->logger->warning($e->getMessage());
+        }
     }
 }

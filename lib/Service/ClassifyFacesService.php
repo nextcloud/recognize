@@ -42,6 +42,7 @@ class ClassifyFacesService {
     /**
      * @param File[] $files
      * @return void
+     * @throws \OCP\Files\NotFoundException
      */
     public function classify(array $faces, array $files): void {
         $paths = array_map(static function($file) {
@@ -101,105 +102,11 @@ class ClassifyFacesService {
                 $this->logger->warning('Classifier process output: '.$errOut);
             }
         }catch(ProcessTimedOutException $e) {
-            $this->logger->warning('Classifier process timeout');
             $this->logger->warning($proc->getErrorOutput());
-            return;
+            throw new \RuntimeException('Classifier process timeout');
         }catch(RuntimeException $e) {
-            $this->logger->warning('Classifier process could not be started');
             $this->logger->warning($proc->getErrorOutput());
-            return;
+            throw new \RuntimeException('Classifier process could not be started');
         }
-    }
-
-    /**
-     * @param File[] $files
-     * @param int $threads
-     * @return int
-     */
-    public function classifyParallel(array $faces, array $files, int $threads, OutputInterface $output): int {
-        $chunks = array_chunk($files, ceil(count($files)/$threads));
-
-        $output->writeln('Looking for faces: '.var_export($faces, true));
-
-        $return = 0;
-        $errOut = [];
-        $proc = [];
-        $i = [];
-        array_walk($chunks, function($chunk, $j) use ($output, &$proc, &$errOut, &$i, &$return, $faces){
-            try {
-                $paths = array_map(static function($file) {
-                    return $file->getStorage()->getLocalFile($file->getInternalPath());
-                }, $chunk);
-
-                $output->writeln('Classifying '.var_export($paths, true));
-
-                $command =[
-                    $this->config->getAppValue('recognize', 'node_binary'),
-                    dirname(__DIR__, 2) . '/src/classifier_faces.js',
-                    '-'
-                ];
-
-                $output->writeln('Running ' . var_export($command, true));
-                $proc[$j] = new Process($command, __DIR__);
-                $proc[$j]->setTimeout(count($paths) * self::IMAGE_TIMEOUT);
-                $proc[$j]->setInput(json_encode($faces) . "\n\n" . implode("\n", $paths));
-
-                $i[$j] = 0;
-                $errOut[$j] = '';
-                $proc[$j]->start(function ($type, $data) use (&$i, &$proc, &$errOut, $chunk, &$j, $output, &$return){
-                    if ($type !== $proc[$j]::OUT) {
-                        $errOut[$j] .= $data;
-                        $output->writeln('Classifier process output: ' . $data);
-                        return;
-                    }
-                    $lines = explode("\n", $data);
-                    foreach($lines as $result) {
-                        if (trim($result) === '') {
-                            continue;
-                        }
-                        $output->writeln('Result for ' . $chunk[$i[$j]]->getName() . ' = ' . $result);
-                        try {
-                            // decode json
-                            $tags = json_decode(utf8_encode($result), true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
-
-                            // assign tags
-                            $this->tagManager->assignTags($chunk[$i[$j]]->getId(), $tags);
-                        } catch (InvalidPathException $e) {
-                            $output->writeln('File with invalid path encountered');
-                            $return = 1;
-                        } catch (NotFoundException $e) {
-                            $output->writeln('File to tag was not found');
-                            $return = 1;
-                        } catch (\JsonException $e) {
-                            $output->writeln('JSON exception');
-                            $output->writeln($e->getMessage());
-                            $output->writeln($result);
-                            $return = 1;
-                        }
-                        $i[$j]++;
-                    }
-                });
-            } catch (RuntimeException $e) {
-                $output->writeln('Classifier process could not be started');
-                $output->writeln($proc[$j]->getErrorOutput());
-                $return = 1;
-            }
-        });
-
-        foreach ($proc as $j => $process) {
-            try {
-                $process->wait();
-            } catch (ProcessTimedOutException $e) {
-                $output->writeln('Classifier process timeout');
-                $output->writeln($process->getErrorOutput());
-                $return = 1;
-                continue;
-            }
-            if ($i[$j] !== count($chunks[$j])) {
-                $output->writeln('Classifier process output: ' . $errOut[$j]);
-                $return = 1;
-            }
-        }
-        return $return;
     }
 }

@@ -66,8 +66,7 @@ class Classify extends Command {
         }
 
         $this->setName('recognize:classify')
-            ->setDescription('Classify all photos in this installation')
-            ->addOption('processors', 'p', InputOption::VALUE_REQUIRED, 'How many processors to use (Default is as many as the machine has to offer)', $ncpu);
+            ->setDescription('Classify all photos in this installation');
     }
 
     /**
@@ -80,8 +79,6 @@ class Classify extends Command {
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $processors = (int) $input->getOption('processors');
-        $returns = [];
         try {
 
             $users = [];
@@ -99,13 +96,13 @@ class Classify extends Command {
                     continue;
                 }
                 $output->writeln('Classifying photos of user '.$user);
-                $returns[] = $this->imagenet->classifyParallel($images, $processors, $output);
+                $this->imagenet->classify($images);
 
                 $faces = $this->referenceFacesFinder->findReferenceFacesForUser($user);
                 if (count($faces) === 0) {
                     continue;
                 }
-                $returns[] = $this->facenet->classifyParallel($faces, $images, $processors, $output);
+                $this->facenet->classify($faces, $images);
             }
 
         } catch (\Exception $ex) {
@@ -114,6 +111,6 @@ class Classify extends Command {
             return 1;
         }
 
-        return array_sum($returns) > 0;
+        return 0;
     }
 }
