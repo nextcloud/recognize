@@ -3164,10 +3164,10 @@ grille:
   see: car
 
 racer:
-  label: vehicle
+  label: car
   threshold: 0.4
   categories:
-    - car
+    - vehicle
 
 moped:
   label: scooter
