@@ -66,10 +66,14 @@ class ReferenceFacesFinderService
                 if (!isset($card['PHOTO'])) {
                     continue;
                 }
-                $image = file_get_contents($card['PHOTO']);
-                $filePath = $this->tempManager->getTemporaryFile();
-                file_put_contents($filePath, $image, FILE_APPEND);
-                $faces[$card['FN']] = $filePath;
+                try {
+                    $image = file_get_contents($card['PHOTO']);
+                    $filePath = $this->tempManager->getTemporaryFile();
+                    file_put_contents($filePath, $image, FILE_APPEND);
+                    $faces[$card['FN']] = $filePath;
+                }catch(\Exception $e) {
+                    // TODO: Log this.
+                }
             }
         }
         return $faces;
