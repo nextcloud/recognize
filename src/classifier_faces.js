@@ -27,13 +27,17 @@ async function main() {
 
 	const faceDescriptors = {}
 	for (const person in facesDefinition) {
-		const tensor = await tf.node.decodeImage(fsSync.readFileSync(facesDefinition[person]), 3)
-		const result = await faceapi.detectSingleFace(tensor).withFaceLandmarks().withFaceDescriptor()
-		tensor.dispose()
-		if (!result) {
-			continue
+		try {
+			const tensor = await tf.node.decodeImage(fsSync.readFileSync(facesDefinition[person]), 3)
+			const result = await faceapi.detectSingleFace(tensor).withFaceLandmarks().withFaceDescriptor()
+			tensor.dispose()
+			if (!result) {
+				continue
+			}
+			faceDescriptors[person] = new faceapi.LabeledFaceDescriptors(person, [result.descriptor])
+		}catch(e) {
+			console.error(e)
 		}
-		faceDescriptors[person] = new faceapi.LabeledFaceDescriptors(person, [result.descriptor])
 	}
 
 	if (!Object.values(faceDescriptors).length) {
