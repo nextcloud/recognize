@@ -6,7 +6,9 @@
 
 > Image recognition for Nextcloud
 
-This app goes through your photo collection and adds fitting tags, automatically categorizing your photos. Tagging works via Nextcloud's Collaborative Tags.
+This app goes through your photo collection and adds fitting tags, automatically categorizing your photos.
+It also recognizes faces from photos set in your contacts.
+Tagging works via Nextcloud's Collaborative Tags.
 You can view your tagged photos with the photos app, as seen in the screenshot above.
 
 ### Accuracy
