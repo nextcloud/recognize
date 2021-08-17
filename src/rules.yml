@@ -1106,7 +1106,7 @@ italian greyhound:
 whippet:
   label: dog
   priority: 5
-  threshold: 0.1
+  threshold: 0.3
   categories:
     - animal
 
@@ -1340,7 +1340,7 @@ irish setter:
 gordon setter:
   label: dog
   priority: 5
-  threshold: 0.1
+  threshold: 0.2
   categories:
     - animal
 
@@ -1433,7 +1433,7 @@ border collie:
 bouvier des flandres:
   label: dog
   priority: 5
-  threshold: 0.1
+  threshold: 0.2
   categories:
     - animal
 
@@ -1640,7 +1640,7 @@ red wolf:
 coyote:
   label: dog
   priority: 5
-  threshold: 0.1
+  threshold: 0.5
   categories:
     - animal
 
@@ -3043,7 +3043,7 @@ tandem bicycle:
 
 mountain bike:
   label: bike
-  threshold: 0.7
+  threshold: 0.95
   categories:
     - vehicle
 
@@ -4027,7 +4027,7 @@ buckeye:
 
 mushroom:
   label: vegetables
-  threshold: 0.3
+  threshold: 0.25
   categories:
     - food
 
@@ -4044,7 +4044,10 @@ stinkhorn:
   see: mushroom
 
 earthstar:
-  see: mushroom
+  label: vegetables
+  threshold: 0.6
+  categories:
+    - food
 
 hen-of-the-woods:
   see: mushroom
@@ -4281,7 +4284,7 @@ baby:
 
 cradle:
   label: cradle
-  threshold: 0.1
+  threshold: 0.8
   categories:
     - baby
 
