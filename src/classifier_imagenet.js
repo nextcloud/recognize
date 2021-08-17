@@ -1,4 +1,7 @@
 const path = require('path')
+const VERSION = require('../package.json').version
+const download = require('download')
+const tar = require('tar')
 const fsSync = require('fs')
 const YAML = require('yaml')
 const _ = require('lodash')
@@ -26,7 +29,24 @@ if (process.argv.length < 3) throw new Error('Incorrect arguments: node classify
 const paths = process.argv[2] === '-' ? fsSync.readFileSync(process.stdin.fd).toString('utf8').split('\n') : process.argv.slice(2)
 
 async function main() {
-	const model = await EfficientNet.create(path.resolve(__dirname, '..', 'model'))
+	const modelPath = path.resolve(__dirname, '..', 'model')
+
+	// Download model on first run
+	if (!fsSync.existsSync(modelPath)) {
+		await download(
+			`https://github.com/marcelklehr/recognize/archive/refs/tags/v${VERSION}.tar.gz`,
+			path.resolve(__dirname, '..')
+		)
+		await new Promise(resolve =>
+			tar.x({
+				strip: 1,
+				C: path.resolve(__dirname, '..'),
+				file: `recognize-${VERSION}.tar.gz`,
+			}, [`recognize-${VERSION}/model`], resolve)
+		)
+	}
+
+	const model = await EfficientNet.create(modelPath)
 
 	for (const path of paths) {
 		try {

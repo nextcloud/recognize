@@ -77,6 +77,8 @@ clean-dev:
 	rm -rf node_modules
 
 appstore:
+	rm -rf node_modules
+	npm install --omit dev
 	mkdir -p $(sign_dir)
 	rsync -a \
 	--include=/vendor \
@@ -90,7 +92,6 @@ appstore:
 	--include=/package.json \
 	--include=/package-lock.json \
 	--include=/src \
-	--include=/model \
 	--include=/js \
 	--include=/lib \
 	--include=/img \
