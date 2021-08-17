@@ -77,8 +77,6 @@ clean-dev:
 	rm -rf node_modules
 
 appstore:
-	rm -rf node_modules
-	npm install --omit dev
 	mkdir -p $(sign_dir)
 	rsync -a \
 	--include=/vendor \
