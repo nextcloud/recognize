@@ -62,7 +62,7 @@ class TagManager
     public function findMissedClassifications(): array
     {
         $classified = $this->objectMapper->getTagIdsForObjects($this->findClassifiedFiles(), 'files');
-        $classifiedChunks = array_chunk($classified, 999);
+        $classifiedChunks = array_chunk($classified, 999, true);
         $missed = [];
         foreach($classifiedChunks as $classifiedChunk) {
             $missedChunk = array_keys(array_filter($classifiedChunk, function ($tags) {
@@ -75,7 +75,6 @@ class TagManager
         }
         $unrecognized = $this->objectMapper->getObjectIdsForTags($this->getTag('Unrecognized')->getId(), 'files');
         $notMissedAnymore = array_diff($unrecognized, $missed);
-
         foreach($notMissedAnymore as $id) {
             $this->objectMapper->unassignTags($id, 'files', [$this->getTag('Unrecognized')->getId()]);
         }
