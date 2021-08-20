@@ -5,9 +5,15 @@ const tar = require('tar')
 const fsSync = require('fs')
 const YAML = require('yaml')
 const _ = require('lodash')
-const tf = require('@tensorflow/tfjs-node-gpu')
-require('@tensorflow/tfjs-backend-wasm')
 const rules = YAML.parse(fsSync.readFileSync(__dirname + '/rules.yml').toString('utf8'))
+
+let tf
+if (process.env.RECOGNIZE_GPU === 'true') {
+	tf = require('@tensorflow/tfjs-node-gpu')
+} else {
+	tf = require('@tensorflow/tfjs-node')
+}
+require('@tensorflow/tfjs-backend-wasm')
 
 const EfficientNet = require('./efficientnet/EfficientnetModel')
 

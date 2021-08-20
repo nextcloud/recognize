@@ -1,9 +1,16 @@
 const path = require('path')
 const fs = require('fs/promises')
 const _ = require('lodash')
-const tf = require('@tensorflow/tfjs-node-gpu')
+
+let tf, faceapi
+if (process.env.RECOGNIZE_GPU === 'true') {
+	tf = require('@tensorflow/tfjs-node-gpu')
+	faceapi = require('@vladmandic/face-api/dist/face-api.node-gpu.js')
+} else {
+	tf = require('@tensorflow/tfjs-node')
+	faceapi = require('@vladmandic/face-api/dist/face-api.node.js')
+}
 require('@tensorflow/tfjs-backend-wasm')
-const faceapi = require('@vladmandic/face-api/dist/face-api.node-gpu.js')
 
 if (process.argv.length < 3) throw new Error('Incorrect arguments: node classifier_faces.js ...<IMAGE_FILES> | node classify.js -')
 

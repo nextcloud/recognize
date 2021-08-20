@@ -1,4 +1,10 @@
-const tf = require('@tensorflow/tfjs-node-gpu')
+let tf
+if (process.env.RECOGNIZE_GPU === 'true') {
+	tf = require('@tensorflow/tfjs-node-gpu')
+} else {
+	tf = require('@tensorflow/tfjs-node')
+}
+
 const { IMAGENET_CLASSES } = require('./classes')
 const fs = require('fs/promises')
 const NUM_OF_CHANNELS = 3
