@@ -1,5 +1,4 @@
 const path = require('path')
-const fsSync = require('fs')
 const fs = require('fs/promises')
 const _ = require('lodash')
 const tf = require('@tensorflow/tfjs-node-gpu')
