@@ -67,12 +67,16 @@ class ReferenceFacesFinderService
                     continue;
                 }
                 try {
-                    $image = file_get_contents($card['PHOTO']);
+                    $photo = $card['PHOTO'];
+                    if (str_starts_with($card['PHOTO'], 'uri:')) {
+                        $photo = substr($photo, 4);
+                    }
+                    $image = file_get_contents($photo);
                     $filePath = $this->tempManager->getTemporaryFile();
                     file_put_contents($filePath, $image, FILE_APPEND);
                     $faces[$card['FN']] = $filePath;
                 }catch(\Exception $e) {
-                    // TODO: Log this.
+                    $this->logger->debug($e->getMessage());
                 }
             }
         }

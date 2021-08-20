@@ -1,6 +1,6 @@
 const tf = require('@tensorflow/tfjs-node-gpu')
 const { IMAGENET_CLASSES } = require('./classes')
-const fs = require('fs')
+const fs = require('fs/promises')
 const NUM_OF_CHANNELS = 3
 class EfficientNetModel {
 
@@ -30,7 +30,7 @@ class EfficientNetModel {
 		const inputMax = 1
 		const inputMin = -1
 		const normalizationConstant = (inputMax - inputMin) / 255.0
-		const image = await tf.node.decodeImage(fs.readFileSync(imgPath), 3)
+		const image = await tf.node.decodeImage(await fs.readFile(imgPath), 3)
 
 		const logits = tf.tidy(() => {
 			// Normalize the image from [0, 255] to [inputMin, inputMax].

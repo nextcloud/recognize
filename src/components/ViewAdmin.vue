@@ -21,7 +21,7 @@
 		</SettingsSection>
 		<SettingsSection
 			:title="t('recognize', 'Manual operation') ">
-			<p>To trigger a full classification run manually, run the following command on the terminal.</p>
+			<p>To trigger a full classification run manually, run the following command on the terminal. (The first time, this will download the machine learning model initially, so it will take longer.)</p>
 			<p>&nbsp;</p>
 			<pre><code>occ recognize:classify</code></pre>
 		</SettingsSection>
