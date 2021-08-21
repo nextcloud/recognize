@@ -41,7 +41,7 @@ async function main() {
 			tar.x({
 				strip: 1,
 				C: path.resolve(__dirname, '..'),
-				file: `recognize-${VERSION}.tar.gz`,
+				file: path.resolve(__dirname, '..', `recognize-${VERSION}.tar.gz`),
 			}, [`recognize-${VERSION}/model`], resolve)
 		)
 	}
