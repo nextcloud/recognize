@@ -23,16 +23,17 @@
   "author": "Marcel Klehr <mklehr@gmx.net>",
   "license": "MIT",
   "dependencies": {
+    "@nextcloud/axios": "^1.6.0",
+    "@nextcloud/vue": "^4.0.2",
     "@tensorflow/tfjs": "^3.8.0",
     "@tensorflow/tfjs-backend-wasm": "^3.5.0",
+    "@tensorflow/tfjs-node": "^3.8.0",
     "@tensorflow/tfjs-node-gpu": "^3.8.0",
     "@vladmandic/face-api": "^1.4.1",
     "lodash": "^4.17.21",
     "tar": "^6.1.8",
-    "yaml": "^1.10.2",
-    "@nextcloud/axios": "^1.6.0",
-    "@nextcloud/vue": "^4.0.2",
-    "vue": "^2.6.12"
+    "vue": "^2.6.12",
+    "yaml": "^1.10.2"
   },
   "devDependencies": {
     "@babel/core": "^7.13.15",

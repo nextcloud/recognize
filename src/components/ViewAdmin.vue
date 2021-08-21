@@ -32,6 +32,12 @@
 				<a href="https://developer.nvidia.com/cuda-toolkit-archive">CUDA® Toolkit 11.2</a>
 				and <a href="https://developer.nvidia.com/rdp/cudnn-download">cuDNN SDK 8.1.0</a>.
 			</p>
+			<p>
+				<label>
+					<input v-model="settings['tensorflow.gpu']" type="checkbox" @change="onChange">
+					<span>Enable GPU Accelaration</span>
+				</label>
+			</p>
 		</SettingsSection>
 		<SettingsSection
 			:title="t('recognize', 'Reset')">
