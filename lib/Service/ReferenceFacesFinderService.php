@@ -68,8 +68,8 @@ class ReferenceFacesFinderService
                 }
                 try {
                     $photo = $card['PHOTO'];
-                    if (str_starts_with($card['PHOTO'], 'uri:')) {
-                        $photo = substr($photo, 4);
+                    if (str_starts_with($card['PHOTO'], 'VALUE=uri:')) {
+                        $photo = substr($photo, strlen('VALUE=uri:'));
                     }
                     $image = file_get_contents($photo);
                     $filePath = $this->tempManager->getTemporaryFile();
