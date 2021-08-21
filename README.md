@@ -31,7 +31,7 @@ This is the [list of recognized things and which categories they are currently m
   - ARM 64bit
   - ARMv7 (32bit)
 - System with glibc (usually the norm)
-- ~2GB of free RAM (so, depending on your server load, you should probably have 4GB RAM)  
+- ~3GB of free RAM (if you're cutting it close, make sure you have some swap available)
 
 ### One click
 
