@@ -61,11 +61,11 @@ class TagManager
 
     public function findMissedClassifications(): array
     {
-        $classified = $this->objectMapper->getTagIdsForObjects($this->findClassifiedFiles(), 'files');
+        $classified = $this->findClassifiedFiles();
         $classifiedChunks = array_chunk($classified, 999, true);
         $missed = [];
         foreach($classifiedChunks as $classifiedChunk) {
-            $missedChunk = array_keys(array_filter($classifiedChunk, function ($tags) {
+            $missedChunk = array_keys(array_filter($this->objectMapper->getTagIdsForObjects($classifiedChunk, 'files'), function ($tags) {
                 $tags = $this->tagManager->getTagsByIds($tags);
                 return count(array_filter($tags, static function ($tag) {
                         return $tag->getName() !== 'Unrecognized' && $tag->getName() !== self::RECOGNIZED_TAG;
