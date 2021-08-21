@@ -13,7 +13,6 @@ if (process.env.RECOGNIZE_GPU === 'true') {
 } else {
 	tf = require('@tensorflow/tfjs-node')
 }
-require('@tensorflow/tfjs-backend-wasm')
 
 const EfficientNet = require('./efficientnet/EfficientnetModel')
 
@@ -139,6 +138,5 @@ async function main() {
 tf.setBackend('tensorflow')
 	.then(() => main())
 	.catch(e =>
-		tf.setBackend('wasm')
-			.then(() => main())
+		console.error(e)
 	)

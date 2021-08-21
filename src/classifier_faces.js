@@ -10,7 +10,6 @@ if (process.env.RECOGNIZE_GPU === 'true') {
 	tf = require('@tensorflow/tfjs-node')
 	faceapi = require('@vladmandic/face-api/dist/face-api.node.js')
 }
-require('@tensorflow/tfjs-backend-wasm')
 
 if (process.argv.length < 3) throw new Error('Incorrect arguments: node classifier_faces.js ...<IMAGE_FILES> | node classify.js -')
 
@@ -78,6 +77,4 @@ tf.setBackend('tensorflow')
 	.then(() => main())
 	.catch(e => {
 		console.error(e)
-		tf.setBackend('wasm')
-			.then(() => main())
 	})
