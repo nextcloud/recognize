@@ -3,6 +3,7 @@ const VERSION = require('../package.json').version
 const download = require('download')
 const tar = require('tar')
 const fsSync = require('fs')
+const fs = require('fs/promises')
 const YAML = require('yaml')
 const _ = require('lodash')
 const rules = YAML.parse(fsSync.readFileSync(__dirname + '/rules.yml').toString('utf8'))
@@ -31,8 +32,6 @@ function findRule(className) {
 
 if (process.argv.length < 3) throw new Error('Incorrect arguments: node classify.js ...<IMAGE_FILES> | node classify.js -')
 
-const paths = process.argv[2] === '-' ? fsSync.readFileSync(process.stdin.fd).toString('utf8').split('\n') : process.argv.slice(2)
-
 async function main() {
 	const modelPath = path.resolve(__dirname, '..', 'model')
 
@@ -52,6 +51,10 @@ async function main() {
 	}
 
 	const model = await EfficientNet.create(modelPath)
+
+	const paths = process.argv[2] === '-'
+		? (await fs.readFile('/dev/stdin')).toString('utf8').split('\n')
+		: process.argv.slice(2)
 
 	for (const path of paths) {
 		try {
