@@ -30,7 +30,7 @@ This is the [list of recognized things and which categories they are currently m
   - x86 64bit
   - ARM 64bit
   - ARMv7 (32bit)
-- System with glibc (usually the norm)
+- System with glibc (usually the norm; Alpine linux is *not* such a system)
 - ~3GB of free RAM (if you're cutting it close, make sure you have some swap available)
 
 ### One click
