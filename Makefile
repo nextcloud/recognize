@@ -78,7 +78,7 @@ clean-dev:
 
 appstore:
 	mkdir -p $(sign_dir)
-	rsync -a \
+	rsync -a --copy-links \
 	--include=/vendor \
 	--include=/CHANGELOG.md \
 	--include=/README.md \
@@ -99,7 +99,7 @@ appstore:
 	--exclude=**/*.map \
 	--exclude=/* \
 	$(project_dir)/ $(sign_dir)/$(app_name)
-	tar -chzf $(build_dir)/$(app_name)-$(version).tar.gz \
+	tar -czf $(build_dir)/$(app_name)-$(version).tar.gz \
 		-C $(sign_dir) $(app_name)
 	@if [ -f $(cert_dir)/$(app_name).key ]; then \
 		echo "Signing package…"; \
