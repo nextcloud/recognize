@@ -75,22 +75,28 @@ class ReferenceFacesFinderService
         if (!$this->contacts->isEnabled()) {
             return $faces;
         }
-        $cards = $this->contacts->search('',['FN']);
-        foreach($cards as $card) {
-            if (!isset($card['PHOTO'])) {
+        $books = $this->contacts->getUserAddressBooks();
+        foreach($books as $book) {
+            if ($book->isSystemAddressBook()) {
                 continue;
             }
-            try {
-                $photo = $card['PHOTO'];
-                if (str_starts_with($card['PHOTO'], 'VALUE=uri:')) {
-                    $photo = substr($photo, strlen('VALUE=uri:'));
+            $cards = $book->search('', ['FN'], []);
+            foreach ($cards as $card) {
+                if (!isset($card['PHOTO'])) {
+                    continue;
                 }
-                $image = file_get_contents($photo);
-                $filePath = $this->tempManager->getTemporaryFile();
-                file_put_contents($filePath, $image, FILE_APPEND);
-                $faces[$card['FN']] = $filePath;
-            }catch(\Exception $e) {
-                $this->logger->debug($e->getMessage());
+                try {
+                    $photo = $card['PHOTO'];
+                    if (str_starts_with($card['PHOTO'], 'VALUE=uri:')) {
+                        $photo = substr($photo, strlen('VALUE=uri:'));
+                    }
+                    $image = file_get_contents($photo);
+                    $filePath = $this->tempManager->getTemporaryFile();
+                    file_put_contents($filePath, $image, FILE_APPEND);
+                    $faces[$card['FN']] = $filePath;
+                } catch (\Exception $e) {
+                    $this->logger->debug($e->getMessage());
+                }
             }
         }
         return $faces;
