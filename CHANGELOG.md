@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.5.4
+
+### Fixed
+
+- Fix "file too short" error
+- Requirements: Add note about alpine
+- Fix EAGAIN error in classifier_imagenet
+- ReferenceFacesFinder: Don't use system address book
+- Fix "More than 1000 expressions on Oracle" warning
+- Remove WASM mode for now
+- classifier_imagenet: Fix model download
+- Add setting for tfjs-node-gpu
+
 ## v1.5.3
 
 ### Fixed
