@@ -78,7 +78,7 @@ clean-dev:
 
 appstore:
 	mkdir -p $(sign_dir)
-	rsync -a --copy-links \
+	rsync -a \
 	--include=/vendor \
 	--include=/CHANGELOG.md \
 	--include=/README.md \
@@ -99,6 +99,10 @@ appstore:
 	--exclude=**/*.map \
 	--exclude=/* \
 	$(project_dir)/ $(sign_dir)/$(app_name)
+	rm $(sign_dir)/$(app_name)/node_modules/@tensorflow/tfjs-node-gpu/deps/lib/libtensorflow.so
+	rm $(sign_dir)/$(app_name)/node_modules/@tensorflow/tfjs-node-gpu/deps/lib/libtensorflow.so.2
+	rm $(sign_dir)/$(app_name)/node_modules/@tensorflow/tfjs-node-gpu/deps/lib/libtensorflow_framework.so
+	rm $(sign_dir)/$(app_name)/node_modules/@tensorflow/tfjs-node-gpu/deps/lib/libtensorflow_framework.so.2
 	tar -czf $(build_dir)/$(app_name)-$(version).tar.gz \
 		-C $(sign_dir) $(app_name)
 	@if [ -f $(cert_dir)/$(app_name).key ]; then \
