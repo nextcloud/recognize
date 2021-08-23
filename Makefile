@@ -7,7 +7,7 @@ source_dir=$(build_dir)/source
 sign_dir=$(build_dir)/sign
 package_name=$(app_name)
 cert_dir=$(HOME)/.nextcloud/certificates
-version+=1.5.5
+version+=1.5.6
 
 node_version=v14.17.4
 
@@ -99,7 +99,7 @@ appstore:
 	rm $(sign_dir)/$(app_name)/node_modules/@tensorflow/tfjs-node-gpu/deps/lib/libtensorflow.so.2
 	rm $(sign_dir)/$(app_name)/node_modules/@tensorflow/tfjs-node-gpu/deps/lib/libtensorflow_framework.so
 	rm $(sign_dir)/$(app_name)/node_modules/@tensorflow/tfjs-node-gpu/deps/lib/libtensorflow_framework.so.2
-	rm $(sign_dir)/$(app_name)/node_modules/@tensorflow/tfjs-node-gpu/deps/lib/libtensorflow.so
+	rm $(sign_dir)/$(app_name)/node_modules/@tensorflow/tfjs-node/deps/lib/libtensorflow.so
 	rm $(sign_dir)/$(app_name)/node_modules/@tensorflow/tfjs-node/deps/lib/libtensorflow.so.2
 	rm $(sign_dir)/$(app_name)/node_modules/@tensorflow/tfjs-node/deps/lib/libtensorflow_framework.so
 	rm $(sign_dir)/$(app_name)/node_modules/@tensorflow/tfjs-node/deps/lib/libtensorflow_framework.so.2
