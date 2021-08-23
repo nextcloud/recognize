@@ -1,6 +1,5 @@
 const path = require('path')
 const fs = require('fs/promises')
-const getStdin = require('get-stdin')
 const _ = require('lodash')
 
 let tf, faceapi
@@ -15,6 +14,7 @@ if (process.env.RECOGNIZE_GPU === 'true') {
 if (process.argv.length < 3) throw new Error('Incorrect arguments: node classifier_faces.js ...<IMAGE_FILES> | node classify.js -')
 
 async function main() {
+	const getStdin = (await import('get-stdin')).default
 	let paths, facesDefinitionJSON
 	if (process.argv[2] === '-') {
 		const lines = (await getStdin()).split('\n')

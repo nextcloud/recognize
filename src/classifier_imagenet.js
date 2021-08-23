@@ -3,8 +3,6 @@ const VERSION = require('../package.json').version
 const download = require('download')
 const tar = require('tar')
 const fsSync = require('fs')
-const fs = require('fs/promises')
-const getStdin = require('get-stdin')
 const YAML = require('yaml')
 const _ = require('lodash')
 const rules = YAML.parse(fsSync.readFileSync(__dirname + '/rules.yml').toString('utf8'))
@@ -52,6 +50,7 @@ async function main() {
 	}
 
 	const model = await EfficientNet.create(modelPath)
+	const getStdin = (await import('get-stdin')).default
 
 	const paths = process.argv[2] === '-'
 		? (await getStdin()).split('\n')
