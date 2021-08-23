@@ -30,11 +30,12 @@
     "@tensorflow/tfjs-node": "^3.8.0",
     "@tensorflow/tfjs-node-gpu": "^3.8.0",
     "@vladmandic/face-api": "^1.4.1",
+    "download": "^8.0.0",
+    "get-stdin": "^9.0.0",
     "lodash": "^4.17.21",
     "tar": "^6.1.8",
     "vue": "^2.6.12",
-    "yaml": "^1.10.2",
-    "download": "^8.0.0"
+    "yaml": "^1.10.2"
   },
   "devDependencies": {
     "@babel/core": "^7.13.15",

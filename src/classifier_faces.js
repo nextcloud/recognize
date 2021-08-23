@@ -1,5 +1,6 @@
 const path = require('path')
 const fs = require('fs/promises')
+const getStdin = require('get-stdin')
 const _ = require('lodash')
 
 let tf, faceapi
@@ -16,11 +17,11 @@ if (process.argv.length < 3) throw new Error('Incorrect arguments: node classifi
 async function main() {
 	let paths, facesDefinitionJSON
 	if (process.argv[2] === '-') {
-		const lines = (await fs.readFile('/dev/stdin')).toString('utf8').split('\n')
+		const lines = (await getStdin()).split('\n')
 		facesDefinitionJSON = lines.slice(0, lines.indexOf('')).join('\n')
 		paths = lines.slice(lines.indexOf('') + 1)
 	} else {
-		facesDefinitionJSON = (await fs.readFile('/dev/stdin')).toString('utf8')
+		facesDefinitionJSON = await getStdin()
 		paths = process.argv.slice(2)
 	}
 

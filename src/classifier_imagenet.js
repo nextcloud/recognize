@@ -4,6 +4,7 @@ const download = require('download')
 const tar = require('tar')
 const fsSync = require('fs')
 const fs = require('fs/promises')
+const getStdin = require('get-stdin')
 const YAML = require('yaml')
 const _ = require('lodash')
 const rules = YAML.parse(fsSync.readFileSync(__dirname + '/rules.yml').toString('utf8'))
@@ -53,7 +54,7 @@ async function main() {
 	const model = await EfficientNet.create(modelPath)
 
 	const paths = process.argv[2] === '-'
-		? (await fs.readFile('/dev/stdin')).toString('utf8').split('\n')
+		? (await getStdin()).split('\n')
 		: process.argv.slice(2)
 
 	for (const path of paths) {
