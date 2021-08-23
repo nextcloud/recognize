@@ -102,6 +102,7 @@ class ClassifyImagenetService {
             }
             if ($i !== count($files)) {
                 $this->logger->warning('Classifier process output: '.$errOut);
+                throw new \RuntimeException('Classifier process error');
             }
         }catch(ProcessTimedOutException $e) {
             $this->logger->warning($proc->getErrorOutput());
