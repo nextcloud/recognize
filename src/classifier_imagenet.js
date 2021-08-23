@@ -8,10 +8,16 @@ const _ = require('lodash')
 const rules = YAML.parse(fsSync.readFileSync(__dirname + '/rules.yml').toString('utf8'))
 
 let tf
-if (process.env.RECOGNIZE_GPU === 'true') {
-	tf = require('@tensorflow/tfjs-node-gpu')
-} else {
-	tf = require('@tensorflow/tfjs-node')
+try {
+	if (process.env.RECOGNIZE_GPU === 'true') {
+		tf = require('@tensorflow/tfjs-node-gpu')
+	} else {
+		tf = require('@tensorflow/tfjs-node')
+	}
+} catch(e) {
+	console.error(e)
+	console.error('Trying js-only mode')
+	tf = require('@tensorflow/tfjs')
 }
 
 const EfficientNet = require('./efficientnet/EfficientnetModel')

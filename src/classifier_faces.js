@@ -3,12 +3,19 @@ const fs = require('fs/promises')
 const _ = require('lodash')
 
 let tf, faceapi
-if (process.env.RECOGNIZE_GPU === 'true') {
-	tf = require('@tensorflow/tfjs-node-gpu')
-	faceapi = require('@vladmandic/face-api/dist/face-api.node-gpu.js')
-} else {
-	tf = require('@tensorflow/tfjs-node')
-	faceapi = require('@vladmandic/face-api/dist/face-api.node.js')
+try {
+	if (process.env.RECOGNIZE_GPU === 'true') {
+		tf = require('@tensorflow/tfjs-node-gpu')
+		faceapi = require('@vladmandic/face-api/dist/face-api.node-gpu.js')
+	} else {
+		tf = require('@tensorflow/tfjs-node')
+		faceapi = require('@vladmandic/face-api/dist/face-api.node.js')
+	}
+} catch(e) {
+	console.error(e)
+	console.error('Trying js-only mode')
+	tf = require('@tensorflow/tfjs')
+	faceapi = require('@vladmandic/face-api/dist/face-api.node-cpu.js')
 }
 
 if (process.argv.length < 3) throw new Error('Incorrect arguments: node classifier_faces.js ...<IMAGE_FILES> | node classify.js -')
