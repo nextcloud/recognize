@@ -36,12 +36,6 @@ composer-no-dev:
 
 install-binaries:
 	mkdir bin
-	curl -sL "https://nodejs.org/dist/$(node_version)/node-$(node_version)-linux-arm64.tar.gz" | tar -xzf - node-$(node_version)-linux-arm64/bin/node --to-stdout > bin/node-$(node_version)-linux-arm64
-	curl -sL "https://nodejs.org/dist/$(node_version)/node-$(node_version)-linux-armv7l.tar.gz" | tar -xzf - node-$(node_version)-linux-armv7l/bin/node --to-stdout > bin/node-$(node_version)-linux-armv7l
-	curl -sL "https://nodejs.org/dist/$(node_version)/node-$(node_version)-linux-x64.tar.gz" | tar -xzf - node-$(node_version)-linux-x64/bin/node --to-stdout > bin/node-$(node_version)-linux-x64
-	chmod 0777 bin/node-$(node_version)-linux-arm64 # for good measure, we have a repair step for this, but still
-	chmod 0777 bin/node-$(node_version)-linux-armv7l
-	chmod 0777 bin/node-$(node_version)-linux-x64
 
 # Building
 build-js:
@@ -77,6 +71,8 @@ clean-dev:
 	rm -rf node_modules
 
 appstore:
+	rm -rf node_modules
+	npm i --omit dev
 	mkdir -p $(sign_dir)
 	rsync -a \
 	--include=/vendor \

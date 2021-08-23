@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace OCA\Recognize\Migration;
 
+use OCA\Recognize\Helper\TAR;
 use OCP\IConfig;
 use OCP\Migration\IOutput;
 use OCP\Migration\IRepairStep;
@@ -40,6 +41,7 @@ class RegisterBinary implements IRepairStep
     public function __construct(IConfig $config)
     {
         $this->config = $config;
+        $this->binaryDir = dirname(__DIR__, 2) . '/bin/';
     }
 
     public function getName(): string
@@ -49,20 +51,18 @@ class RegisterBinary implements IRepairStep
 
     public function run(IOutput $output): void
     {
-        $binaryDir = dirname(__DIR__, 2) . '/bin/';
-
         if (PHP_INT_SIZE === 8) {
-            $binaryPath = $binaryDir . 'node-' . self::VERSION . '-linux-arm64';
+            $binaryPath = $this->downloadBinary(self::VERSION, 'arm64');
             $version = $this->testBinary($binaryPath);
             if ($version === null) {
-                $binaryPath = $binaryDir . 'node-' . self::VERSION . '-linux-x64';
+                $binaryPath = $this->downloadBinary(self::VERSION, 'x64');
                 $version = $this->testBinary($binaryPath);
                 if ($version === null) {
                     $output->warning('Failed to read version from node binary');
                 }
             }
         } else {
-            $binaryPath = $binaryDir . 'node-' . self::VERSION . '-linux-armv7l';
+            $binaryPath = $this->downloadBinary(self::VERSION, 'armv7l');
             $version = $this->testBinary($binaryPath);
 
             if ($version === null) {
@@ -90,5 +90,21 @@ class RegisterBinary implements IRepairStep
         }
 
         return trim(implode("\n", $output));
+    }
+
+    protected function downloadBinary(string $version, string $arch) : string {
+        $url = 'https://nodejs.org/dist/'.$version.'/node-'.$version.'-linux-'.$arch.'.tar.gz';
+        $file = $this->binaryDir.'/'.$arch.'.tar.gz';
+        $archive = file_get_contents($url);
+        if ($archive === FALSE) {
+            throw new \Exception('Downloading of node binary failed');
+        }
+        $saved = file_put_contents($file, $archive);
+        if ($saved === FALSE) {
+            throw new \Exception('Saving of node binary failed');
+        }
+        $tar = new TAR($file);
+        $tar->extractFile('node-'.$version.'-linux-'.$arch.'/bin/node', $this->binaryDir.'/'.'node-'.$version.'-linux-'.$arch);
+        return $this->binaryDir.'/'.'node-'.$version.'-linux-'.$arch;
     }
 }
