@@ -1,14 +1,25 @@
-let tf
-try {
-	if (process.env.RECOGNIZE_GPU === 'true') {
-		tf = require('@tensorflow/tfjs-node-gpu')
-	} else {
-		tf = require('@tensorflow/tfjs-node')
-	}
-}catch(e) {
-	console.error(e)
-	console.error('Trying js-only mode')
+let tf, Jimp
+let PUREJS = false
+if (process.env.RECOGNIZE_PUREJS === 'true') {
 	tf = require('@tensorflow/tfjs')
+	require('@tensorflow/tfjs-backend-wasm')
+	PUREJS = true
+	Jimp = require('jimp')
+} else {
+	try {
+		if (process.env.RECOGNIZE_GPU === 'true') {
+			tf = require('@tensorflow/tfjs-node-gpu')
+		} else {
+			tf = require('@tensorflow/tfjs-node')
+		}
+	} catch (e) {
+		console.error(e)
+		console.error('Trying js-only mode')
+		tf = require('@tensorflow/tfjs')
+		require('@tensorflow/tfjs-backend-wasm')
+		PUREJS = true
+		Jimp = require('jimp')
+	}
 }
 
 const { IMAGENET_CLASSES } = require('./classes')
@@ -21,10 +32,8 @@ class EfficientNetModel {
 		this.imageSize = imageSize
 	}
 
-	static async create(localModelRootDirectory) {
-		const modelFileName = 'model.json'
-		const modelPath = `file://${localModelRootDirectory}/${modelFileName}`
-		const model = new EfficientNetModel(modelPath, 512)
+	static async create(modelURL) {
+		const model = new EfficientNetModel(modelURL, 512)
 		await model.load()
 		return model
 	}
@@ -42,7 +51,13 @@ class EfficientNetModel {
 		const inputMax = 1
 		const inputMin = -1
 		const normalizationConstant = (inputMax - inputMin) / 255.0
-		const image = await tf.node.decodeImage(await fs.readFile(imgPath), 3)
+		let image
+		if (PUREJS) {
+			const jimage = await Jimp.read(imgPath)
+			image = await this.createTensor(jimage)
+		} else {
+			image = await tf.node.decodeImage(await fs.readFile(imgPath), 3)
+		}
 
 		const logits = tf.tidy(() => {
 			// Normalize the image from [0, 255] to [inputMin, inputMax].
@@ -69,6 +84,25 @@ class EfficientNetModel {
 		values.dispose()
 		image.dispose()
 		return prediction
+	}
+
+	async createTensor(image) {
+		const values = new Float32Array(image.bitmap.width * image.bitmap.height * NUM_OF_CHANNELS)
+		let i = 0
+		image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y) => {
+			const pixel = Jimp.intToRGBA(image.getPixelColor(x, y))
+			values[i * NUM_OF_CHANNELS + 0] = pixel.r
+			values[i * NUM_OF_CHANNELS + 1] = pixel.g
+			values[i * NUM_OF_CHANNELS + 2] = pixel.b
+			i++
+		})
+		const outShape = [
+			image.bitmap.height,
+			image.bitmap.width,
+			NUM_OF_CHANNELS,
+		]
+		const imageTensor = tf.tensor3d(values, outShape, 'float32')
+		return imageTensor
 	}
 
 }

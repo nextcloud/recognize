@@ -7,17 +7,28 @@ const YAML = require('yaml')
 const _ = require('lodash')
 const rules = YAML.parse(fsSync.readFileSync(__dirname + '/rules.yml').toString('utf8'))
 
-let tf
-try {
-	if (process.env.RECOGNIZE_GPU === 'true') {
-		tf = require('@tensorflow/tfjs-node-gpu')
-	} else {
-		tf = require('@tensorflow/tfjs-node')
-	}
-} catch(e) {
-	console.error(e)
-	console.error('Trying js-only mode')
+let tf; let getPort; let StaticServer; let PUREJS = false
+if (process.env.RECOGNIZE_PUREJS === 'true') {
 	tf = require('@tensorflow/tfjs')
+	require('@tensorflow/tfjs-backend-wasm')
+	getPort = require('get-port')
+	StaticServer = require('static-server')
+	PUREJS = true
+} else {
+	try {
+		if (process.env.RECOGNIZE_GPU === 'true') {
+			tf = require('@tensorflow/tfjs-node-gpu')
+		} else {
+			tf = require('@tensorflow/tfjs-node')
+			require('@tensorflow/tfjs-backend-wasm')
+		}
+	} catch (e) {
+		console.error(e)
+		console.error('Trying js-only mode')
+		tf = require('@tensorflow/tfjs')
+		require('@tensorflow/tfjs-backend-wasm')
+		PUREJS = true
+	}
 }
 
 const EfficientNet = require('./efficientnet/EfficientnetModel')
@@ -40,6 +51,23 @@ if (process.argv.length < 3) throw new Error('Incorrect arguments: node classify
 async function main() {
 	const modelPath = path.resolve(__dirname, '..', 'model')
 
+	const modelFileName = 'model.json'
+	let modelUrl
+	if (PUREJS) {
+		// See https://github.com/tensorflow/tfjs/issues/4927
+		const port = await getPort()
+		const server = new StaticServer({
+			rootPath: modelPath,
+			port,
+		})
+
+		await new Promise(resolve => server.start(resolve))
+
+		modelUrl = `http://localhost:${port}/${modelFileName}`
+	} else {
+		modelUrl = `file://${modelPath}/${modelFileName}`
+	}
+
 	// Download model on first run
 	if (!fsSync.existsSync(modelPath)) {
 		await download(
@@ -55,7 +83,7 @@ async function main() {
 		)
 	}
 
-	const model = await EfficientNet.create(modelPath)
+	const model = await EfficientNet.create(modelUrl)
 	const getStdin = (await import('get-stdin')).default
 
 	const paths = process.argv[2] === '-'
@@ -144,8 +172,10 @@ async function main() {
 	}
 }
 
-tf.setBackend('tensorflow')
+tf.setBackend(process.env.RECOGNIZE_PUREJS === 'true' ? 'cpu' : 'tensorflow')
 	.then(() => main())
-	.catch(e =>
+	.then(() => process.exit(1))
+	.catch(e => {
 		console.error(e)
-	)
+		process.exit(1)
+	})

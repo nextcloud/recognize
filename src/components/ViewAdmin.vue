@@ -40,11 +40,40 @@
 			</p>
 		</SettingsSection>
 		<SettingsSection
+			:title="t('recognize', 'Tensorflow plain mode')">
+			<p>
+				If your CPU is not x86 or doesn't support the instructions that tensorflow uses, you can run
+				tensorflow in JavaScript mode.
+			</p>
+			<p>
+				<label>
+					<input v-model="settings['tensorflow.purejs']" type="checkbox" @change="onChange">
+					<span>Enable JavaScript mode</span>
+				</label>
+			</p>
+		</SettingsSection>
+		<SettingsSection
 			:title="t('recognize', 'Reset')">
 			<p>Click the below button to remove all tags from all images that have been classified so far.</p>
 			<button class="button" @click="onReset">
 				Reset tags for classified images
 			</button>
+		</SettingsSection>
+		<SettingsSection
+			:title="t('recognize', 'Donate')">
+			<p>Work on Recognize is fuelled by a voluntary subscription model. If you like what we do and can spare a few coins each month, please consider donating. Thank you!</p>
+			<p>&nbsp;</p>
+			<p>
+				<a class="button" href="https://www.paypal.me/marcelklehr1">
+					Paypal
+				</a>
+				<a class="button" href="https://liberapay.com/marcelklehr/donate">
+					LiberaPay
+				</a>
+				<a class="button" href="https://github.com/sponsors/marcelklehr">
+					Github Sponsors
+				</a>
+			</p>
 		</SettingsSection>
 	</div>
 </template>
@@ -53,7 +82,7 @@
 import SettingsSection from '@nextcloud/vue/dist/Components/SettingsSection'
 import axios from '@nextcloud/axios'
 
-const SETTINGS = ['tensorflow.gpu']
+const SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs']
 
 export default {
 	name: 'ViewAdmin',

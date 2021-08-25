@@ -63,6 +63,9 @@ class ClassifyFacesService {
         if ($this->config->getAppValue('recognize', 'tensorflow.gpu', 'false') !== 'false') {
             $proc->setEnv(['RECOGNIZE_GPU' => 'true']);
         }
+        if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') !== 'false') {
+            $proc->setEnv(['RECOGNIZE_PUREJS' => 'true']);
+        }
         $proc->setTimeout(count($paths) * self::IMAGE_TIMEOUT);
         $proc->setInput(json_encode($faces)."\n\n".implode("\n", $paths));
         try {
