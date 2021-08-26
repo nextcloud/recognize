@@ -11,7 +11,6 @@ let tf, getPort, StaticServer
 let PUREJS = false
 if (process.env.RECOGNIZE_PUREJS === 'true') {
 	tf = require('@tensorflow/tfjs')
-	require('@tensorflow/tfjs-backend-wasm')
 	getPort = require('get-port')
 	StaticServer = require('static-server')
 	PUREJS = true
