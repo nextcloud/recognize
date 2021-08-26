@@ -21,13 +21,11 @@ if (process.env.RECOGNIZE_PUREJS === 'true') {
 			tf = require('@tensorflow/tfjs-node-gpu')
 		} else {
 			tf = require('@tensorflow/tfjs-node')
-			require('@tensorflow/tfjs-backend-wasm')
 		}
 	} catch (e) {
 		console.error(e)
 		console.error('Trying js-only mode')
 		tf = require('@tensorflow/tfjs')
-		require('@tensorflow/tfjs-backend-wasm')
 		PUREJS = true
 	}
 }
