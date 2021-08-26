@@ -7,7 +7,8 @@ const YAML = require('yaml')
 const _ = require('lodash')
 const rules = YAML.parse(fsSync.readFileSync(__dirname + '/rules.yml').toString('utf8'))
 
-let tf; let getPort; let StaticServer; let PUREJS = false
+let tf, getPort, StaticServer
+let PUREJS = false
 if (process.env.RECOGNIZE_PUREJS === 'true') {
 	tf = require('@tensorflow/tfjs')
 	require('@tensorflow/tfjs-backend-wasm')
@@ -16,7 +17,7 @@ if (process.env.RECOGNIZE_PUREJS === 'true') {
 	PUREJS = true
 } else {
 	try {
-		if (process.env.RECOGNIZE_GPU === 'true') {
+		if (false && process.env.RECOGNIZE_GPU === 'true') {
 			tf = require('@tensorflow/tfjs-node-gpu')
 		} else {
 			tf = require('@tensorflow/tfjs-node')

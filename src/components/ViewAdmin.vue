@@ -26,20 +26,6 @@
 			<pre><code>occ recognize:classify</code></pre>
 		</SettingsSection>
 		<SettingsSection
-			:title="t('recognize', 'GPU Acceleration')">
-			<p>
-				To make use of GPU acceleration you need <a href="https://www.nvidia.com/Download/index.aspx?lang=en-us"> NVIDIA® GPU drivers >450.x</a>,
-				<a href="https://developer.nvidia.com/cuda-toolkit-archive">CUDA® Toolkit 11.2</a>
-				and <a href="https://developer.nvidia.com/rdp/cudnn-download">cuDNN SDK 8.1.0</a>.
-			</p>
-			<p>
-				<label>
-					<input v-model="settings['tensorflow.gpu']" type="checkbox" @change="onChange">
-					<span>Enable GPU Accelaration</span>
-				</label>
-			</p>
-		</SettingsSection>
-		<SettingsSection
 			:title="t('recognize', 'Tensorflow plain mode')">
 			<p>
 				If your CPU is not x86 or doesn't support the instructions that tensorflow uses, you can run

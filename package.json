@@ -27,7 +27,6 @@
     "@nextcloud/vue": "^4.0.2",
     "@tensorflow/tfjs": "^3.8.0",
     "@tensorflow/tfjs-node": "^3.8.0",
-    "@tensorflow/tfjs-node-gpu": "^3.8.0",
     "@vladmandic/face-api": "^1.4.1",
     "download": "^8.0.0",
     "get-port": "^5.1.1",
