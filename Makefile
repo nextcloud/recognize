@@ -72,9 +72,9 @@ clean-dev:
 
 appstore:
 	rm -rf node_modules
-	npm i --omit dev
+	npm i --omit dev --omit peer
 	mkdir -p $(sign_dir)
-	rsync -a \
+	rsync -a --delete \
 	--include=/vendor \
 	--include=/CHANGELOG.md \
 	--include=/README.md \
