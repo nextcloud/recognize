@@ -14,6 +14,9 @@ jobs:
     name: Test classifier
 
     steps:
+      - name: Checkout app
+        uses: actions/checkout@v2
+
       - name: Read package.json node and npm engines version
         uses: skjnldsv/read-package-engines-version-actions@v1.1
         id: versions
@@ -28,9 +31,6 @@ jobs:
 
       - name: Set up npm ${{ steps.versions.outputs.npmVersion }}
         run: npm i -g npm@"${{ steps.versions.outputs.npmVersion }}"
-
-      - name: Checkout app
-        uses: actions/checkout@v2
 
       - name: Install app
         run: |

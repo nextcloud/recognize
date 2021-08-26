@@ -44,21 +44,6 @@ jobs:
         options: --health-cmd pg_isready --health-interval 5s --health-timeout 2s --health-retries 5
 
     steps:
-      - name: Read package.json node and npm engines version
-        uses: skjnldsv/read-package-engines-version-actions@v1.1
-        id: versions
-        with:
-          fallbackNode: '^12'
-          fallbackNpm: '^6'
-
-      - name: Set up node ${{ steps.versions.outputs.nodeVersion }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ steps.versions.outputs.nodeVersion }}
-
-      - name: Set up npm ${{ steps.versions.outputs.npmVersion }}
-        run: npm i -g npm@"${{ steps.versions.outputs.npmVersion }}"
-
       - name: Checkout server
         uses: actions/checkout@v2
         with:
@@ -83,6 +68,22 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: apps/${{ env.APP_NAME }}
+
+      - name: Read package.json node and npm engines version
+        uses: skjnldsv/read-package-engines-version-actions@v1.1
+        id: versions
+        with:
+          path: apps/${{ env.APP_NAME }}/package.json
+          fallbackNode: '^12'
+          fallbackNpm: '^6'
+
+      - name: Set up node ${{ steps.versions.outputs.nodeVersion }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ steps.versions.outputs.nodeVersion }}
+
+      - name: Set up npm ${{ steps.versions.outputs.npmVersion }}
+        run: npm i -g npm@"${{ steps.versions.outputs.npmVersion }}"
 
       - name: Install app
         working-directory: apps/${{ env.APP_NAME }}
