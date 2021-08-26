@@ -11,14 +11,17 @@ It also recognizes faces from photos set in your contacts.
 Tagging works via Nextcloud's Collaborative Tags.
 You can view your tagged photos with the photos app, as seen in the screenshot above.
 
-### Accuracy
-The app has been calibrated to make as few false positives as possible, but currently only recognizes about 50% of testing images.
-
 ### Privacy
 This app does not send any sensitive data to cloud providers or similar services. All image processing is done on your nextcloud machine, using Tensorflow.js running in Node.js, which comes bundled with this app.
 
 ### Categories
 This is the [list of recognized things and which categories they are currently mapped to](https://github.com/marcelklehr/recognize/blob/master/src/rules.yml). I'm happy to accept pull requests for this file to fine tune predictions.
+
+## Behind the scenes
+Recognize uses [Efficient](https://github.com/google/automl/tree/master/efficientnetv2)[Net v2](https://tfhub.dev/google/collections/efficientnet_v2/1) for ImageNet object detection
+
+Recgonize uses [face-api.js](https://github.com/justadudewhohacks/face-api.js) to extract and compare face features.
+
 
 ## Install
 
