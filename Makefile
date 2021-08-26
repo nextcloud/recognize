@@ -7,11 +7,11 @@ source_dir=$(build_dir)/source
 sign_dir=$(build_dir)/sign
 package_name=$(app_name)
 cert_dir=$(HOME)/.nextcloud/certificates
-version+=1.6.0
+version+=1.6.1
 
 node_version=v14.17.4
 
-all: dev-setup build-js-production composer-no-dev
+all: dev-setup build-js-production
 
 release: appstore create-tag
 
@@ -30,9 +30,6 @@ npm-update:
 
 composer-install:
 	composer install
-
-composer-no-dev:
-	composer install --no-dev
 
 install-binaries:
 	mkdir bin
@@ -73,6 +70,7 @@ clean-dev:
 appstore:
 	rm -rf node_modules
 	npm i --omit dev --omit peer
+	composer install --no-dev
 	mkdir -p $(sign_dir)
 	rsync -a --delete \
 	--include=/vendor \
