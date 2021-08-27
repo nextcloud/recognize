@@ -2,7 +2,6 @@ let tf, Jimp
 let PUREJS = false
 if (process.env.RECOGNIZE_PUREJS === 'true') {
 	tf = require('@tensorflow/tfjs')
-	require('@tensorflow/tfjs-backend-wasm')
 	PUREJS = true
 	Jimp = require('jimp')
 } else {
@@ -16,7 +15,6 @@ if (process.env.RECOGNIZE_PUREJS === 'true') {
 		console.error(e)
 		console.error('Trying js-only mode')
 		tf = require('@tensorflow/tfjs')
-		require('@tensorflow/tfjs-backend-wasm')
 		PUREJS = true
 		Jimp = require('jimp')
 	}
