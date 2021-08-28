@@ -18,6 +18,7 @@ jobs:
         php-versions: ['7.3']
         databases: ['sqlite', 'mysql', 'pgsql']
         server-versions: ['stable20', 'stable21', 'stable22']
+        pure-js-mode: ['true', 'false']
 
     name: Test classify command on ${{ matrix.databases }}-${{ matrix.server-versions }}
 
@@ -118,6 +119,10 @@ jobs:
           for filename in apps/${{ env.APP_NAME }}/test/res/*; do
             curl -u 'admin:password' -T "$filename" 'http://localhost:8080/remote.php/webdav/'
           done
+
+      - name: Run classifier
+        run: |
+          ./occ config:app:set --value ${{ matrix.pure-js-mode }} recognize tensorflow.purejs
 
       - name: Run classifier
         run: |
