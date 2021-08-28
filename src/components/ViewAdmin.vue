@@ -20,6 +20,21 @@
 			<p>The app is installed and will classify up to 100 images every 10 minutes.</p>
 		</SettingsSection>
 		<SettingsSection
+			:title="t('recognize', 'Image tagging')">
+			<p>
+				<label>
+					<input v-model="settings['imagenet.enabled']" type="checkbox" @change="onChange">
+					<span>Enable object recognition</span>
+				</label>
+			</p>
+			<p>
+				<label>
+					<input v-model="settings['faces.enabled']" type="checkbox" @change="onChange">
+					<span>Enable face recognition</span>
+				</label>
+			</p>
+		</SettingsSection>
+		<SettingsSection
 			:title="t('recognize', 'Manual operation') ">
 			<p>To trigger a full classification run manually, run the following command on the terminal. (The first time, this will download the machine learning model initially, so it will take longer.)</p>
 			<p>&nbsp;</p>
@@ -68,7 +83,7 @@
 import SettingsSection from '@nextcloud/vue/dist/Components/SettingsSection'
 import axios from '@nextcloud/axios'
 
-const SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs']
+const SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'faces.enabled']
 
 export default {
 	name: 'ViewAdmin',

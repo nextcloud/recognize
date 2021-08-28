@@ -46,6 +46,10 @@ class ClassifyFacesService {
      * @throws \OCP\Files\NotFoundException
      */
     public function classify(array $faces, array $files): void {
+        if ($this->config->getAppValue('recognize', 'faces.enabled', 'true') === 'false') {
+            return;
+        }
+
         $paths = array_map(static function($file) {
             return $file->getStorage()->getLocalFile($file->getInternalPath());
         }, $files);
