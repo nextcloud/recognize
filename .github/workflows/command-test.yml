@@ -19,6 +19,8 @@ jobs:
         databases: ['sqlite', 'mysql', 'pgsql']
         server-versions: ['stable20', 'stable21', 'stable22']
         pure-js-mode: ['true', 'false']
+        imagenet-enabled: ['true', 'false']
+        faces-enabled: ['true', 'false']
 
     name: Test classify command on ${{ matrix.databases }}-${{ matrix.server-versions }}
 
@@ -120,9 +122,17 @@ jobs:
             curl -u 'admin:password' -T "$filename" 'http://localhost:8080/remote.php/webdav/'
           done
 
-      - name: Run classifier
+      - name: Set pure-js mode
         run: |
           ./occ config:app:set --value ${{ matrix.pure-js-mode }} recognize tensorflow.purejs
+
+      - name: Set imagenet.enabled
+        run: |
+          ./occ config:app:set --value ${{ matrix.imagenet-enabled }} recognize imagenet.enabled
+
+      - name: Set imagenet.enabled
+        run: |
+          ./occ config:app:set --value ${{ matrix.faces-enabled }} recognize faces.enabled
 
       - name: Run classifier
         run: |
