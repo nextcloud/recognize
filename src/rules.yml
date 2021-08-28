@@ -846,7 +846,7 @@ nematode:
 
 conch:
   label: shell
-  threshold: 0.1
+  threshold: 0.3
   context: flotsam
 
 snail:
@@ -907,7 +907,7 @@ crayfish:
     - lobster
 
 isopod:
-  threshold: 0.1
+  threshold: 1
   label: animal
   context: nature
 
@@ -997,13 +997,13 @@ dugong:
   threshold: 0.1
 
 sea lion:
-  threshold: 0.1
+  threshold: 0.2
   categories:
     - animal
 
 dog:
   label: dog
-  threshold: 0.1
+  threshold: 0.2
   priority: 5
   categories:
     - animal
@@ -1268,7 +1268,7 @@ silky terrier:
 soft-coated wheaten terrier:
   label: dog
   priority: 5
-  threshold: 0.1
+  threshold: 0.25
   categories:
     - animal
 
@@ -1387,7 +1387,7 @@ kuvasz:
 schipperke:
   label: dog
   priority: 5
-  threshold: 0.1
+  threshold: 0.2
   categories:
     - animal
 
@@ -1508,7 +1508,7 @@ malamute:
 siberian husky:
   label: dog
   priority: 5
-  threshold: 0.1
+  threshold: 0.2
   categories:
     - animal
 
@@ -1670,7 +1670,7 @@ hyena:
 
 fox:
   label: fox
-  threshold: 0.1
+  threshold: 0.2
   categories:
     - animal
 
@@ -1736,13 +1736,16 @@ long-horned beetle:
   see: beetle
 
 leaf beetle:
-  see: beetle
-
-dung beetle:
-  threshold: 0.1
+  label: beetle
+  threshold: 0.4
   categories:
     - animal
-    - beetle
+
+dung beetle:
+  label: beetle
+  threshold: 0.9
+  categories:
+    - animal
 
 rhinoceros beetle:
   see: beetle
@@ -1756,7 +1759,7 @@ fly:
     - animal
 
 bee:
-  threshold: 0.1
+  threshold: 0.2
   categories:
     - animal
 
@@ -1771,14 +1774,14 @@ walking stick:
   see: ignore
 
 cockroach:
-  threshold: 0.1
+  threshold: 0.4
   categories:
     - animal
     - insect
 
 insect:
   label: insect
-  threshold: 0.1
+  threshold: 0.2
   categories:
     - animal
 
@@ -1805,7 +1808,7 @@ damselfly:
 
 butterfly:
   label: butterfly
-  threshold: 0.1
+  threshold: 0.2
   categories:
     - animal
     - insect
@@ -1863,7 +1866,7 @@ hamster:
 porcupine:
   label: animal
   context: nature
-  threshold: 0.1
+  threshold: 0.3
 
 fox squirrel:
   label: animal
@@ -1895,7 +1898,7 @@ zebra:
     - wildlife
 
 hog:
-  threshold: 0.1
+  threshold: 0.2
   categories:
     - animal
     - farm
@@ -2011,14 +2014,14 @@ skunk:
     - animal
 
 badger:
-  threshold: 0.1
+  threshold: 0.35
   categories:
     - animal
 
 armadillo:
   label: animal
   context: nature
-  threshold: 0.1
+  threshold: 0.35
 
 three-toed sloth:
   label: animal
@@ -2238,10 +2241,9 @@ acoustic guitar:
   see: instrument
 
 aircraft carrier:
-  label: runway
-  threshold: 0.1
+  label: ship
+  threshold: 0.5
   categories:
-    - airport
     - vehicle
 
 airliner:
@@ -2686,9 +2688,6 @@ dock:
 dogsled:
   label: snow
   threshold: 0.3
-  categories:
-    - animal
-    - dog
 
 dome:
   label: dome
@@ -2754,7 +2753,12 @@ flagpole:
   threshold: 0.9
 
 flute:
-  see: instrument
+  label: instrument
+  context: tool
+  threshold: 0.4
+  priority: -2
+  categories:
+    - music
 
 folding chair:
   label: furniture
@@ -2839,7 +2843,12 @@ harmonica:
   see: instrument
 
 harp:
-  see: instrument
+  label: instrument
+  context: tool
+  threshold: 0.45
+  priority: -2
+  categories:
+    - music
 
 tool:
   label: tool
@@ -2959,7 +2968,12 @@ maraca:
     - music
 
 marimba:
-  see: instrument
+  label: instrument
+  context: tool
+  threshold: 0.8
+  priority: -2
+  categories:
+    - music
 
 matchstick:
   see: ignore
@@ -3315,7 +3329,7 @@ punching bag:
 
 harvester:
   label: tractor
-  threshold: 0.2
+  threshold: 0.3
   categories:
     - vehicle
 
@@ -3384,7 +3398,12 @@ sandal:
   threshold: 0.1
 
 sax:
-  see: instrument
+  label: instrument
+  context: tool
+  threshold: 0.4
+  priority: -2
+  categories:
+    - music
 
 school bus:
   label: bus
@@ -4050,7 +4069,10 @@ earthstar:
     - food
 
 hen-of-the-woods:
-  see: mushroom
+  label: vegetables
+  threshold: 1
+  categories:
+    - food
 
 bolete:
   see: mushroom
@@ -4064,7 +4086,7 @@ knot:
 arabian camel:
   label: animal
   context: nature
-  threshold: 0.1
+  threshold: 0.4
 
 tile roof:
   label: building
@@ -4274,7 +4296,7 @@ whiskey jug:
 
 bucket:
   label: bucket
-  threshold: 0.2
+  threshold: 0.3
 
 baby:
   label: baby
@@ -4295,8 +4317,8 @@ diaper:
   see: ignore
 
 patio:
-  label: building
-  context: nature stones
+  label: patio
+  context: garden
   threshold: 0.1
 
 scoreboard:
