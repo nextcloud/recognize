@@ -18,7 +18,8 @@ use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Process\Process;
 
 class ClassifyImagenetService {
-    public const IMAGE_TIMEOUT = 17; // 17s
+    public const IMAGE_TIMEOUT = 12; // seconds
+    public const IMAGE_PUREJS_TIMEOUT = 480; // seconds
 
     /**
      * @var LoggerInterface
@@ -64,8 +65,10 @@ class ClassifyImagenetService {
         }
         if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') !== 'false') {
             $proc->setEnv(['RECOGNIZE_PUREJS' => 'true']);
+            $proc->setTimeout(count($paths) * self::IMAGE_PUREJS_TIMEOUT);
+        }else{
+            $proc->setTimeout(count($paths) * self::IMAGE_TIMEOUT);
         }
-        $proc->setTimeout(count($paths) * self::IMAGE_TIMEOUT);
         $proc->setInput(implode("\n", $paths));
         try {
             $proc->start();
