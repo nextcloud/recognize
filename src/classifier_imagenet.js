@@ -172,7 +172,7 @@ async function main() {
 
 tf.setBackend(process.env.RECOGNIZE_PUREJS === 'true' ? 'cpu' : 'tensorflow')
 	.then(() => main())
-	.then(() => process.exit(1))
+	.then(() => process.exit(0))
 	.catch(e => {
 		console.error(e)
 		process.exit(1)
