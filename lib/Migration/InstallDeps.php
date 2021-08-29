@@ -30,10 +30,10 @@ use OCP\IConfig;
 use OCP\Migration\IOutput;
 use OCP\Migration\IRepairStep;
 
-class RegisterBinary implements IRepairStep
+class InstallDeps implements IRepairStep
 {
 
-    public const VERSION = 'v14.17.4';
+    public const NODE_VERSION = 'v14.17.4';
 
     /** @var IConfig */
     protected $config;
@@ -42,36 +42,43 @@ class RegisterBinary implements IRepairStep
     {
         $this->config = $config;
         $this->binaryDir = dirname(__DIR__, 2) . '/bin/';
+        $this->nodeModulesBinaryDir = dirname(__DIR__, 2) . '/node_modules/.bin/';
+        $this->tfjsInstallScript = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node/scripts/install.js';
+        $this->tfjsPath = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node/';
     }
 
     public function getName(): string
     {
-        return 'Register the node binary';
+        return 'Install dependencies';
     }
 
     public function run(IOutput $output): void
     {
         if (PHP_INT_SIZE === 8) {
-            $binaryPath = $this->downloadBinary(self::VERSION, 'arm64');
+            $binaryPath = $this->downloadBinary(self::NODE_VERSION, 'arm64');
             $version = $this->testBinary($binaryPath);
             if ($version === null) {
-                $binaryPath = $this->downloadBinary(self::VERSION, 'x64');
+                $binaryPath = $this->downloadBinary(self::NODE_VERSION, 'x64');
                 $version = $this->testBinary($binaryPath);
                 if ($version === null) {
-                    $output->warning('Failed to read version from node binary');
+                    $output->warning('Failed to install node binary');
+                    return;
                 }
             }
         } else {
-            $binaryPath = $this->downloadBinary(self::VERSION, 'armv7l');
+            $binaryPath = $this->downloadBinary(self::NODE_VERSION, 'armv7l');
             $version = $this->testBinary($binaryPath);
 
             if ($version === null) {
-                $output->warning('Failed to read version from node binary');
+                $output->warning('Failed to install node binary');
+                return;
             }
         }
 
         // Write the app config
         $this->config->setAppValue('recognize', 'node_binary', $binaryPath);
+
+        $this->runTfjsInstall($binaryPath);
     }
 
     protected function testBinary(string $binaryPath): ?string
@@ -92,6 +99,20 @@ class RegisterBinary implements IRepairStep
         return trim(implode("\n", $output));
     }
 
+    protected function runTfjsInstall($nodeBinary) : void {
+        $oriCwd = getcwd();
+        chdir($this->tfjsPath);
+        $cmd = 'PATH='.escapeshellcmd($this->nodeModulesBinaryDir).':'.escapeshellcmd($this->binaryDir).':$PATH ' . escapeshellcmd($nodeBinary) . ' ' . escapeshellarg($this->tfjsInstallScript) . ' ' . escapeshellarg('download');
+        try {
+            @exec($cmd, $output, $returnCode);
+        } catch (\Throwable $e) {
+        }
+        chdir($oriCwd);
+        if ($returnCode !== 0) {
+            throw new \Exception('Failed to install Tensorflow.js: '.trim(implode("\n", $output)));
+        }
+    }
+
     protected function downloadBinary(string $version, string $arch) : string {
         $url = 'https://nodejs.org/dist/'.$version.'/node-'.$version.'-linux-'.$arch.'.tar.gz';
         $file = $this->binaryDir.'/'.$arch.'.tar.gz';
@@ -104,7 +125,7 @@ class RegisterBinary implements IRepairStep
             throw new \Exception('Saving of node binary failed');
         }
         $tar = new TAR($file);
-        $tar->extractFile('node-'.$version.'-linux-'.$arch.'/bin/node', $this->binaryDir.'/'.'node-'.$version.'-linux-'.$arch);
-        return $this->binaryDir.'/'.'node-'.$version.'-linux-'.$arch;
+        $tar->extractFile('node-'.$version.'-linux-'.$arch.'/bin/node', $this->binaryDir.'/node');
+        return $this->binaryDir.'/node';
     }
 }
