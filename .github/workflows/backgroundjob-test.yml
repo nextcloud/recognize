@@ -125,4 +125,4 @@ jobs:
 
       - name: Check log
         run: |
-          tail -50 data/nextcloud.log
+          ! tail -50 data/nextcloud.log | grep -q 'Classifier process error'
