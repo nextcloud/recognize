@@ -31,8 +31,7 @@ Recgonize uses [face-api.js](https://github.com/justadudewhohacks/face-api.js) t
 - App "collaborative tags" enabled
 - Processor
   - x86 64bit
-  - ARM 64bit
-  - ARMv7 (32bit)
+  - probably ARMv7 (32bit) (untested)
 - System with glibc (usually the norm; Alpine linux is *not* such a system)
 - ~3GB of free RAM (if you're cutting it close, make sure you have some swap available)
 
