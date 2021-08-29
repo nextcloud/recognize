@@ -54,6 +54,16 @@
 			</p>
 		</SettingsSection>
 		<SettingsSection
+			:title="t('recognize', 'Node.js path')">
+			<p>
+				If the shipped Node.js binary doesn't work on your system, you can set the path to a custom node.js binary.
+				Currently supported is version v14.17 and newer v14 releases.
+			</p>
+			<p>
+				<input v-model="settings['node_binary']" type="text" @change="onChange">
+			</p>
+		</SettingsSection>
+		<SettingsSection
 			:title="t('recognize', 'Reset')">
 			<p>Click the below button to remove all tags from all images that have been classified so far.</p>
 			<button class="button" @click="onReset">
@@ -83,7 +93,7 @@
 import SettingsSection from '@nextcloud/vue/dist/Components/SettingsSection'
 import axios from '@nextcloud/axios'
 
-const SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'faces.enabled']
+const SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'faces.enabled', 'node_binary']
 
 export default {
 	name: 'ViewAdmin',
