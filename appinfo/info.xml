@@ -22,7 +22,7 @@ Requirements:
 The app does not send any sensitive data to cloud providers or similar services. All image processing is done on your nextcloud machine, using Tensorflow.js running in Node.js, which comes bundled with this app.
 
 ]]></description>
-	<version>1.6.4</version>
+	<version>1.6.5</version>
 	<licence>agpl</licence>
 	<author mail="mklehr@gmx.net">Marcel Klehr</author>
 	<category>organization</category>
@@ -48,10 +48,10 @@ The app does not send any sensitive data to cloud providers or similar services.
 
 	<repair-steps>
 		<post-migration>
-			<step>OCA\Recognize\Migration\RegisterBinary</step>
+			<step>OCA\Recognize\Migration\InstallDeps</step>
 		</post-migration>
 		<install>
-			<step>OCA\Recognize\Migration\RegisterBinary</step>
+			<step>OCA\Recognize\Migration\InstallDeps</step>
 		</install>
 	</repair-steps>
 

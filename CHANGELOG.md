@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.6.5
+
+### Fixed
+ - Improve some false-positive thresholds
+ - Add options for disabling faces/imagenet individually
+ - Pure js mode: Adjust image timeout values
+ - Add node.js path option
+ - Use the TF.js built-in installer for optimal prebuilt binaries
+
 ## v1.6.4
 
 ### Fixed
