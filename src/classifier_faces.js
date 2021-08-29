@@ -70,6 +70,9 @@ async function main() {
 	}
 
 	if (!Object.values(faceDescriptors).length) {
+		for (const path of paths) {
+			console.log('[]')
+		}
 		return
 	}
 
