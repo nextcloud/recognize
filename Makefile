@@ -7,7 +7,7 @@ source_dir=$(build_dir)/source
 sign_dir=$(build_dir)/sign
 package_name=$(app_name)
 cert_dir=$(HOME)/.nextcloud/certificates
-version+=1.6.6
+version+=1.6.7
 
 node_version=v14.17.4
 
@@ -68,8 +68,6 @@ clean-dev:
 	rm -rf node_modules
 
 appstore:
-	rm -rf node_modules
-	npm i --omit dev --omit peer
 	composer install --no-dev
 	mkdir -p $(sign_dir)
 	rsync -a --delete \
@@ -89,7 +87,6 @@ appstore:
 	--include=/img \
 	--include=/appinfo \
 	--include=/bin \
-	--exclude=**/.bin \
 	--exclude=**/*.map \
 	--exclude=/* \
 	$(project_dir)/ $(sign_dir)/$(app_name)
