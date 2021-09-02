@@ -7,7 +7,7 @@ source_dir=$(build_dir)/source
 sign_dir=$(build_dir)/sign
 package_name=$(app_name)
 cert_dir=$(HOME)/.nextcloud/certificates
-version+=1.6.7
+version+=1.6.8
 
 node_version=v14.17.4
 
@@ -20,7 +20,7 @@ create-tag:
 	git push origin v$(version)
 
 # Dev env management
-dev-setup: clean clean-dev npm-init composer-install install-binaries
+dev-setup: clean clean-dev npm-init composer-install
 
 npm-init:
 	npm ci
@@ -30,9 +30,6 @@ npm-update:
 
 composer-install:
 	composer install
-
-install-binaries:
-	mkdir bin
 
 # Building
 build-js:
@@ -60,7 +57,6 @@ stylelint-fix:
 
 # Cleaning
 clean:
-	rm -rf bin
 	rm -rf js
 	rm -rf $(sign_dir)
 
