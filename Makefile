@@ -20,7 +20,7 @@ create-tag:
 	git push origin v$(version)
 
 # Dev env management
-dev-setup: clean clean-dev npm-init composer-install
+dev-setup: clean clean-dev npm-init composer-install install-binaries
 
 npm-init:
 	npm ci
@@ -30,6 +30,9 @@ npm-update:
 
 composer-install:
 	composer install
+
+install-binaries:
+	mkdir -p bin
 
 # Building
 build-js:
