@@ -78,6 +78,8 @@ class InstallDeps implements IRepairStep
         // Write the app config
         $this->config->setAppValue('recognize', 'node_binary', $binaryPath);
 
+        $this->setBinariesPermissions();
+
         $this->runTfjsInstall($binaryPath);
     }
 
@@ -127,5 +129,18 @@ class InstallDeps implements IRepairStep
         $tar = new TAR($file);
         $tar->extractFile('node-'.$version.'-linux-'.$arch.'/bin/node', $this->binaryDir.'/node');
         return $this->binaryDir.'/node';
+    }
+
+    /**
+     * try to fix binaries permissions issues
+     */
+    protected function setBinariesPermissions()
+    {
+        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->nodeModulesBinaryDir));
+        foreach($iterator as $item) {
+            if (chmod(realpath($item->getPathname()), 0755) === FALSE) {
+                throw new \Exception('Error when setting node_modules/.bin/* permissions');
+            }
+        }
     }
 }
