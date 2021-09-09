@@ -6,11 +6,7 @@ if (process.env.RECOGNIZE_PUREJS === 'true') {
 	Jimp = require('jimp')
 } else {
 	try {
-		if (process.env.RECOGNIZE_GPU === 'true') {
-			tf = require('@tensorflow/tfjs-node-gpu')
-		} else {
-			tf = require('@tensorflow/tfjs-node')
-		}
+		tf = require('@tensorflow/tfjs-node')
 	} catch (e) {
 		console.error(e)
 		console.error('Trying js-only mode')
@@ -105,6 +101,10 @@ class EfficientNetModel {
 
 }
 
+/**
+ * @param values
+ * @param topK
+ */
 function getTopKClasses(values, topK) {
 	const valuesAndIndices = []
 	for (let i = 0; i < values.length; i++) {
