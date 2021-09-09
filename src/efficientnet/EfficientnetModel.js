@@ -105,6 +105,10 @@ class EfficientNetModel {
 
 }
 
+/**
+ * @param values
+ * @param topK
+ */
 function getTopKClasses(values, topK) {
 	const valuesAndIndices = []
 	for (let i = 0; i < values.length; i++) {
