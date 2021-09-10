@@ -42,7 +42,7 @@ class InstallDeps implements IRepairStep
     {
         $this->config = $config;
         $this->binaryDir = dirname(__DIR__, 2) . '/bin/';
-        $this->nodeModulesBinaryDir = dirname(__DIR__, 2) . '/node_modules/.bin/';
+        $this->preGypBinaryDir = dirname(__DIR__, 2) . '/node_modules/@mapbox/node-pre-gyp/bin/';
         $this->tfjsInstallScript = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node/scripts/install.js';
         $this->tfjsPath = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node/';
     }
@@ -104,7 +104,7 @@ class InstallDeps implements IRepairStep
     protected function runTfjsInstall($nodeBinary) : void {
         $oriCwd = getcwd();
         chdir($this->tfjsPath);
-        $cmd = 'PATH='.escapeshellcmd($this->nodeModulesBinaryDir).':'.escapeshellcmd($this->binaryDir).':$PATH ' . escapeshellcmd($nodeBinary) . ' ' . escapeshellarg($this->tfjsInstallScript) . ' ' . escapeshellarg('download');
+        $cmd = 'PATH='.escapeshellcmd($this->preGypBinaryDir).':'.escapeshellcmd($this->binaryDir).':$PATH ' . escapeshellcmd($nodeBinary) . ' ' . escapeshellarg($this->tfjsInstallScript) . ' ' . escapeshellarg('download');
         try {
             @exec($cmd, $output, $returnCode);
         } catch (\Throwable $e) {
@@ -136,7 +136,7 @@ class InstallDeps implements IRepairStep
      */
     protected function setBinariesPermissions()
     {
-        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->nodeModulesBinaryDir));
+        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->preGypBinaryDir));
         foreach($iterator as $item) {
             if (chmod(realpath($item->getPathname()), 0755) === FALSE) {
                 throw new \Exception('Error when setting node_modules/.bin/* permissions');
