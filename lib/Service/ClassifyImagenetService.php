@@ -46,7 +46,7 @@ class ClassifyImagenetService {
      * @throws \OCP\Files\NotFoundException
      */
     public function classify(array $files): void {
-        if ($this->config->getAppValue('recognize', 'imagenet.enabled', 'true') === 'false') {
+        if ($this->config->getAppValue('recognize', 'imagenet.enabled', 'false') !== 'true') {
             return;
         }
 

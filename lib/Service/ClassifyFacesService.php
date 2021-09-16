@@ -46,7 +46,7 @@ class ClassifyFacesService {
      * @throws \OCP\Files\NotFoundException
      */
     public function classify(array $faces, array $files): void {
-        if ($this->config->getAppValue('recognize', 'faces.enabled', 'true') === 'false') {
+        if ($this->config->getAppValue('recognize', 'faces.enabled', 'false') !== 'true') {
             return;
         }
 
@@ -65,10 +65,10 @@ class ClassifyFacesService {
 
         $this->logger->debug('Running '.var_export($command, true));
         $proc = new Process($command, __DIR__);
-        if ($this->config->getAppValue('recognize', 'tensorflow.gpu', 'false') !== 'false') {
+        if ($this->config->getAppValue('recognize', 'tensorflow.gpu', 'false') === 'true') {
             $proc->setEnv(['RECOGNIZE_GPU' => 'true']);
         }
-        if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') !== 'false') {
+        if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
             $proc->setEnv(['RECOGNIZE_PUREJS' => 'true']);
             $proc->setTimeout(count($paths) * self::IMAGE_PUREJS_TIMEOUT);
         }else{
