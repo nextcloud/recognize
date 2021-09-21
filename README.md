@@ -20,7 +20,7 @@ This is the [list of recognized things and which categories they are currently m
 ## Behind the scenes
 Recognize uses [Efficient](https://github.com/google/automl/tree/master/efficientnetv2)[Net v2](https://tfhub.dev/google/collections/efficientnet_v2/1) for ImageNet object detection
 
-Recgonize uses [face-api.js](https://github.com/justadudewhohacks/face-api.js) to extract and compare face features.
+Recognize uses [face-api.js](https://github.com/justadudewhohacks/face-api.js) to extract and compare face features.
 
 
 ## Install
@@ -38,6 +38,12 @@ Recgonize uses [face-api.js](https://github.com/justadudewhohacks/face-api.js) t
 ### One click
 
 Go to "Apps" in your nextcloud, search for "recognize" and click install.
+
+### Configuration
+
+Any configuration is done in Settings/Recognize of your Nextcloud instance.
+
+You can also ignore directories (and their children) by adding a `.noimage` or `.nomedia` file in them.
 
 ### Manual install
 
