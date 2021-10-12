@@ -18,8 +18,8 @@ use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Process\Process;
 
 class ClassifyImagenetService {
-    public const IMAGE_TIMEOUT = 12; // seconds
-    public const IMAGE_PUREJS_TIMEOUT = 480; // seconds
+    public const IMAGE_TIMEOUT = 480; // seconds
+    public const IMAGE_PUREJS_TIMEOUT = 600; // seconds
 
     /**
      * @var LoggerInterface
