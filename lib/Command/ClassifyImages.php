@@ -10,10 +10,9 @@ use OCP\IUser;
 use OCP\IUserManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class Classify extends Command {
+class ClassifyImages extends Command {
     /**
      * @var ClassifyImagenetService
      */
@@ -57,15 +56,7 @@ class Classify extends Command {
      */
     protected function configure()
     {
-        // get the number of CPUs
-        $ncpu = 1;
-        if(is_file('/proc/cpuinfo')) {
-            $cpuinfo = file_get_contents('/proc/cpuinfo');
-            preg_match_all('/^processor/m', $cpuinfo, $matches);
-            $ncpu = count($matches[0]);
-        }
-
-        $this->setName('recognize:classify')
+        $this->setName('recognize:classify-images')
             ->setDescription('Classify all photos in this installation');
     }
 

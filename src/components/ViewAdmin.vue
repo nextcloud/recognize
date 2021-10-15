@@ -35,10 +35,20 @@
 			</p>
 		</SettingsSection>
 		<SettingsSection
+				:title="t('recognize', 'Audio tagging')">
+			<p>
+				<label>
+					<input v-model="settings['musicnn.enabled']" type="checkbox" @change="onChange">
+					<span>Enable music genre recognition</span>
+				</label>
+			</p>
+		</SettingsSection>
+		<SettingsSection
 			:title="t('recognize', 'Manual operation') ">
-			<p>To trigger a full classification run manually, run the following command on the terminal. (The first time, this will download the machine learning model initially, so it will take longer.)</p>
+			<p>To trigger a full classification run manually, run the following commands on the terminal. (The first time, this will download the machine learning model initially, so it will take longer.)</p>
 			<p>&nbsp;</p>
-			<pre><code>occ recognize:classify</code></pre>
+			<pre><code>occ recognize:classify-images</code></pre>
+			<pre><code>occ recognize:classify-audio</code></pre>
 		</SettingsSection>
 		<SettingsSection
 			:title="t('recognize', 'Tensorflow plain mode')">
@@ -93,7 +103,7 @@
 import SettingsSection from '@nextcloud/vue/dist/Components/SettingsSection'
 import axios from '@nextcloud/axios'
 
-const SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'faces.enabled', 'node_binary']
+const SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'faces.enabled', 'musicnn.enabled', 'node_binary']
 
 export default {
 	name: 'ViewAdmin',

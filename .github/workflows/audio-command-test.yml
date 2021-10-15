@@ -19,10 +19,8 @@ jobs:
         databases: ['sqlite', 'mysql', 'pgsql']
         server-versions: ['stable20', 'stable21', 'stable22']
         pure-js-mode: ['true', 'false']
-        imagenet-enabled: ['true', 'false']
-        faces-enabled: ['true', 'false']
 
-    name: Test classify images command on ${{ matrix.databases }}-${{ matrix.server-versions }}
+    name: Test classify audio command on ${{ matrix.databases }}-${{ matrix.server-versions }}
 
     env:
       MYSQL_PORT: 4444
@@ -116,7 +114,7 @@ jobs:
         run: |
           ./occ app:enable -vvv ${{ env.APP_NAME }}
 
-      - name: Upload photos
+      - name: Upload files
         run: |
           for filename in apps/${{ env.APP_NAME }}/test/res/*; do
             curl -u 'admin:password' -T "$filename" 'http://localhost:8080/remote.php/webdav/'
@@ -126,14 +124,10 @@ jobs:
         run: |
           ./occ config:app:set --value ${{ matrix.pure-js-mode }} recognize tensorflow.purejs
 
-      - name: Set imagenet.enabled
+      - name: Set musicnn.enabled
         run: |
-          ./occ config:app:set --value ${{ matrix.imagenet-enabled }} recognize imagenet.enabled
-
-      - name: Set imagenet.enabled
-        run: |
-          ./occ config:app:set --value ${{ matrix.faces-enabled }} recognize faces.enabled
+          ./occ config:app:set --value true recognize imagenet.enabled
 
       - name: Run classifier
         run: |
-          ./occ recognize:classify-images
+          ./occ recognize:classify-audio
