@@ -11,13 +11,13 @@
 		<SettingsSection
 			:title="t('recognize', 'Status')">
 			<p v-if="count >= 0">
-				Processed images: {{ count }}<br>
-				Unrecognized images: {{ countMissed }}
+				Processed files: {{ count }}<br>
+				Unrecognized files: {{ countMissed }}
 			</p>
 			<p v-else>
-				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Counting images
+				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Counting files
 			</p>
-			<p>The app is installed and will classify up to 100 images every 10 minutes.</p>
+			<p>The app is installed and will classify up to 100 files every 10 minutes.</p>
 		</SettingsSection>
 		<SettingsSection
 			:title="t('recognize', 'Image tagging')">
@@ -35,7 +35,7 @@
 			</p>
 		</SettingsSection>
 		<SettingsSection
-				:title="t('recognize', 'Audio tagging')">
+			:title="t('recognize', 'Audio tagging')">
 			<p>
 				<label>
 					<input v-model="settings['musicnn.enabled']" type="checkbox" @change="onChange">
