@@ -113,7 +113,7 @@ jobs:
         run: |
           ./occ app:enable -vvv ${{ env.APP_NAME }}
 
-      - name: Upload photos
+      - name: Upload files
         run: |
           for filename in apps/${{ env.APP_NAME }}/test/res/*; do
             curl -u 'admin:password' -T "$filename" 'http://localhost:8080/remote.php/webdav/'
