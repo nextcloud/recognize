@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
 
 class AudioFinderService extends FileFinderService
 {
-    public const FORMATS = ['audio/mpeg', 'audio/mp4', 'audio/ogg', 'audio/vnd.wav'];
+    public const FORMATS = ['audio/mpeg', 'audio/mp4', 'audio/ogg', 'audio/vnd.wav', 'audio/flac'];
     public const IGNORE_MARKERS = ['.nomusic', '.nomedia'];
 
     public function __construct(LoggerInterface $logger, ISystemTagObjectMapper $objectMapper, TagManager $tagManager) {
