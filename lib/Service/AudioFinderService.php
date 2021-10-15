@@ -13,10 +13,10 @@ use OCP\Files\NotFoundException;
 use OCP\SystemTag\ISystemTagObjectMapper;
 use Psr\Log\LoggerInterface;
 
-class ImagesFinderService extends FileFinderService
+class AudioFinderService extends FileFinderService
 {
-    public const FORMATS = ['image/jpeg', 'image/png', 'image/bmp', 'image/tiff'];
-    public const IGNORE_MARKERS = ['.noimage', '.nomedia'];
+    public const FORMATS = ['audio/mpeg', 'audio/mp4', 'audio/ogg', 'audio/vnd.wav'];
+    public const IGNORE_MARKERS = ['.nomusic', '.nomedia'];
 
     public function __construct(LoggerInterface $logger, ISystemTagObjectMapper $objectMapper, TagManager $tagManager) {
         parent::__construct($logger, $objectMapper, $tagManager);
@@ -27,7 +27,7 @@ class ImagesFinderService extends FileFinderService
     /**
      * @throws NotFoundException|InvalidPathException
      */
-    public function findImagesInFolder(Folder $folder):array {
+    public function findAudioInFolder(Folder $folder):array {
         return $this->findFilesInFolder($folder);
     }
 }
