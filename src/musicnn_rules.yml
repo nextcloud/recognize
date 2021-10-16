@@ -4,7 +4,7 @@ rap:
 
 jazz:
   label: jazz
-  threshold: 0.15
+  threshold: 0.2
 
 pop:
   label: pop
@@ -29,3 +29,31 @@ new age:
 rnb:
   label: rnb
   threshold: 0.15
+
+latin:
+  label: latin
+  threshold: 0.2
+
+electronic:
+  label: electronic
+  threshold: 0.2
+
+metal:
+  label: metal
+  threshold: 0.2
+
+regae:
+  label: reggae
+  threshold: 0.2
+
+blues:
+  label: blues
+  threshold: 0.2
+
+punk:
+  label: punk
+  threshold: 0.2
+
+world:
+  label: world
+  threshold: 0.2
