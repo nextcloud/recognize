@@ -57,6 +57,7 @@ The app does not send any sensitive data to cloud providers or similar services.
 	</repair-steps>
 
 	<commands>
-		<command>OCA\Recognize\Command\Classify</command>
+		<command>OCA\Recognize\Command\ClassifyAudio</command>
+		<command>OCA\Recognize\Command\ClassifyImages</command>
 	</commands>
 </info>
