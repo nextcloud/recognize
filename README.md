@@ -4,12 +4,15 @@
 
 ![](https://github.com/marcelklehr/recognize/raw/master/screenshots/screenshot.png)
 
-> Image recognition for Nextcloud
+> Smart media tagging for Nextcloud
 
-This app goes through your photo collection and adds fitting tags, automatically categorizing your photos.
-It also recognizes faces from photos set in your contacts.
-Tagging works via Nextcloud's Collaborative Tags.
-You can view your tagged photos with the photos app, as seen in the screenshot above.
+This app goes through your media collection and adds fitting tags, automatically categorizing your photos and music.
+
+* 👪 Recognizes faces from contact photos
+* 🏔 🦍 Recognizes animals, landscapes, food, vehicles, buildings and other objects
+* 📷 view your tagged photos with the photos app
+* 🎵 listen to your tagged music with the audioplayer app
+* ⚡ Tagging works via Nextcloud's Collaborative Tags, allowing access by any of your apps
 
 ### Privacy
 This app does not send any sensitive data to cloud providers or similar services. All image processing is done on your nextcloud machine, using Tensorflow.js running in Node.js, which comes bundled with this app.
@@ -18,10 +21,11 @@ This app does not send any sensitive data to cloud providers or similar services
 This is the [list of recognized things and which categories they are currently mapped to](https://github.com/marcelklehr/recognize/blob/master/src/rules.yml). I'm happy to accept pull requests for this file to fine tune predictions.
 
 ## Behind the scenes
-Recognize uses [Efficient](https://github.com/google/automl/tree/master/efficientnetv2)[Net v2](https://tfhub.dev/google/collections/efficientnet_v2/1) for ImageNet object detection
+Recognize uses a pre-trained [Efficient](https://github.com/google/automl/tree/master/efficientnetv2)[Net v2](https://tfhub.dev/google/collections/efficientnet_v2/1) model for ImageNet object detection
 
 Recgonize uses [face-api.js](https://github.com/justadudewhohacks/face-api.js) to extract and compare face features.
 
+Recognize uses a [Musicnn](https://arxiv.org/abs/1909.06654) neural network architecture to classify audio files into music genres. Also see [the original musicnn repository](https://github.com/jordipons/musicnn).
 
 ## Install
 
@@ -29,9 +33,7 @@ Recgonize uses [face-api.js](https://github.com/justadudewhohacks/face-api.js) t
 
 - php 7.3 and above
 - App "collaborative tags" enabled
-- Processor
-  - x86 64bit
-  - probably ARMv7 (32bit) (untested)
+- Processor: x86 64bit
 - System with glibc (usually the norm; Alpine linux is *not* such a system)
 - ~3GB of free RAM (if you're cutting it close, make sure you have some swap available)
 
