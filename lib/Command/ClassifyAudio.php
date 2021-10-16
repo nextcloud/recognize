@@ -46,7 +46,7 @@ class ClassifyAudio extends Command {
     protected function configure()
     {
         $this->setName('recognize:classify-audio')
-            ->setDescription('Classify all photos in this installation');
+            ->setDescription('Classify all audio in this installation');
     }
 
     /**
