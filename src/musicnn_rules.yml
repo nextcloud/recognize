@@ -12,7 +12,7 @@ pop:
 
 rock:
   label: rock
-  threshold: 0.1
+  threshold: 0.15
 
 country:
   label: country
@@ -40,7 +40,7 @@ electronic:
 
 metal:
   label: metal
-  threshold: 0.2
+  threshold: 0.3
 
 regae:
   label: reggae
@@ -56,4 +56,4 @@ punk:
 
 world:
   label: world
-  threshold: 0.2
+  threshold: 0.3
