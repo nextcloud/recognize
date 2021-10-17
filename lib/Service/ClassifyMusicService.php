@@ -45,7 +45,7 @@ class ClassifyMusicService {
      * @throws \OCP\Files\NotFoundException
      */
     public function classify(array $files): void {
-        if ($this->config->getAppValue('recognize', 'musicnn.enabled', 'true') === 'false') {
+        if ($this->config->getAppValue('recognize', 'musicnn.enabled', 'false') !== 'true') {
             return;
         }
 
@@ -62,10 +62,10 @@ class ClassifyMusicService {
 
         $this->logger->debug('Running '.var_export($command, true));
         $proc = new Process($command, __DIR__);
-        if ($this->config->getAppValue('recognize', 'tensorflow.gpu', 'false') !== 'false') {
+        if ($this->config->getAppValue('recognize', 'tensorflow.gpu', 'false') === 'true') {
             $proc->setEnv(['RECOGNIZE_GPU' => 'true']);
         }
-        if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') !== 'false') {
+        if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
             $proc->setEnv(['RECOGNIZE_PUREJS' => 'true']);
             $proc->setTimeout(count($paths) * self::FILE_PUREJS_TIMEOUT);
         }else{
