@@ -39,7 +39,7 @@ class MusicnnModel {
 	}
 
 	async load() {
-		this.model = await tf.node.loadSavedModel(this.modelPath)
+		this.model = await tf.loadGraphModel(this.modelPath)
 	}
 
 	predict(tensor, topK) {

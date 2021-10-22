@@ -49,13 +49,10 @@ function findRule(className) {
 
 if (process.argv.length < 3) throw new Error('Incorrect arguments: node classify.js ...<IMAGE_FILES> | node classify.js -')
 
-/**
- *
- */
 async function main() {
 	const modelPath = path.resolve(__dirname, '..', 'music_model')
 
-	const modelFileName = 'saved_model.pb'
+	const modelFileName = 'model.json'
 	let modelUrl
 	if (PUREJS) {
 		// See https://github.com/tensorflow/tfjs/issues/4927
@@ -83,7 +80,7 @@ async function main() {
 				strip: 1,
 				C: path.resolve(__dirname, '..'),
 				file: path.resolve(__dirname, '..', `recognize-${VERSION}.tar.gz`),
-			}, [`recognize-${VERSION}/model`], resolve)
+			}, [`recognize-${VERSION}/music_model`], resolve)
 		)
 	}
 
@@ -97,7 +94,7 @@ async function main() {
 	for (const path of paths) {
 		try {
 			let results = await model.inference(path, {
-				topK: 8,
+				topK: 6,
 			})
 
 			const labels = []
