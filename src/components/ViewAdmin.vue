@@ -11,13 +11,13 @@
 		<SettingsSection
 			:title="t('recognize', 'Status')">
 			<p v-if="count >= 0">
-				Processed images: {{ count }}<br>
-				Unrecognized images: {{ countMissed }}
+				Processed files: {{ count }}<br>
+				Unrecognized files: {{ countMissed }}
 			</p>
 			<p v-else>
-				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Counting images
+				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Counting files
 			</p>
-			<p>The app is installed and will classify up to 100 images every 10 minutes.</p>
+			<p>The app is installed and will classify up to 100 files every 10 minutes.</p>
 		</SettingsSection>
 		<SettingsSection
 			:title="t('recognize', 'Image tagging')">
@@ -35,10 +35,20 @@
 			</p>
 		</SettingsSection>
 		<SettingsSection
+			:title="t('recognize', 'Audio tagging')">
+			<p>
+				<label>
+					<input v-model="settings['musicnn.enabled']" type="checkbox" @change="onChange">
+					<span>Enable music genre recognition</span>
+				</label>
+			</p>
+		</SettingsSection>
+		<SettingsSection
 			:title="t('recognize', 'Manual operation') ">
-			<p>To trigger a full classification run manually, run the following command on the terminal. (The first time, this will download the machine learning model initially, so it will take longer.)</p>
+			<p>To trigger a full classification run manually, run the following commands on the terminal. (The first time, this will download the machine learning model initially, so it will take longer.)</p>
 			<p>&nbsp;</p>
-			<pre><code>occ recognize:classify</code></pre>
+			<pre><code>occ recognize:classify-images</code></pre>
+			<pre><code>occ recognize:classify-audio</code></pre>
 		</SettingsSection>
 		<SettingsSection
 			:title="t('recognize', 'Tensorflow plain mode')">
@@ -93,7 +103,7 @@
 import SettingsSection from '@nextcloud/vue/dist/Components/SettingsSection'
 import axios from '@nextcloud/axios'
 
-const SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'faces.enabled', 'node_binary']
+const SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'faces.enabled', 'musicnn.enabled', 'node_binary']
 
 export default {
 	name: 'ViewAdmin',

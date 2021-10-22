@@ -38,7 +38,8 @@ The app does not send any sensitive data to cloud providers or similar services.
 		<nextcloud min-version="20" max-version="22" />
 	</dependencies>
 	<background-jobs>
-		<job>OCA\Recognize\BackgroundJobs\ClassifyJob</job>
+		<job>OCA\Recognize\BackgroundJobs\ClassifyImagesJob</job>
+		<job>OCA\Recognize\BackgroundJobs\ClassifyAudioJob</job>
 	</background-jobs>
 
 	<settings>
@@ -56,6 +57,7 @@ The app does not send any sensitive data to cloud providers or similar services.
 	</repair-steps>
 
 	<commands>
-		<command>OCA\Recognize\Command\Classify</command>
+		<command>OCA\Recognize\Command\ClassifyAudio</command>
+		<command>OCA\Recognize\Command\ClassifyImages</command>
 	</commands>
 </info>

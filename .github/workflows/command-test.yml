@@ -22,7 +22,7 @@ jobs:
         imagenet-enabled: ['true', 'false']
         faces-enabled: ['true', 'false']
 
-    name: Test classify command on ${{ matrix.databases }}-${{ matrix.server-versions }}
+    name: Test classify images command on ${{ matrix.databases }}-${{ matrix.server-versions }}
 
     env:
       MYSQL_PORT: 4444
@@ -136,4 +136,4 @@ jobs:
 
       - name: Run classifier
         run: |
-          ./occ recognize:classify
+          ./occ recognize:classify-images
