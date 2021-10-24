@@ -10,6 +10,7 @@ This app goes through your media collection and adds fitting tags, automatically
 
 * 👪 Recognizes faces from contact photos
 * 🏔 🦍 Recognizes animals, landscapes, food, vehicles, buildings and other objects
+* 👂 Recognizes music genres
 * 📷 view your tagged photos with the photos app
 * 🎵 listen to your tagged music with the audioplayer app
 * ⚡ Tagging works via Nextcloud's Collaborative Tags, allowing access by any of your apps
