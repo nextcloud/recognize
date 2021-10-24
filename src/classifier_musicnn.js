@@ -69,7 +69,7 @@ async function main() {
 
 		modelUrl = `http://localhost:${port}/${modelFileName}`
 	} else {
-		modelUrl = `${modelPath}/`
+		modelUrl = `file://${modelPath}/${modelFileName}`
 	}
 
 	// Download model on first run
