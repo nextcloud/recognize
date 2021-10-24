@@ -49,6 +49,9 @@ function findRule(className) {
 
 if (process.argv.length < 3) throw new Error('Incorrect arguments: node classify.js ...<IMAGE_FILES> | node classify.js -')
 
+/**
+ *
+ */
 async function main() {
 	const modelPath = path.resolve(__dirname, '..', 'music_model')
 

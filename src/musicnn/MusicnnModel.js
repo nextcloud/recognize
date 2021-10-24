@@ -55,6 +55,7 @@ class MusicnnModel {
 			'-ac', '1',
 			'-ar', '8000',
 			'-acodec', 'pcm_s16le',
+			'-t', '120',
 			'-',
 		], { encoding: null, stripFinalNewline: false })
 
