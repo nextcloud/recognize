@@ -2,7 +2,7 @@
 
 [![Join the chat at https://gitter.im/marcelklehr/recognize](https://badges.gitter.im/marcelklehr/recognize.svg)](https://gitter.im/marcelklehr/recognize?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-![](https://github.com/marcelklehr/recognize/raw/master/screenshots/screenshot.png)
+![](https://github.com/marcelklehr/recognize/raw/master/screenshots/recognize.png)
 
 > Smart media tagging for Nextcloud
 
