@@ -97,3 +97,5 @@ Happy hacking :heart:
 ## License
 
 This software is licensed under the terms of the AGPL written by the Free Software Foundation and available at [COPYING](./COPYING).
+
+The recognize logo [Smart tag](https://thenounproject.com/term/smart-tag/1193284/) by Xinh Studio from [the Noun Project](https://thenounproject.com) is licensed under a Creative Commons Attribution license.
