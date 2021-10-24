@@ -45,7 +45,7 @@ Go to "Apps" in your nextcloud, search for "recognize" and click install (curren
 
 Any configuration is done in Settings/Recognize of your Nextcloud instance.
 
-You can also ignore directories (and their children) by adding a `.noimage` or `.nomedia` file in them.
+You can also ignore directories (and their children) by adding a `.noimage`, `.nomusic` or `.nomedia` file in them.
 
 ### Manual install
 
