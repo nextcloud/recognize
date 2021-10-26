@@ -102,6 +102,7 @@
 <script>
 import SettingsSection from '@nextcloud/vue/dist/Components/SettingsSection'
 import axios from '@nextcloud/axios'
+import { generateUrl } from '@nextcloud/router'
 
 const SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'faces.enabled', 'musicnn.enabled', 'node_binary']
 
@@ -148,7 +149,7 @@ export default {
 	methods: {
 		async onReset() {
 			this.loading = true
-			await axios.get('/index.php/apps/recognize/admin/reset')
+			await axios.get(generateUrl('/apps/recognize/admin/reset'))
 			await this.getCount()
 			this.loading = false
 			this.success = true
@@ -157,9 +158,9 @@ export default {
 			}, 3000)
 		},
 		async getCount() {
-			let resp = await axios.get('/index.php/apps/recognize/admin/count')
+			let resp = await axios.get(generateUrl('/apps/recognize/admin/count'))
 			const { count } = resp.data
-			resp = await axios.get('/index.php/apps/recognize/admin/countMissed')
+			resp = await axios.get(generateUrl('/apps/recognize/admin/countMissed'))
 			const { count: countMissed } = resp.data
 			this.count = count
 			this.countMissed = countMissed
