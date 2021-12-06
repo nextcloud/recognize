@@ -22,7 +22,7 @@ Requirements:
 The app does not send any sensitive data to cloud providers or similar services. All image processing is done on your nextcloud machine, using Tensorflow.js running in Node.js, which comes bundled with this app.
 
 ]]></description>
-	<version>1.7.0-beta.1</version>
+	<version>1.7.0-beta.2</version>
 	<licence>agpl</licence>
 	<author mail="mklehr@gmx.net">Marcel Klehr</author>
 	<category>organization</category>
@@ -35,7 +35,7 @@ The app does not send any sensitive data to cloud providers or similar services.
 
 	<dependencies>
 		<php min-version="7.3" />
-		<nextcloud min-version="20" max-version="22" />
+		<nextcloud min-version="20" max-version="23" />
 	</dependencies>
 	<background-jobs>
 		<job>OCA\Recognize\BackgroundJobs\ClassifyImagesJob</job>
