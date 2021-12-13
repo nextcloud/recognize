@@ -17,11 +17,13 @@ class ImagesFinderService extends FileFinderService
 {
     public const FORMATS = ['image/jpeg', 'image/png', 'image/bmp', 'image/tiff'];
     public const IGNORE_MARKERS = ['.noimage', '.nomedia'];
+    public const MAX_FILE_SIZE = 10000000;
 
     public function __construct(LoggerInterface $logger, ISystemTagObjectMapper $objectMapper, TagManager $tagManager) {
         parent::__construct($logger, $objectMapper, $tagManager);
         $this->setFormats(self::FORMATS);
         $this->setIgnoreMarkers(self::IGNORE_MARKERS);
+        $this->setMaxFileSize(self::MAX_FILE_SIZE);
     }
 
     /**

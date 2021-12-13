@@ -37,6 +37,11 @@ class FileFinderService
     private $formats;
 
     /**
+     * @var int
+     */
+    private $maxFileSize = 0;
+
+    /**
      * @var string[] $ignoreMarkers
      */
     private $ignoreMarkers;
@@ -53,6 +58,15 @@ class FileFinderService
      */
     public function setFormats(array $formats):self {
         $this->formats = $formats;
+        return $this;
+    }
+
+    /**
+     * @param int $fileSize
+     * @return $this
+     */
+    public function setMaxFileSize(int $fileSize):self {
+        $this->maxFileSize = $fileSize;
         return $this;
     }
 
@@ -91,6 +105,9 @@ class FileFinderService
                 }
                 $mimeType = $node->getMimetype();
                 if (!in_array($mimeType, $this->formats)) {
+                    continue;
+                }
+                if ($this->maxFileSize !== 0 && $this->maxFileSize < $node->getSize()) {
                     continue;
                 }
                 $this->logger->debug('Found '.$node->getPath());
