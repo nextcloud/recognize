@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.7.0
+
+### New
+- Update node.js version
+- Set upper limit for image file size
+- Support Nextcloud 23
+- New logo and cover art
+- Music genre recognition
+
+### Fixed
+- Fix ViewAdmin API URLs
+- higher timeout values
+- fix default checkboxes
+
 ## v1.6.10
 
 ### Fixed

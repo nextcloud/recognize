@@ -7,9 +7,7 @@ source_dir=$(build_dir)/source
 sign_dir=$(build_dir)/sign
 package_name=$(app_name)
 cert_dir=$(HOME)/.nextcloud/certificates
-version+=1.7.0-beta.2
-
-node_version=v14.18.2
+version+=1.7.0
 
 all: dev-setup build-js-production
 
@@ -88,6 +86,8 @@ appstore:
 	--include=/bin \
 	--exclude=**/*.map \
 	--exclude=/* \
+	--exclude=node \
+	--exclude=libtensorflow* \
 	$(project_dir)/ $(sign_dir)/$(app_name)
 	tar -czf $(build_dir)/$(app_name)-$(version).tar.gz \
 		-C $(sign_dir) $(app_name)
