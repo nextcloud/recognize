@@ -20,6 +20,7 @@ use Symfony\Component\Process\Process;
 class ClassifyImagenetService {
     public const IMAGE_TIMEOUT = 480; // seconds
     public const IMAGE_PUREJS_TIMEOUT = 600; // seconds
+    public const MODEL_DOWNLOAD_TIMEOUT = 180; // seconds
 
     /**
      * @var LoggerInterface
@@ -69,9 +70,9 @@ class ClassifyImagenetService {
         }
         if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
             $proc->setEnv(['RECOGNIZE_PUREJS' => 'true']);
-            $proc->setTimeout(count($paths) * self::IMAGE_PUREJS_TIMEOUT);
+            $proc->setTimeout(count($paths) * self::IMAGE_PUREJS_TIMEOUT + self::MODEL_DOWNLOAD_TIMEOUT);
         }else{
-            $proc->setTimeout(count($paths) * self::IMAGE_TIMEOUT);
+            $proc->setTimeout(count($paths) * self::IMAGE_TIMEOUT + self::MODEL_DOWNLOAD_TIMEOUT);
         }
         $proc->setInput(implode("\n", $paths));
         try {

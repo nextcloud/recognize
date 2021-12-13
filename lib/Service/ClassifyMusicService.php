@@ -19,6 +19,7 @@ use Symfony\Component\Process\Process;
 class ClassifyMusicService {
     public const FILE_TIMEOUT = 40; // seconds
     public const FILE_PUREJS_TIMEOUT = 300; // seconds
+    public const MODEL_DOWNLOAD_TIMEOUT = 180; // seconds
 
     /**
      * @var LoggerInterface
@@ -67,9 +68,9 @@ class ClassifyMusicService {
         }
         if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
             $proc->setEnv(['RECOGNIZE_PUREJS' => 'true']);
-            $proc->setTimeout(count($paths) * self::FILE_PUREJS_TIMEOUT);
+            $proc->setTimeout(count($paths) * self::FILE_PUREJS_TIMEOUT + self::MODEL_DOWNLOAD_TIMEOUT);
         }else{
-            $proc->setTimeout(count($paths) * self::FILE_TIMEOUT);
+            $proc->setTimeout(count($paths) * self::FILE_TIMEOUT + self::MODEL_DOWNLOAD_TIMEOUT);
         }
         $proc->setInput(implode("\n", $paths));
         try {
