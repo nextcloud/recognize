@@ -33,7 +33,7 @@ use OCP\Migration\IRepairStep;
 class InstallDeps implements IRepairStep
 {
 
-    public const NODE_VERSION = 'v14.17.4';
+    public const NODE_VERSION = 'v14.18.2';
 
     /** @var IConfig */
     protected $config;
