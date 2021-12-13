@@ -87,7 +87,6 @@ appstore:
 	--exclude=**/*.map \
 	--exclude=/* \
 	--exclude=node \
-	--exclude=libtensorflow* \
 	$(project_dir)/ $(sign_dir)/$(app_name)
 	tar -czf $(build_dir)/$(app_name)-$(version).tar.gz \
 		-C $(sign_dir) $(app_name)
