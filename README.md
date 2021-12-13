@@ -15,6 +15,8 @@ This app goes through your media collection and adds fitting tags, automatically
 * 🎵 listen to your tagged music with the audioplayer app
 * ⚡ Tagging works via Nextcloud's Collaborative Tags, allowing access by any of your apps
 
+Notice: While this app often works nicely its stability across different environments is more comparable to that of a tech preview.
+
 ### Privacy
 This app does not send any sensitive data to cloud providers or similar services. All image processing is done on your nextcloud machine, using Tensorflow.js running in Node.js, which comes bundled with this app.
 
