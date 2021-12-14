@@ -17,7 +17,12 @@ jobs:
       matrix:
         php-versions: ['7.3']
         databases: ['sqlite', 'mysql', 'pgsql']
-        server-versions: ['stable20', 'stable21', 'stable22']
+        server-versions: ['stable20', 'stable21', 'stable22', 'stable23']
+        include:
+          - server-versions: stable22
+            php-versions: 7.4
+          - server-versions: stable23
+            php-versions: 8.0
 
     name: Test classify job on ${{ matrix.databases }}-${{ matrix.server-versions }}
 

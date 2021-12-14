@@ -19,6 +19,11 @@ jobs:
         databases: ['sqlite', 'mysql', 'pgsql']
         server-versions: ['stable20', 'stable21', 'stable22']
         pure-js-mode: ['true', 'false']
+        include:
+          - server-versions: stable22
+            php-versions: 7.4
+          - server-versions: stable23
+            php-versions: 8.0
 
     name: Test classify audio command on ${{ matrix.databases }}-${{ matrix.server-versions }}
 
