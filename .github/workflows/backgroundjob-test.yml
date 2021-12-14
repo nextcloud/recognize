@@ -21,10 +21,12 @@ jobs:
         include:
           - server-versions: stable22
             php-versions: 7.4
+            databases: sqlite
           - server-versions: stable23
             php-versions: 8.0
+            databases: sqlite
 
-    name: Test classify job on ${{ matrix.databases }}-${{ matrix.server-versions }}
+    name: Test classify job on ${{ matrix.databases }}-${{ matrix.server-versions }}-php${{ matrix.php-versions }}
 
     env:
       MYSQL_PORT: 4444
