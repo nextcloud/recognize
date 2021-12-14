@@ -29,6 +29,7 @@ jobs:
             imagenet-enabled: true
             faces-enabled: true
           - server-versions: stable23
+            databases: sqlite
             php-versions: 8.0
             pure-js-mode: false
             imagenet-enabled: true
