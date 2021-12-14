@@ -19,8 +19,17 @@ jobs:
         databases: ['sqlite', 'mysql', 'pgsql']
         server-versions: ['stable20', 'stable21', 'stable22']
         pure-js-mode: ['true', 'false']
+        include:
+          - server-versions: stable22
+            php-versions: 7.4
+            databases: sqlite
+            pure-js-mode: false
+          - server-versions: stable23
+            php-versions: 8.0
+            databases: sqlite
+            pure-js-mode: false
 
-    name: Test classify audio command on ${{ matrix.databases }}-${{ matrix.server-versions }}
+    name: Test classify audio command on ${{ matrix.databases }}-${{ matrix.server-versions }}-php${{ matrix.php-versions }}
 
     env:
       MYSQL_PORT: 4444

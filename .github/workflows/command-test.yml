@@ -21,6 +21,19 @@ jobs:
         pure-js-mode: ['true', 'false']
         imagenet-enabled: ['true', 'false']
         faces-enabled: ['true', 'false']
+        include:
+          - server-versions: stable22
+            php-versions: 7.4
+            databases: sqlite
+            pure-js-mode: false
+            imagenet-enabled: true
+            faces-enabled: true
+          - server-versions: stable23
+            databases: sqlite
+            php-versions: 8.0
+            pure-js-mode: false
+            imagenet-enabled: true
+            faces-enabled: true
 
     name: Test classify images command on ${{ matrix.databases }}-${{ matrix.server-versions }}
 
