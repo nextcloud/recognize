@@ -82,7 +82,7 @@ class ReferenceFacesFinderService
             }
             $cards = $book->search('', ['FN'], []);
             foreach ($cards as $card) {
-                if (!isset($card['PHOTO'])) {
+                if (empty($card['PHOTO'])) {
                     continue;
                 }
                 try {
