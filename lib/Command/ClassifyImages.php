@@ -90,9 +90,6 @@ class ClassifyImages extends Command {
                 $this->imagenet->classify($images);
 
                 $faces = $this->referenceFacesFinder->findReferenceFacesForUser($user);
-                if (count($faces) === 0) {
-                    continue;
-                }
                 $this->facenet->classify($faces, $images);
             }
 

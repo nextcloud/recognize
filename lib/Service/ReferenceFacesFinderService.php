@@ -8,6 +8,7 @@
 namespace OCA\Recognize\Service;
 
 use OCA\DAV\CardDAV\ContactsManager;
+use OCP\IConfig;
 use OCA\Recognize\Service\TagManager;
 use OCP\Contacts\IManager;
 use OCP\Files\File;
@@ -28,7 +29,10 @@ class ReferenceFacesFinderService
      * @var LoggerInterface
      */
     private $logger;
-
+    /**
+     * @var IConfig
+     */
+    private $config;
     /**
      * @var \OCP\Contacts\IManager
      */
@@ -54,8 +58,9 @@ class ReferenceFacesFinderService
      */
     private $urlGenerator;
 
-    public function __construct(LoggerInterface $logger, IManager $contacts, IUserSession $session, IUserManager $users, ITempManager $tempManager, ContactsManager $contactsManager, IURLGenerator $urlGenerator) {
+    public function __construct(LoggerInterface $logger, IConfig $config, IManager $contacts, IUserSession $session, IUserManager $users, ITempManager $tempManager, ContactsManager $contactsManager, IURLGenerator $urlGenerator) {
         $this->logger = $logger;
+        $this->config = $config;
         $this->contacts = $contacts;
         $this->session = $session;
         $this->users = $users;
@@ -69,6 +74,9 @@ class ReferenceFacesFinderService
      * @return array
      */
     public function findReferenceFacesForUser(string $userId):array {
+        if ($this->config->getAppValue('recognize', 'faces.enabled', 'false') !== 'true') {
+            return 0;
+        }
         $faces = [];
         $this->contacts->clear();
         $this->contactsManager->setupContactsProvider($this->contacts, $userId, $this->urlGenerator);
