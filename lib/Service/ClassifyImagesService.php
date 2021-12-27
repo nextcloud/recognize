@@ -8,7 +8,6 @@ use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
 use OCP\IConfig;
 use OCP\Files\IRootFolder;
 use OCP\Files\NotPermittedException;
-use Psr\Log\LoggerInterface;
 
 class ClassifyImagesService {
 	/**
@@ -40,7 +39,7 @@ class ClassifyImagesService {
 	 */
 	private $config;
 
-	public function __construct(FacesClassifier $facenet, ImagenetClassifier $imagenet, IRootFolder $rootFolder, ImagesFinderService $imagesFinder, ReferenceFacesFinderService $referenceFacesFinder, LoggerInterface $logger, IConfig $config) {
+	public function __construct(FacesClassifier $facenet, ImagenetClassifier $imagenet, IRootFolder $rootFolder, ImagesFinderService $imagesFinder, ReferenceFacesFinderService $referenceFacesFinder, Logger $logger, IConfig $config) {
 		$this->facenet = $facenet;
 		$this->imagenet = $imagenet;
 		$this->rootFolder = $rootFolder;

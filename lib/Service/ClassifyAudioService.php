@@ -7,7 +7,6 @@ use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
 use OCP\Files\IRootFolder;
 use OCP\Files\NotPermittedException;
 use OCP\IConfig;
-use Psr\Log\LoggerInterface;
 
 class ClassifyAudioService {
 	/**
@@ -31,7 +30,7 @@ class ClassifyAudioService {
 	 */
 	private $musicnn;
 
-	public function __construct(IRootFolder $rootFolder, AudioFinderService $audioFinder, LoggerInterface $logger, IConfig $config, MusicnnClassifier $musicnn) {
+	public function __construct(IRootFolder $rootFolder, AudioFinderService $audioFinder, Logger $logger, IConfig $config, MusicnnClassifier $musicnn) {
 		$this->rootFolder = $rootFolder;
 		$this->audioFinder = $audioFinder;
 		$this->logger = $logger;

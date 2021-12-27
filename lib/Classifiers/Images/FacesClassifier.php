@@ -7,6 +7,7 @@
 
 namespace OCA\Recognize\Classifiers\Images;
 
+use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\TagManager;
 use OCP\Files\File;
 use OCP\IConfig;
@@ -34,7 +35,7 @@ class FacesClassifier {
 	 */
 	private $config;
 
-	public function __construct(LoggerInterface $logger, IConfig $config, TagManager $tagManager) {
+	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager) {
 		$this->logger = $logger;
 		$this->config = $config;
 		$this->tagManager = $tagManager;

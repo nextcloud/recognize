@@ -8,6 +8,7 @@
 namespace OCA\Recognize\BackgroundJobs;
 
 use OCA\Recognize\Service\ClassifyAudioService;
+use OCA\Recognize\Service\Logger;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\TimedJob;
 use OCP\IUser;
@@ -34,7 +35,7 @@ class ClassifyAudioJob extends TimedJob {
 
 
 	public function __construct(
-		ITimeFactory $timeFactory, LoggerInterface $logger, IUserManager $userManager, ClassifyAudioService $audioClassifier) {
+		ITimeFactory $timeFactory, Logger $logger, IUserManager $userManager, ClassifyAudioService $audioClassifier) {
 		parent::__construct($timeFactory);
 
 		$this->setInterval(self::INTERVAL);

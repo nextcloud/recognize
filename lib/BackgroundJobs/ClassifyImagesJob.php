@@ -8,9 +8,9 @@
 namespace OCA\Recognize\BackgroundJobs;
 
 use OCA\Recognize\Service\ClassifyImagesService;
+use OCA\Recognize\Service\Logger;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\TimedJob;
-use OCP\Files\IRootFolder;
 use OCP\IUser;
 use OCP\IUserManager;
 use Psr\Log\LoggerInterface;
@@ -39,7 +39,7 @@ class ClassifyImagesJob extends TimedJob {
 
 
 	public function __construct(
-		ITimeFactory $timeFactory, IRootFolder $rootFolder, LoggerInterface $logger, IUserManager $userManager, ClassifyImagesService $imageClassifier
+		ITimeFactory $timeFactory, Logger $logger, IUserManager $userManager, ClassifyImagesService $imageClassifier
 	) {
 		parent::__construct($timeFactory);
 		$this->setInterval(self::INTERVAL);

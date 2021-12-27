@@ -3,9 +3,9 @@
 namespace OCA\Recognize\Command;
 
 use OCA\Recognize\Service\ClassifyAudioService;
+use OCA\Recognize\Service\Logger;
 use OCP\IUser;
 use OCP\IUserManager;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -20,10 +20,16 @@ class ClassifyAudio extends Command {
 	 */
 	private $audioClassifier;
 
-	public function __construct(IUserManager $userManager, ClassifyAudioService $audioClassifier, LoggerInterface $logger) {
+	/**
+	 * @var \OCA\Recognize\Service\Logger
+	 */
+	private $logger;
+
+	public function __construct(IUserManager $userManager, ClassifyAudioService $audioClassifier, Logger $logger) {
 		parent::__construct();
 		$this->userManager = $userManager;
 		$this->audioClassifier = $audioClassifier;
+		$this->logger = $logger;
 	}
 
 	/**
@@ -50,7 +56,7 @@ class ClassifyAudio extends Command {
 			$this->userManager->callForSeenUsers(function (IUser $user) use (&$users) {
 				$users[] = $user->getUID();
 			});
-
+			$this->logger->setCliOutput($output);
 			foreach ($users as $user) {
 				$this->audioClassifier->run($user);
 			}

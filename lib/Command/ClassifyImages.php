@@ -3,6 +3,7 @@
 namespace OCA\Recognize\Command;
 
 use OCA\Recognize\Service\ClassifyImagesService;
+use OCA\Recognize\Service\Logger;
 use OCP\IUser;
 use OCP\IUserManager;
 use Symfony\Component\Console\Command\Command;
@@ -19,10 +20,17 @@ class ClassifyImages extends Command {
 	 */
 	private $imageClassifier;
 
-	public function __construct(IUserManager $userManager, ClassifyImagesService $imageClassifier) {
+	/**
+	 * @var \OCA\Recognize\Service\Logger
+	 */
+	private $logger;
+
+
+	public function __construct(IUserManager $userManager, ClassifyImagesService $imageClassifier, Logger $logger) {
 		parent::__construct();
 		$this->userManager = $userManager;
 		$this->imageClassifier = $imageClassifier;
+		$this->logger = $logger;
 	}
 
 	/**
@@ -49,7 +57,7 @@ class ClassifyImages extends Command {
 			$this->userManager->callForSeenUsers(function (IUser $user) use (&$users) {
 				$users[] = $user->getUID();
 			});
-
+			$this->logger->setCliOutput($output);
 			foreach ($users as $user) {
 				$this->imageClassifier->run($user);
 			}

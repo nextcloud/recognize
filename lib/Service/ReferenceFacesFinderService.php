@@ -8,12 +8,9 @@
 namespace OCA\Recognize\Service;
 
 use OCA\DAV\CardDAV\ContactsManager;
-use OCP\IConfig;
 use OCP\Contacts\IManager;
 use OCP\ITempManager;
 use OCP\IURLGenerator;
-use OCP\IUserManager;
-use OCP\IUserSession;
 use Psr\Log\LoggerInterface;
 
 class ReferenceFacesFinderService {
@@ -22,21 +19,9 @@ class ReferenceFacesFinderService {
 	 */
 	private $logger;
 	/**
-	 * @var IConfig
-	 */
-	private $config;
-	/**
 	 * @var \OCP\Contacts\IManager
 	 */
 	private $contacts;
-	/**
-	 * @var \OCP\IUserSession
-	 */
-	private $session;
-	/**
-	 * @var \OCP\IUserManager
-	 */
-	private $users;
 	/**
 	 * @var \OCP\ITempManager
 	 */
@@ -50,12 +35,9 @@ class ReferenceFacesFinderService {
 	 */
 	private $urlGenerator;
 
-	public function __construct(LoggerInterface $logger, IConfig $config, IManager $contacts, IUserSession $session, IUserManager $users, ITempManager $tempManager, ContactsManager $contactsManager, IURLGenerator $urlGenerator) {
+	public function __construct(Logger $logger, IManager $contacts, ITempManager $tempManager, ContactsManager $contactsManager, IURLGenerator $urlGenerator) {
 		$this->logger = $logger;
-		$this->config = $config;
 		$this->contacts = $contacts;
-		$this->session = $session;
-		$this->users = $users;
 		$this->tempManager = $tempManager;
 		$this->contactsManager = $contactsManager;
 		$this->urlGenerator = $urlGenerator;

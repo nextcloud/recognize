@@ -44,7 +44,7 @@ class FileFinderService {
 	 */
 	private $ignoreMarkers;
 
-	public function __construct(LoggerInterface $logger, ISystemTagObjectMapper $objectMapper, TagManager $tagManager) {
+	public function __construct(Logger $logger, ISystemTagObjectMapper $objectMapper, TagManager $tagManager) {
 		$this->logger = $logger;
 		$this->objectMapper = $objectMapper;
 		$this->recognizedTag = $tagManager->getProcessedTag();
