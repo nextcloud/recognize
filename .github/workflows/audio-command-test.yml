@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       # do not stop on another job's failure
-      fail-fast: false
+      fail-fast: true
       matrix:
         php-versions: ['7.3']
         databases: ['sqlite', 'mysql', 'pgsql']
@@ -98,7 +98,7 @@ jobs:
       - name: Install app
         working-directory: apps/${{ env.APP_NAME }}
         run: |
-          composer install --ignore-platform-req=php
+          composer install --ignore-platform-req=php --no-dev
           make all
 
       - name: Set up Nextcloud and install app
