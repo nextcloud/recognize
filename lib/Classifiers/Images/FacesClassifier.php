@@ -56,7 +56,7 @@ class FacesClassifier {
 
 		$command = [
 			$this->config->getAppValue('recognize', 'node_binary'),
-			dirname(__DIR__, 2) . '/src/classifier_faces.js',
+			dirname(__DIR__, 3) . '/src/classifier_faces.js',
 			'-'
 		];
 
