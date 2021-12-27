@@ -17,9 +17,10 @@ use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Process\Process;
 
-class ClassifyFacesService {
-    public const IMAGE_TIMEOUT = 120; // seconds
-    public const IMAGE_PUREJS_TIMEOUT = 360; // seconds
+class ImagenetClassifier {
+    public const IMAGE_TIMEOUT = 480; // seconds
+    public const IMAGE_PUREJS_TIMEOUT = 600; // seconds
+    public const MODEL_DOWNLOAD_TIMEOUT = 180; // seconds
 
     /**
      * @var LoggerInterface
@@ -45,17 +46,16 @@ class ClassifyFacesService {
      * @return void
      * @throws \OCP\Files\NotFoundException
      */
-    public function classify(array $faces, array $files): void {
+    public function classify(array $files): void {
         $paths = array_map(static function($file) {
             return $file->getStorage()->getLocalFile($file->getInternalPath());
         }, $files);
 
-        $this->logger->debug('Reference faces '.var_export($faces, true));
         $this->logger->debug('Classifying '.var_export($paths, true));
 
         $command = [
             $this->config->getAppValue('recognize', 'node_binary'),
-            dirname(__DIR__, 2) . '/src/classifier_faces.js',
+            dirname(__DIR__, 2) . '/src/classifier_imagenet.js',
             '-'
         ];
 
@@ -66,11 +66,11 @@ class ClassifyFacesService {
         }
         if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
             $proc->setEnv(['RECOGNIZE_PUREJS' => 'true']);
-            $proc->setTimeout(count($paths) * self::IMAGE_PUREJS_TIMEOUT);
+            $proc->setTimeout(count($paths) * self::IMAGE_PUREJS_TIMEOUT + self::MODEL_DOWNLOAD_TIMEOUT);
         }else{
-            $proc->setTimeout(count($paths) * self::IMAGE_TIMEOUT);
+            $proc->setTimeout(count($paths) * self::IMAGE_TIMEOUT + self::MODEL_DOWNLOAD_TIMEOUT);
         }
-        $proc->setInput(json_encode($faces)."\n\n".implode("\n", $paths));
+        $proc->setInput(implode("\n", $paths));
         try {
             $proc->start();
 

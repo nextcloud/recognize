@@ -11,11 +11,11 @@ use Psr\Log\LoggerInterface;
 class ClassifyAudioService
 {
     /**
-     * @var ClassifyImagenetService
+     * @var ImagenetClassifier
      */
     private $imagenet;
     /**
-     * @var ClassifyFacesService
+     * @var FacesClassifier
      */
     private $facenet;
     /**
@@ -35,11 +35,11 @@ class ClassifyAudioService
      */
     private $config;
     /**
-     * @var \OCA\Recognize\Service\ClassifyMusicService
+     * @var \OCA\Recognize\Service\MusicnnClassifier
      */
     private $musicnn;
 
-    public function __construct(IRootFolder $rootFolder, AudioFinderService $audioFinder, LoggerInterface $logger, IConfig $config, ClassifyMusicService $musicnn)
+    public function __construct(IRootFolder $rootFolder, AudioFinderService $audioFinder, LoggerInterface $logger, IConfig $config, MusicnnClassifier $musicnn)
     {
         $this->rootFolder = $rootFolder;
         $this->audioFinder = $audioFinder;

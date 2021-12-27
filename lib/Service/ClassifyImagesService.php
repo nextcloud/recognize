@@ -15,11 +15,11 @@ use Psr\Log\LoggerInterface;
 class ClassifyImagesService
 {
     /**
-     * @var ClassifyImagenetService
+     * @var ImagenetClassifier
      */
     private $imagenet;
     /**
-     * @var ClassifyFacesService
+     * @var FacesClassifier
      */
     private $facenet;
     /**
@@ -43,7 +43,7 @@ class ClassifyImagesService
      */
     private $config;
 
-    public function __construct(ClassifyFacesService $facenet, ClassifyImagenetService $imagenet, IRootFolder $rootFolder, ImagesFinderService $imagesFinder, ReferenceFacesFinderService $referenceFacesFinder, LoggerInterface $logger, IConfig $config)
+    public function __construct(FacesClassifier $facenet, ImagenetClassifier $imagenet, IRootFolder $rootFolder, ImagesFinderService $imagesFinder, ReferenceFacesFinderService $referenceFacesFinder, LoggerInterface $logger, IConfig $config)
     {
         $this->facenet = $facenet;
         $this->imagenet = $imagenet;

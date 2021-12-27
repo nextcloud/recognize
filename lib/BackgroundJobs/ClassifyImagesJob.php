@@ -7,7 +7,7 @@
 
 namespace OCA\Recognize\BackgroundJobs;
 
-use OCA\Recognize\Service\ClassifyImagenetService;
+use OCA\Recognize\Service\ImagenetClassifier;
 use OCA\Recognize\Service\ClassifyImagesService;
 use OCA\Recognize\Service\ImagesFinderService;
 use OCP\AppFramework\Utility\ITimeFactory;

@@ -2,11 +2,7 @@
 
 namespace OCA\Recognize\Command;
 
-use OCA\Recognize\Service\ClassifyImagenetService;
-use OCA\Recognize\Service\ClassifyFacesService;
 use OCA\Recognize\Service\ClassifyImagesService;
-use OCA\Recognize\Service\ImagesFinderService;
-use OCP\Files\IRootFolder;
 use OCP\IUser;
 use OCP\IUserManager;
 use Symfony\Component\Console\Command\Command;
@@ -15,29 +11,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ClassifyImages extends Command {
     /**
-     * @var ClassifyImagenetService
-     */
-    private $imagenet;
-    /**
-     * @var ClassifyFacesService
-     */
-    private $facenet;
-    /**
-     * @var ImagesFinderService
-     */
-    private $imagesFinder;
-    /**
-     * @var IRootFolder
-     */
-    private $rootFolder;
-    /**
      * @var IUserManager
      */
     private $userManager;
-    /**
-     * @var \OCA\Recognize\Service\ReferenceFacesFinderService
-     */
-    private $referenceFacesFinder;
     /**
      * @var \OCA\Recognize\Service\ClassifyImagesService
      */

@@ -16,7 +16,7 @@ use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Process\Process;
 
-class ClassifyMusicService {
+class MusicnnClassifier {
     public const FILE_TIMEOUT = 40; // seconds
     public const FILE_PUREJS_TIMEOUT = 300; // seconds
     public const MODEL_DOWNLOAD_TIMEOUT = 180; // seconds
