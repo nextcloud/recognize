@@ -2,9 +2,7 @@
 
 namespace OCA\Recognize\Command;
 
-use OCA\Recognize\Service\AudioFinderService;
-use OCA\Recognize\Service\ClassifyMusicService;
-use OCP\Files\IRootFolder;
+use OCA\Recognize\Service\ClassifyAudioService;
 use OCP\IUser;
 use OCP\IUserManager;
 use Symfony\Component\Console\Command\Command;
@@ -13,29 +11,19 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ClassifyAudio extends Command {
     /**
-     * @var ClassifyMusicService
-     */
-    private $musicnn;
-    /**
-     * @var AudioFinderService
-     */
-    private $audioFinder;
-    /**
-     * @var IRootFolder
-     */
-    private $rootFolder;
-    /**
      * @var IUserManager
      */
     private $userManager;
+    /**
+     * @var \OCA\Recognize\Service\ClassifyAudioService
+     */
+    private $audioClassifier;
 
-    public function __construct(ClassifyMusicService $musicnn, IRootFolder $rootFolder, IUserManager $userManager, AudioFinderService $audioFinder)
+    public function __construct(IUserManager $userManager, ClassifyAudioService $audioClassifier)
     {
         parent::__construct();
-        $this->musicnn = $musicnn;
-        $this->rootFolder = $rootFolder;
         $this->userManager = $userManager;
-        $this->audioFinder = $audioFinder;
+        $this->audioClassifier = $audioClassifier;
     }
 
     /**
@@ -67,16 +55,7 @@ class ClassifyAudio extends Command {
             });
 
             foreach ($users as $user) {
-                if (!$user) {
-                    $output->writeln('No users left, whose audio could be classified');
-                    return 0;
-                }
-                $images = $this->audioFinder->findAudioInFolder($this->rootFolder->getUserFolder($user));
-                if (count($images) === 0) {
-                    continue;
-                }
-                $output->writeln('Classifying audios of user '.$user);
-                $this->musicnn->classify($images);
+                $this->audioClassifier->run($user);
             }
 
         } catch (\Exception $ex) {

@@ -46,10 +46,6 @@ class ClassifyMusicService {
      * @throws \OCP\Files\NotFoundException
      */
     public function classify(array $files): void {
-        if ($this->config->getAppValue('recognize', 'musicnn.enabled', 'false') !== 'true') {
-            return;
-        }
-
         $paths = array_map(static function($file) {
             return $file->getStorage()->getLocalFile($file->getInternalPath());
         }, $files);
