@@ -3,3 +3,4 @@ vendor
 bin
 build
 .idea
+/.php-cs-fixer.cache

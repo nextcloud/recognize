@@ -21,9 +21,9 @@ namespace OCA\Recognize\AppInfo;
 return [
 	'routes' => [
 
-        //internal ADMIN API
-        ['name' => 'admin#reset', 'url' => '/admin/reset', 'verb' => 'GET'],
-        ['name' => 'admin#count', 'url' => '/admin/count', 'verb' => 'GET'],
-        ['name' => 'admin#count_missed', 'url' => '/admin/countMissed', 'verb' => 'GET']
-    ],
+		//internal ADMIN API
+		['name' => 'admin#reset', 'url' => '/admin/reset', 'verb' => 'GET'],
+		['name' => 'admin#count', 'url' => '/admin/count', 'verb' => 'GET'],
+		['name' => 'admin#count_missed', 'url' => '/admin/countMissed', 'verb' => 'GET']
+	],
 ];

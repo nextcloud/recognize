@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 /**
  * @copyright Copyright (c) 2020, Joas Schilling <coding@schilljs.com>
@@ -30,117 +31,110 @@ use OCP\IConfig;
 use OCP\Migration\IOutput;
 use OCP\Migration\IRepairStep;
 
-class InstallDeps implements IRepairStep
-{
+class InstallDeps implements IRepairStep {
+	public const NODE_VERSION = 'v14.18.2';
 
-    public const NODE_VERSION = 'v14.18.2';
+	/** @var IConfig */
+	protected $config;
 
-    /** @var IConfig */
-    protected $config;
+	public function __construct(IConfig $config) {
+		$this->config = $config;
+		$this->binaryDir = dirname(__DIR__, 2) . '/bin/';
+		$this->preGypBinaryDir = dirname(__DIR__, 2) . '/node_modules/@mapbox/node-pre-gyp/bin/';
+		$this->tfjsInstallScript = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node/scripts/install.js';
+		$this->tfjsPath = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node/';
+	}
 
-    public function __construct(IConfig $config)
-    {
-        $this->config = $config;
-        $this->binaryDir = dirname(__DIR__, 2) . '/bin/';
-        $this->preGypBinaryDir = dirname(__DIR__, 2) . '/node_modules/@mapbox/node-pre-gyp/bin/';
-        $this->tfjsInstallScript = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node/scripts/install.js';
-        $this->tfjsPath = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node/';
-    }
+	public function getName(): string {
+		return 'Install dependencies';
+	}
 
-    public function getName(): string
-    {
-        return 'Install dependencies';
-    }
+	public function run(IOutput $output): void {
+		if (PHP_INT_SIZE === 8) {
+			$binaryPath = $this->downloadBinary(self::NODE_VERSION, 'arm64');
+			$version = $this->testBinary($binaryPath);
+			if ($version === null) {
+				$binaryPath = $this->downloadBinary(self::NODE_VERSION, 'x64');
+				$version = $this->testBinary($binaryPath);
+				if ($version === null) {
+					$output->warning('Failed to install node binary');
+					return;
+				}
+			}
+		} else {
+			$binaryPath = $this->downloadBinary(self::NODE_VERSION, 'armv7l');
+			$version = $this->testBinary($binaryPath);
 
-    public function run(IOutput $output): void
-    {
-        if (PHP_INT_SIZE === 8) {
-            $binaryPath = $this->downloadBinary(self::NODE_VERSION, 'arm64');
-            $version = $this->testBinary($binaryPath);
-            if ($version === null) {
-                $binaryPath = $this->downloadBinary(self::NODE_VERSION, 'x64');
-                $version = $this->testBinary($binaryPath);
-                if ($version === null) {
-                    $output->warning('Failed to install node binary');
-                    return;
-                }
-            }
-        } else {
-            $binaryPath = $this->downloadBinary(self::NODE_VERSION, 'armv7l');
-            $version = $this->testBinary($binaryPath);
+			if ($version === null) {
+				$output->warning('Failed to install node binary');
+				return;
+			}
+		}
 
-            if ($version === null) {
-                $output->warning('Failed to install node binary');
-                return;
-            }
-        }
+		// Write the app config
+		$this->config->setAppValue('recognize', 'node_binary', $binaryPath);
 
-        // Write the app config
-        $this->config->setAppValue('recognize', 'node_binary', $binaryPath);
+		$this->setBinariesPermissions();
 
-        $this->setBinariesPermissions();
+		$this->runTfjsInstall($binaryPath);
+	}
 
-        $this->runTfjsInstall($binaryPath);
-    }
+	protected function testBinary(string $binaryPath): ?string {
+		// Make binary executable
+		chmod($binaryPath, 0755);
 
-    protected function testBinary(string $binaryPath): ?string
-    {
-        // Make binary executable
-        chmod($binaryPath, 0755);
+		$cmd = escapeshellcmd($binaryPath) . ' ' . escapeshellarg('--version');
+		try {
+			@exec($cmd, $output, $returnCode);
+		} catch (\Throwable $e) {
+		}
 
-        $cmd = escapeshellcmd($binaryPath) . ' ' . escapeshellarg('--version');
-        try {
-            @exec($cmd, $output, $returnCode);
-        } catch (\Throwable $e) {
-        }
+		if ($returnCode !== 0) {
+			return null;
+		}
 
-        if ($returnCode !== 0) {
-            return null;
-        }
+		return trim(implode("\n", $output));
+	}
 
-        return trim(implode("\n", $output));
-    }
+	protected function runTfjsInstall($nodeBinary) : void {
+		$oriCwd = getcwd();
+		chdir($this->tfjsPath);
+		$cmd = 'PATH='.escapeshellcmd($this->preGypBinaryDir).':'.escapeshellcmd($this->binaryDir).':$PATH ' . escapeshellcmd($nodeBinary) . ' ' . escapeshellarg($this->tfjsInstallScript) . ' ' . escapeshellarg('download');
+		try {
+			@exec($cmd, $output, $returnCode);
+		} catch (\Throwable $e) {
+		}
+		chdir($oriCwd);
+		if ($returnCode !== 0) {
+			throw new \Exception('Failed to install Tensorflow.js: '.trim(implode("\n", $output)));
+		}
+	}
 
-    protected function runTfjsInstall($nodeBinary) : void {
-        $oriCwd = getcwd();
-        chdir($this->tfjsPath);
-        $cmd = 'PATH='.escapeshellcmd($this->preGypBinaryDir).':'.escapeshellcmd($this->binaryDir).':$PATH ' . escapeshellcmd($nodeBinary) . ' ' . escapeshellarg($this->tfjsInstallScript) . ' ' . escapeshellarg('download');
-        try {
-            @exec($cmd, $output, $returnCode);
-        } catch (\Throwable $e) {
-        }
-        chdir($oriCwd);
-        if ($returnCode !== 0) {
-            throw new \Exception('Failed to install Tensorflow.js: '.trim(implode("\n", $output)));
-        }
-    }
+	protected function downloadBinary(string $version, string $arch) : string {
+		$url = 'https://nodejs.org/dist/'.$version.'/node-'.$version.'-linux-'.$arch.'.tar.gz';
+		$file = $this->binaryDir.'/'.$arch.'.tar.gz';
+		$archive = file_get_contents($url);
+		if ($archive === false) {
+			throw new \Exception('Downloading of node binary failed');
+		}
+		$saved = file_put_contents($file, $archive);
+		if ($saved === false) {
+			throw new \Exception('Saving of node binary failed');
+		}
+		$tar = new TAR($file);
+		$tar->extractFile('node-'.$version.'-linux-'.$arch.'/bin/node', $this->binaryDir.'/node');
+		return $this->binaryDir.'/node';
+	}
 
-    protected function downloadBinary(string $version, string $arch) : string {
-        $url = 'https://nodejs.org/dist/'.$version.'/node-'.$version.'-linux-'.$arch.'.tar.gz';
-        $file = $this->binaryDir.'/'.$arch.'.tar.gz';
-        $archive = file_get_contents($url);
-        if ($archive === FALSE) {
-            throw new \Exception('Downloading of node binary failed');
-        }
-        $saved = file_put_contents($file, $archive);
-        if ($saved === FALSE) {
-            throw new \Exception('Saving of node binary failed');
-        }
-        $tar = new TAR($file);
-        $tar->extractFile('node-'.$version.'-linux-'.$arch.'/bin/node', $this->binaryDir.'/node');
-        return $this->binaryDir.'/node';
-    }
-
-    /**
-     * try to fix binaries permissions issues
-     */
-    protected function setBinariesPermissions()
-    {
-        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->preGypBinaryDir));
-        foreach($iterator as $item) {
-            if (chmod(realpath($item->getPathname()), 0755) === FALSE) {
-                throw new \Exception('Error when setting node_modules/.bin/* permissions');
-            }
-        }
-    }
+	/**
+	 * try to fix binaries permissions issues
+	 */
+	protected function setBinariesPermissions() {
+		$iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->preGypBinaryDir));
+		foreach ($iterator as $item) {
+			if (chmod(realpath($item->getPathname()), 0755) === false) {
+				throw new \Exception('Error when setting node_modules/.bin/* permissions');
+			}
+		}
+	}
 }
