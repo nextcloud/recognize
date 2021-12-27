@@ -4,6 +4,7 @@ namespace OCA\Recognize\Command;
 
 use OCA\Recognize\Service\ClassifyImagenetService;
 use OCA\Recognize\Service\ClassifyFacesService;
+use OCA\Recognize\Service\ClassifyImagesService;
 use OCA\Recognize\Service\ImagesFinderService;
 use OCP\Files\IRootFolder;
 use OCP\IUser;
@@ -37,16 +38,16 @@ class ClassifyImages extends Command {
      * @var \OCA\Recognize\Service\ReferenceFacesFinderService
      */
     private $referenceFacesFinder;
+    /**
+     * @var \OCA\Recognize\Service\ClassifyImagesService
+     */
+    private $imageClassifier;
 
-    public function __construct(ClassifyFacesService $facenet, ClassifyImagenetService $imagenet, IRootFolder $rootFolder, IUserManager $userManager, ImagesFinderService $imagesFinder, \OCA\Recognize\Service\ReferenceFacesFinderService $referenceFacesFinder)
+    public function __construct(IUserManager $userManager, ClassifyImagesService $imageClassifier)
     {
         parent::__construct();
-        $this->facenet = $facenet;
-        $this->imagenet = $imagenet;
-        $this->rootFolder = $rootFolder;
         $this->userManager = $userManager;
-        $this->imagesFinder = $imagesFinder;
-        $this->referenceFacesFinder = $referenceFacesFinder;
+        $this->imageClassifier = $imageClassifier;
     }
 
     /**
@@ -71,28 +72,14 @@ class ClassifyImages extends Command {
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
-
             $users = [];
             $this->userManager->callForSeenUsers(function(IUser $user) use (&$users) {
                 $users[] = $user->getUID();
             });
 
             foreach ($users as $user) {
-                if (!$user) {
-                    $output->writeln('No users left, whose photos could be classified');
-                    return 0;
-                }
-                $images = $this->imagesFinder->findImagesInFolder($this->rootFolder->getUserFolder($user));
-                if (count($images) === 0) {
-                    continue;
-                }
-                $output->writeln('Classifying photos of user '.$user);
-                $this->imagenet->classify($images);
-
-                $faces = $this->referenceFacesFinder->findReferenceFacesForUser($user);
-                $this->facenet->classify($faces, $images);
+                $this->imageClassifier->run($user);
             }
-
         } catch (\Exception $ex) {
             $output->writeln('<error>Failed to classify images</error>');
             $output->writeln($ex->getMessage());

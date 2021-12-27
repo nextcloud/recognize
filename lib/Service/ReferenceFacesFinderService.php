@@ -74,9 +74,6 @@ class ReferenceFacesFinderService
      * @return array
      */
     public function findReferenceFacesForUser(string $userId):array {
-        if ($this->config->getAppValue('recognize', 'faces.enabled', 'false') !== 'true') {
-            return 0;
-        }
         $faces = [];
         $this->contacts->clear();
         $this->contactsManager->setupContactsProvider($this->contacts, $userId, $this->urlGenerator);
