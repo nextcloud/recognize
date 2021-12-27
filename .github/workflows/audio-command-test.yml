@@ -135,7 +135,7 @@ jobs:
 
       - name: Set musicnn.enabled
         run: |
-          ./occ config:app:set --value true recognize imagenet.enabled
+          ./occ config:app:set --value true recognize musicnn.enabled
 
       - name: Run classifier
         run: |
