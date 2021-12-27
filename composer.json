@@ -1,7 +1,8 @@
 {
     "require": {
         "symfony/process": "^5.2",
-        "ext-json": "*"
+        "ext-json": "*",
+        "php": ">=7.3"
     },
     "autoload": {
         "psr-4": {
@@ -16,5 +17,10 @@
         "lint": "find . -name \\*.php -not -path './vendor/*' -print0 | xargs -0 -n1 php -l",
         "cs:check": "php-cs-fixer fix --dry-run --diff",
         "cs:fix": "php-cs-fixer fix"
+    },
+    "config": {
+        "platform": {
+            "php": "7.3"
+        }
     }
 }
