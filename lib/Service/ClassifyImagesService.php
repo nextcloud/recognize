@@ -3,6 +3,8 @@
 namespace OCA\Recognize\Service;
 
 use OC\User\NoUserException;
+use OCA\Recognize\Classifiers\Images\FacesClassifier;
+use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
 use OCP\IConfig;
 use OCP\Files\IRootFolder;
 use OCP\Files\NotPermittedException;

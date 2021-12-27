@@ -3,6 +3,7 @@
 namespace OCA\Recognize\Service;
 
 use OC\User\NoUserException;
+use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
 use OCP\Files\IRootFolder;
 use OCP\Files\NotPermittedException;
 use OCP\IConfig;
@@ -10,15 +11,7 @@ use Psr\Log\LoggerInterface;
 
 class ClassifyAudioService {
 	/**
-	 * @var ImagenetClassifier
-	 */
-	private $imagenet;
-	/**
-	 * @var FacesClassifier
-	 */
-	private $facenet;
-	/**
-	 * @var ImagesFinderService
+	 * @var AudioFinderService
 	 */
 	private $audioFinder;
 	/**
@@ -34,7 +27,7 @@ class ClassifyAudioService {
 	 */
 	private $config;
 	/**
-	 * @var \OCA\Recognize\Service\MusicnnClassifier
+	 * @var MusicnnClassifier
 	 */
 	private $musicnn;
 
