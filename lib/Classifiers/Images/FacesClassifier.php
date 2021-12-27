@@ -7,6 +7,7 @@
 
 namespace OCA\Recognize\Classifiers\Images;
 
+use OCA\Recognize\Service\TagManager;
 use OCP\Files\File;
 use OCP\IConfig;
 use OCP\Files\InvalidPathException;
