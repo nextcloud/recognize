@@ -7,91 +7,66 @@
 
 namespace OCA\Recognize\BackgroundJobs;
 
-use OCA\Recognize\Service\ClassifyImagenetService;
-use OCA\Recognize\Service\ImagesFinderService;
+use OCA\Recognize\Service\ClassifyImagesService;
+use OCA\Recognize\Service\Logger;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\TimedJob;
-use OCP\Files\IRootFolder;
 use OCP\IUser;
 use OCP\IUserManager;
 use Psr\Log\LoggerInterface;
 
 class ClassifyImagesJob extends TimedJob {
-    public const BATCH_SIZE = 100; // 100 images
-    public const INTERVAL = 30 * 60; // 30 minutes
+	public const BATCH_SIZE = 100; // 100 images
+	public const INTERVAL = 30 * 60; // 30 minutes
 
-    /**
-     * @var ClassifyImagenetService
-     */
-    private $imagenet;
-    /**
-     * @var ImagesFinderService
-     */
-    private $imagesFinder;
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-    /**
-     * @var IRootFolder
-     */
-    private $rootFolder;
-    /**
-     * @var ITimeFactory
-     */
-    private $timeFactory;
-    /**
-     * @var IUserManager
-     */
-    private $userManager;
-    /**
-     * @var \OCA\Recognize\Service\ClassifyFacesService
-     */
-    private $facenet;
-    /**
-     * @var \OCA\Recognize\Service\ReferenceFacesFinderService
-     */
-    private $referenceFacesFinder;
+	/**
+	 * @var LoggerInterface
+	 */
+	private $logger;
 
-    public function __construct(
-        \OCA\Recognize\Service\ClassifyFacesService $facenet, ClassifyImagenetService $imagenet, ITimeFactory $timeFactory, IRootFolder $rootFolder, LoggerInterface $logger, IUserManager $userManager, ImagesFinderService $imagesFinder, \OCA\Recognize\Service\ReferenceFacesFinderService $referenceFacesFinder
-    ) {
-        parent::__construct($timeFactory);
+	/**
+	 * @var ITimeFactory
+	 */
+	private $timeFactory;
+	/**
+	 * @var IUserManager
+	 */
+	private $userManager;
+	/**
+	 * @var \OCA\Recognize\Service\ClassifyImagesService
+	 */
+	private $imageClassifier;
 
-        $this->setInterval(self::INTERVAL);
-        $this->imagenet = $imagenet;
-        $this->rootFolder = $rootFolder;
-        $this->logger = $logger;
-        $this->userManager = $userManager;
-        $this->imagesFinder = $imagesFinder;
-        $this->facenet = $facenet;
-        $this->referenceFacesFinder = $referenceFacesFinder;
-    }
 
-    protected function run($argument) {
-        $users = [];
-        $this->userManager->callForSeenUsers(function(IUser $user) use (&$users) {
-            $users[] = $user->getUID();
-        });
+	public function __construct(
+		ITimeFactory $timeFactory, Logger $logger, IUserManager $userManager, ClassifyImagesService $imageClassifier
+	) {
+		parent::__construct($timeFactory);
+		$this->setInterval(self::INTERVAL);
+		$this->logger = $logger;
+		$this->userManager = $userManager;
+		$this->imageClassifier = $imageClassifier;
+	}
 
-        do {
-            $user = array_pop($users);
-            if (!$user) {
-                $this->logger->debug('No users left, whose photos could be classified ');
-                return;
-            }
-            $images = $this->imagesFinder->findImagesInFolder($this->rootFolder->getUserFolder($user));
-        }while(count($images) === 0);
-        $images = array_slice($images, 0, self::BATCH_SIZE);
+	protected function run($argument) {
+		$users = [];
+		$this->userManager->callForSeenUsers(function (IUser $user) use (&$users) {
+			$users[] = $user->getUID();
+		});
 
-        $this->logger->warning('Classifying photos of user '.$user);
-        try {
-            $this->imagenet->classify($images);
-            $faces = $this->referenceFacesFinder->findReferenceFacesForUser($user);
-            $this->facenet->classify($faces, $images);
-        }catch(\Exception $e) {
-            $this->logger->warning('Classifier process errored');
-            $this->logger->warning($e->getMessage());
-        }
-    }
+		do {
+			$user = array_pop($users);
+			if (!$user) {
+				$this->logger->debug('No users left, whose photos could be classified ');
+				return;
+			}
+			try {
+				$processed = $this->imageClassifier->run($user, self::BATCH_SIZE);
+			} catch (\Exception $e) {
+				$this->logger->warning('Classifier process errored');
+				$this->logger->warning($e->getMessage());
+				return;
+			}
+		} while (!$processed);
+	}
 }

@@ -11,25 +11,23 @@ use OCP\Files\Folder;
 use OCP\Files\InvalidPathException;
 use OCP\Files\NotFoundException;
 use OCP\SystemTag\ISystemTagObjectMapper;
-use Psr\Log\LoggerInterface;
 
-class ImagesFinderService extends FileFinderService
-{
-    public const FORMATS = ['image/jpeg', 'image/png', 'image/bmp', 'image/tiff'];
-    public const IGNORE_MARKERS = ['.noimage', '.nomedia'];
-    public const MAX_FILE_SIZE = 10000000;
+class ImagesFinderService extends FileFinderService {
+	public const FORMATS = ['image/jpeg', 'image/png', 'image/bmp', 'image/tiff'];
+	public const IGNORE_MARKERS = ['.noimage', '.nomedia'];
+	public const MAX_FILE_SIZE = 10000000;
 
-    public function __construct(LoggerInterface $logger, ISystemTagObjectMapper $objectMapper, TagManager $tagManager) {
-        parent::__construct($logger, $objectMapper, $tagManager);
-        $this->setFormats(self::FORMATS);
-        $this->setIgnoreMarkers(self::IGNORE_MARKERS);
-        $this->setMaxFileSize(self::MAX_FILE_SIZE);
-    }
+	public function __construct(Logger $logger, ISystemTagObjectMapper $objectMapper, TagManager $tagManager) {
+		parent::__construct($logger, $objectMapper, $tagManager);
+		$this->setFormats(self::FORMATS);
+		$this->setIgnoreMarkers(self::IGNORE_MARKERS);
+		$this->setMaxFileSize(self::MAX_FILE_SIZE);
+	}
 
-    /**
-     * @throws NotFoundException|InvalidPathException
-     */
-    public function findImagesInFolder(Folder $folder):array {
-        return $this->findFilesInFolder($folder);
-    }
+	/**
+	 * @throws NotFoundException|InvalidPathException
+	 */
+	public function findImagesInFolder(Folder $folder):array {
+		return $this->findFilesInFolder($folder);
+	}
 }

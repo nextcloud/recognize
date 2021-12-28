@@ -7,76 +7,62 @@
 
 namespace OCA\Recognize\BackgroundJobs;
 
-use OCA\Recognize\Service\AudioFinderService;
-use OCA\Recognize\Service\ClassifyMusicService;
+use OCA\Recognize\Service\ClassifyAudioService;
+use OCA\Recognize\Service\Logger;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\TimedJob;
-use OCP\Files\IRootFolder;
 use OCP\IUser;
 use OCP\IUserManager;
 use Psr\Log\LoggerInterface;
 
 class ClassifyAudioJob extends TimedJob {
-    public const BATCH_SIZE = 100; // 100 files
-    public const INTERVAL = 30 * 60; // 30 minutes
-
-    /**
-     * @var ClassifyMusicService
-     */
-    private $musicnn;
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-    /**
-     * @var IRootFolder
-     */
-    private $rootFolder;
-    /**
-     * @var IUserManager
-     */
-    private $userManager;
-
-    /**
-     * @var \OCA\Recognize\Service\AudioFinderService
-     */
-    private $audioFinder;
+	public const BATCH_SIZE = 100; // 100 files
+	public const INTERVAL = 30 * 60; // 30 minutes
 
 
-    public function __construct(
-        ClassifyMusicService $musicnn, ITimeFactory $timeFactory, IRootFolder $rootFolder, LoggerInterface $logger, IUserManager $userManager, AudioFinderService $audioFinder) {
-        parent::__construct($timeFactory);
+	/**
+	 * @var LoggerInterface
+	 */
+	private $logger;
+	/**
+	 * @var IUserManager
+	 */
+	private $userManager;
+	/**
+	 * @var \OCA\Recognize\Service\ClassifyAudioService
+	 */
+	private $audioClassifier;
 
-        $this->setInterval(self::INTERVAL);
-        $this->musicnn = $musicnn;
-        $this->rootFolder = $rootFolder;
-        $this->logger = $logger;
-        $this->userManager = $userManager;
-        $this->audioFinder = $audioFinder;
-    }
 
-    protected function run($argument) {
-        $users = [];
-        $this->userManager->callForSeenUsers(function(IUser $user) use (&$users) {
-            $users[] = $user->getUID();
-        });
+	public function __construct(
+		ITimeFactory $timeFactory, Logger $logger, IUserManager $userManager, ClassifyAudioService $audioClassifier) {
+		parent::__construct($timeFactory);
 
-        do {
-            $user = array_pop($users);
-            if (!$user) {
-                $this->logger->debug('No users left, whose audios could be classified ');
-                return;
-            }
-            $images = $this->audioFinder->findAudioInFolder($this->rootFolder->getUserFolder($user));
-        }while(count($images) === 0);
-        $images = array_slice($images, 0, self::BATCH_SIZE);
+		$this->setInterval(self::INTERVAL);
+		$this->logger = $logger;
+		$this->userManager = $userManager;
+		$this->audioClassifier = $audioClassifier;
+	}
 
-        $this->logger->warning('Classifying audios of user '.$user);
-        try {
-            $this->musicnn->classify($images);
-        }catch(\Exception $e) {
-            $this->logger->warning('Classifier process errored');
-            $this->logger->warning($e->getMessage());
-        }
-    }
+	protected function run($argument) {
+		$users = [];
+		$this->userManager->callForSeenUsers(function (IUser $user) use (&$users) {
+			$users[] = $user->getUID();
+		});
+
+		do {
+			$user = array_pop($users);
+			if (!$user) {
+				$this->logger->debug('No users left, whose photos could be classified ');
+				return;
+			}
+			try {
+				$processed = $this->audioClassifier->run($user, self::BATCH_SIZE);
+			} catch (\Exception $e) {
+				$this->logger->warning('Classifier process errored');
+				$this->logger->warning($e->getMessage());
+				return;
+			}
+		} while (!$processed);
+	}
 }
