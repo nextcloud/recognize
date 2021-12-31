@@ -1,4 +1,4 @@
-name: Command test
+name: Audio Command test
 
 on:
   pull_request:
