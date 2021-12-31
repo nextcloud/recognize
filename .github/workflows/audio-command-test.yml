@@ -18,16 +18,23 @@ jobs:
         php-versions: ['7.3']
         databases: ['sqlite', 'mysql', 'pgsql']
         server-versions: ['stable20', 'stable21', 'stable22']
-        pure-js-mode: ['true', 'false']
+        pure-js-mode: ['false']
         include:
+          # test php 7.4 once
           - server-versions: stable22
             php-versions: 7.4
             databases: sqlite
             pure-js-mode: false
+          # test php 8 once
           - server-versions: stable23
             php-versions: 8.0
             databases: sqlite
             pure-js-mode: false
+          # test pure-js once
+          - server-versions: stable23
+            php-versions: 8.0
+            databases: sqlite
+            pure-js-mode: true
 
     name: Test classify audio command on ${{ matrix.databases }}-${{ matrix.server-versions }}-php${{ matrix.php-versions }}
 

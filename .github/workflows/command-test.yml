@@ -18,20 +18,29 @@ jobs:
         php-versions: ['7.3']
         databases: ['sqlite', 'mysql', 'pgsql']
         server-versions: ['stable20', 'stable21', 'stable22']
-        pure-js-mode: ['true', 'false']
+        pure-js-mode: ['false']
         imagenet-enabled: ['true', 'false']
         faces-enabled: ['true', 'false']
         include:
+          # test php7.4 once
           - server-versions: stable22
             php-versions: 7.4
             databases: sqlite
             pure-js-mode: false
             imagenet-enabled: true
             faces-enabled: true
+          # test php 8 once
           - server-versions: stable23
             databases: sqlite
             php-versions: 8.0
             pure-js-mode: false
+            imagenet-enabled: true
+            faces-enabled: true
+          # test pure-js once
+          - server-versions: stable23
+            databases: sqlite
+            php-versions: 8.0
+            pure-js-mode: true
             imagenet-enabled: true
             faces-enabled: true
 
