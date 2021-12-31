@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.8.0
+
+### New
+Implement Logger proxy and copy logs to cli
+
+### Fixed
+- Lint: Run php-cs-fixer
+- Refactor: Move classifier classes out of Service folder
+- check faces-classify enabled earlier (thanks @bonswouar)
+- fix #121 empty contact photo (thanks @bonswouar)
+- Fix Classifier timeouts: Add constant time to account for model download
+
 ## v1.7.0
 
 ### New
