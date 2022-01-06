@@ -13,6 +13,11 @@ jobs:
 
     name: Test classifier
 
+    strategy:
+      fail-fast: false
+      matrix:
+        purejs: ['true', 'false']
+
     steps:
       - name: Checkout app
         uses: actions/checkout@v2
@@ -39,5 +44,6 @@ jobs:
       - name: Run classifier tests
         env:
           FLICKR_API_KEY: ${{ secrets.FLICKR_API_KEY }}
+          RECOGNIZE_PUREJS: ${{ matrix.pure-js-mode }}
         run: |
           node test/tests.js
