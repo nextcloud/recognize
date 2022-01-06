@@ -41,7 +41,9 @@ Recognize uses a [Musicnn](https://arxiv.org/abs/1909.06654) neural network arch
 
 - php 7.3 and above
 - App "collaborative tags" enabled
-- Processor: x86 64bit (with support for AVX instructions, otherwise you'll have to run in JavaScript mode, which is much slower)
+- Processor:
+  - For native speed: x86 64bit (with support for AVX instructions)
+  - For sub-native speed (using JavaScript mode): x86 64bit (without AVX), arm64, armv7l
 - System with glibc (usually the norm on Linux; Alpine linux and FreeBSD are *not* such systems)
 - ~4GB of free RAM (if you're cutting it close, make sure you have some swap available)
 

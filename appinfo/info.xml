@@ -18,9 +18,11 @@ This is still experimental and currently only works for files that don't reside 
 Requirements:
 - php 7.3 and above
 - App "collaborative tags" enabled
-- Processor: x86 64bit
-- System with glibc (usually the norm; Alpine linux is *not* such a system)
-- ~3GB of free RAM (if you're cutting it close, make sure you have some swap available)
+- Processor:
+  - For native speed: x86 64bit (with support for AVX instructions)
+  - For sub-native speed (using JavaScript mode): x86 64bit (without AVX), arm64, armv7l
+- System with glibc (usually the norm on Linux; Alpine linux and FreeBSD are *not* such systems)
+- ~4GB of free RAM (if you're cutting it close, make sure you have some swap available)
 
 The app does not send any sensitive data to cloud providers or similar services. All processing is done on your nextcloud machine, using Tensorflow.js running in Node.js, which comes bundled with this app.
 
