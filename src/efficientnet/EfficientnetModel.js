@@ -21,13 +21,14 @@ const fs = require('fs/promises')
 const NUM_OF_CHANNELS = 3
 class EfficientNetModel {
 
-	constructor(modelPath, imageSize) {
+	constructor(modelPath, imageSize, inputMin) {
 		this.modelPath = modelPath
 		this.imageSize = imageSize
+		this.inputMin = inputMin
 	}
 
-	static async create(modelURL) {
-		const model = new EfficientNetModel(modelURL, 512)
+	static async create(modelURL, imgSize, inputMin) {
+		const model = new EfficientNetModel(modelURL, imgSize, inputMin)
 		await model.load()
 		return model
 	}
@@ -43,7 +44,7 @@ class EfficientNetModel {
 	async inference(imgPath, options) {
 		const { topK = NUM_OF_CHANNELS } = options || {}
 		const inputMax = 1
-		const inputMin = -1
+		const inputMin = this.inputMin
 		const normalizationConstant = (inputMax - inputMin) / 255.0
 		let image
 		if (PUREJS) {

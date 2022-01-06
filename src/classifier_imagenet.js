@@ -52,10 +52,12 @@ function findRule(className) {
 if (process.argv.length < 3) throw new Error('Incorrect arguments: node classify.js ...<IMAGE_FILES> | node classify.js -')
 
 /**
- *
+ * @param modelName
+ * @param imgSize
+ * @param minInput
  */
-async function main() {
-	const modelPath = path.resolve(__dirname, '..', 'model')
+async function main(modelName, imgSize, minInput) {
+	const modelPath = path.resolve(__dirname, '..', 'models', modelName)
 
 	const modelFileName = 'model.json'
 	let modelUrl
@@ -85,11 +87,11 @@ async function main() {
 				strip: 1,
 				C: path.resolve(__dirname, '..'),
 				file: path.resolve(__dirname, '..', `recognize-${VERSION}.tar.gz`),
-			}, [`recognize-${VERSION}/model`], resolve)
+			}, [`recognize-${VERSION}/models/${modelName}`], resolve)
 		)
 	}
 
-	const model = await EfficientNet.create(modelUrl)
+	const model = await EfficientNet.create(modelUrl, imgSize, minInput)
 	const getStdin = (await import('get-stdin')).default
 
 	const paths = process.argv[2] === '-'
@@ -178,8 +180,16 @@ async function main() {
 	}
 }
 
-tf.setBackend(process.env.RECOGNIZE_PUREJS === 'true' ? 'cpu' : 'tensorflow')
-	.then(() => main())
+tf.setBackend(process.env.RECOGNIZE_PUREJS === 'true' ? 'wasm' : 'tensorflow')
+	.then(() => {
+		let modelName = 'efficientnetv2'; let imgSize = 512; let minInput = -1
+		if (process.env.RECOGNIZE_PUREJS === 'true') {
+			modelName = 'efficientnet_lite4'
+			imgSize = 380
+			minInput = 0
+		}
+		return main(modelName, imgSize, minInput)
+	})
 	.then(() => process.exit(0))
 	.catch(e => {
 		console.error(e)

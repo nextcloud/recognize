@@ -83,7 +83,7 @@ async function main() {
 				strip: 1,
 				C: path.resolve(__dirname, '..'),
 				file: path.resolve(__dirname, '..', `recognize-${VERSION}.tar.gz`),
-			}, [`recognize-${VERSION}/music_model`], resolve)
+			}, [`recognize-${VERSION}/models/musicnn`], resolve)
 		)
 	}
 
