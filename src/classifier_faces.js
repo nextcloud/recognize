@@ -6,7 +6,8 @@ let tf, faceapi, Jimp
 let PUREJS = false
 if (process.env.RECOGNIZE_PUREJS === 'true') {
 	tf = require('@tensorflow/tfjs')
-	faceapi = require('@vladmandic/face-api/dist/face-api.node-cpu.js')
+	require('@tensorflow/tfjs-backend-wasm')
+	faceapi = require('./face-api.node.js')
 	Jimp = require('jimp')
 	PUREJS = true
 } else {
@@ -22,7 +23,8 @@ if (process.env.RECOGNIZE_PUREJS === 'true') {
 		console.error(e)
 		console.error('Trying js-only mode')
 		tf = require('@tensorflow/tfjs')
-		faceapi = require('@vladmandic/face-api/dist/face-api.node-cpu.js')
+		require('@tensorflow/tfjs-backend-wasm')
+		faceapi = require('./face-api.node.js')
 		Jimp = require('jimp')
 		PUREJS = true
 	}
@@ -30,6 +32,9 @@ if (process.env.RECOGNIZE_PUREJS === 'true') {
 
 if (process.argv.length < 3) throw new Error('Incorrect arguments: node classifier_faces.js ...<IMAGE_FILES> | node classify.js -')
 
+/**
+ *
+ */
 async function main() {
 	const getStdin = (await import('get-stdin')).default
 	let paths, facesDefinitionJSON
@@ -69,14 +74,9 @@ async function main() {
 		}
 	}
 
-	if (!Object.values(faceDescriptors).length) {
-		for (const path of paths) {
-			console.log('[]')
-		}
-		return
+	if (Object.values(faceDescriptors).length) {
+		const faceMatcher = new faceapi.FaceMatcher(Object.values(faceDescriptors), 0.4) // default is 0.6
 	}
-
-	const faceMatcher = new faceapi.FaceMatcher(Object.values(faceDescriptors), 0.4) // default is 0.6
 
 	for (const path of paths) {
 		try {
@@ -88,9 +88,13 @@ async function main() {
 			}
 			const results = await faceapi.detectAllFaces(tensor).withFaceLandmarks().withFaceDescriptors()
 			tensor.dispose()
-			const labels = results
-				.map(result => faceMatcher.findBestMatch(result.descriptor).label)
-				.filter(label => label !== 'unknown')
+
+			let labels = []
+			if (Object.values(faceDescriptors).length) {
+				labels = results
+					.map(result => faceMatcher.findBestMatch(result.descriptor).label)
+					.filter(label => label !== 'unknown')
+			}
 
 			if (results.length) {
 				labels.push('people')
@@ -104,12 +108,15 @@ async function main() {
 	}
 }
 
-tf.setBackend(process.env.RECOGNIZE_PUREJS === 'true' ? 'cpu' : 'tensorflow')
+tf.setBackend(process.env.RECOGNIZE_PUREJS === 'true' ? 'wasm' : 'tensorflow')
 	.then(() => main())
 	.catch(e => {
 		console.error(e)
 	})
 
+/**
+ * @param image
+ */
 async function createTensor(image) {
 	const NUM_OF_CHANNELS = 3
 	const values = new Float32Array(image.bitmap.width * image.bitmap.height * NUM_OF_CHANNELS)

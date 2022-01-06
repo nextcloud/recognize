@@ -11,6 +11,7 @@ let tf, getPort, StaticServer
 let PUREJS = false
 if (process.env.RECOGNIZE_PUREJS === 'true') {
 	tf = require('@tensorflow/tfjs')
+	require('@tensorflow/tfjs-backend-wasm')
 	getPort = require('get-port')
 	StaticServer = require('static-server')
 	PUREJS = true
@@ -25,12 +26,16 @@ if (process.env.RECOGNIZE_PUREJS === 'true') {
 		console.error(e)
 		console.error('Trying js-only mode')
 		tf = require('@tensorflow/tfjs')
+		require('@tensorflow/tfjs-backend-wasm')
 		PUREJS = true
 	}
 }
 
 const EfficientNet = require('./efficientnet/EfficientnetModel')
 
+/**
+ * @param className
+ */
 function findRule(className) {
 	const rule = rules[className]
 	if (!rule) {
@@ -46,6 +51,9 @@ function findRule(className) {
 
 if (process.argv.length < 3) throw new Error('Incorrect arguments: node classify.js ...<IMAGE_FILES> | node classify.js -')
 
+/**
+ *
+ */
 async function main() {
 	const modelPath = path.resolve(__dirname, '..', 'model')
 
@@ -170,7 +178,7 @@ async function main() {
 	}
 }
 
-tf.setBackend(process.env.RECOGNIZE_PUREJS === 'true' ? 'cpu' : 'tensorflow')
+tf.setBackend(process.env.RECOGNIZE_PUREJS === 'true' ? 'wasm' : 'tensorflow')
 	.then(() => main())
 	.then(() => process.exit(0))
 	.catch(e => {
