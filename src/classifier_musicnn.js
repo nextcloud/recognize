@@ -53,7 +53,7 @@ if (process.argv.length < 3) throw new Error('Incorrect arguments: node classify
  *
  */
 async function main() {
-	const modelPath = path.resolve(__dirname, '..', 'music_model')
+	const modelPath = path.resolve(__dirname, '..', 'models', 'musicnn')
 
 	const modelFileName = 'model.json'
 	let modelUrl
