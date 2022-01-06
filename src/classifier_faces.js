@@ -7,7 +7,7 @@ let PUREJS = false
 if (process.env.RECOGNIZE_PUREJS === 'true') {
 	tf = require('@tensorflow/tfjs')
 	require('@tensorflow/tfjs-backend-wasm')
-	faceapi = require('./face-api.node.js')
+	faceapi = require('@vladmandic/face-api/dist/face-api.node-wasm.js')
 	Jimp = require('jimp')
 	PUREJS = true
 } else {
@@ -24,7 +24,7 @@ if (process.env.RECOGNIZE_PUREJS === 'true') {
 		console.error('Trying js-only mode')
 		tf = require('@tensorflow/tfjs')
 		require('@tensorflow/tfjs-backend-wasm')
-		faceapi = require('./face-api.node.js')
+		faceapi = require('@vladmandic/face-api/dist/face-api.node-wasm.js')
 		Jimp = require('jimp')
 		PUREJS = true
 	}
