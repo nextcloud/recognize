@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        purejs: ['true', 'false']
+        pure-js-mode: ['true', 'false']
 
     steps:
       - name: Checkout app
