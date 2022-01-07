@@ -50,12 +50,15 @@ class InstallDeps implements IRepairStep {
 	}
 
 	public function run(IOutput $output): void {
+        $isARM = false;
 		if (PHP_INT_SIZE === 8) {
 			$binaryPath = $this->downloadBinary(self::NODE_VERSION, 'arm64');
 			$version = $this->testBinary($binaryPath);
+            $isARM = true;
 			if ($version === null) {
 				$binaryPath = $this->downloadBinary(self::NODE_VERSION, 'x64');
 				$version = $this->testBinary($binaryPath);
+                $isARM = false;
 				if ($version === null) {
 					$output->warning('Failed to install node binary');
 					return;
@@ -64,6 +67,7 @@ class InstallDeps implements IRepairStep {
 		} else {
 			$binaryPath = $this->downloadBinary(self::NODE_VERSION, 'armv7l');
 			$version = $this->testBinary($binaryPath);
+            $isARM = true;
 
 			if ($version === null) {
 				$output->warning('Failed to install node binary');
@@ -73,6 +77,9 @@ class InstallDeps implements IRepairStep {
 
 		// Write the app config
 		$this->config->setAppValue('recognize', 'node_binary', $binaryPath);
+        if ($isARM) {
+            $this->config->setAppValue('recognize', 'tensorflow.purejs', 'true');
+        }
 
 		$this->setBinariesPermissions();
 
