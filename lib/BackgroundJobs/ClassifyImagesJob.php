@@ -11,12 +11,14 @@ use OCA\Recognize\Service\ClassifyImagesService;
 use OCA\Recognize\Service\Logger;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\TimedJob;
+use OCP\IConfig;
 use OCP\IUser;
 use OCP\IUserManager;
 use Psr\Log\LoggerInterface;
 
 class ClassifyImagesJob extends TimedJob {
 	public const BATCH_SIZE = 100; // 100 images
+	public const BATCH_SIZE_PUREJS = 25; // 25 images
 	public const INTERVAL = 30 * 60; // 30 minutes
 
 	/**
@@ -36,23 +38,29 @@ class ClassifyImagesJob extends TimedJob {
 	 * @var \OCA\Recognize\Service\ClassifyImagesService
 	 */
 	private $imageClassifier;
+    /**
+     * @var \OCP\IConfig
+     */
+    private $config;
 
 
-	public function __construct(
-		ITimeFactory $timeFactory, Logger $logger, IUserManager $userManager, ClassifyImagesService $imageClassifier
-	) {
+    public function __construct(
+        ITimeFactory $timeFactory, Logger $logger, IUserManager $userManager, ClassifyImagesService $imageClassifier, IConfig $config
+    ) {
 		parent::__construct($timeFactory);
 		$this->setInterval(self::INTERVAL);
 		$this->logger = $logger;
 		$this->userManager = $userManager;
 		$this->imageClassifier = $imageClassifier;
-	}
+        $this->config = $config;
+    }
 
 	protected function run($argument) {
 		$users = [];
 		$this->userManager->callForSeenUsers(function (IUser $user) use (&$users) {
 			$users[] = $user->getUID();
 		});
+        $pureJS = $this->config->getAppValue('bookmarks', 'tensorflow.purejs', 'false');
 
 		do {
 			$user = array_pop($users);
@@ -61,7 +69,7 @@ class ClassifyImagesJob extends TimedJob {
 				return;
 			}
 			try {
-				$processed = $this->imageClassifier->run($user, self::BATCH_SIZE);
+				$processed = $this->imageClassifier->run($user, $pureJS === 'false' ? self::BATCH_SIZE : self::BATCH_SIZE_PUREJS);
 			} catch (\Exception $e) {
 				$this->logger->warning('Classifier process errored');
 				$this->logger->warning($e->getMessage());
