@@ -53,8 +53,8 @@
 		<SettingsSection
 			:title="t('recognize', 'Tensorflow plain mode')">
 			<p>
-				If your CPU is not x86 or doesn't support the instructions that tensorflow uses, you can run
-				tensorflow in JavaScript mode.
+				If your CPU architecture is not x86 or doesn't support the instructions that tensorflow uses, or your system is not using glibc,
+				you can still run tensorflow in JavaScript mode.
 			</p>
 			<p>
 				<label>
@@ -66,7 +66,7 @@
 		<SettingsSection
 			:title="t('recognize', 'Node.js path')">
 			<p>
-				If the shipped Node.js binary doesn't work on your system, you can set the path to a custom node.js binary.
+				If the shipped Node.js binary doesn't work on your system, because you don't have glibc, you can set the path to a custom node.js binary.
 				Currently supported is version v14.17 and newer v14 releases.
 			</p>
 			<p>
