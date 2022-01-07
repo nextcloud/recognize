@@ -15,20 +15,19 @@ if (process.env.RECOGNIZE_PUREJS === 'true') {
 		Jimp = require('jimp')
 	}
 }
-
-const { IMAGENET_CLASSES } = require('./classes')
 const fs = require('fs/promises')
 const NUM_OF_CHANNELS = 3
 class EfficientNetModel {
 
-	constructor(modelPath, imageSize, inputMin) {
+	constructor(modelPath, imageSize, inputMin, labels) {
 		this.modelPath = modelPath
 		this.imageSize = imageSize
 		this.inputMin = inputMin
+		this.labels = labels
 	}
 
-	static async create(modelURL, imgSize, inputMin) {
-		const model = new EfficientNetModel(modelURL, imgSize, inputMin)
+	static async create(modelURL, imgSize, inputMin, labels) {
+		const model = new EfficientNetModel(modelURL, imgSize, inputMin, labels)
 		await model.load()
 		return model
 	}
@@ -54,7 +53,7 @@ class EfficientNetModel {
 			image = await tf.node.decodeImage(await fs.readFile(imgPath), 3)
 		}
 
-		const values = tf.tidy(() => {
+		const logits = tf.tidy(() => {
 			// Normalize the image from [0, 255] to [inputMin, inputMax].
 			const normalized = tf.add(
 				tf.mul(tf.cast(image, 'float32'), normalizationConstant),
@@ -71,9 +70,18 @@ class EfficientNetModel {
 			// Reshape so we can pass it to predict.
 			const reshaped = tf.reshape(resized, [-1, this.imageSize, this.imageSize, 3])
 
-			return tf.softmax(this.predict(reshaped, topK))
+			return this.predict(reshaped, topK)
 		})
-		const prediction = getTopKClasses(await values.data(), topK)
+		const logitsData = await logits.data()
+
+		let values
+		if (options.softmax) {
+			values = tf.softmax(logitsData)
+		} else {
+			values = tf.tensor(logitsData)
+		}
+		const prediction = getTopKClasses(await values.data(), topK, this.labels)
+		logits.dispose()
 		values.dispose()
 		image.dispose()
 		return prediction
@@ -103,8 +111,9 @@ class EfficientNetModel {
 /**
  * @param values
  * @param topK
+ * @param labels
  */
-function getTopKClasses(values, topK) {
+function getTopKClasses(values, topK, labels) {
 	const valuesAndIndices = []
 	for (let i = 0; i < values.length; i++) {
 		valuesAndIndices.push({ value: values[i], index: i })
@@ -121,7 +130,7 @@ function getTopKClasses(values, topK) {
 	const topClassesAndProbs = []
 	for (let i = 0; i < topkIndices.length; i++) {
 		topClassesAndProbs.push({
-			className: IMAGENET_CLASSES[topkIndices[i]],
+			className: labels[topkIndices[i]],
 			probability: topkValues[i],
 		})
 	}
