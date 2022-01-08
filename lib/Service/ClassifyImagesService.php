@@ -75,7 +75,7 @@ class ClassifyImagesService {
 			$images = array_slice($images, 0, $n);
 		}
 
-		if ($this->config->getAppValue('recognize', 'faces.enabled', 'false') !== 'false') {
+		if ($this->config->getAppValue('recognize', 'imagenet.enabled', 'false') !== 'false') {
 			$this->logger->debug('Classifying photos of user '.$user. ' using imagenet');
 			$this->imagenet->classify($images);
 		}
