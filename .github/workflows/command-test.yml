@@ -17,25 +17,36 @@ jobs:
       matrix:
         php-versions: ['7.3']
         databases: ['sqlite', 'mysql', 'pgsql']
-        server-versions: ['stable20', 'stable21', 'stable22']
+        server-versions: ['stable20']
         pure-js-mode: ['false']
         imagenet-enabled: ['true', 'false']
         faces-enabled: ['true', 'false']
+        landmarks-enabled: ['true', 'false']
         include:
-          # test php7.4 once
+          # stable21,sqlite,php7.3
+          - server-versions: stable21
+            php-versions: 7.3
+            databases: sqlite
+            pure-js-mode: false
+            imagenet-enabled: true
+            faces-enabled: true
+            landmarks-enabled: true
+          # stable22,sqlite,php7.4
           - server-versions: stable22
             php-versions: 7.4
             databases: sqlite
             pure-js-mode: false
             imagenet-enabled: true
             faces-enabled: true
-          # test php 8 once
+            landmarks-enabled: true
+          # stable23,sqlite,php8
           - server-versions: stable23
             databases: sqlite
             php-versions: 8.0
             pure-js-mode: false
             imagenet-enabled: true
             faces-enabled: true
+            landmarks-enabled: true
           # test pure-js once
           - server-versions: stable23
             databases: sqlite
@@ -43,6 +54,7 @@ jobs:
             pure-js-mode: true
             imagenet-enabled: true
             faces-enabled: true
+            landmarks-enabled: true
 
     name: Test classify images command on ${{ matrix.databases }}-${{ matrix.server-versions }}
 
@@ -152,9 +164,12 @@ jobs:
         run: |
           ./occ config:app:set --value ${{ matrix.imagenet-enabled }} recognize imagenet.enabled
 
-      - name: Set imagenet.enabled
+      - name: Set faces.enabled
         run: |
           ./occ config:app:set --value ${{ matrix.faces-enabled }} recognize faces.enabled
+      - name: Set landmarks.enabled
+        run: |
+          ./occ config:app:set --value ${{ matrix.landmarks-enabled }} recognize landmarks.enabled
 
       - name: Run classifier
         run: |
