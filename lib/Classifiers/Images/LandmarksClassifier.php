@@ -56,10 +56,14 @@ class LandmarksClassifier {
 		$paths = array_map(function ($file) {
 			return $file->getStorage()->getLocalFile($file->getInternalPath());
 		}, array_filter($files, function($file) use ($tagsByFile){
-            return count(array_diff(self::PRECONDITION_TAGS, $tagsByFile[$file->getId()])) !== count(self::PRECONDITION_TAGS);
+            return count(array_intersect(self::PRECONDITION_TAGS, $tagsByFile[$file->getId()])) !== 0;
         }));
 
-		$this->logger->debug('Classifying landmarks of'.var_export($paths, true));
+        if (count($paths) === 0) {
+            $this->logger->debug('No potential landmarks found');
+        }
+
+		$this->logger->debug('Classifying landmarks of '.var_export($paths, true));
 
 		$command = [
 			$this->config->getAppValue('recognize', 'node_binary'),
