@@ -63,9 +63,9 @@ if (process.argv.length < 3) throw new Error('Incorrect arguments: node classify
  * @param modelName
  * @param imgSize
  * @param minInput
- * @param labels
+ * @param paths
  */
-async function main(modelName, imgSize, minInput, labels) {
+async function main(modelName, imgSize, minInput, paths) {
 	const modelPath = path.resolve(__dirname, '..', 'models', modelName)
 
 	const modelFileName = 'model.json'
@@ -101,11 +101,6 @@ async function main(modelName, imgSize, minInput, labels) {
 	}
 
 	const model = await EfficientNet.create(modelUrl, imgSize, minInput, LABELS[modelName])
-	const getStdin = (await import('get-stdin')).default
-
-	const paths = process.argv[2] === '-'
-		? (await getStdin()).split('\n')
-		: process.argv.slice(2)
 
 	console.error(modelName)
 	const result = []
@@ -146,11 +141,16 @@ tf.setBackend(process.env.RECOGNIZE_PUREJS === 'true' ? 'wasm' : 'tensorflow')
 		const imgSize = 321
 		const minInput = 0
 		const models = ['landmarks_africa', 'landmarks_asia', 'landmarks_europe', 'landmarks_north_america', 'landmarks_south_america', 'landmarks_oceania']
+		const getStdin = (await import('get-stdin')).default
+
+		const paths = process.argv[2] === '-'
+			? (await getStdin()).split('\n')
+			: process.argv.slice(2)
 		let error
 		const labels = []
 		for (const modelName of models) {
 			try {
-				const results = await main(modelName, imgSize, minInput)
+				const results = await main(modelName, imgSize, minInput, paths)
 				results.forEach((result, i) => (labels[i] = labels[i] || []).push(...result))
 			} catch (e) {
 				console.error(e)
