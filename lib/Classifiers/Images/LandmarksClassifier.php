@@ -59,9 +59,9 @@ class LandmarksClassifier {
                 return $tag->getName();
             }, $tags);
         }, $tagsByFile);
-        $landmarkFiles =  array_filter($files, function($file) use ($tagsByFile){
+        $landmarkFiles = array_values(array_filter($files, function($file) use ($tagsByFile){
             return count(array_intersect(self::PRECONDITION_TAGS, $tagsByFile[$file->getId()])) !== 0;
-        });
+        }));
 		$paths = array_map(function ($file) {
 			return $file->getStorage()->getLocalFile($file->getInternalPath());
 		}, $landmarkFiles);
@@ -107,14 +107,13 @@ class LandmarksClassifier {
 					if (trim($result) === '') {
 						continue;
 					}
-					$this->logger->debug('Result for ' . $files[$i]->getName() . ' = ' . $result);
+					$this->logger->debug('Result for ' . $landmarkFiles[$i]->getName() . ' = ' . $result);
 					try {
 						// decode json
 						$tags = json_decode(utf8_encode($result), true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
 
-
 						// assign tags
-						$this->tagManager->assignTags($files[$i]->getId(), $tags);
+						$this->tagManager->assignTags($landmarkFiles[$i]->getId(), $tags);
 					} catch (InvalidPathException $e) {
 						$this->logger->warning('File with invalid path encountered');
 					} catch (NotFoundException $e) {
@@ -127,7 +126,7 @@ class LandmarksClassifier {
 					$i++;
 				}
 			}
-			if ($i !== count($files)) {
+			if ($i !== count($landmarkFiles)) {
 				$this->logger->warning('Classifier process output: '.$errOut);
 				throw new \RuntimeException('Classifier process error');
 			}
