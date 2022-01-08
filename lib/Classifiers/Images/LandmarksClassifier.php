@@ -13,6 +13,7 @@ use OCP\Files\File;
 use OCP\IConfig;
 use OCP\Files\InvalidPathException;
 use OCP\Files\NotFoundException;
+use OCP\SystemTag\ISystemTag;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Exception\RuntimeException;
@@ -53,11 +54,17 @@ class LandmarksClassifier {
         $tagsByFile = $this->tagManager->getTagsForFiles(array_map(function($file) {
             return $file->getId();
         }, $files));
+        $tagsByFile = array_map(function($tags) {
+            return array_map(function(ISystemTag $tag) {
+                return $tag->getName();
+            }, $tags);
+        }, $tagsByFile);
+        $landmarkFiles =  array_filter($files, function($file) use ($tagsByFile){
+            return count(array_intersect(self::PRECONDITION_TAGS, $tagsByFile[$file->getId()])) !== 0;
+        });
 		$paths = array_map(function ($file) {
 			return $file->getStorage()->getLocalFile($file->getInternalPath());
-		}, array_filter($files, function($file) use ($tagsByFile){
-            return count(array_intersect(self::PRECONDITION_TAGS, $tagsByFile[$file->getId()])) !== 0;
-        }));
+		}, $landmarkFiles);
 
         if (count($paths) === 0) {
             $this->logger->debug('No potential landmarks found');
