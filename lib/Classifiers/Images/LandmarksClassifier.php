@@ -61,6 +61,7 @@ class LandmarksClassifier {
 
         if (count($paths) === 0) {
             $this->logger->debug('No potential landmarks found');
+            return;
         }
 
 		$this->logger->debug('Classifying landmarks of '.var_export($paths, true));
