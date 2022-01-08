@@ -107,6 +107,8 @@ async function main(modelName, imgSize, minInput, labels) {
 		? (await getStdin()).split('\n')
 		: process.argv.slice(2)
 
+	console.error(modelName)
+	const result = []
 	for (const path of paths) {
 		try {
 			const results = await model.inference(path, {
@@ -115,7 +117,7 @@ async function main(modelName, imgSize, minInput, labels) {
 			})
 
 			const labels = []
-			console.error(modelName)
+			console.error(path)
 			results
 				.filter(result => {
 					console.error(result)
@@ -130,12 +132,13 @@ async function main(modelName, imgSize, minInput, labels) {
 					}
 				})
 
-			return _.uniq(labels)
+			result.push(_.uniq(labels))
 		} catch (e) {
 			console.error(e)
-			console.log('[]')
+			result.push([])
 		}
 	}
+	return result
 }
 
 tf.setBackend(process.env.RECOGNIZE_PUREJS === 'true' ? 'wasm' : 'tensorflow')
@@ -147,13 +150,14 @@ tf.setBackend(process.env.RECOGNIZE_PUREJS === 'true' ? 'wasm' : 'tensorflow')
 		const labels = []
 		for (const modelName of models) {
 			try {
-				labels.push(...(await main(modelName, imgSize, minInput)))
+				const results = await main(modelName, imgSize, minInput)
+				results.forEach((result, i) => (labels[i] = labels[i] || []).push(...result))
 			} catch (e) {
 				console.error(e)
 				error = e
 			}
 		}
-		console.log(JSON.stringify(labels))
+		labels.forEach(labels => console.log(JSON.stringify(labels)))
 		if (error) {
 			throw error
 		}
