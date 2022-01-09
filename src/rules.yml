@@ -3139,7 +3139,8 @@ paintbrush:
 
 historic architecture:
   label: historic
-  threshold: 0.4
+  threshold: 0.25
+  context: buildings architecture
   categories:
     - architecture
 
