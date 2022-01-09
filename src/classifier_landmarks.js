@@ -39,7 +39,7 @@ if (process.env.RECOGNIZE_PUREJS === 'true') {
 }
 
 const EfficientNet = require('./efficientnet/EfficientnetModel')
-const THRESHOLD = 0.9
+const THRESHOLD = 0.82
 
 /**
  * @param className
@@ -102,32 +102,23 @@ async function main(modelName, imgSize, minInput, paths) {
 
 	const model = await EfficientNet.create(modelUrl, imgSize, minInput, LABELS[modelName])
 
-	console.error(modelName)
 	const result = []
 	for (const path of paths) {
 		try {
-			const results = await model.inference(path, {
+			let results = await model.inference(path, {
 				topK: 7,
 				softmax: false,
 			})
 
-			const labels = []
-			console.error(path)
-			results
+			results = results
 				.filter(result => {
-					console.error(result)
 					if (result.probability < 0.0) {
 						return false
 					}
 					return result.probability >= THRESHOLD
 				})
-				.forEach((result) => {
-					if (result.className) {
-						labels.push(result.className)
-					}
-				})
 
-			result.push(_.uniq(labels))
+			result.push(results)
 		} catch (e) {
 			console.error(e)
 			result.push([])
@@ -157,7 +148,16 @@ tf.setBackend(process.env.RECOGNIZE_PUREJS === 'true' ? 'wasm' : 'tensorflow')
 				error = e
 			}
 		}
-		labels.forEach(labels => console.log(JSON.stringify(labels)))
+		labels.forEach((labels, i) => {
+			console.error(paths[i])
+			labels.sort((a, b) => a.probability - b.probability).reverse()
+			console.error(labels)
+			if (labels.length) {
+				console.log(JSON.stringify([labels[0].className]))
+			} else {
+				console.log(JSON.stringify([]))
+			}
+		})
 		if (error) {
 			throw error
 		}
