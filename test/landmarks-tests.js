@@ -1,4 +1,5 @@
 const Flickr = require('flickr-sdk')
+const { GOOGLE_IMG_SCRAP , GOOGLE_QUERY } = require('google-img-scrap');
 const download = require('download')
 const uniq = require('lodash/uniq')
 const execa = require('execa')
@@ -26,8 +27,8 @@ const flickr = new Flickr(process.env.FLICKR_API_KEY)
 		let tpr = 0
 
 		try {
-
-			const urls = await findPhotos(label, Math.ceil(PHOTOS_PER_LABEL))
+			let urls = await findPhotos(label, Math.ceil(PHOTOS_PER_LABEL/2))
+			urls.push(...(await findPhotosGoogle(label, PHOTOS_PER_LABEL - urls.length)))
 			await Promise.all(
 				urls.map(url => download(url, 'temp_images/' + label))
 			)
@@ -96,4 +97,16 @@ function findPhotos(label, amount = PHOTOS_PER_LABEL) {
 	}).catch(function(err) {
 		throw err
 	})
+}
+
+async function findPhotosGoogle(label, amount= PHOTOS_PER_LABEL) {
+	const results = await GOOGLE_IMG_SCRAP({
+		search: label,
+		query: {
+			EXTENSION: GOOGLE_QUERY.EXTENSION.JPG
+		},
+		limit: amount,
+	});
+
+	return results.result.map(i => i.url)
 }
