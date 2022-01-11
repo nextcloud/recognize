@@ -2,6 +2,7 @@ const Flickr = require('flickr-sdk')
 const { GOOGLE_IMG_SCRAP , GOOGLE_QUERY } = require('google-img-scrap');
 const download = require('download')
 const uniq = require('lodash/uniq')
+const flatten = require('lodash/flatten')
 const execa = require('execa')
 const glob = require('fast-glob')
 const Parallel = require('async-parallel')
@@ -14,27 +15,35 @@ const LABELS = {
 	landmarks_oceania: require('../src/landmarks/oceania.json').name,
 }
 
-const PHOTOS_PER_LABEL = 30
+const PHOTOS_PER_LABEL = 1
 const PHOTOS_OLDER_THAN = 1627464319 // 2021-07-28; for determinism
 const flickr = new Flickr(process.env.FLICKR_API_KEY)
 
 ;(async function() {
 	const modelName = process.argv[2]
-	const labels = uniq(Object.values(LABELS[modelName]))
+	const labels = uniq(Object.values(LABELS[modelName])).slice(0, 10000) // GitHub has a 6h timeout, sadly
+
+
+	await Parallel.each(labels, async label => {
+		try {
+			let urls = await findPhotos(label, PHOTOS_PER_LABEL)
+			await Promise.all(
+				flatten(urls).map(url => download(url, 'temp_images/' + label))
+			)
+		} catch (e) {
+			console.log('Error downloading photos for label "' + label + '"')
+			console.log(e)
+		}
+	}, 20)
 
 	const results = await Parallel.map(labels, async label => {
 		// Calculate the true positive rate
 		let tpr = 0
 
 		try {
-			let urls = await findPhotos(label, Math.ceil(PHOTOS_PER_LABEL/2))
-			urls.push(...(await findPhotosGoogle(label, PHOTOS_PER_LABEL - urls.length)))
-			await Promise.all(
-				urls.map(url => download(url, 'temp_images/' + label))
-			)
-
 			const files = await glob(['temp_images/' + label + '/*'])
 			if (!files.length) {
+				tpr = -1
 				throw new Error('No photos found for label "' + label + '"')
 			}
 			const { stdout } = await execa('node', [__dirname + '/../src/classifier_landmarks.js'].concat(files))
@@ -48,6 +57,7 @@ const flickr = new Flickr(process.env.FLICKR_API_KEY)
 
 			console.log('Processed photos for label "' + label + '"')
 		} catch (e) {
+			tpr = -1
 			console.log('Error processing photos for label "' + label + '"')
 			console.log(e)
 		}
@@ -55,25 +65,17 @@ const flickr = new Flickr(process.env.FLICKR_API_KEY)
 		console.log({ tpr })
 
 		return { tpr }
-	}, 2)
+	}, 4)
 
 	const sum = results.reduce((acc, val) => {
-		return { tpr: acc.tpr + val.tpr }
-	}, { tpr: 0 })
+		return { tpr: acc.tpr + (val.tpr !== -1 ? val.tpr : 0), count: acc.count + (val.tpr !== -1 ? 1 : 0)  }
+	}, { tpr: 0, count: 0 })
 
 	const averageTPR = sum.tpr / results.length
 
 	console.log({ averageTPR })
 
-	const worstLabels = Object.fromEntries(
-		results
-			.map((result, i) => [labels[i], result])
-			.filter(([, result]) => (result.tpr < 0.5))
-	)
-
-	console.log({ worstLabels })
-
-	if (averageTPR < 0.6) {
+	if (averageTPR < 0.04) {
 		process.exit(1)
 	}
 })()
@@ -100,6 +102,7 @@ function findPhotos(label, amount = PHOTOS_PER_LABEL) {
 }
 
 async function findPhotosGoogle(label, amount= PHOTOS_PER_LABEL) {
+	console.log('GOOGLE search: '+label)
 	const results = await GOOGLE_IMG_SCRAP({
 		search: label,
 		query: {

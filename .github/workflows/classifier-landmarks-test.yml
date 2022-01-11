@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        pure-js-mode: ['true', 'false']
+        pure-js-mode: ['false']
         models:
           - landmarks_africa
           - landmarks_asia
