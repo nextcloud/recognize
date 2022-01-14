@@ -33,7 +33,7 @@
 					<span>Enable object recognition</span>
 				</label>
 			</p>
-			<p style="margin-left: 20px;">
+			<p class="indent">
 				<label>
 					<input v-model="settings['landmarks.enabled']"
 						type="checkbox"
@@ -238,6 +238,10 @@ figure[class^='icon-'] {
 
 #recognize {
 	position: relative;
+}
+
+#recognize .indent {
+	margin-left: 20px;
 }
 
 #recognize .loading,
