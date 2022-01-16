@@ -119,8 +119,15 @@ const labels = uniq(flatten(Object.entries(rules)
 
 	console.log({ worstLabels })
 
-	if (balancedAccuracy < 0.8) {
-		process.exit(1)
+	if (process.env.RECOGNIZE_PUREJS === 'true') {
+		// In pureJS mdoe we're using a lighter model which is slightly worse
+		if (balancedAccuracy < 0.75) {
+			process.exit(1)
+		}
+	}else{
+		if (balancedAccuracy < 0.8) {
+			process.exit(1)
+		}
 	}
 })()
 
