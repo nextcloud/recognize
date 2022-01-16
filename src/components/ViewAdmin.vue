@@ -60,6 +60,21 @@
 			<pre><code>occ recognize:classify-audio</code></pre>
 		</SettingsSection>
 		<SettingsSection
+			:title="t('recognize', 'CPU cores') ">
+			<p>By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used.</p>
+			<p>
+				<label>
+					<input v-model="settings['tensorflow.cores']"
+						type="number"
+						:min="0"
+						:step="1"
+						:max="32"
+						@change="onChange">
+					<span>Number of CPU Cores (0 for no limit)</span>
+				</label>
+			</p>
+		</SettingsSection>
+		<SettingsSection
 			:title="t('recognize', 'Tensorflow plain mode')">
 			<p>
 				If your CPU architecture is not x86 or doesn't support the instructions that tensorflow uses, or your system is not using glibc,
@@ -113,7 +128,7 @@ import SettingsSection from '@nextcloud/vue/dist/Components/SettingsSection'
 import axios from '@nextcloud/axios'
 import { generateUrl } from '@nextcloud/router'
 
-const SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'node_binary']
+const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'node_binary']
 
 export default {
 	name: 'ViewAdmin',
@@ -147,6 +162,9 @@ export default {
 				this.settings[setting] = await this.getValue(setting)
 				if (['true', 'false'].includes(this.settings[setting])) {
 					this.settings[setting] = (this.settings[setting] === 'true')
+				}
+				if (setting === 'tensorflow.cores' && this.settings[setting] === '') {
+					this.settings[setting] = 0
 				}
 			}
 		} catch (e) {

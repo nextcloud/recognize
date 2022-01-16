@@ -23,7 +23,7 @@ class LandmarksClassifier {
 	public const IMAGE_TIMEOUT = 480; // seconds
 	public const IMAGE_PUREJS_TIMEOUT = 600; // seconds
 	public const MODEL_DOWNLOAD_TIMEOUT = 180; // seconds
-    const PRECONDITION_TAGS = ['architecture', 'tower', 'monument', 'bridge', 'historic'];
+    const PRECONDITION_TAGS = ['architecture', 'tower', 'monument', 'bridge', 'historic', 'landscape'];
 
     /**
 	 * @var LoggerInterface
@@ -93,6 +93,12 @@ class LandmarksClassifier {
 		$proc->setInput(implode("\n", $paths));
 		try {
 			$proc->start();
+
+            // Set cores
+            $cores = $this->config->getAppValue('recognize', 'tensorflow.cores', '0');
+            if ($cores !== '0') {
+                @exec('taskset -cp ' . implode(',', range(0, (int)$cores, 1)) . ' ' . $proc->getPid());
+            }
 
 			$i = 0;
 			$errOut = '';
