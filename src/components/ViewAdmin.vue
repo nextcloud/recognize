@@ -23,14 +23,23 @@
 			:title="t('recognize', 'Image tagging')">
 			<p>
 				<label>
-					<input v-model="settings['imagenet.enabled']" type="checkbox" @change="onChange">
-					<span>Enable object recognition</span>
+					<input v-model="settings['faces.enabled']" type="checkbox" @change="onChange">
+					<span>Enable face recognition</span>
 				</label>
 			</p>
 			<p>
 				<label>
-					<input v-model="settings['faces.enabled']" type="checkbox" @change="onChange">
-					<span>Enable face recognition</span>
+					<input v-model="settings['imagenet.enabled']" type="checkbox" @change="onChange">
+					<span>Enable object recognition</span>
+				</label>
+			</p>
+			<p class="indent">
+				<label>
+					<input v-model="settings['landmarks.enabled']"
+						type="checkbox"
+						:disabled="!Boolean(settings['imagenet.enabled'])"
+						@change="onChange">
+					<span>Enable landmark recognition</span>
 				</label>
 			</p>
 		</SettingsSection>
@@ -104,7 +113,7 @@ import SettingsSection from '@nextcloud/vue/dist/Components/SettingsSection'
 import axios from '@nextcloud/axios'
 import { generateUrl } from '@nextcloud/router'
 
-const SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'faces.enabled', 'musicnn.enabled', 'node_binary']
+const SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'node_binary']
 
 export default {
 	name: 'ViewAdmin',
@@ -229,6 +238,10 @@ figure[class^='icon-'] {
 
 #recognize {
 	position: relative;
+}
+
+#recognize .indent {
+	margin-left: 20px;
 }
 
 #recognize .loading,

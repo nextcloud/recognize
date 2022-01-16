@@ -50,6 +50,12 @@ class TagManager {
 		$this->objectMapper->assignTags($fileId, 'files', $tags);
 	}
 
+    public function getTagsForFiles(array $fileIds): array {
+        return array_map(function($tags) {
+            return $this->tagManager->getTagsByIds($tags);
+        }, $this->objectMapper->getTagIdsForObjects($fileIds, 'files'));
+    }
+
 	public function findClassifiedFiles(): array {
 		return $this->objectMapper->getObjectIdsForTags($this->getProcessedTag()->getId(), 'files');
 	}

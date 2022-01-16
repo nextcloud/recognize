@@ -6,6 +6,7 @@ const fsSync = require('fs')
 const YAML = require('yaml')
 const _ = require('lodash')
 const rules = YAML.parse(fsSync.readFileSync(__dirname + '/rules.yml').toString('utf8'))
+const { IMAGENET_CLASSES } = require('./efficientnet/classes')
 
 let tf, getPort, StaticServer
 let PUREJS = false
@@ -91,7 +92,7 @@ async function main(modelName, imgSize, minInput) {
 		)
 	}
 
-	const model = await EfficientNet.create(modelUrl, imgSize, minInput)
+	const model = await EfficientNet.create(modelUrl, imgSize, minInput, IMAGENET_CLASSES)
 	const getStdin = (await import('get-stdin')).default
 
 	const paths = process.argv[2] === '-'
@@ -102,6 +103,7 @@ async function main(modelName, imgSize, minInput) {
 		try {
 			let results = await model.inference(path, {
 				topK: 7,
+				softmax: true,
 			})
 
 			const labels = []

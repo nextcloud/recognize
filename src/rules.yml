@@ -3139,7 +3139,8 @@ paintbrush:
 
 historic architecture:
   label: historic
-  threshold: 0.4
+  threshold: 0.25
+  context: buildings architecture
   categories:
     - architecture
 
@@ -4365,7 +4366,10 @@ pencil sharpener:
   threshold: 0.1
 
 volcano:
-  see: ignore
+  label: mountain
+  categories:
+    - landscape
+  threshold: 0.5
 
 radio telescope:
   label: radio telescope

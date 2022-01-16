@@ -5,6 +5,7 @@ namespace OCA\Recognize\Service;
 use OC\User\NoUserException;
 use OCA\Recognize\Classifiers\Images\FacesClassifier;
 use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
+use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
 use OCP\IConfig;
 use OCP\Files\IRootFolder;
 use OCP\Files\NotPermittedException;
@@ -38,8 +39,12 @@ class ClassifyImagesService {
 	 * @var \OCP\IConfig
 	 */
 	private $config;
+    /**
+     * @var \OCA\Recognize\Classifiers\Images\LandmarksClassifier
+     */
+    private $landmarks;
 
-	public function __construct(FacesClassifier $facenet, ImagenetClassifier $imagenet, IRootFolder $rootFolder, ImagesFinderService $imagesFinder, ReferenceFacesFinderService $referenceFacesFinder, Logger $logger, IConfig $config) {
+    public function __construct(FacesClassifier $facenet, ImagenetClassifier $imagenet, IRootFolder $rootFolder, ImagesFinderService $imagesFinder, ReferenceFacesFinderService $referenceFacesFinder, Logger $logger, IConfig $config, LandmarksClassifier $landmarks) {
 		$this->facenet = $facenet;
 		$this->imagenet = $imagenet;
 		$this->rootFolder = $rootFolder;
@@ -47,7 +52,8 @@ class ClassifyImagesService {
 		$this->referenceFacesFinder = $referenceFacesFinder;
 		$this->logger = $logger;
 		$this->config = $config;
-	}
+        $this->landmarks = $landmarks;
+    }
 
 	/**
 	 * Run image classifiers
@@ -75,9 +81,14 @@ class ClassifyImagesService {
 			$images = array_slice($images, 0, $n);
 		}
 
-		if ($this->config->getAppValue('recognize', 'faces.enabled', 'false') !== 'false') {
+		if ($this->config->getAppValue('recognize', 'imagenet.enabled', 'false') !== 'false') {
 			$this->logger->debug('Classifying photos of user '.$user. ' using imagenet');
 			$this->imagenet->classify($images);
+
+            if ($this->config->getAppValue('recognize', 'landmarks.enabled', 'false') !== 'false') {
+                $this->logger->debug('Classifying photos of user '.$user. ' using landmarks');
+                $this->landmarks->classify($images);
+            }
 		}
 
 		if ($this->config->getAppValue('recognize', 'faces.enabled', 'false') !== 'false') {
