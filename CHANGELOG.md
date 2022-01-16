@@ -4,10 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.9.0
+
+### New
+
+ - Allow setting amount of used cores
+ - Speed up image classification models in pureJS mode by using WASM
+ - InstallDeps: Automatically enable pureJS on ARM
+ - Implement landmarks
+
+### Fixed
+
+ - Reduce BG job batch size in pureJS mode
+ - imagenet: Try to improve recognition of historic architecture
+ - imagenet: Don't ignore volcano
+
 ## v1.8.0
 
 ### New
-Implement Logger proxy and copy logs to cli
+ - Implement Logger proxy and copy logs to cli
 
 ### Fixed
 - Lint: Run php-cs-fixer
