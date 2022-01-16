@@ -8,14 +8,15 @@
 
 This app goes through your media collection and adds fitting tags, automatically categorizing your photos and music.
 
-* 👪 Recognizes faces from contact photos
-* 🏔 🦍 Recognizes animals, landscapes, food, vehicles, buildings and other objects
-* 👂 Recognizes music genres
+* 📷 👪 Recognizes faces from contact photos
+* 📷 🏔 🦍 Recognizes animals, landscapes, food, vehicles, buildings and other objects
+* 📷🗼 Recognizes landmarks and monuments
 * 📷 view your tagged photos with the photos app
+* 👂 🎵 Recognizes music genres
 * 🎵 listen to your tagged music with the audioplayer app
 * ⚡ Tagging works via Nextcloud's Collaborative Tags, allowing access by any of your apps
 
-Notice: While this app often works nicely its stability across different environments is more comparable to that of a tech preview.
+Note: This project is quite young and thus still a bit rough around the edges.
 
 ### Examples
 
@@ -29,11 +30,12 @@ This app does not send any sensitive data to cloud providers or similar services
 This is the [list of recognized things and which categories they are currently mapped to](https://github.com/marcelklehr/recognize/blob/master/src/rules.yml). I'm happy to accept pull requests for this file to fine tune predictions.
 
 ## Behind the scenes
-Recognize uses a pre-trained [Efficient](https://github.com/google/automl/tree/master/efficientnetv2)[Net v2](https://tfhub.dev/google/collections/efficientnet_v2/1) model for ImageNet object detection
+Recognize uses
 
-Recognize uses [face-api.js](https://github.com/justadudewhohacks/face-api.js) to extract and compare face features.
-
-Recognize uses a [Musicnn](https://arxiv.org/abs/1909.06654) neural network architecture to classify audio files into music genres. Also see [the original musicnn repository](https://github.com/jordipons/musicnn).
+ * a pre-trained [Efficient](https://github.com/google/automl/tree/master/efficientnetv2)[Net v2](https://tfhub.dev/google/collections/efficientnet_v2/1) model for ImageNet object detection.
+ * a pre-trained [model trained on the Landmarks v1 dataset](https://tfhub.dev/google/collections/landmarks/1) for landmark recognition.
+ * [face-api.js](https://github.com/justadudewhohacks/face-api.js) to extract and compare face features.
+ * a [Musicnn](https://arxiv.org/abs/1909.06654) neural network architecture to classify audio files into music genres. Also see [the original musicnn repository](https://github.com/jordipons/musicnn).
 
 ## Install
 
