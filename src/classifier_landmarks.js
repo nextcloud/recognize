@@ -39,7 +39,7 @@ if (process.env.RECOGNIZE_PUREJS === 'true') {
 }
 
 const EfficientNet = require('./efficientnet/EfficientnetModel')
-const THRESHOLD = 0.82
+const THRESHOLD = 0.9
 
 /**
  * @param className
