@@ -75,7 +75,7 @@ const flickr = new Flickr(process.env.FLICKR_API_KEY)
 
 	console.log({ averageTPR })
 
-	if (averageTPR < 0.04) {
+	if (averageTPR < 0.01) {
 		process.exit(1)
 	}
 })()
