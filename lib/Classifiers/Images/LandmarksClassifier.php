@@ -23,7 +23,7 @@ class LandmarksClassifier {
 	public const IMAGE_TIMEOUT = 480; // seconds
 	public const IMAGE_PUREJS_TIMEOUT = 600; // seconds
 	public const MODEL_DOWNLOAD_TIMEOUT = 180; // seconds
-    const PRECONDITION_TAGS = ['architecture', 'tower', 'monument', 'bridge', 'historic', 'landscape'];
+    const PRECONDITION_TAGS = ['architecture', 'tower', 'monument', 'bridge', 'historic'];
 
     /**
 	 * @var LoggerInterface
