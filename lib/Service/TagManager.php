@@ -90,5 +90,16 @@ class TagManager {
 			$tagIds = $this->objectMapper->getTagIdsForObjects($id, 'files');
 			$this->objectMapper->unassignTags($id, 'files', $tagIds[$id]);
 		}
+        $this->removeEmptyTags();
 	}
+
+    public function removeEmptyTags(): void {
+        $tags = $this->tagManager->getAllTags();
+        foreach ($tags as $tag) {
+            $files = $this->objectMapper->getObjectIdsForTags($tag->getId(), 'files', 1);
+            if (empty($files)) {
+                $this->tagManager->deleteTags($tag->getId());
+            }
+        }
+    }
 }
