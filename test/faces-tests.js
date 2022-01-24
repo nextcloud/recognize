@@ -8,7 +8,7 @@ const glob = require('fast-glob')
 const Parallel = require('async-parallel')
 const LABELS = require('./res/famous_people.json')
 
-const PHOTOS_PER_LABEL = 4
+const PHOTOS_PER_LABEL = 10
 const PHOTOS_OLDER_THAN = 1627464319 // 2021-07-28; for determinism
 const flickr = new Flickr(process.env.FLICKR_API_KEY)
 
@@ -18,7 +18,7 @@ const flickr = new Flickr(process.env.FLICKR_API_KEY)
 
 	await Parallel.each(labels, async label => {
 		try {
-			let urls = await findPhotos(label, PHOTOS_PER_LABEL)
+			let urls = await findPhotos(label + ' person', PHOTOS_PER_LABEL)
 			await Promise.all(
 				flatten(urls).map(url => download(url, 'temp_images/' + label))
 			)
