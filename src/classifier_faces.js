@@ -74,8 +74,9 @@ async function main() {
 		}
 	}
 
+	let faceMatcher
 	if (Object.values(faceDescriptors).length) {
-		const faceMatcher = new faceapi.FaceMatcher(Object.values(faceDescriptors), 0.4) // default is 0.6
+		faceMatcher = new faceapi.FaceMatcher(Object.values(faceDescriptors), 0.4) // default is 0.6
 	}
 
 	for (const path of paths) {
