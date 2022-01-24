@@ -58,6 +58,13 @@
 			<p>&nbsp;</p>
 			<pre><code>occ recognize:classify-images</code></pre>
 			<pre><code>occ recognize:classify-audio</code></pre>
+			<p>&nbsp;</p>
+			<p>You can reset the tags of all files that have been previously classified by recognize with the following command:</p>
+			<p>&nbsp;</p>
+			<pre><code>occ recognize:reset-tags</code></pre>
+			<p>You can delete all tags that no longer have any files associated with them with the following command:</p>
+			<p>&nbsp;</p>
+			<pre><code>occ recognize:cleanup-tags</code></pre>
 		</SettingsSection>
 		<SettingsSection
 			:title="t('recognize', 'CPU cores') ">
