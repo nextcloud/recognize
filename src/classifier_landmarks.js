@@ -153,7 +153,7 @@ tf.setBackend(process.env.RECOGNIZE_PUREJS === 'true' ? 'wasm' : 'tensorflow')
 			labels.sort((a, b) => a.probability - b.probability).reverse()
 			console.error(labels)
 			if (labels.length) {
-				console.log(JSON.stringify([labels[0].className]))
+				console.log(JSON.stringify(['landmark', labels[0].className]))
 			} else {
 				console.log(JSON.stringify([]))
 			}
