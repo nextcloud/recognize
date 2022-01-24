@@ -18,7 +18,7 @@ const flickr = new Flickr(process.env.FLICKR_API_KEY)
 
 	await Parallel.each(labels, async label => {
 		try {
-			let urls = await findPhotos(label + ' person', PHOTOS_PER_LABEL)
+			let urls = await findPhotos('"' + label + '" person', PHOTOS_PER_LABEL)
 			await Promise.all(
 				flatten(urls).map(url => download(url, 'temp_images/' + label))
 			)
