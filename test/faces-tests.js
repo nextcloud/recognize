@@ -64,7 +64,7 @@ const flickr = new Flickr(process.env.FLICKR_API_KEY)
 		console.log({ tpr })
 
 		return { tpr }
-	}, 4)
+	}, 1)
 
 	const sum = results.reduce((acc, val) => {
 		return { tpr: acc.tpr + (val.tpr !== -1 ? val.tpr : 0), count: acc.count + (val.tpr !== -1 ? 1 : 0)  }
