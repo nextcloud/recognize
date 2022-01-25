@@ -13,8 +13,7 @@ const PHOTOS_OLDER_THAN = 1627464319 // 2021-07-28; for determinism
 const flickr = new Flickr(process.env.FLICKR_API_KEY)
 
 ;(async function() {
-	const labels = LABELS
-
+	const labels = LABELS.slice(0, 100) // Github has a time limit :(
 
 	await Parallel.each(labels, async label => {
 		try {
