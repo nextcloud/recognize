@@ -1,7 +1,6 @@
 const Flickr = require('flickr-sdk')
 const { GOOGLE_IMG_SCRAP , GOOGLE_QUERY } = require('google-img-scrap');
 const download = require('download')
-const uniq = require('lodash/uniq')
 const flatten = require('lodash/flatten')
 const execa = require('execa')
 const glob = require('fast-glob')
@@ -13,7 +12,7 @@ const PHOTOS_OLDER_THAN = 1627464319 // 2021-07-28; for determinism
 const flickr = new Flickr(process.env.FLICKR_API_KEY)
 
 ;(async function() {
-	const labels = LABELS.slice(0,50)
+	const labels = LABELS.slice(0,20)
 
 	await Parallel.each(labels, async label => {
 		try {
@@ -25,7 +24,7 @@ const flickr = new Flickr(process.env.FLICKR_API_KEY)
 			console.log('Error downloading photos for label "' + label + '"')
 			console.log(e)
 		}
-	}, 20)
+	}, 1)
 
 	const faces = Object.fromEntries((await Parallel.map(labels, async label => {
 		const files = await glob(['temp_images/' + label + '/*'])
