@@ -52,7 +52,7 @@ const flickr = new Flickr(process.env.FLICKR_API_KEY)
 			const withFaces = predictions
 				.filter((labels, i) => labels.includes('people'))
 
-			tpr = matches.length / ( withFaces.length + 1 )
+			tpr = Math.max(matches.length - 1, 0) / Math.max(withFaces.length - 1, 1) // we exclude the reference pic and avoid dividing by 0
 
 			console.log('Processed photos for label "' + label + '"')
 		} catch (e) {
