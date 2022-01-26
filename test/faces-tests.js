@@ -13,7 +13,7 @@ const PHOTOS_OLDER_THAN = 1627464319 // 2021-07-28; for determinism
 const flickr = new Flickr(process.env.FLICKR_API_KEY)
 
 ;(async function() {
-	const labels = LABELS.slice(0, 100) // Github has a time limit :(
+	const labels = LABELS
 
 	await Parallel.each(labels, async label => {
 		try {
@@ -73,7 +73,7 @@ const flickr = new Flickr(process.env.FLICKR_API_KEY)
 
 	console.log({ averageTPR })
 
-	if (averageTPR < 0.01) {
+	if (averageTPR < 0.1) {
 		process.exit(1)
 	}
 })()
