@@ -8,16 +8,16 @@ const glob = require('fast-glob')
 const Parallel = require('async-parallel')
 const LABELS = require('./res/famous_people.json')
 
-const PHOTOS_PER_LABEL = 4
+const PHOTOS_PER_LABEL = 10
 const PHOTOS_OLDER_THAN = 1627464319 // 2021-07-28; for determinism
 const flickr = new Flickr(process.env.FLICKR_API_KEY)
 
 ;(async function() {
-	const labels = LABELS
+	const labels = LABELS.slice(0,50)
 
 	await Parallel.each(labels, async label => {
 		try {
-			let urls = await findPhotos('"' + label + '"', PHOTOS_PER_LABEL)
+			let urls = await findPhotosGoogle('"' + label + '"', PHOTOS_PER_LABEL)
 			await Promise.all(
 				flatten(urls).map(url => download(url, 'temp_images/' + label))
 			)
@@ -29,7 +29,7 @@ const flickr = new Flickr(process.env.FLICKR_API_KEY)
 
 	const faces = Object.fromEntries((await Parallel.map(labels, async label => {
 		const files = await glob(['temp_images/' + label + '/*'])
-		return [label, files[1]]
+		return [label, files[0]]
 	})).filter(entry => entry.length === 2))
 
 	const results = await Parallel.map(labels, async label => {
@@ -105,7 +105,8 @@ async function findPhotosGoogle(label, amount= PHOTOS_PER_LABEL) {
 	const results = await GOOGLE_IMG_SCRAP({
 		search: label,
 		query: {
-			EXTENSION: GOOGLE_QUERY.EXTENSION.JPG
+			EXTENSION: GOOGLE_QUERY.EXTENSION.JPG,
+			SIZE: GOOGLE_QUERY.SIZE.LARGE,
 		},
 		limit: amount,
 	});
