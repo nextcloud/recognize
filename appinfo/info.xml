@@ -7,13 +7,13 @@
 	<description><![CDATA[
 This app goes through your media collection and adds fitting tags, automatically categorizing your photos and music.
 
-* 👪 Recognizes faces from contact photos
-* 🏔 🦍 Recognizes animals, landscapes, food, vehicles, buildings and other objects
-* 👂 Recognizes music genres
-* 📷 view your tagged photos with the photos app
-* 🎵 listen to your tagged music with the audioplayer app
+* 📷 👪 Recognizes faces from contact photos
+* 📷 🏔 Recognizes animals, landscapes, food, vehicles, buildings and other objects
+* 📷 🗼 Recognizes landmarks and monuments
+* 👂 🎵 Recognizes music genres
 * ⚡ Tagging works via Nextcloud's Collaborative Tags, allowing access by any of your apps
-This is still experimental and currently only works for files that don't reside in external storage.
+  * 👂 listen to your tagged music with the audioplayer app
+  * 📷 view your tagged photos with the photos app
 
 Requirements:
 - php 7.3 and above
@@ -29,7 +29,7 @@ Requirements:
 The app does not send any sensitive data to cloud providers or similar services. All processing is done on your nextcloud machine, using Tensorflow.js running in Node.js, which comes bundled with this app.
 
 ]]></description>
-	<version>1.9.0</version>
+	<version>1.10.0</version>
 	<licence>agpl</licence>
 	<author mail="mklehr@gmx.net">Marcel Klehr</author>
 	<category>organization</category>
