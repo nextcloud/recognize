@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-### v1.10.0
+### 1.10.0 - 2022-01-27
 
 ### New
  - Landmarks: Add 'landmark' tag to all landmarks
@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - classifier_landmarks: Don't run landmarks models on 'landscape' images
 - classifier_landmarks: Increase threshold to 0.9
 
-## v1.9.0
+## 1.9.0 - 2022-01-16
 
 ### New
 
@@ -31,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - imagenet: Try to improve recognition of historic architecture
  - imagenet: Don't ignore volcano
 
-## v1.8.0
+## 1.8.0 - 2021-12-31
 
 ### New
  - Implement Logger proxy and copy logs to cli
@@ -43,7 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fix #121 empty contact photo (thanks @bonswouar)
 - Fix Classifier timeouts: Add constant time to account for model download
 
-## v1.7.0
+## 1.7.0 - 2021-12-13
 
 ### New
 - Update node.js version
@@ -57,37 +57,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - higher timeout values
 - fix default checkboxes
 
-## v1.6.10
+## 1.6.10 - 2021-09-10
 
 ### Fixed
 
 - Fixed node-pre-gyp execution
 
-## v1.6.9
+## 1.6.9
 
 ### Fixed
 
 - Fixed binary permissions
 
-## v1.6.8
+## 1.6.8
 
 ### Fixed
 
 - Fixed PureJS config checkbox initial values
 
-## v1.6.7
+## 1.6.7
 
 ### Fixed
 - Failed to install Tensorflow.js
 
-## v1.6.6
+## 1.6.6
 
 ### Fixed
 
 - Classifier_faces: Always return proper output
 - Classifier_imagenet: Correct exit code
 
-## v1.6.5
+## 1.6.5
 
 ### Fixed
  - Improve some false-positive thresholds
@@ -96,38 +96,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Add node.js path option
  - Use the TF.js built-in installer for optimal prebuilt binaries
 
-## v1.6.4
+## 1.6.4
 
 ### Fixed
 
 - Fix pure JS mode for imagenet classifier
 
 
-## v1.6.3
+## 1.6.3
 
 ### Fixed
 
 - Fix pure JS mode for imagenet classifier
 
-## v1.6.2
+## 1.6.2
 
 ### Fixed
 - Don't require wasm
 
-## v1.6.1
+## 1.6.1
 
 ### Fixed
 - Reduce bundle size
 - Disable GPU accelaration for now
 
 
-## v1.6.0
+## 1.6.0
 
 ### New
 
 - Implement a pure JS option
 
-## v1.5.8
+## 1.5.8
 
 ### Fixed
 
@@ -135,13 +135,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implement js-only fallback for cases where binaries can't be loaded
 
 
-## v1.5.7
+## 1.5.7
 
 ### Fixed
 
 - Fix build: Dereference symlinks instead of deleting them
 
-## v1.5.6
+## 1.5.6
 
 ### Fixed
 
@@ -149,13 +149,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix out-of-path file extraction
 - Fix broken pipe error
 
-## v1.5.5
+## 1.5.5
 
 ### Fixed
 
 - Reduce bundle size
 
-## v1.5.4
+## 1.5.4
 
 ### Fixed
 
@@ -168,7 +168,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - classifier_imagenet: Fix model download
 - Add setting for tfjs-node-gpu
 
-## v1.5.3
+## 1.5.3
 
 ### Fixed
 - Classifier.js: use fs/promises
@@ -177,20 +177,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix findMissedClassifications
 - Avoid symlink errors
 
-## v1.5.2
+## 1.5.2
 
 ### Fixed
 
 - classifier_faces: Don't fail on unreadable images
 
 
-## v1.5.1
+## 1.5.1
 
 ### Fixed
 
 - Reduced bundle size to be able to install from app store
 
-## v1.5.0
+## 1.5.0
 
 ### New
 
@@ -202,13 +202,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Support .nomedia and .noimage files
 
-## v1.4.2
+## 1.4.2
 
 ### Fixed
 - Include admin settings in build
 - Increase JPEG decoder memory limit
 
-## v1.4.0
+## 1.4.0
 
 ### New
 - admin settings
@@ -218,32 +218,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve classification
 - classifier_imagenet.js: Catch errors
 
-## v1.3.1
+## 1.3.1
 
 ### Fixed
 
 - Fix build
 
-## v1.3.0
+## 1.3.0
 
 ### New
 
 - Add a command line interface to run classifier on full speed
 
-## v1.2.2
+## 1.2.2
 
 ### Fixed
 
 - Add support for ARMv7l
 
 
-## v1.2.1
+## 1.2.1
 
 ### Fixed
 
 - Fix installation via appstore
 
-## v1.2.0
+## 1.2.0
 
 ### New
 
@@ -253,7 +253,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix build to allow installation via app store
 
-## v1.1.0
+## 1.1.0
 
 ### New
 
@@ -263,5 +263,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix build to allow installation via app store
 
-## v1.0.0
+## 1.0.0
 Initial version
