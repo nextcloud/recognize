@@ -67,6 +67,7 @@ jobs:
           apk add git
           apk add composer
           apk add nodejs
+          apk add npm
 
       - name: Checkout server
         uses: actions/checkout@v2
