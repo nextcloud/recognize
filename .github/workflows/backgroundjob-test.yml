@@ -29,7 +29,7 @@ jobs:
           - server-versions: stable23
             php-versions: 8.0
             databases: sqlite
-            container: alpine:3
+            container: nextcloud:fpm-alpine
 
     name: Test classify job on ${{ matrix.databases }}-${{ matrix.server-versions }}-php${{ matrix.php-versions }}
 
