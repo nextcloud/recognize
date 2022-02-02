@@ -58,6 +58,14 @@ jobs:
         options: --health-cmd pg_isready --health-interval 5s --health-timeout 2s --health-retries 5
 
     steps:
+      - name: Get Alpine Linux ready
+        if: ${{ matrix.container != ''}}
+        run: |
+          apk update
+          apk upgrade
+          apk add bash
+          apk add git
+
       - name: Checkout server
         uses: actions/checkout@v2
         with:
