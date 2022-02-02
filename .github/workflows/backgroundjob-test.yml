@@ -18,6 +18,7 @@ jobs:
         php-versions: ['7.3']
         databases: ['sqlite', 'mysql', 'pgsql']
         server-versions: ['stable20', 'stable21', 'stable22', 'stable23']
+        container: ['']
         include:
           - server-versions: stable22
             php-versions: 7.4
@@ -25,8 +26,14 @@ jobs:
           - server-versions: stable23
             php-versions: 8.0
             databases: sqlite
+          - server-versions: stable23
+            php-versions: 8.0
+            databases: sqlite
+            container: alpine:3
 
     name: Test classify job on ${{ matrix.databases }}-${{ matrix.server-versions }}-php${{ matrix.php-versions }}
+
+    container: ${{ matrix.container }}
 
     env:
       MYSQL_PORT: 4444

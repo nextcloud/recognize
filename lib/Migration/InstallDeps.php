@@ -33,6 +33,8 @@ use OCP\Migration\IRepairStep;
 
 class InstallDeps implements IRepairStep {
 	public const NODE_VERSION = 'v14.18.2';
+    public const NODE_SERVER_OFFICIAL = 'https://nodejs.org/dist/';
+    public const NODE_SERVER_UNOFFICIAL = 'https://unofficial-builds.nodejs.org/download/release/';
 
 	/** @var IConfig */
 	protected $config;
@@ -51,33 +53,42 @@ class InstallDeps implements IRepairStep {
 
 	public function run(IOutput $output): void {
         $isARM = false;
-		if (PHP_INT_SIZE === 8) {
-			$binaryPath = $this->downloadBinary(self::NODE_VERSION, 'arm64');
-			$version = $this->testBinary($binaryPath);
-            $isARM = true;
-			if ($version === null) {
-				$binaryPath = $this->downloadBinary(self::NODE_VERSION, 'x64');
-				$version = $this->testBinary($binaryPath);
-                $isARM = false;
-				if ($version === null) {
-					$output->warning('Failed to install node binary');
-					return;
-				}
-			}
-		} else {
-			$binaryPath = $this->downloadBinary(self::NODE_VERSION, 'armv7l');
-			$version = $this->testBinary($binaryPath);
-            $isARM = true;
+        $isMusl = false;
+        $configs = [
+            ['server' => self::NODE_SERVER_OFFICIAL, 'flavor' => ''],
+            ['server' => self::NODE_SERVER_UNOFFICIAL, 'flavor' => 'musl'],
+        ];
+        foreach($configs as $config) {
+            if ($config['flavor'] === 'musl') {
+                $isMusl = true;
+            }
+            if (PHP_INT_SIZE === 8) {
+                $binaryPath = $this->downloadNodeBinary($config['server'], self::NODE_VERSION, 'arm64', $config['flavor']);
+                $version = $this->testBinary($binaryPath);
+                $isARM = true;
+                if ($version === null) {
+                    $binaryPath = $this->downloadNodeBinary($config['server'], self::NODE_VERSION, 'x64', $config['flavor']);
+                    $version = $this->testBinary($binaryPath);
+                    $isARM = false;
+                }
+            } else {
+                $binaryPath = $this->downloadNodeBinary($config['server'], self::NODE_VERSION, 'armv7l', $config['flavor']);
+                $version = $this->testBinary($binaryPath);
+                $isARM = true;
+            }
+            if ($version !== null) {
+                break;
+            }
+        }
 
-			if ($version === null) {
-				$output->warning('Failed to install node binary');
-				return;
-			}
-		}
+        if ($version === null) {
+            $output->warning('Failed to install node binary');
+            return;
+        }
 
 		// Write the app config
 		$this->config->setAppValue('recognize', 'node_binary', $binaryPath);
-        if ($isARM) {
+        if ($isARM || $isMusl) {
             $this->config->setAppValue('recognize', 'tensorflow.purejs', 'true');
         }
 
@@ -117,8 +128,12 @@ class InstallDeps implements IRepairStep {
 		}
 	}
 
-	protected function downloadBinary(string $version, string $arch) : string {
-		$url = 'https://nodejs.org/dist/'.$version.'/node-'.$version.'-linux-'.$arch.'.tar.gz';
+	protected function downloadNodeBinary(string $server, string $version, string $arch, string $flavor = '') : string {
+        $name = 'node-'.$version.'-linux-'.$arch;
+        if ($flavor !== '') {
+            $name = $name . '-'.$flavor;
+        }
+		$url = $server.$version.'/'.$name.'.tar.gz';
 		$file = $this->binaryDir.'/'.$arch.'.tar.gz';
 		$archive = file_get_contents($url);
 		if ($archive === false) {
@@ -129,7 +144,7 @@ class InstallDeps implements IRepairStep {
 			throw new \Exception('Saving of node binary failed');
 		}
 		$tar = new TAR($file);
-		$tar->extractFile('node-'.$version.'-linux-'.$arch.'/bin/node', $this->binaryDir.'/node');
+		$tar->extractFile($name.'/bin/node', $this->binaryDir.'/node');
 		return $this->binaryDir.'/node';
 	}
 
