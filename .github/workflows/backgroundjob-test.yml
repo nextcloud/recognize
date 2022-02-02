@@ -82,7 +82,7 @@ jobs:
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
       - name: Set up php ${{ matrix.php-versions }}
-        if: ${{ matrix.container === ''}}
+        if: ${{ matrix.container == ''}}
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
@@ -103,7 +103,7 @@ jobs:
           fallbackNpm: '^6'
 
       - name: Set up node ${{ steps.versions.outputs.nodeVersion }}
-        if: ${{ matrix.container === ''}}
+        if: ${{ matrix.container == ''}}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ steps.versions.outputs.nodeVersion }}
