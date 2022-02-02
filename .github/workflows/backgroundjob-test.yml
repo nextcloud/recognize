@@ -68,6 +68,9 @@ jobs:
           apk add composer
           apk add nodejs
           apk add npm
+          apk add make
+          apk add curl
+          apk add grep
 
       - name: Checkout server
         uses: actions/checkout@v2
