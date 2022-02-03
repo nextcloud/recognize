@@ -54,31 +54,27 @@ class InstallDeps implements IRepairStep {
 	public function run(IOutput $output): void {
         $isARM = false;
         $isMusl = false;
-        $configs = [
-            ['server' => self::NODE_SERVER_OFFICIAL, 'flavor' => ''],
-            ['server' => self::NODE_SERVER_UNOFFICIAL, 'flavor' => 'musl'],
-        ];
-        foreach($configs as $config) {
-            if ($config['flavor'] === 'musl') {
-                $isMusl = true;
-            }
-            if (PHP_INT_SIZE === 8) {
-                $binaryPath = $this->downloadNodeBinary($config['server'], self::NODE_VERSION, 'arm64', $config['flavor']);
+
+        if (PHP_INT_SIZE === 8) {
+            $binaryPath = $this->downloadNodeBinary(self::NODE_SERVER_OFFICIAL, self::NODE_VERSION, 'arm64');
+            $version = $this->testBinary($binaryPath);
+            $isARM = true;
+            if ($version === null) {
+                $binaryPath = $this->downloadNodeBinary(self::NODE_SERVER_OFFICIAL, self::NODE_VERSION, 'x64');
                 $version = $this->testBinary($binaryPath);
-                $isARM = true;
-                if ($version === null) {
-                    $binaryPath = $this->downloadNodeBinary($config['server'], self::NODE_VERSION, 'x64', $config['flavor']);
-                    $version = $this->testBinary($binaryPath);
-                    $isARM = false;
-                }
-            } else {
-                $binaryPath = $this->downloadNodeBinary($config['server'], self::NODE_VERSION, 'armv7l', $config['flavor']);
-                $version = $this->testBinary($binaryPath);
-                $isARM = true;
+                $isARM = false;
             }
-            if ($version !== null) {
-                break;
-            }
+        } else {
+            $binaryPath = $this->downloadNodeBinary(self::NODE_SERVER_OFFICIAL, self::NODE_VERSION, 'armv7l');
+            $version = $this->testBinary($binaryPath);
+            $isARM = true;
+        }
+
+        if ($version === null && PHP_INT_SIZE === 8) {
+            $binaryPath = $this->downloadNodeBinary(self::NODE_SERVER_UNOFFICIAL, self::NODE_VERSION, 'x64', 'musl');
+            $version = $this->testBinary($binaryPath);
+            $isARM = false;
+            $isMusl = true;
         }
 
         if ($version === null) {
