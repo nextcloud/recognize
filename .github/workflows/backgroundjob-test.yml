@@ -120,7 +120,7 @@ jobs:
         working-directory: apps/${{ env.APP_NAME }}
         run: |
           composer install --ignore-platform-req=php --no-dev
-          npm ci
+          make all
 
       - name: Install app on Alpine
         if: ${{ matrix.container != ''}}
@@ -128,6 +128,8 @@ jobs:
         run: |
           composer install --ignore-platform-req=php --no-dev
           npm ci --ignore-scripts
+          npm run build
+          mkdir -p bin
 
       - name: Set up Nextcloud and install app
         if: ${{ matrix.databases != 'pgsql'}}
@@ -174,6 +176,10 @@ jobs:
       - name: Run cron
         run: |
           php cron.php
+
+      - name: Show log
+        run: |
+          tail -50 data/nextcloud.log
 
       - name: Check log
         run: |
