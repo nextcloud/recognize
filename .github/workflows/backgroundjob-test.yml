@@ -116,10 +116,18 @@ jobs:
         run: npm i -g npm@"${{ steps.versions.outputs.npmVersion }}"
 
       - name: Install app
+        if: ${{ matrix.container == ''}}
         working-directory: apps/${{ env.APP_NAME }}
         run: |
           composer install --ignore-platform-req=php --no-dev
-          make all
+          npm ci
+
+      - name: Install app on Alpine
+        if: ${{ matrix.container != ''}}
+        working-directory: apps/${{ env.APP_NAME }}
+        run: |
+          composer install --ignore-platform-req=php --no-dev
+          npm ci --ignore-scripts
 
       - name: Set up Nextcloud and install app
         if: ${{ matrix.databases != 'pgsql'}}
