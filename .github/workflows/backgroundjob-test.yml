@@ -154,6 +154,7 @@ jobs:
           ./occ app:enable -vvv ${{ env.APP_NAME }}
 
       - name: Set pure-js mode
+        if: ${{ matrix.container == ''}}
         run: |
           ./occ config:app:set --value false recognize tensorflow.purejs
 
