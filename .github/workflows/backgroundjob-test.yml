@@ -18,6 +18,7 @@ jobs:
         php-versions: ['7.3']
         databases: ['sqlite', 'mysql', 'pgsql']
         server-versions: ['stable20', 'stable21', 'stable22', 'stable23']
+        container: ['']
         include:
           - server-versions: stable22
             php-versions: 7.4
@@ -25,8 +26,14 @@ jobs:
           - server-versions: stable23
             php-versions: 8.0
             databases: sqlite
+          - server-versions: stable23
+            php-versions: 8.0
+            databases: sqlite
+            container: nextcloud:fpm-alpine
 
     name: Test classify job on ${{ matrix.databases }}-${{ matrix.server-versions }}-php${{ matrix.php-versions }}
+
+    container: ${{ matrix.container }}
 
     env:
       MYSQL_PORT: 4444
@@ -51,6 +58,20 @@ jobs:
         options: --health-cmd pg_isready --health-interval 5s --health-timeout 2s --health-retries 5
 
     steps:
+      - name: Get Alpine Linux ready
+        if: ${{ matrix.container != ''}}
+        run: |
+          apk update
+          apk upgrade
+          apk add bash
+          apk add git
+          apk add composer
+          apk add nodejs
+          apk add npm
+          apk add make
+          apk add curl
+          apk add grep
+
       - name: Checkout server
         uses: actions/checkout@v2
         with:
@@ -65,7 +86,8 @@ jobs:
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
       - name: Set up php ${{ matrix.php-versions }}
-        uses: shivammathur/setup-php@v1
+        if: ${{ matrix.container == ''}}
+        uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
           tools: phpunit
@@ -85,6 +107,7 @@ jobs:
           fallbackNpm: '^6'
 
       - name: Set up node ${{ steps.versions.outputs.nodeVersion }}
+        if: ${{ matrix.container == ''}}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ steps.versions.outputs.nodeVersion }}
@@ -93,10 +116,20 @@ jobs:
         run: npm i -g npm@"${{ steps.versions.outputs.npmVersion }}"
 
       - name: Install app
+        if: ${{ matrix.container == ''}}
         working-directory: apps/${{ env.APP_NAME }}
         run: |
           composer install --ignore-platform-req=php --no-dev
           make all
+
+      - name: Install app on Alpine
+        if: ${{ matrix.container != ''}}
+        working-directory: apps/${{ env.APP_NAME }}
+        run: |
+          composer install --ignore-platform-req=php --no-dev
+          npm ci --ignore-scripts
+          npm run build
+          mkdir -p bin
 
       - name: Set up Nextcloud and install app
         if: ${{ matrix.databases != 'pgsql'}}
@@ -121,6 +154,7 @@ jobs:
           ./occ app:enable -vvv ${{ env.APP_NAME }}
 
       - name: Set pure-js mode
+        if: ${{ matrix.container == ''}}
         run: |
           ./occ config:app:set --value false recognize tensorflow.purejs
 
@@ -143,6 +177,10 @@ jobs:
       - name: Run cron
         run: |
           php cron.php
+
+      - name: Show log
+        run: |
+          tail -50 data/nextcloud.log
 
       - name: Check log
         run: |
