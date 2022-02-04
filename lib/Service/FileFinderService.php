@@ -80,7 +80,7 @@ class FileFinderService {
 	/**
 	 * @throws NotFoundException|InvalidPathException
 	 */
-	public function findFilesInFolder(Folder $folder, &$results = []):array {
+	public function findFilesInFolder(string $user, Folder $folder, &$results = []):array {
 		$this->logger->debug('Searching '.$folder->getInternalPath());
 
 		$foundMarkers = array_filter($this->ignoreMarkers, static function ($markerFile) use ($folder) {
@@ -95,11 +95,14 @@ class FileFinderService {
 		$nodes = $folder->getDirectoryListing();
 		foreach ($nodes as $node) {
 			if ($node instanceof Folder) {
-				$this->findFilesInFolder($node, $results);
+				$this->findFilesInFolder($user, $node, $results);
 			} elseif ($node instanceof File) {
 				if ($this->objectMapper->haveTag([$node->getId()], 'files', $this->recognizedTag->getId())) {
 					continue;
 				}
+                if ($node->getOwner()->getUID() !== $user) {
+                    continue;
+                }
 				$mimeType = $node->getMimetype();
 				if (!in_array($mimeType, $this->formats)) {
 					continue;

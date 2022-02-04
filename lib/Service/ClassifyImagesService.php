@@ -72,7 +72,7 @@ class ClassifyImagesService {
 			return false;
 		}
 		$this->logger->debug('Collecting photos of user '.$user);
-		$images = $this->imagesFinder->findImagesInFolder($this->rootFolder->getUserFolder($user));
+		$images = $this->imagesFinder->findImagesInFolder($user, $this->rootFolder->getUserFolder($user));
 		if (count($images) === 0) {
 			$this->logger->debug('No unclassified photos found by user '.$user);
 			return false;

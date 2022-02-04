@@ -27,7 +27,7 @@ class ImagesFinderService extends FileFinderService {
 	/**
 	 * @throws NotFoundException|InvalidPathException
 	 */
-	public function findImagesInFolder(Folder $folder):array {
-		return $this->findFilesInFolder($folder);
+	public function findImagesInFolder(string $user, Folder $folder):array {
+		return $this->findFilesInFolder($user, $folder);
 	}
 }
