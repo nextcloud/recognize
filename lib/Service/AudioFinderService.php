@@ -25,7 +25,7 @@ class AudioFinderService extends FileFinderService {
 	/**
 	 * @throws NotFoundException|InvalidPathException
 	 */
-	public function findAudioInFolder(Folder $folder):array {
-		return $this->findFilesInFolder($folder);
+	public function findAudioInFolder(string $user, Folder $folder):array {
+		return $this->findFilesInFolder($user, $folder);
 	}
 }

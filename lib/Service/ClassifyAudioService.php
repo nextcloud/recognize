@@ -54,7 +54,7 @@ class ClassifyAudioService {
 			return false;
 		}
 		$this->logger->debug('Collecting audio files of user '.$user);
-		$files = $this->audioFinder->findAudioInFolder($this->rootFolder->getUserFolder($user));
+		$files = $this->audioFinder->findAudioInFolder($user, $this->rootFolder->getUserFolder($user));
 		if (count($files) === 0) {
 			$this->logger->debug('No audio files found of user '.$user);
 			return false;
