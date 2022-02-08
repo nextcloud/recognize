@@ -1,3 +1,5 @@
+import { downloadAll } from './model-manager'
+
 const path = require('path')
 const VERSION = require('../package.json').version
 const download = require('download')
@@ -85,19 +87,9 @@ async function main(modelName, imgSize, minInput, paths) {
 		modelUrl = `file://${modelPath}/${modelFileName}`
 	}
 
-	// Download model on first run
+	// Download models on first run
 	if (!fsSync.existsSync(modelPath)) {
-		await download(
-			`https://github.com/marcelklehr/recognize/archive/refs/tags/v${VERSION}.tar.gz`,
-			path.resolve(__dirname, '..')
-		)
-		await new Promise(resolve =>
-			tar.x({
-				strip: 1,
-				C: path.resolve(__dirname, '..'),
-				file: path.resolve(__dirname, '..', `recognize-${VERSION}.tar.gz`),
-			}, [`recognize-${VERSION}/models/${modelName}`], resolve)
-		)
+		await downloadAll()
 	}
 
 	const model = await EfficientNet.create(modelUrl, imgSize, minInput, LABELS[modelName])
