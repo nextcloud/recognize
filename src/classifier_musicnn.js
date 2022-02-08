@@ -30,6 +30,7 @@ if (process.env.RECOGNIZE_PUREJS === 'true') {
 }
 
 const Musicnn = require('./musicnn/MusicnnModel')
+const { downloadAll } = require('./model-manager')
 
 /**
  * @param className
@@ -72,19 +73,9 @@ async function main() {
 		modelUrl = `file://${modelPath}/${modelFileName}`
 	}
 
-	// Download model on first run
+	// Download models on first run
 	if (!fsSync.existsSync(modelPath)) {
-		await download(
-			`https://github.com/marcelklehr/recognize/archive/refs/tags/v${VERSION}.tar.gz`,
-			path.resolve(__dirname, '..')
-		)
-		await new Promise(resolve =>
-			tar.x({
-				strip: 1,
-				C: path.resolve(__dirname, '..'),
-				file: path.resolve(__dirname, '..', `recognize-${VERSION}.tar.gz`),
-			}, [`recognize-${VERSION}/models/musicnn`], resolve)
-		)
+		await downloadAll()
 	}
 
 	const model = await Musicnn.create(modelUrl)

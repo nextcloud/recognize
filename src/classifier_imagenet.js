@@ -1,5 +1,4 @@
 const path = require('path')
-const VERSION = require('../package.json').version
 const download = require('download')
 const tar = require('tar')
 const fsSync = require('fs')
@@ -7,7 +6,6 @@ const YAML = require('yaml')
 const _ = require('lodash')
 const rules = YAML.parse(fsSync.readFileSync(__dirname + '/rules.yml').toString('utf8'))
 const { IMAGENET_CLASSES } = require('./efficientnet/classes')
-const ref = process.env.GITHUB_REF ? process.env.GITHUB_REF : `ref/tags/v${VERSION}`
 
 let tf, getPort, StaticServer
 let PUREJS = false
@@ -34,6 +32,7 @@ if (process.env.RECOGNIZE_PUREJS === 'true') {
 }
 
 const EfficientNet = require('./efficientnet/EfficientnetModel')
+const { downloadAll } = require('./model-manager')
 
 /**
  * @param className
@@ -78,22 +77,9 @@ async function main(modelName, imgSize, minInput) {
 		modelUrl = `file://${modelPath}/${modelFileName}`
 	}
 
-	// Download model on first run
+	// Download models on first run
 	if (!fsSync.existsSync(modelPath)) {
-		await download(
-			`https://github.com/marcelklehr/recognize/archive/${ref}.tar.gz`,
-			{ filename: path.resolve(__dirname, '..', 'recognize.tar.gz') }
-		)
-		await new Promise(resolve =>
-			tar.x({
-				strip: 1,
-				C: path.resolve(__dirname, '..'),
-				file: path.resolve(__dirname, '..', 'recognize.tar.gz'),
-				filter(path, entry) {
-					return path.contains('models/')
-				},
-			}, [], resolve)
-		)
+		await downloadAll()
 	}
 
 	const model = await EfficientNet.create(modelUrl, imgSize, minInput, IMAGENET_CLASSES)
