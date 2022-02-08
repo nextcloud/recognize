@@ -1,7 +1,4 @@
 const path = require('path')
-const VERSION = require('../package.json').version
-const download = require('download')
-const tar = require('tar')
 const fsSync = require('fs')
 const YAML = require('yaml')
 const _ = require('lodash')
