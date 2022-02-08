@@ -97,6 +97,7 @@ jobs:
         run: |
           composer install --ignore-platform-req=php --no-dev
           make all
+          rm -rf models # Make it download from github
 
       - name: Set up Nextcloud and install app
         if: ${{ matrix.databases != 'pgsql'}}
@@ -141,6 +142,8 @@ jobs:
           done
 
       - name: Run cron
+        env:
+          GITHUB_REF: ${{ github.ref }}
         run: |
           php cron.php
 

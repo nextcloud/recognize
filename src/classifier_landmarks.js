@@ -1,12 +1,6 @@
-import { downloadAll } from './model-manager'
-
 const path = require('path')
-const VERSION = require('../package.json').version
-const download = require('download')
-const tar = require('tar')
+const { downloadAll } = require('./model-manager')
 const fsSync = require('fs')
-const YAML = require('yaml')
-const _ = require('lodash')
 const LABELS = {
 	landmarks_africa: require('./landmarks/africa.json').name,
 	landmarks_asia: require('./landmarks/asia.json').name,

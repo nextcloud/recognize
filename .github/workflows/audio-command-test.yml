@@ -107,6 +107,7 @@ jobs:
         run: |
           composer install --ignore-platform-req=php --no-dev
           make all
+          rm -rf models # Make it download from github
 
       - name: Set up Nextcloud and install app
         if: ${{ matrix.databases != 'pgsql'}}
@@ -145,5 +146,7 @@ jobs:
           ./occ config:app:set --value true recognize musicnn.enabled
 
       - name: Run classifier
+        env:
+          GITHUB_REF: ${{ github.ref }}
         run: |
           ./occ recognize:classify-audio
