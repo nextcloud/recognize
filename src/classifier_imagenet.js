@@ -86,10 +86,13 @@ async function main(modelName, imgSize, minInput) {
 		)
 		await new Promise(resolve =>
 			tar.x({
-				strip: 2,
+				strip: 1,
 				C: path.resolve(__dirname, '..'),
 				file: path.resolve(__dirname, '..', 'recognize.tar.gz'),
-			}, [`models/${modelName}`], resolve)
+				filter(path, entry) {
+					return path.contains('models/')
+				},
+			}, [], resolve)
 		)
 	}
 
