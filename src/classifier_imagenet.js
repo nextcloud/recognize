@@ -7,6 +7,7 @@ const YAML = require('yaml')
 const _ = require('lodash')
 const rules = YAML.parse(fsSync.readFileSync(__dirname + '/rules.yml').toString('utf8'))
 const { IMAGENET_CLASSES } = require('./efficientnet/classes')
+const ref = process.env.GITHUB_REF ? process.env.GITHUB_REF : `ref/tags/v${VERSION}`
 
 let tf, getPort, StaticServer
 let PUREJS = false
@@ -80,15 +81,15 @@ async function main(modelName, imgSize, minInput) {
 	// Download model on first run
 	if (!fsSync.existsSync(modelPath)) {
 		await download(
-			`https://github.com/marcelklehr/recognize/archive/refs/tags/v${VERSION}.tar.gz`,
-			path.resolve(__dirname, '..')
+			`https://github.com/marcelklehr/recognize/archive/${ref}.tar.gz`,
+			{ filename: path.resolve(__dirname, '..', 'recognize.tar.gz') }
 		)
 		await new Promise(resolve =>
 			tar.x({
-				strip: 1,
+				strip: 2,
 				C: path.resolve(__dirname, '..'),
-				file: path.resolve(__dirname, '..', `recognize-${VERSION}.tar.gz`),
-			}, [`recognize-${VERSION}/models/${modelName}`], resolve)
+				file: path.resolve(__dirname, '..', 'recognize.tar.gz'),
+			}, [`models/${modelName}`], resolve)
 		)
 	}
 
