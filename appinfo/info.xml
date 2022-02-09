@@ -20,16 +20,16 @@ Requirements:
 - App "collaborative tags" enabled
 - For native speed:
   - Processor: x86 64bit (with support for AVX instructions)
-  - System with glibc (Required by libtensorflow; usually the norm on Linux; Alpine linux and FreeBSD are *not* such systems)
+  - System with glibc (usually the norm on Linux; Alpine linux and FreeBSD are *not* such systems)
 - For sub-native speed (using JavaScript mode)
   - Processor: x86 64bit, arm64, armv7l (no AVX needed)
-  - System with glibc (When using the bundled node.js binary; alternatively you can set the path to custom node.js binary)
+  - System with glibc or musl (incl. Alpine linux)
 - ~4GB of free RAM (if you're cutting it close, make sure you have some swap available)
 
 The app does not send any sensitive data to cloud providers or similar services. All processing is done on your nextcloud machine, using Tensorflow.js running in Node.js, which comes bundled with this app.
 
 ]]></description>
-	<version>1.10.0</version>
+	<version>1.11.0</version>
 	<licence>agpl</licence>
 	<author mail="mklehr@gmx.net">Marcel Klehr</author>
 	<category>organization</category>
