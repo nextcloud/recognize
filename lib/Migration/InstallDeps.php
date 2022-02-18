@@ -99,7 +99,7 @@ class InstallDeps implements IRepairStep {
 
 		$cmd = escapeshellcmd($binaryPath) . ' ' . escapeshellarg('--version');
 		try {
-			@exec($cmd, $output, $returnCode);
+			exec($cmd . ' 2>&1', $output, $returnCode);
 		} catch (\Throwable $e) {
 		}
 
@@ -115,7 +115,7 @@ class InstallDeps implements IRepairStep {
 		chdir($this->tfjsPath);
 		$cmd = 'PATH='.escapeshellcmd($this->preGypBinaryDir).':'.escapeshellcmd($this->binaryDir).':$PATH ' . escapeshellcmd($nodeBinary) . ' ' . escapeshellarg($this->tfjsInstallScript) . ' ' . escapeshellarg('download');
 		try {
-			@exec($cmd, $output, $returnCode);
+			exec($cmd . ' 2>&1', $output, $returnCode); // Appending  2>&1 to avoid leaking sterr
 		} catch (\Throwable $e) {
 		}
 		chdir($oriCwd);
