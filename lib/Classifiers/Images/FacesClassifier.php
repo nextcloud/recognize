@@ -97,7 +97,7 @@ class FacesClassifier {
 					$this->logger->debug('Result for ' . $files[$i]->getName() . ' = ' . $result);
 					try {
 						// decode json
-						$tags = json_decode(utf8_encode($result), true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
+						$tags = json_decode($result, true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
 
 
 						// assign tags
