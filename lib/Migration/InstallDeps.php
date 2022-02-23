@@ -52,30 +52,34 @@ class InstallDeps implements IRepairStep {
 	}
 
 	public function run(IOutput $output): void {
-        $isARM = false;
-        $isMusl = false;
+		$isARM = false;
+		$isMusl = false;
+		$uname = php_uname('m')
 
-        if (PHP_INT_SIZE === 8) {
-            $binaryPath = $this->downloadNodeBinary(self::NODE_SERVER_OFFICIAL, self::NODE_VERSION, 'arm64');
-            $version = $this->testBinary($binaryPath);
-            $isARM = true;
-            if ($version === null) {
-                $binaryPath = $this->downloadNodeBinary(self::NODE_SERVER_OFFICIAL, self::NODE_VERSION, 'x64');
-                $version = $this->testBinary($binaryPath);
-                $isARM = false;
-            }
-        } else {
-            $binaryPath = $this->downloadNodeBinary(self::NODE_SERVER_OFFICIAL, self::NODE_VERSION, 'armv7l');
-            $version = $this->testBinary($binaryPath);
-            $isARM = true;
-        }
+		if ($uname === 'x86_64') {
+			$binaryPath = $this->downloadNodeBinary(self::NODE_SERVER_OFFICIAL, self::NODE_VERSION, 'x64');
+			$version = $this->testBinary($binaryPath);
 
-        if ($version === null && PHP_INT_SIZE === 8) {
-            $binaryPath = $this->downloadNodeBinary(self::NODE_SERVER_UNOFFICIAL, self::NODE_VERSION, 'x64', 'musl');
+			if ($version === null) {
+				$binaryPath = $this->downloadNodeBinary(self::NODE_SERVER_UNOFFICIAL, self::NODE_VERSION, 'x64', 'musl');
+				$version = $this->testBinary($binaryPath);
+				$isMusl = true;
+			}
+
+		} elseif ($uname === 'aarch64') {
+			$binaryPath = $this->downloadNodeBinary(self::NODE_SERVER_OFFICIAL, self::NODE_VERSION, 'arm64');
             $version = $this->testBinary($binaryPath);
-            $isARM = false;
-            $isMusl = true;
-        }
+			$isARM = true;
+
+		} elseif ($uname === 'armv7l') {
+			$binaryPath = $this->downloadNodeBinary(self::NODE_SERVER_OFFICIAL, self::NODE_VERSION, 'armv7l');
+			$version = $this->testBinary($binaryPath);
+			$isARM = true;
+
+		} else {
+			$output->warning('CPU archtecture $uname is not supported.');
+            return;
+		}
 
         if ($version === null) {
             $output->warning('Failed to install node binary');
