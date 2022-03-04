@@ -27,7 +27,7 @@
     "@nextcloud/router": "^2.0.0",
     "@nextcloud/vue": "^4.0.2",
     "@tedconf/fessonia": "^2.2.1",
-    "@tensorflow/tfjs": "^3.12",
+    "@tensorflow/tfjs": "^3.14",
     "@tensorflow/tfjs-backend-wasm": "^3.12.0",
     "@tensorflow/tfjs-node": "^3.12",
     "@vladmandic/face-api": "^1.6.3",
