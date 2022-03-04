@@ -28,7 +28,7 @@
     "@nextcloud/vue": "^4.0.2",
     "@tedconf/fessonia": "^2.2.1",
     "@tensorflow/tfjs": "^3.14",
-    "@tensorflow/tfjs-backend-wasm": "^3.12.0",
+    "@tensorflow/tfjs-backend-wasm": "^3.14.0",
     "@tensorflow/tfjs-node": "^3.14",
     "@vladmandic/face-api": "^1.6.3",
     "download": "^8.0.0",
