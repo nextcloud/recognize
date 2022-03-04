@@ -23,7 +23,7 @@
   "author": "Marcel Klehr <mklehr@gmx.net>",
   "license": "MIT",
   "dependencies": {
-    "@nextcloud/axios": "^1.6.0",
+    "@nextcloud/axios": "^1.9.0",
     "@nextcloud/router": "^2.0.0",
     "@nextcloud/vue": "^4.0.2",
     "@tedconf/fessonia": "^2.2.1",
