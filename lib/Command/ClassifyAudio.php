@@ -58,7 +58,9 @@ class ClassifyAudio extends Command {
 			});
 			$this->logger->setCliOutput($output);
 			foreach ($users as $user) {
-				$this->audioClassifier->run($user);
+                do {
+                    $anythingClassified = $this->audioClassifier->run($user, 500);
+                } while($anythingClassified);
 			}
 		} catch (\Exception $ex) {
 			$output->writeln('<error>Failed to classify audio</error>');

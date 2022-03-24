@@ -59,7 +59,9 @@ class ClassifyImages extends Command {
 			});
 			$this->logger->setCliOutput($output);
 			foreach ($users as $user) {
-				$this->imageClassifier->run($user);
+				do {
+                    $anythingClassified = $this->imageClassifier->run($user, 500);
+                } while($anythingClassified);
 			}
 		} catch (\Exception $ex) {
 			$output->writeln('<error>Failed to classify images</error>');
