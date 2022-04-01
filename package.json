@@ -23,6 +23,7 @@
   "author": "Marcel Klehr <mklehr@gmx.net>",
   "license": "MIT",
   "dependencies": {
+    "@exifer/gps": "^1.0.0-beta.2",
     "@nextcloud/axios": "^1.9.0",
     "@nextcloud/router": "^2.0.0",
     "@nextcloud/vue": "^4.0.2",
@@ -32,7 +33,9 @@
     "@tensorflow/tfjs-node": "^3.14",
     "@vladmandic/face-api": "^1.6.5",
     "download": "^8.0.0",
+    "exifer": "^1.0.0-beta.2",
     "ffmpeg-static": "^4.4.0",
+    "geo-reverse": "^1.0.13",
     "get-port": "^5.1.1",
     "get-stdin": "^9.0.0",
     "jimp": "^0.16.1",
