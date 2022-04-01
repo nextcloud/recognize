@@ -93,8 +93,10 @@ class InstallDeps implements IRepairStep {
 
 		// Write the app config
 		$this->config->setAppValue('recognize', 'node_binary', $binaryPath);
-        if ($isARM || $isMusl) {
-            $output->info('Enabling purejs mode (isMusl='.$isMusl.', isARM='.$isARM.')');
+
+        $supportsAVX = $this->isAVXSupported();
+        if ($isARM || $isMusl || !$supportsAVX) {
+            $output->info('Enabling purejs mode (isMusl='.$isMusl.', isARM='.$isARM.', supportsAVX='.$supportsAVX.')');
             $this->config->setAppValue('recognize', 'tensorflow.purejs', 'true');
         }
 
@@ -165,4 +167,9 @@ class InstallDeps implements IRepairStep {
 			}
 		}
 	}
+
+    protected function isAVXSupported() {
+        $cpuinfo = file_get_contents('/proc/cpuinfo');
+        return str_contains('avx', $cpuinfo);
+    }
 }
