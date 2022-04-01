@@ -63,18 +63,23 @@ class InstallDeps implements IRepairStep {
 			if ($version === null) {
 				$binaryPath = $this->downloadNodeBinary(self::NODE_SERVER_UNOFFICIAL, self::NODE_VERSION, 'x64', 'musl');
 				$version = $this->testBinary($binaryPath);
-				$isMusl = true;
+                if ($version !== null) {
+                    $isMusl = true;
+                }
 			}
 
 		} elseif ($uname === 'aarch64') {
 			$binaryPath = $this->downloadNodeBinary(self::NODE_SERVER_OFFICIAL, self::NODE_VERSION, 'arm64');
             $version = $this->testBinary($binaryPath);
-			$isARM = true;
-
+            if ($version !== null) {
+                $isARM = true;
+            }
 		} elseif ($uname === 'armv7l') {
 			$binaryPath = $this->downloadNodeBinary(self::NODE_SERVER_OFFICIAL, self::NODE_VERSION, 'armv7l');
 			$version = $this->testBinary($binaryPath);
-			$isARM = true;
+            if ($version !== null) {
+                $isARM = true;
+            }
 
 		} else {
 			$output->warning('CPU archtecture $uname is not supported.');
@@ -89,6 +94,7 @@ class InstallDeps implements IRepairStep {
 		// Write the app config
 		$this->config->setAppValue('recognize', 'node_binary', $binaryPath);
         if ($isARM || $isMusl) {
+            $output->info('Enabling purejs mode (isMusl='.$isMusl.', isARM='.$isARM.')');
             $this->config->setAppValue('recognize', 'tensorflow.purejs', 'true');
         }
 
