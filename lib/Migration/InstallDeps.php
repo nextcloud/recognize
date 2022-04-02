@@ -27,6 +27,7 @@ declare(strict_types=1);
 namespace OCA\Recognize\Migration;
 
 use OCA\Recognize\Helper\TAR;
+use OCP\AppFramework\Http\JSONResponse;
 use OCP\IConfig;
 use OCP\Migration\IOutput;
 use OCP\Migration\IRepairStep;
@@ -170,6 +171,6 @@ class InstallDeps implements IRepairStep {
 
     protected function isAVXSupported() {
         $cpuinfo = file_get_contents('/proc/cpuinfo');
-        return str_contains('avx', $cpuinfo);
+        return str_contains($cpuinfo, 'avx');
     }
 }

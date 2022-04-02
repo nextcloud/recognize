@@ -83,14 +83,19 @@
 		</SettingsSection>
 		<SettingsSection
 			:title="t('recognize', 'Tensorflow plain mode')">
-			<p>
-				If your CPU architecture is not x86 or doesn't support the instructions that tensorflow uses, or your system is not using glibc,
-				you can still run tensorflow in JavaScript mode.
+			<p v-if="avx === null || platform === null || musl === null">
+				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Checking CPU
+			</p>
+			<p v-else-if="avx && platform === 'x86_64' && !musl">
+				Your machine supports native TensorFlow operation, you do not need WASM mode.
+			</p>
+			<p v-else>
+				Your machine does not support native TensorFlow operation, because {{ pureJSReasons }}. WASM mode is recommended.
 			</p>
 			<p>
 				<label>
 					<input v-model="settings['tensorflow.purejs']" type="checkbox" @change="onChange">
-					<span>Enable JavaScript mode</span>
+					<span>Enable WASM mode</span>
 				</label>
 			</p>
 		</SettingsSection>
@@ -149,7 +154,26 @@ export default {
 			countMissed: -1,
 			settings: SETTINGS.reduce((obj, key) => ({ ...obj, [key]: '' }), {}),
 			timeout: null,
+			avx: null,
+			platform: null,
+			musl: null,
 		}
+	},
+
+	computed: {
+		pureJSReasons() {
+			const reasons = []
+			if (!this.avx) {
+				reasons.push('it does not support AVX instructions')
+			}
+			if (this.platform !== 'x86_64') {
+				reasons.push('it doesn\'t have not an x86 64bit CPU')
+			}
+			if (this.musl) {
+				reasons.push('it uses musl libc')
+			}
+			return reasons.join(' and ')
+		},
 	},
 
 	watch: {
@@ -159,10 +183,15 @@ export default {
 		},
 	},
 	async created() {
-		this.getCount()
+		await Promise.all([
+			this.getCount(),
+			this.getAVX(),
+			this.getPlatform(),
+			this.getMusl(),
+		])
 		setInterval(() => {
 			this.getCount()
-		}, 60 * 1000)
+		}, 5 * 60 * 1000)
 
 		try {
 			for (const setting of SETTINGS) {
@@ -198,6 +227,21 @@ export default {
 			const { count: countMissed } = resp.data
 			this.count = count
 			this.countMissed = countMissed
+		},
+		async getAVX() {
+			const resp = await axios.get(generateUrl('/apps/recognize/admin/avx'))
+			const { avx } = resp.data
+			this.avx = avx
+		},
+		async getPlatform() {
+			const resp = await axios.get(generateUrl('/apps/recognize/admin/platform'))
+			const { platform } = resp.data
+			this.platform = platform
+		},
+		async getMusl() {
+			const resp = await axios.get(generateUrl('/apps/recognize/admin/musl'))
+			const { musl } = resp.data
+			this.musl = musl
 		},
 		onChange() {
 			if (this.timeout) {
