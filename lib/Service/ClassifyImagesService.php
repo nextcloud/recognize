@@ -96,7 +96,7 @@ class ClassifyImagesService {
 			$faces = $this->referenceFacesFinder->findReferenceFacesForUser($user);
 			if (count($faces) === 0) {
 				$this->logger->debug('No contact photos found of user '.$user);
-				return true;
+				return false;
 			}
 			$this->logger->debug('Classifying photos of user '.$user. ' using facenet');
 			$this->facenet->classify($faces, $images);
