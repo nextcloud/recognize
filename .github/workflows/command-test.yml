@@ -176,7 +176,7 @@ jobs:
 
       - name: Set geo.enabled
         run: |
-        ./occ config:app:set --value ${{ matrix.geo-enabled }} recognize geo.enabled
+          ./occ config:app:set --value ${{ matrix.geo-enabled }} recognize geo.enabled
 
       - name: Run classifier
         env:
