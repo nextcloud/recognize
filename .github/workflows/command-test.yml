@@ -22,6 +22,7 @@ jobs:
         imagenet-enabled: ['true', 'false']
         faces-enabled: ['true', 'false']
         landmarks-enabled: ['true', 'false']
+        geo-enabled: ['true', 'false']
         include:
           # stable21,sqlite,php7.3
           - server-versions: stable21
@@ -168,9 +169,14 @@ jobs:
       - name: Set faces.enabled
         run: |
           ./occ config:app:set --value ${{ matrix.faces-enabled }} recognize faces.enabled
+
       - name: Set landmarks.enabled
         run: |
           ./occ config:app:set --value ${{ matrix.landmarks-enabled }} recognize landmarks.enabled
+
+      - name: Set geo.enabled
+        run: |
+        ./occ config:app:set --value ${{ matrix.geo-enabled }} recognize geo.enabled
 
       - name: Run classifier
         env:
