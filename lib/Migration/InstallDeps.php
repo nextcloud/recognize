@@ -27,6 +27,7 @@ declare(strict_types=1);
 namespace OCA\Recognize\Migration;
 
 use OCA\Recognize\Helper\TAR;
+use OCP\AppFramework\Http\JSONResponse;
 use OCP\IConfig;
 use OCP\Migration\IOutput;
 use OCP\Migration\IRepairStep;
@@ -63,18 +64,23 @@ class InstallDeps implements IRepairStep {
 			if ($version === null) {
 				$binaryPath = $this->downloadNodeBinary(self::NODE_SERVER_UNOFFICIAL, self::NODE_VERSION, 'x64', 'musl');
 				$version = $this->testBinary($binaryPath);
-				$isMusl = true;
+                if ($version !== null) {
+                    $isMusl = true;
+                }
 			}
 
 		} elseif ($uname === 'aarch64') {
 			$binaryPath = $this->downloadNodeBinary(self::NODE_SERVER_OFFICIAL, self::NODE_VERSION, 'arm64');
             $version = $this->testBinary($binaryPath);
-			$isARM = true;
-
+            if ($version !== null) {
+                $isARM = true;
+            }
 		} elseif ($uname === 'armv7l') {
 			$binaryPath = $this->downloadNodeBinary(self::NODE_SERVER_OFFICIAL, self::NODE_VERSION, 'armv7l');
 			$version = $this->testBinary($binaryPath);
-			$isARM = true;
+            if ($version !== null) {
+                $isARM = true;
+            }
 
 		} else {
 			$output->warning('CPU archtecture $uname is not supported.');
@@ -88,7 +94,10 @@ class InstallDeps implements IRepairStep {
 
 		// Write the app config
 		$this->config->setAppValue('recognize', 'node_binary', $binaryPath);
-        if ($isARM || $isMusl) {
+
+        $supportsAVX = $this->isAVXSupported();
+        if ($isARM || $isMusl || !$supportsAVX) {
+            $output->info('Enabling purejs mode (isMusl='.$isMusl.', isARM='.$isARM.', supportsAVX='.$supportsAVX.')');
             $this->config->setAppValue('recognize', 'tensorflow.purejs', 'true');
         }
 
@@ -159,4 +168,9 @@ class InstallDeps implements IRepairStep {
 			}
 		}
 	}
+
+    protected function isAVXSupported() {
+        $cpuinfo = file_get_contents('/proc/cpuinfo');
+        return str_contains($cpuinfo, 'avx');
+    }
 }

@@ -24,6 +24,9 @@ return [
 		//internal ADMIN API
 		['name' => 'admin#reset', 'url' => '/admin/reset', 'verb' => 'GET'],
 		['name' => 'admin#count', 'url' => '/admin/count', 'verb' => 'GET'],
-		['name' => 'admin#count_missed', 'url' => '/admin/countMissed', 'verb' => 'GET']
+		['name' => 'admin#count_missed', 'url' => '/admin/countMissed', 'verb' => 'GET'],
+		['name' => 'admin#avx', 'url' => '/admin/avx', 'verb' => 'GET'],
+		['name' => 'admin#platform', 'url' => '/admin/platform', 'verb' => 'GET'],
+		['name' => 'admin#musl', 'url' => '/admin/musl', 'verb' => 'GET'],
 	],
 ];
