@@ -32,6 +32,7 @@ jobs:
             imagenet-enabled: true
             faces-enabled: true
             landmarks-enabled: true
+            geo-enabled: true
           # stable22,sqlite,php7.4
           - server-versions: stable22
             php-versions: 7.4
@@ -40,6 +41,7 @@ jobs:
             imagenet-enabled: true
             faces-enabled: true
             landmarks-enabled: true
+            geo-enabled: true
           # stable23,sqlite,php8
           - server-versions: stable23
             databases: sqlite
@@ -48,6 +50,7 @@ jobs:
             imagenet-enabled: true
             faces-enabled: true
             landmarks-enabled: true
+            geo-enabled: true
           # test pure-js once
           - server-versions: stable23
             databases: sqlite
@@ -56,6 +59,7 @@ jobs:
             imagenet-enabled: true
             faces-enabled: true
             landmarks-enabled: true
+            geo-enabled: true
 
     name: Test classify images command on ${{ matrix.databases }}-${{ matrix.server-versions }}
 
