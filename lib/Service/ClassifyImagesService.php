@@ -4,6 +4,7 @@ namespace OCA\Recognize\Service;
 
 use OC\User\NoUserException;
 use OCA\Recognize\Classifiers\Images\FacesClassifier;
+use OCA\Recognize\Classifiers\Images\GeoClassifier;
 use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
 use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
 use OCP\IConfig;
@@ -43,8 +44,12 @@ class ClassifyImagesService {
      * @var \OCA\Recognize\Classifiers\Images\LandmarksClassifier
      */
     private $landmarks;
+    /**
+     * @var \OCA\Recognize\Classifiers\Images\GeoClassifier
+     */
+    private $geo;
 
-    public function __construct(FacesClassifier $facenet, ImagenetClassifier $imagenet, IRootFolder $rootFolder, ImagesFinderService $imagesFinder, ReferenceFacesFinderService $referenceFacesFinder, Logger $logger, IConfig $config, LandmarksClassifier $landmarks) {
+    public function __construct(FacesClassifier $facenet, ImagenetClassifier $imagenet, IRootFolder $rootFolder, ImagesFinderService $imagesFinder, ReferenceFacesFinderService $referenceFacesFinder, Logger $logger, IConfig $config, LandmarksClassifier $landmarks, GeoClassifier $geo) {
 		$this->facenet = $facenet;
 		$this->imagenet = $imagenet;
 		$this->rootFolder = $rootFolder;
@@ -53,6 +58,7 @@ class ClassifyImagesService {
 		$this->logger = $logger;
 		$this->config = $config;
         $this->landmarks = $landmarks;
+        $this->geo = $geo;
     }
 
 	/**
@@ -90,6 +96,11 @@ class ClassifyImagesService {
                 $this->landmarks->classify($images);
             }
 		}
+
+        if ($this->config->getAppValue('recognize', 'geo.enabled', 'false') !== 'false') {
+            $this->logger->debug('Classifying photos of user '.$user. ' using geo tagger');
+            $this->geo->classify($images);
+        }
 
 		if ($this->config->getAppValue('recognize', 'faces.enabled', 'false') !== 'false') {
 			$this->logger->debug('Collecting contact photos of user '.$user);

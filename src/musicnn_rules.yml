@@ -12,7 +12,7 @@ pop:
 
 rock:
   label: rock
-  threshold: 0.15
+  threshold: 0.10
 
 country:
   label: country
@@ -52,7 +52,7 @@ blues:
 
 punk:
   label: punk
-  threshold: 0.2
+  threshold: 0.6
 
 world:
   label: world
