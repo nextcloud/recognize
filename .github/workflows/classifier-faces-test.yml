@@ -3,6 +3,8 @@ name: Classifier Faces test
 on:
   pull_request:
   push:
+    branches:
+      - master
 
 env:
   APP_NAME: recognize

@@ -3,6 +3,8 @@ name: Image command test
 on:
   pull_request:
   push:
+    branches:
+      - master
 
 env:
   APP_NAME: recognize
