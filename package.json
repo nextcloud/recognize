@@ -26,7 +26,7 @@
     "@exifer/gps": "^1.0.0-beta.2",
     "@nextcloud/axios": "^1.9.0",
     "@nextcloud/router": "^2.0.0",
-    "@nextcloud/vue": "^4.0.2",
+    "@nextcloud/vue": "^5.3.0",
     "@tedconf/fessonia": "^2.2.1",
     "@tensorflow/tfjs": "^3.14",
     "@tensorflow/tfjs-backend-wasm": "^3.14.0",
