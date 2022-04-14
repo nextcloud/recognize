@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.12.0 - 2022-04-14
+### New
+ - Implement GeoClassifier
+ - Add newly trained musicnn model
+ - Admin settings: Add system check for WASM mode
+ - InstallDeps: Add check for AVX
+ - FileFinderService: Add more debug output
+
+### Fixed
+ - InstallDeps: Don't enable WASM mode when installation failed
+ - CLI: Don't call the classifiers with *all* files in one go
+ - Fix encoding errors in tags
+ - Smarter way to detect cpu architecture
+ - Don't leak exec errors on installation
+
 ## 1.11.0 - 2022-02-09
 
 ### New
