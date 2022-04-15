@@ -83,6 +83,7 @@ jobs:
       - name: Checkout submodules
         shell: bash
         run: |
+          git config --global --add safe.directory /__w/recognize/recognize
           git submodule sync --recursive
           git submodule update --init --force --recursive --depth=1
 
