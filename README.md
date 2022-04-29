@@ -65,9 +65,10 @@ You can also ignore directories (and their children) by adding a `.noimage`, `.n
 
 #### Dependencies
 
+- make
 - [git](https://git-scm.org/)
-- [Node.js and npm](https://nodejs.org/)
-- [php](https://php.net/)
+- [Node.js v16.x and npm](https://nodejs.org/)
+- [php 7.3 or later](https://php.net/)
 - [composer](https://getcomposer.org/)
 
 #### Setup
