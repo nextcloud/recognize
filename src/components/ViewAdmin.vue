@@ -24,7 +24,13 @@
 			<p>
 				<label>
 					<input v-model="settings['faces.enabled']" type="checkbox" @change="onChange">
-					<span>Enable face recognition</span>
+					<span>Enable face recognition (based on contact pictures in the Contacts app)</span>
+				</label>
+			</p>
+			<p>
+				<label>
+					<input v-model="settings['geo.enabled']" type="checkbox" @change="onChange">
+					<span>Enable location tagging (country only) based on GPS tags</span>
 				</label>
 			</p>
 			<p>
@@ -113,7 +119,7 @@
 			:title="t('recognize', 'Reset')">
 			<p>Click the below button to remove all tags from all images that have been classified so far.</p>
 			<button class="button" @click="onReset">
-				Reset tags for classified images
+				Reset tags for classified files
 			</button>
 		</SettingsSection>
 		<SettingsSection
@@ -140,7 +146,7 @@ import SettingsSection from '@nextcloud/vue/dist/Components/SettingsSection'
 import axios from '@nextcloud/axios'
 import { generateUrl } from '@nextcloud/router'
 
-const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'node_binary']
+const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'geo.enabled', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'node_binary']
 
 export default {
 	name: 'ViewAdmin',
