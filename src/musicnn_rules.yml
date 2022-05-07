@@ -1,6 +1,6 @@
 rap:
   label: rap
-  threshold: 0.2
+  threshold: 0.18
 
 jazz:
   label: jazz
@@ -8,7 +8,7 @@ jazz:
 
 pop:
   label: pop
-  threshold: 0.1
+  threshold: 0.15
 
 rock:
   label: rock
@@ -16,7 +16,7 @@ rock:
 
 country:
   label: country
-  threshold: 0.17
+  threshold: 0.3
 
 folk:
   label: folk
@@ -42,7 +42,7 @@ metal:
   label: metal
   threshold: 0.3
 
-regae:
+reggae:
   label: reggae
   threshold: 0.2
 
