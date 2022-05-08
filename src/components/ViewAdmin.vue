@@ -108,8 +108,8 @@
 		<SettingsSection
 			:title="t('recognize', 'Node.js path')">
 			<p>
-				If the shipped Node.js binary doesn't work on your system, because you don't have glibc, you can set the path to a custom node.js binary.
-				Currently supported is version v14.17 and newer v14 releases.
+				If the shipped Node.js binary doesn't work on your system for some reason you can set the path to a custom node.js binary.
+				Currently supported is Node v14.17 and newer v14 releases.
 			</p>
 			<p>
 				<input v-model="settings['node_binary']" type="text" @change="onChange">
@@ -121,22 +121,6 @@
 			<button class="button" @click="onReset">
 				Reset tags for classified files
 			</button>
-		</SettingsSection>
-		<SettingsSection
-			:title="t('recognize', 'Donate')">
-			<p>Work on Recognize is fuelled by a voluntary subscription model. If you like what we do and can spare a few coins each month, please consider donating. Thank you!</p>
-			<p>&nbsp;</p>
-			<p>
-				<a class="button" href="https://www.paypal.me/marcelklehr1">
-					Paypal
-				</a>
-				<a class="button" href="https://liberapay.com/marcelklehr/donate">
-					LiberaPay
-				</a>
-				<a class="button" href="https://github.com/sponsors/marcelklehr">
-					Github Sponsors
-				</a>
-			</p>
 		</SettingsSection>
 	</div>
 </template>
