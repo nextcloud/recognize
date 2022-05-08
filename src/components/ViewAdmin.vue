@@ -17,7 +17,7 @@
 			<p v-else>
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Counting files
 			</p>
-			<p>The app is installed and will classify up to 100 files every 10 minutes.</p>
+			<p>The app is installed and will classify up to 100 files every 30 minutes.</p>
 		</SettingsSection>
 		<SettingsSection
 			:title="t('recognize', 'Image tagging')">
