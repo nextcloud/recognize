@@ -71,10 +71,14 @@ class ClassifyImagesJob extends TimedJob {
 			try {
 				$processed = $this->imageClassifier->run($user, $pureJS === 'false' ? self::BATCH_SIZE : self::BATCH_SIZE_PUREJS);
 			} catch (\Exception $e) {
+                $this->config->setAppValue('recognize', 'images.status', 'false');
 				$this->logger->warning('Classifier process errored');
 				$this->logger->warning($e->getMessage());
 				return;
 			}
+            if ($processed) {
+                $this->config->setAppValue('recognize', 'images.status', 'true');
+            }
 		} while (!$processed);
 	}
 }

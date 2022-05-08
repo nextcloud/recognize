@@ -4,6 +4,7 @@ namespace OCA\Recognize\Command;
 
 use OCA\Recognize\Service\ClassifyImagesService;
 use OCA\Recognize\Service\Logger;
+use OCP\IConfig;
 use OCP\IUser;
 use OCP\IUserManager;
 use Symfony\Component\Console\Command\Command;
@@ -24,14 +25,19 @@ class ClassifyImages extends Command {
 	 * @var \OCA\Recognize\Service\Logger
 	 */
 	private $logger;
+    /**
+     * @var \OCP\IConfig
+     */
+    private $config;
 
 
-	public function __construct(IUserManager $userManager, ClassifyImagesService $imageClassifier, Logger $logger) {
+    public function __construct(IUserManager $userManager, ClassifyImagesService $imageClassifier, Logger $logger, IConfig $config) {
 		parent::__construct();
 		$this->userManager = $userManager;
 		$this->imageClassifier = $imageClassifier;
 		$this->logger = $logger;
-	}
+        $this->config = $config;
+    }
 
 	/**
 	 * Configure the command
@@ -61,9 +67,13 @@ class ClassifyImages extends Command {
 			foreach ($users as $user) {
 				do {
                     $anythingClassified = $this->imageClassifier->run($user, 500);
+                    if ($anythingClassified) {
+                        $this->config->setAppValue('recognize', 'images.status', 'true');
+                    }
                 } while($anythingClassified);
 			}
 		} catch (\Exception $ex) {
+            $this->config->setAppValue('recognize', 'images.status', 'false');
 			$output->writeln('<error>Failed to classify images</error>');
 			$output->writeln($ex->getMessage());
 			return 1;

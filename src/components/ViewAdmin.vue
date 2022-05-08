@@ -10,14 +10,41 @@
 		<figure v-if="!loading && success" class="icon-checkmark success" />
 		<SettingsSection
 			:title="t('recognize', 'Status')">
-			<p v-if="count >= 0">
-				Processed files: {{ count }}<br>
-				Unrecognized files: {{ countMissed }}
-			</p>
+			<template v-if="settings['faces.enabled'] || settings['geo.enabled'] || settings['imagenet.enabled'] || settings['musicnn.enabled']">
+				<p>The app is installed and will automatically classify up to 100 files every 30 minutes.</p>
+				<template v-if="settings['faces.enabled'] || settings['geo.enabled'] || settings['imagenet.enabled']">
+					<p v-if="settings['images.status'] === true">
+						Image recognition is working.
+					</p>
+					<p v-else-if="settings['images.status'] === false">
+						An error occurred during image processing, please check the Nextcloud logs.
+					</p>
+					<p v-else>
+						<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Waiting for status reports on image processing. If this message persists beyond 30minutes, please check the Nextcloud logs.
+					</p>
+				</template>
+				<template v-if="settings['musicnn.enabled']">
+					<p v-if="settings['audio.status'] === true">
+						Audio recognition is working.
+					</p>
+					<p v-else-if="settings['audio.status'] === false">
+						An error occurred during audio recognition, please check the Nextcloud logs.
+					</p>
+					<p v-else>
+						<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Waiting for status reports on audio recognition. If this message persists beyond 30minutes, please check the Nextcloud logs.
+					</p>
+				</template>
+				<p v-if="count >= 0">
+					Processed files: {{ count }}<br>
+					Unrecognized files: {{ countMissed }}
+				</p>
+				<p v-else>
+					<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Counting files
+				</p>
+			</template>
 			<p v-else>
-				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Counting files
+				None of the tagging options below are currently selected. The app will currently do nothing.
 			</p>
-			<p>The app is installed and will classify up to 100 files every 30 minutes.</p>
 		</SettingsSection>
 		<SettingsSection
 			:title="t('recognize', 'Image tagging')">
@@ -59,17 +86,22 @@
 			</p>
 		</SettingsSection>
 		<SettingsSection
+			:title="t('recognize', 'Reset')">
+			<p>Click the below button to remove all tags from all images that have been classified so far.</p>
+			<button class="button" @click="onReset">
+				Reset tags for classified files
+			</button>
+		</SettingsSection>
+		<SettingsSection
 			:title="t('recognize', 'Manual operation') ">
 			<p>To trigger a full classification run manually, run the following commands on the terminal. (The first time, this will download the machine learning model initially, so it will take longer.)</p>
-			<p>&nbsp;</p>
 			<pre><code>occ recognize:classify-images</code></pre>
 			<pre><code>occ recognize:classify-audio</code></pre>
 			<p>&nbsp;</p>
 			<p>You can reset the tags of all files that have been previously classified by recognize with the following command:</p>
-			<p>&nbsp;</p>
 			<pre><code>occ recognize:reset-tags</code></pre>
-			<p>You can delete all tags that no longer have any files associated with them with the following command:</p>
 			<p>&nbsp;</p>
+			<p>You can delete all tags that no longer have any files associated with them with the following command:</p>
 			<pre><code>occ recognize:cleanup-tags</code></pre>
 		</SettingsSection>
 		<SettingsSection
@@ -115,13 +147,6 @@
 				<input v-model="settings['node_binary']" type="text" @change="onChange">
 			</p>
 		</SettingsSection>
-		<SettingsSection
-			:title="t('recognize', 'Reset')">
-			<p>Click the below button to remove all tags from all images that have been classified so far.</p>
-			<button class="button" @click="onReset">
-				Reset tags for classified files
-			</button>
-		</SettingsSection>
 	</div>
 </template>
 
@@ -130,7 +155,7 @@ import SettingsSection from '@nextcloud/vue/dist/Components/SettingsSection'
 import axios from '@nextcloud/axios'
 import { generateUrl } from '@nextcloud/router'
 
-const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'geo.enabled', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'node_binary']
+const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'geo.enabled', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'node_binary', 'audio.status', 'images.status']
 
 export default {
 	name: 'ViewAdmin',

@@ -68,10 +68,14 @@ class ClassifyAudioJob extends TimedJob {
 			try {
 				$processed = $this->audioClassifier->run($user, $pureJS === 'false' ? self::BATCH_SIZE : self::BATCH_SIZE_PUREJS);
 			} catch (\Exception $e) {
+                $this->config->setAppValue('recognize', 'audio.status', 'false');
 				$this->logger->warning('Classifier process errored');
 				$this->logger->warning($e->getMessage());
 				return;
 			}
+            if ($processed) {
+                $this->config->setAppValue('recognize', 'audio.status', 'true');
+            }
 		} while (!$processed);
 	}
 }
