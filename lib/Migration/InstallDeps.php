@@ -44,6 +44,7 @@ class InstallDeps implements IRepairStep {
 		$this->config = $config;
 		$this->binaryDir = dirname(__DIR__, 2) . '/bin/';
 		$this->preGypBinaryDir = dirname(__DIR__, 2) . '/node_modules/@mapbox/node-pre-gyp/bin/';
+		$this->ffmpegDir= dirname(__DIR__, 2) . '/node_modules/ffmpeg-static/';
 		$this->tfjsInstallScript = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node/scripts/install.js';
 		$this->tfjsPath = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node/';
 	}
@@ -164,9 +165,15 @@ class InstallDeps implements IRepairStep {
 		$iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->preGypBinaryDir));
 		foreach ($iterator as $item) {
 			if (chmod(realpath($item->getPathname()), 0755) === false) {
-				throw new \Exception('Error when setting node_modules/.bin/* permissions');
+				throw new \Exception('Error when setting '.$this->preGypBinaryDir.'* permissions');
 			}
 		}
+        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->ffmpegDir));
+        foreach ($iterator as $item) {
+            if (chmod(realpath($item->getPathname()), 0755) === false) {
+                throw new \Exception('Error when setting '.$this->ffmpegDir.'* permissions');
+            }
+        }
 	}
 
     protected function isAVXSupported() {
