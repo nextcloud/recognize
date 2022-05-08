@@ -30,13 +30,13 @@
 			<p>
 				<label>
 					<input v-model="settings['geo.enabled']" type="checkbox" @change="onChange">
-					<span>Enable location tagging (country only) based on GPS tags</span>
+					<span>Enable location tagging based on GPS tags (country only tags, e.g. Spain, South Africa)</span>
 				</label>
 			</p>
 			<p>
 				<label>
 					<input v-model="settings['imagenet.enabled']" type="checkbox" @change="onChange">
-					<span>Enable object recognition</span>
+					<span>Enable object recognition (e.g. food, vehicles, landscapes)</span>
 				</label>
 			</p>
 			<p class="indent">
@@ -45,7 +45,7 @@
 						type="checkbox"
 						:disabled="!Boolean(settings['imagenet.enabled'])"
 						@change="onChange">
-					<span>Enable landmark recognition</span>
+					<span>Enable landmark recognition (e.g. Eiffel Tower, Golden Gate Bridge)</span>
 				</label>
 			</p>
 		</SettingsSection>
@@ -54,7 +54,7 @@
 			<p>
 				<label>
 					<input v-model="settings['musicnn.enabled']" type="checkbox" @change="onChange">
-					<span>Enable music genre recognition</span>
+					<span>Enable music genre recognition (e.g. pop, rock, folk, metal, new age)</span>
 				</label>
 			</p>
 		</SettingsSection>
