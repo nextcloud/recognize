@@ -101,7 +101,7 @@ class FileFinderService {
                     $this->logger->debug('Already processed '.$node->getPath());
 					continue;
 				}
-                if ($node->getOwner()->getUID() !== $user) {
+                if ($node->getMountPoint()->getMountType() === 'shared' && $node->getOwner()->getUID() !== $user) {
                     $this->logger->debug('Not original owner of '.$node->getPath());
                     continue;
                 }
