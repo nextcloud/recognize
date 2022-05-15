@@ -92,7 +92,12 @@ class FileFinderService {
 			return $results;
 		}
 
-		$nodes = $folder->getDirectoryListing();
+        try {
+            $nodes = $folder->getDirectoryListing();
+        }catch(\Exception $e) {
+            $this->logger->debug('Error reading directory '.$folder->getInternalPath().': '.$e->getMessage());
+            return $results;
+        }
 		foreach ($nodes as $node) {
 			if ($node instanceof Folder) {
 				$this->findFilesInFolder($user, $node, $results);
