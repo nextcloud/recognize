@@ -25,14 +25,10 @@ class GeoClassifier {
 	 * @var LoggerInterface
 	 */
 	private $logger;
-	/**
-	 * @var TagManager
-	 */
-	private $tagManager;
-	/**
-	 * @var IConfig
-	 */
-	private $config;
+
+	private TagManager $tagManager;
+
+	private IConfig $config;
 
 	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager) {
 		$this->logger = $logger;

@@ -21,27 +21,13 @@ class ClassifyImagesJob extends TimedJob {
 	public const BATCH_SIZE_PUREJS = 25; // 25 images
 	public const INTERVAL = 30 * 60; // 30 minutes
 
-	/**
-	 * @var LoggerInterface
-	 */
-	private $logger;
+	private LoggerInterface $logger;
 
-	/**
-	 * @var ITimeFactory
-	 */
-	private $timeFactory;
-	/**
-	 * @var IUserManager
-	 */
-	private $userManager;
-	/**
-	 * @var \OCA\Recognize\Service\ClassifyImagesService
-	 */
-	private $imageClassifier;
-	/**
-	 * @var \OCP\IConfig
-	 */
-	private $config;
+	private IUserManager $userManager;
+
+	private ClassifyImagesService $imageClassifier;
+
+	private IConfig $config;
 
 
 	public function __construct(

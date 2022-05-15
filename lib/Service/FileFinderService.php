@@ -20,29 +20,23 @@ class FileFinderService {
 	 * @var LoggerInterface
 	 */
 	private $logger;
-	/**
-	 * @var ISystemTagObjectMapper
-	 */
-	private $objectMapper;
-	/**
-	 * @var ISystemTag
-	 */
-	private $recognizedTag;
+
+	private ISystemTagObjectMapper $objectMapper;
+
+	private ISystemTag $recognizedTag;
 
 	/**
 	 * @var string[] $formats
 	 */
-	private $formats;
+	private array $formats;
 
-	/**
-	 * @var int
-	 */
-	private $maxFileSize = 0;
+
+	private int $maxFileSize = 0;
 
 	/**
 	 * @var string[] $ignoreMarkers
 	 */
-	private $ignoreMarkers;
+	private array $ignoreMarkers;
 
 	public function __construct(Logger $logger, ISystemTagObjectMapper $objectMapper, TagManager $tagManager) {
 		$this->logger = $logger;

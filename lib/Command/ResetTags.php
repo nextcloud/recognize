@@ -8,10 +8,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ResetTags extends Command {
-	/**
-	 * @var \OCA\Recognize\Service\TagManager
-	 */
-	private $tagManager;
+	private TagManager $tagManager;
 
 
 	public function __construct(TagManager $tagManager) {

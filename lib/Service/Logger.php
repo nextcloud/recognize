@@ -6,15 +6,9 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Logger implements LoggerInterface {
-	/**
-	 * @var \Psr\Log\LoggerInterface
-	 */
-	private $logger;
+	private LoggerInterface $logger;
 
-	/**
-	 * @var OutputInterface
-	 */
-	private $cliOutput;
+	private OutputInterface $cliOutput;
 
 
 	public function __construct(LoggerInterface $logger) {

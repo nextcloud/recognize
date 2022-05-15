@@ -12,42 +12,25 @@ use OCP\Files\IRootFolder;
 use OCP\Files\NotPermittedException;
 
 class ClassifyImagesService {
-	/**
-	 * @var ImagenetClassifier
-	 */
-	private $imagenet;
-	/**
-	 * @var FacesClassifier
-	 */
-	private $facenet;
-	/**
-	 * @var ImagesFinderService
-	 */
-	private $imagesFinder;
-	/**
-	 * @var IRootFolder
-	 */
-	private $rootFolder;
-	/**
-	 * @var \OCA\Recognize\Service\ReferenceFacesFinderService
-	 */
-	private $referenceFacesFinder;
+	private ImagenetClassifier $imagenet;
+
+	private FacesClassifier $facenet;
+
+	private ImagesFinderService $imagesFinder;
+
+	private IRootFolder $rootFolder;
+
+	private ReferenceFacesFinderService $referenceFacesFinder;
 	/**
 	 * @var \Psr\Log\LoggerInterface
 	 */
 	private $logger;
-	/**
-	 * @var \OCP\IConfig
-	 */
-	private $config;
-	/**
-	 * @var \OCA\Recognize\Classifiers\Images\LandmarksClassifier
-	 */
-	private $landmarks;
-	/**
-	 * @var \OCA\Recognize\Classifiers\Images\GeoClassifier
-	 */
-	private $geo;
+
+	private IConfig $config;
+
+	private LandmarksClassifier $landmarks;
+
+	private GeoClassifier $geo;
 
 	public function __construct(FacesClassifier $facenet, ImagenetClassifier $imagenet, IRootFolder $rootFolder, ImagesFinderService $imagesFinder, ReferenceFacesFinderService $referenceFacesFinder, Logger $logger, IConfig $config, LandmarksClassifier $landmarks, GeoClassifier $geo) {
 		$this->facenet = $facenet;

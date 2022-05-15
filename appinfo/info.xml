@@ -18,7 +18,7 @@ This app goes through your media collection and adds fitting tags, automatically
 After installation, you can enable tagging in the admin settings.
 
 Requirements:
-- php 7.3 and above
+- php 7.4 and above
 - App "collaborative tags" enabled
 - For native speed:
   - Processor: x86 64bit (with support for AVX instructions)

@@ -8,37 +8,34 @@ use OCP\AppFramework\Http\JSONResponse;
 use OCP\IRequest;
 
 class AdminController extends Controller {
-	/**
-	 * @var \OCA\Recognize\Service\TagManager
-	 */
-	private $tagManager;
+	private TagManager $tagManager;
 
 	public function __construct($appName, IRequest $request, TagManager $tagManager) {
 		parent::__construct($appName, $request);
 		$this->tagManager = $tagManager;
 	}
 
-	public function reset() {
+	public function reset(): JSONResponse {
 		$this->tagManager->resetClassifications();
 		return new JSONResponse([]);
 	}
 
-	public function count() {
+	public function count(): JSONResponse {
 		$count = count($this->tagManager->findClassifiedFiles());
 		return new JSONResponse(['count' => $count]);
 	}
 
-	public function countMissed() {
+	public function countMissed(): JSONResponse {
 		$count = count($this->tagManager->findMissedClassifications());
 		return new JSONResponse(['count' => $count]);
 	}
 
-	public function avx() {
+	public function avx(): JSONResponse {
 		$cpuinfo = file_get_contents('/proc/cpuinfo');
 		return new JSONResponse(['avx' => str_contains($cpuinfo, 'avx')]);
 	}
 
-	public function platform() {
+	public function platform(): JSONResponse {
 		try {
 			exec('lscpu --json' . ' 2>&1', $output, $returnCode);
 		} catch (\Throwable $e) {
@@ -52,7 +49,7 @@ class AdminController extends Controller {
 		return new JSONResponse(['platform' => $lscpu['lscpu'][0]['data']]);
 	}
 
-	public function musl() {
+	public function musl(): JSONResponse {
 		try {
 			exec('ldd /bin/ls' . ' 2>&1', $output, $returnCode);
 		} catch (\Throwable $e) {

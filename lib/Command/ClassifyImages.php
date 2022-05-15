@@ -12,23 +12,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ClassifyImages extends Command {
-	/**
-	 * @var IUserManager
-	 */
-	private $userManager;
-	/**
-	 * @var \OCA\Recognize\Service\ClassifyImagesService
-	 */
-	private $imageClassifier;
+	private IUserManager $userManager;
 
-	/**
-	 * @var \OCA\Recognize\Service\Logger
-	 */
-	private $logger;
-	/**
-	 * @var \OCP\IConfig
-	 */
-	private $config;
+	private ClassifyImagesService $imageClassifier;
+
+	private Logger $logger;
+
+	private IConfig $config;
 
 
 	public function __construct(IUserManager $userManager, ClassifyImagesService $imageClassifier, Logger $logger, IConfig $config) {

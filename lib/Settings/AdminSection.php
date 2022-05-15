@@ -12,12 +12,9 @@ use OCP\IURLGenerator;
 use OCP\Settings\IIconSection;
 
 class AdminSection implements IIconSection {
+	private IL10N $l;
 
-	/** @var IL10N */
-	private $l;
-
-	/** @var IURLGenerator */
-	private $urlgen;
+	private IURLGenerator $urlgen;
 
 	public function __construct(IL10N $l, IURLGenerator $urlgen) {
 		$this->l = $l;
@@ -30,7 +27,7 @@ class AdminSection implements IIconSection {
 	 *
 	 * @return string
 	 */
-	public function getID() {
+	public function getID(): string {
 		return 'recognize';
 	}
 
@@ -40,21 +37,21 @@ class AdminSection implements IIconSection {
 	 *
 	 * @return string
 	 */
-	public function getName() {
+	public function getName(): string {
 		return $this->l->t('Recognize');
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getIcon() {
+	public function getIcon(): string {
 		return $this->urlgen->imagePath('recognize', 'recognize-black.svg');
 	}
 
 	/**
 	 * @return int whether the form should be rather on the top or bottom of the settings navigation. The sections are arranged in ascending order of the priority values. It is required to return a value between 0 and 99.
 	 */
-	public function getPriority() {
+	public function getPriority(): int {
 		return 80;
 	}
 }

@@ -10,14 +10,10 @@ use OCP\SystemTag\TagNotFoundException;
 class TagManager {
 	public const RECOGNIZED_TAG = 'Tagged by recognize';
 
-	/**
-	 * @var \OCP\SystemTag\ISystemTagManager
-	 */
-	private $tagManager;
-	/**
-	 * @var \OCP\SystemTag\ISystemTagObjectMapper
-	 */
-	private $objectMapper;
+
+	private ISystemTagManager $tagManager;
+
+	private ISystemTagObjectMapper $objectMapper;
 
 	public function __construct(ISystemTagManager $systemTagManager, ISystemTagObjectMapper $objectMapper) {
 		$this->tagManager = $systemTagManager;

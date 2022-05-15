@@ -12,23 +12,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ClassifyAudio extends Command {
-	/**
-	 * @var IUserManager
-	 */
-	private $userManager;
-	/**
-	 * @var \OCA\Recognize\Service\ClassifyAudioService
-	 */
-	private $audioClassifier;
+	private IUserManager $userManager;
 
-	/**
-	 * @var \OCA\Recognize\Service\Logger
-	 */
-	private $logger;
-	/**
-	 * @var \OCP\IConfig
-	 */
-	private $config;
+	private ClassifyAudioService $audioClassifier;
+
+
+	private Logger $logger;
+
+	private IConfig $config;
 
 	public function __construct(IUserManager $userManager, ClassifyAudioService $audioClassifier, Logger $logger, IConfig $config) {
 		parent::__construct();

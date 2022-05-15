@@ -18,22 +18,14 @@ class ReferenceFacesFinderService {
 	 * @var LoggerInterface
 	 */
 	private $logger;
-	/**
-	 * @var \OCP\Contacts\IManager
-	 */
-	private $contacts;
-	/**
-	 * @var \OCP\ITempManager
-	 */
-	private $tempManager;
-	/**
-	 * @var \OCA\DAV\CardDAV\ContactsManager
-	 */
-	private $contactsManager;
-	/**
-	 * @var \OCP\IURLGenerator
-	 */
-	private $urlGenerator;
+
+	private IManager $contacts;
+
+	private ITempManager $tempManager;
+
+	private ContactsManager $contactsManager;
+
+	private IURLGenerator $urlGenerator;
 
 	public function __construct(Logger $logger, IManager $contacts, ITempManager $tempManager, ContactsManager $contactsManager, IURLGenerator $urlGenerator) {
 		$this->logger = $logger;

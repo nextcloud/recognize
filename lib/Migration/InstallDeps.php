@@ -36,8 +36,12 @@ class InstallDeps implements IRepairStep {
 	public const NODE_SERVER_OFFICIAL = 'https://nodejs.org/dist/';
 	public const NODE_SERVER_UNOFFICIAL = 'https://unofficial-builds.nodejs.org/download/release/';
 
-	/** @var IConfig */
-	protected $config;
+	protected IConfig $config;
+	private string $binaryDir;
+	private string $preGypBinaryDir;
+	private string $ffmpegDir;
+	private string $tfjsInstallScript;
+	private string $tfjsPath;
 
 	public function __construct(IConfig $config) {
 		$this->config = $config;
@@ -173,7 +177,7 @@ class InstallDeps implements IRepairStep {
 		}
 	}
 
-	protected function isAVXSupported() {
+	protected function isAVXSupported(): bool {
 		$cpuinfo = file_get_contents('/proc/cpuinfo');
 		return str_contains($cpuinfo, 'avx');
 	}

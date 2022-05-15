@@ -22,22 +22,13 @@ class ClassifyAudioJob extends TimedJob {
 	public const INTERVAL = 30 * 60; // 30 minutes
 
 
-	/**
-	 * @var LoggerInterface
-	 */
-	private $logger;
-	/**
-	 * @var IUserManager
-	 */
-	private $userManager;
-	/**
-	 * @var \OCA\Recognize\Service\ClassifyAudioService
-	 */
-	private $audioClassifier;
-	/**
-	 * @var \OCP\IConfig
-	 */
-	private $config;
+	private LoggerInterface $logger;
+
+	private IUserManager $userManager;
+
+	private ClassifyAudioService $audioClassifier;
+
+	private IConfig $config;
 
 
 	public function __construct(
