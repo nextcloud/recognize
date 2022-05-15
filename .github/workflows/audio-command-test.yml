@@ -17,26 +17,27 @@ jobs:
       # do not stop on another job's failure
       fail-fast: false
       matrix:
-        php-versions: ['7.3']
+        php-versions: ['7.4']
         databases: ['sqlite', 'mysql', 'pgsql']
-        server-versions: ['stable20', 'stable21', 'stable22', 'stable24']
+        server-versions: ['stable22', 'stable23', 'stable24']
         pure-js-mode: ['false']
         include:
-          # test php 7.4 once
-          - server-versions: stable22
-            php-versions: 7.4
-            databases: sqlite
-            pure-js-mode: false
           # test php 8 once
           - server-versions: stable23
             php-versions: 8.0
             databases: sqlite
             pure-js-mode: false
+          # test php 8.1 once
+          - server-versions: stable24
+            php-versions: 8.1
+            databases: sqlite
+            pure-js-mode: false
           # test pure-js once
-          - server-versions: stable23
-            php-versions: 8.0
+          - server-versions: stable24
+            php-versions: 8.1
             databases: sqlite
             pure-js-mode: true
+
     name: Test classify audio command on ${{ matrix.databases }}-${{ matrix.server-versions }}-php${{ matrix.php-versions }}
 
     env:
