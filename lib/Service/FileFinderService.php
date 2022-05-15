@@ -98,20 +98,20 @@ class FileFinderService {
 				$this->findFilesInFolder($user, $node, $results);
 			} elseif ($node instanceof File) {
 				if ($this->objectMapper->haveTag([$node->getId()], 'files', $this->recognizedTag->getId())) {
-                    $this->logger->debug('Already processed '.$node->getPath());
+					$this->logger->debug('Already processed '.$node->getPath());
 					continue;
 				}
-                if ($node->getMountPoint()->getMountType() === 'shared' && $node->getOwner()->getUID() !== $user) {
-                    $this->logger->debug('Not original owner of '.$node->getPath());
-                    continue;
-                }
+				if ($node->getMountPoint()->getMountType() === 'shared' && $node->getOwner()->getUID() !== $user) {
+					$this->logger->debug('Not original owner of '.$node->getPath());
+					continue;
+				}
 				$mimeType = $node->getMimetype();
 				if (!in_array($mimeType, $this->formats)) {
-                    $this->logger->debug('Not a supported format: '.$node->getPath());
+					$this->logger->debug('Not a supported format: '.$node->getPath());
 					continue;
 				}
 				if ($this->maxFileSize !== 0 && $this->maxFileSize < $node->getSize()) {
-                    $this->logger->debug('File is too large: '.$node->getPath());
+					$this->logger->debug('File is too large: '.$node->getPath());
 					continue;
 				}
 				$this->logger->debug('Found '.$node->getPath());

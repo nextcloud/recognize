@@ -34,22 +34,22 @@ class ClassifyAudioJob extends TimedJob {
 	 * @var \OCA\Recognize\Service\ClassifyAudioService
 	 */
 	private $audioClassifier;
-    /**
-     * @var \OCP\IConfig
-     */
-    private $config;
+	/**
+	 * @var \OCP\IConfig
+	 */
+	private $config;
 
 
-    public function __construct(
-        ITimeFactory $timeFactory, Logger $logger, IUserManager $userManager, ClassifyAudioService $audioClassifier, IConfig $config) {
+	public function __construct(
+		ITimeFactory $timeFactory, Logger $logger, IUserManager $userManager, ClassifyAudioService $audioClassifier, IConfig $config) {
 		parent::__construct($timeFactory);
 
 		$this->setInterval(self::INTERVAL);
 		$this->logger = $logger;
 		$this->userManager = $userManager;
 		$this->audioClassifier = $audioClassifier;
-        $this->config = $config;
-    }
+		$this->config = $config;
+	}
 
 	protected function run($argument) {
 		$users = [];
@@ -57,9 +57,9 @@ class ClassifyAudioJob extends TimedJob {
 			$users[] = $user->getUID();
 		});
 
-        $pureJS = $this->config->getAppValue('bookmarks', 'tensorflow.purejs', 'false');
+		$pureJS = $this->config->getAppValue('bookmarks', 'tensorflow.purejs', 'false');
 
-        do {
+		do {
 			$user = array_pop($users);
 			if (!$user) {
 				$this->logger->debug('No users left, whose photos could be classified ');
@@ -68,14 +68,14 @@ class ClassifyAudioJob extends TimedJob {
 			try {
 				$processed = $this->audioClassifier->run($user, $pureJS === 'false' ? self::BATCH_SIZE : self::BATCH_SIZE_PUREJS);
 			} catch (\Exception $e) {
-                $this->config->setAppValue('recognize', 'audio.status', 'false');
+				$this->config->setAppValue('recognize', 'audio.status', 'false');
 				$this->logger->warning('Classifier process errored');
 				$this->logger->warning($e->getMessage());
 				return;
 			}
-            if ($processed) {
-                $this->config->setAppValue('recognize', 'audio.status', 'true');
-            }
+			if ($processed) {
+				$this->config->setAppValue('recognize', 'audio.status', 'true');
+			}
 		} while (!$processed);
 	}
 }

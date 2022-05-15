@@ -19,7 +19,7 @@ jobs:
       matrix:
         php-versions: ['7.3']
         databases: ['sqlite', 'mysql', 'pgsql']
-        server-versions: ['stable20', 'stable21', 'stable22']
+        server-versions: ['stable20', 'stable21', 'stable22', 'stable24']
         pure-js-mode: ['false']
         include:
           # test php 7.4 once
@@ -37,7 +37,6 @@ jobs:
             php-versions: 8.0
             databases: sqlite
             pure-js-mode: true
-
     name: Test classify audio command on ${{ matrix.databases }}-${{ matrix.server-versions }}-php${{ matrix.php-versions }}
 
     env:

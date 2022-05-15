@@ -40,16 +40,16 @@ class ClassifyImagesService {
 	 * @var \OCP\IConfig
 	 */
 	private $config;
-    /**
-     * @var \OCA\Recognize\Classifiers\Images\LandmarksClassifier
-     */
-    private $landmarks;
-    /**
-     * @var \OCA\Recognize\Classifiers\Images\GeoClassifier
-     */
-    private $geo;
+	/**
+	 * @var \OCA\Recognize\Classifiers\Images\LandmarksClassifier
+	 */
+	private $landmarks;
+	/**
+	 * @var \OCA\Recognize\Classifiers\Images\GeoClassifier
+	 */
+	private $geo;
 
-    public function __construct(FacesClassifier $facenet, ImagenetClassifier $imagenet, IRootFolder $rootFolder, ImagesFinderService $imagesFinder, ReferenceFacesFinderService $referenceFacesFinder, Logger $logger, IConfig $config, LandmarksClassifier $landmarks, GeoClassifier $geo) {
+	public function __construct(FacesClassifier $facenet, ImagenetClassifier $imagenet, IRootFolder $rootFolder, ImagesFinderService $imagesFinder, ReferenceFacesFinderService $referenceFacesFinder, Logger $logger, IConfig $config, LandmarksClassifier $landmarks, GeoClassifier $geo) {
 		$this->facenet = $facenet;
 		$this->imagenet = $imagenet;
 		$this->rootFolder = $rootFolder;
@@ -57,9 +57,9 @@ class ClassifyImagesService {
 		$this->referenceFacesFinder = $referenceFacesFinder;
 		$this->logger = $logger;
 		$this->config = $config;
-        $this->landmarks = $landmarks;
-        $this->geo = $geo;
-    }
+		$this->landmarks = $landmarks;
+		$this->geo = $geo;
+	}
 
 	/**
 	 * Run image classifiers
@@ -75,7 +75,7 @@ class ClassifyImagesService {
 	public function run(string $user, int $n = 0): bool {
 		if ($this->config->getAppValue('recognize', 'faces.enabled', 'false') !== 'true' &&
 			$this->config->getAppValue('recognize', 'imagenet.enabled', 'false') !== 'true' &&
-            $this->config->getAppValue('recognize', 'geo.enabled', 'false') !== 'true') {
+			$this->config->getAppValue('recognize', 'geo.enabled', 'false') !== 'true') {
 			return false;
 		}
 		$this->logger->debug('Collecting photos of user '.$user);
@@ -92,27 +92,27 @@ class ClassifyImagesService {
 			$this->logger->debug('Classifying photos of user '.$user. ' using imagenet');
 			$this->imagenet->classify($images);
 
-            if ($this->config->getAppValue('recognize', 'landmarks.enabled', 'false') !== 'false') {
-                $this->logger->debug('Classifying photos of user '.$user. ' using landmarks');
-                $this->landmarks->classify($images);
-            }
+			if ($this->config->getAppValue('recognize', 'landmarks.enabled', 'false') !== 'false') {
+				$this->logger->debug('Classifying photos of user '.$user. ' using landmarks');
+				$this->landmarks->classify($images);
+			}
 		}
 
-        if ($this->config->getAppValue('recognize', 'geo.enabled', 'false') !== 'false') {
-            $this->logger->debug('Classifying photos of user '.$user. ' using geo tagger');
-            $this->geo->classify($images);
-        }
+		if ($this->config->getAppValue('recognize', 'geo.enabled', 'false') !== 'false') {
+			$this->logger->debug('Classifying photos of user '.$user. ' using geo tagger');
+			$this->geo->classify($images);
+		}
 
 		if ($this->config->getAppValue('recognize', 'faces.enabled', 'false') !== 'false') {
 			$this->logger->debug('Collecting contact photos of user '.$user);
 			$faces = $this->referenceFacesFinder->findReferenceFacesForUser($user);
 			if (count($faces) === 0) {
 				$this->logger->debug('No contact photos found of user '.$user);
-                if ($this->config->getAppValue('recognize', 'imagenet.enabled', 'false') !== 'true') {
-                    return false;
-                }else{
-                    return true;
-                }
+				if ($this->config->getAppValue('recognize', 'imagenet.enabled', 'false') !== 'true') {
+					return false;
+				} else {
+					return true;
+				}
 			}
 			$this->logger->debug('Classifying photos of user '.$user. ' using facenet');
 			$this->facenet->classify($faces, $images);

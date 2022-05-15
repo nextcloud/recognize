@@ -38,29 +38,29 @@ class ClassifyImagesJob extends TimedJob {
 	 * @var \OCA\Recognize\Service\ClassifyImagesService
 	 */
 	private $imageClassifier;
-    /**
-     * @var \OCP\IConfig
-     */
-    private $config;
+	/**
+	 * @var \OCP\IConfig
+	 */
+	private $config;
 
 
-    public function __construct(
-        ITimeFactory $timeFactory, Logger $logger, IUserManager $userManager, ClassifyImagesService $imageClassifier, IConfig $config
-    ) {
+	public function __construct(
+		ITimeFactory $timeFactory, Logger $logger, IUserManager $userManager, ClassifyImagesService $imageClassifier, IConfig $config
+	) {
 		parent::__construct($timeFactory);
 		$this->setInterval(self::INTERVAL);
 		$this->logger = $logger;
 		$this->userManager = $userManager;
 		$this->imageClassifier = $imageClassifier;
-        $this->config = $config;
-    }
+		$this->config = $config;
+	}
 
 	protected function run($argument) {
 		$users = [];
 		$this->userManager->callForSeenUsers(function (IUser $user) use (&$users) {
 			$users[] = $user->getUID();
 		});
-        $pureJS = $this->config->getAppValue('bookmarks', 'tensorflow.purejs', 'false');
+		$pureJS = $this->config->getAppValue('bookmarks', 'tensorflow.purejs', 'false');
 
 		do {
 			$user = array_pop($users);
@@ -71,14 +71,14 @@ class ClassifyImagesJob extends TimedJob {
 			try {
 				$processed = $this->imageClassifier->run($user, $pureJS === 'false' ? self::BATCH_SIZE : self::BATCH_SIZE_PUREJS);
 			} catch (\Exception $e) {
-                $this->config->setAppValue('recognize', 'images.status', 'false');
+				$this->config->setAppValue('recognize', 'images.status', 'false');
 				$this->logger->warning('Classifier process errored');
 				$this->logger->warning($e->getMessage());
 				return;
 			}
-            if ($processed) {
-                $this->config->setAppValue('recognize', 'images.status', 'true');
-            }
+			if ($processed) {
+				$this->config->setAppValue('recognize', 'images.status', 'true');
+			}
 		} while (!$processed);
 	}
 }

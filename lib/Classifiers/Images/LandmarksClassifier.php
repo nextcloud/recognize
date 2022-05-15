@@ -23,9 +23,9 @@ class LandmarksClassifier {
 	public const IMAGE_TIMEOUT = 480; // seconds
 	public const IMAGE_PUREJS_TIMEOUT = 600; // seconds
 	public const MODEL_DOWNLOAD_TIMEOUT = 180; // seconds
-    const PRECONDITION_TAGS = ['architecture', 'tower', 'monument', 'bridge', 'historic'];
+	public const PRECONDITION_TAGS = ['architecture', 'tower', 'monument', 'bridge', 'historic'];
 
-    /**
+	/**
 	 * @var LoggerInterface
 	 */
 	private $logger;
@@ -44,32 +44,32 @@ class LandmarksClassifier {
 		$this->tagManager = $tagManager;
 	}
 
-    /**
-     * @param File[] $files
-     * @return void
-     * @throws \OCP\Files\NotFoundException
-     * @throws \OCP\Files\InvalidPathException
-     */
+	/**
+	 * @param File[] $files
+	 * @return void
+	 * @throws \OCP\Files\NotFoundException
+	 * @throws \OCP\Files\InvalidPathException
+	 */
 	public function classify(array $files): void {
-        $tagsByFile = $this->tagManager->getTagsForFiles(array_map(function($file) {
-            return $file->getId();
-        }, $files));
-        $tagsByFile = array_map(function($tags) {
-            return array_map(function(ISystemTag $tag) {
-                return $tag->getName();
-            }, $tags);
-        }, $tagsByFile);
-        $landmarkFiles = array_values(array_filter($files, function($file) use ($tagsByFile){
-            return count(array_intersect(self::PRECONDITION_TAGS, $tagsByFile[$file->getId()])) !== 0;
-        }));
+		$tagsByFile = $this->tagManager->getTagsForFiles(array_map(function ($file) {
+			return $file->getId();
+		}, $files));
+		$tagsByFile = array_map(function ($tags) {
+			return array_map(function (ISystemTag $tag) {
+				return $tag->getName();
+			}, $tags);
+		}, $tagsByFile);
+		$landmarkFiles = array_values(array_filter($files, function ($file) use ($tagsByFile) {
+			return count(array_intersect(self::PRECONDITION_TAGS, $tagsByFile[$file->getId()])) !== 0;
+		}));
 		$paths = array_map(function ($file) {
 			return $file->getStorage()->getLocalFile($file->getInternalPath());
 		}, $landmarkFiles);
 
-        if (count($paths) === 0) {
-            $this->logger->debug('No potential landmarks found');
-            return;
-        }
+		if (count($paths) === 0) {
+			$this->logger->debug('No potential landmarks found');
+			return;
+		}
 
 		$this->logger->debug('Classifying landmarks of '.var_export($paths, true));
 
@@ -94,11 +94,11 @@ class LandmarksClassifier {
 		try {
 			$proc->start();
 
-            // Set cores
-            $cores = $this->config->getAppValue('recognize', 'tensorflow.cores', '0');
-            if ($cores !== '0') {
-                @exec('taskset -cp ' . implode(',', range(0, (int)$cores, 1)) . ' ' . $proc->getPid());
-            }
+			// Set cores
+			$cores = $this->config->getAppValue('recognize', 'tensorflow.cores', '0');
+			if ($cores !== '0') {
+				@exec('taskset -cp ' . implode(',', range(0, (int)$cores, 1)) . ' ' . $proc->getPid());
+			}
 
 			$i = 0;
 			$errOut = '';
