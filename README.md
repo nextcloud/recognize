@@ -41,7 +41,7 @@ Recognize uses
 
 ### Requirements
 
-- php 7.3 and above
+- php 7.4 and above
 - App "collaborative tags" enabled
 - For native speed:
   - Processor: x86 64bit (with support for AVX instructions)
@@ -68,7 +68,7 @@ You can also ignore directories (and their children) by adding a `.noimage`, `.n
 - make
 - [git](https://git-scm.org/)
 - [Node.js v16.x and npm](https://nodejs.org/)
-- [php 7.3 or later](https://php.net/)
+- [php 7.4 or later](https://php.net/)
 - [composer](https://getcomposer.org/)
 
 #### Setup

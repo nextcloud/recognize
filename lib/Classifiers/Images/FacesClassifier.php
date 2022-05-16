@@ -26,14 +26,10 @@ class FacesClassifier {
 	 * @var LoggerInterface
 	 */
 	private $logger;
-	/**
-	 * @var TagManager
-	 */
-	private $tagManager;
-	/**
-	 * @var IConfig
-	 */
-	private $config;
+
+	private TagManager $tagManager;
+
+	private IConfig $config;
 
 	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager) {
 		$this->logger = $logger;
@@ -75,11 +71,11 @@ class FacesClassifier {
 		try {
 			$proc->start();
 
-            // Set cores
-            $cores = $this->config->getAppValue('recognize', 'tensorflow.cores', '0');
-            if ($cores !== '0') {
-                @exec('taskset -cp '.implode(',', range(0, (int)$cores, 1)).' ' . $proc->getPid());
-            }
+			// Set cores
+			$cores = $this->config->getAppValue('recognize', 'tensorflow.cores', '0');
+			if ($cores !== '0') {
+				@exec('taskset -cp '.implode(',', range(0, (int)$cores, 1)).' ' . $proc->getPid());
+			}
 
 			$i = 0;
 			$errOut = '';

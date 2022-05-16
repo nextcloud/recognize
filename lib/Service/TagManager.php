@@ -10,14 +10,10 @@ use OCP\SystemTag\TagNotFoundException;
 class TagManager {
 	public const RECOGNIZED_TAG = 'Tagged by recognize';
 
-	/**
-	 * @var \OCP\SystemTag\ISystemTagManager
-	 */
-	private $tagManager;
-	/**
-	 * @var \OCP\SystemTag\ISystemTagObjectMapper
-	 */
-	private $objectMapper;
+
+	private ISystemTagManager $tagManager;
+
+	private ISystemTagObjectMapper $objectMapper;
 
 	public function __construct(ISystemTagManager $systemTagManager, ISystemTagObjectMapper $objectMapper) {
 		$this->tagManager = $systemTagManager;
@@ -50,11 +46,11 @@ class TagManager {
 		$this->objectMapper->assignTags($fileId, 'files', $tags);
 	}
 
-    public function getTagsForFiles(array $fileIds): array {
-        return array_map(function($tags) {
-            return $this->tagManager->getTagsByIds($tags);
-        }, $this->objectMapper->getTagIdsForObjects($fileIds, 'files'));
-    }
+	public function getTagsForFiles(array $fileIds): array {
+		return array_map(function ($tags) {
+			return $this->tagManager->getTagsByIds($tags);
+		}, $this->objectMapper->getTagIdsForObjects($fileIds, 'files'));
+	}
 
 	public function findClassifiedFiles(): array {
 		return $this->objectMapper->getObjectIdsForTags($this->getProcessedTag()->getId(), 'files');
@@ -92,13 +88,13 @@ class TagManager {
 		}
 	}
 
-    public function removeEmptyTags(): void {
-        $tags = $this->tagManager->getAllTags();
-        foreach ($tags as $tag) {
-            $files = $this->objectMapper->getObjectIdsForTags($tag->getId(), 'files', 1);
-            if (empty($files)) {
-                $this->tagManager->deleteTags($tag->getId());
-            }
-        }
-    }
+	public function removeEmptyTags(): void {
+		$tags = $this->tagManager->getAllTags();
+		foreach ($tags as $tag) {
+			$files = $this->objectMapper->getObjectIdsForTags($tag->getId(), 'files', 1);
+			if (empty($files)) {
+				$this->tagManager->deleteTags($tag->getId());
+			}
+		}
+	}
 }

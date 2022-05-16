@@ -12,31 +12,22 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ClassifyAudio extends Command {
-	/**
-	 * @var IUserManager
-	 */
-	private $userManager;
-	/**
-	 * @var \OCA\Recognize\Service\ClassifyAudioService
-	 */
-	private $audioClassifier;
+	private IUserManager $userManager;
 
-	/**
-	 * @var \OCA\Recognize\Service\Logger
-	 */
-	private $logger;
-    /**
-     * @var \OCP\IConfig
-     */
-    private $config;
+	private ClassifyAudioService $audioClassifier;
 
-    public function __construct(IUserManager $userManager, ClassifyAudioService $audioClassifier, Logger $logger, IConfig $config) {
+
+	private Logger $logger;
+
+	private IConfig $config;
+
+	public function __construct(IUserManager $userManager, ClassifyAudioService $audioClassifier, Logger $logger, IConfig $config) {
 		parent::__construct();
 		$this->userManager = $userManager;
 		$this->audioClassifier = $audioClassifier;
 		$this->logger = $logger;
-        $this->config = $config;
-    }
+		$this->config = $config;
+	}
 
 	/**
 	 * Configure the command
@@ -64,20 +55,20 @@ class ClassifyAudio extends Command {
 			});
 			$this->logger->setCliOutput($output);
 			foreach ($users as $user) {
-                do {
-                    $anythingClassified = $this->audioClassifier->run($user, 500);
-                    if ($anythingClassified) {
-                        $this->config->setAppValue('recognize', 'images.status', 'true');
-                    }
-                } while($anythingClassified);
+				do {
+					$anythingClassified = $this->audioClassifier->run($user, 500);
+					if ($anythingClassified) {
+						$this->config->setAppValue('recognize', 'images.status', 'true');
+					}
+				} while ($anythingClassified);
 			}
 		} catch (\Exception $ex) {
-            $this->config->setAppValue('recognize', 'audio.status', 'false');
+			$this->config->setAppValue('recognize', 'audio.status', 'false');
 			$output->writeln('<error>Failed to classify audio</error>');
 			$output->writeln($ex->getMessage());
 			return 1;
 		}
 
-        return 0;
+		return 0;
 	}
 }

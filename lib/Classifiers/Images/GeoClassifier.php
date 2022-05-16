@@ -25,14 +25,10 @@ class GeoClassifier {
 	 * @var LoggerInterface
 	 */
 	private $logger;
-	/**
-	 * @var TagManager
-	 */
-	private $tagManager;
-	/**
-	 * @var IConfig
-	 */
-	private $config;
+
+	private TagManager $tagManager;
+
+	private IConfig $config;
 
 	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager) {
 		$this->logger = $logger;
@@ -60,7 +56,7 @@ class GeoClassifier {
 
 		$this->logger->debug('Running '.var_export($command, true));
 		$proc = new Process($command, __DIR__);
-        $proc->setTimeout(count($paths) * self::IMAGE_TIMEOUT);
+		$proc->setTimeout(count($paths) * self::IMAGE_TIMEOUT);
 		$proc->setInput(implode("\n", $paths));
 		try {
 			$proc->start();

@@ -2,7 +2,7 @@
     "require": {
         "symfony/process": "^5.2",
         "ext-json": "*",
-        "php": ">=7.3"
+        "php": ">=7.4"
     },
     "autoload": {
         "psr-4": {
@@ -20,7 +20,7 @@
     },
     "config": {
         "platform": {
-            "php": "7.3"
+            "php": "7.4"
         }
     }
 }

@@ -20,29 +20,23 @@ class FileFinderService {
 	 * @var LoggerInterface
 	 */
 	private $logger;
-	/**
-	 * @var ISystemTagObjectMapper
-	 */
-	private $objectMapper;
-	/**
-	 * @var ISystemTag
-	 */
-	private $recognizedTag;
+
+	private ISystemTagObjectMapper $objectMapper;
+
+	private ISystemTag $recognizedTag;
 
 	/**
 	 * @var string[] $formats
 	 */
-	private $formats;
+	private array $formats;
 
-	/**
-	 * @var int
-	 */
-	private $maxFileSize = 0;
+
+	private int $maxFileSize = 0;
 
 	/**
 	 * @var string[] $ignoreMarkers
 	 */
-	private $ignoreMarkers;
+	private array $ignoreMarkers;
 
 	public function __construct(Logger $logger, ISystemTagObjectMapper $objectMapper, TagManager $tagManager) {
 		$this->logger = $logger;
@@ -103,20 +97,20 @@ class FileFinderService {
 				$this->findFilesInFolder($user, $node, $results);
 			} elseif ($node instanceof File) {
 				if ($this->objectMapper->haveTag([$node->getId()], 'files', $this->recognizedTag->getId())) {
-                    $this->logger->debug('Already processed '.$node->getPath());
+					$this->logger->debug('Already processed '.$node->getPath());
 					continue;
 				}
-                if ($node->getMountPoint()->getMountType() === 'shared' && $node->getOwner()->getUID() !== $user) {
-                    $this->logger->debug('Not original owner of '.$node->getPath());
-                    continue;
-                }
+				if ($node->getMountPoint()->getMountType() === 'shared' && $node->getOwner()->getUID() !== $user) {
+					$this->logger->debug('Not original owner of '.$node->getPath());
+					continue;
+				}
 				$mimeType = $node->getMimetype();
 				if (!in_array($mimeType, $this->formats)) {
-                    $this->logger->debug('Not a supported format: '.$node->getPath());
+					$this->logger->debug('Not a supported format: '.$node->getPath());
 					continue;
 				}
 				if ($this->maxFileSize !== 0 && $this->maxFileSize < $node->getSize()) {
-                    $this->logger->debug('File is too large: '.$node->getPath());
+					$this->logger->debug('File is too large: '.$node->getPath());
 					continue;
 				}
 				$this->logger->debug('Found '.$node->getPath());

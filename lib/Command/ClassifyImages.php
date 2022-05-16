@@ -12,32 +12,22 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ClassifyImages extends Command {
-	/**
-	 * @var IUserManager
-	 */
-	private $userManager;
-	/**
-	 * @var \OCA\Recognize\Service\ClassifyImagesService
-	 */
-	private $imageClassifier;
+	private IUserManager $userManager;
 
-	/**
-	 * @var \OCA\Recognize\Service\Logger
-	 */
-	private $logger;
-    /**
-     * @var \OCP\IConfig
-     */
-    private $config;
+	private ClassifyImagesService $imageClassifier;
+
+	private Logger $logger;
+
+	private IConfig $config;
 
 
-    public function __construct(IUserManager $userManager, ClassifyImagesService $imageClassifier, Logger $logger, IConfig $config) {
+	public function __construct(IUserManager $userManager, ClassifyImagesService $imageClassifier, Logger $logger, IConfig $config) {
 		parent::__construct();
 		$this->userManager = $userManager;
 		$this->imageClassifier = $imageClassifier;
 		$this->logger = $logger;
-        $this->config = $config;
-    }
+		$this->config = $config;
+	}
 
 	/**
 	 * Configure the command
@@ -66,14 +56,14 @@ class ClassifyImages extends Command {
 			$this->logger->setCliOutput($output);
 			foreach ($users as $user) {
 				do {
-                    $anythingClassified = $this->imageClassifier->run($user, 500);
-                    if ($anythingClassified) {
-                        $this->config->setAppValue('recognize', 'images.status', 'true');
-                    }
-                } while($anythingClassified);
+					$anythingClassified = $this->imageClassifier->run($user, 500);
+					if ($anythingClassified) {
+						$this->config->setAppValue('recognize', 'images.status', 'true');
+					}
+				} while ($anythingClassified);
 			}
 		} catch (\Exception $ex) {
-            $this->config->setAppValue('recognize', 'images.status', 'false');
+			$this->config->setAppValue('recognize', 'images.status', 'false');
 			$output->writeln('<error>Failed to classify images</error>');
 			$output->writeln($ex->getMessage());
 			return 1;

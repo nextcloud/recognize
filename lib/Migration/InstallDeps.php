@@ -27,24 +27,27 @@ declare(strict_types=1);
 namespace OCA\Recognize\Migration;
 
 use OCA\Recognize\Helper\TAR;
-use OCP\AppFramework\Http\JSONResponse;
 use OCP\IConfig;
 use OCP\Migration\IOutput;
 use OCP\Migration\IRepairStep;
 
 class InstallDeps implements IRepairStep {
 	public const NODE_VERSION = 'v14.18.2';
-    public const NODE_SERVER_OFFICIAL = 'https://nodejs.org/dist/';
-    public const NODE_SERVER_UNOFFICIAL = 'https://unofficial-builds.nodejs.org/download/release/';
+	public const NODE_SERVER_OFFICIAL = 'https://nodejs.org/dist/';
+	public const NODE_SERVER_UNOFFICIAL = 'https://unofficial-builds.nodejs.org/download/release/';
 
-	/** @var IConfig */
-	protected $config;
+	protected IConfig $config;
+	private string $binaryDir;
+	private string $preGypBinaryDir;
+	private string $ffmpegDir;
+	private string $tfjsInstallScript;
+	private string $tfjsPath;
 
 	public function __construct(IConfig $config) {
 		$this->config = $config;
 		$this->binaryDir = dirname(__DIR__, 2) . '/bin/';
 		$this->preGypBinaryDir = dirname(__DIR__, 2) . '/node_modules/@mapbox/node-pre-gyp/bin/';
-		$this->ffmpegDir= dirname(__DIR__, 2) . '/node_modules/ffmpeg-static/';
+		$this->ffmpegDir = dirname(__DIR__, 2) . '/node_modules/ffmpeg-static/';
 		$this->tfjsInstallScript = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node/scripts/install.js';
 		$this->tfjsPath = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node/';
 	}
@@ -65,42 +68,40 @@ class InstallDeps implements IRepairStep {
 			if ($version === null) {
 				$binaryPath = $this->downloadNodeBinary(self::NODE_SERVER_UNOFFICIAL, self::NODE_VERSION, 'x64', 'musl');
 				$version = $this->testBinary($binaryPath);
-                if ($version !== null) {
-                    $isMusl = true;
-                }
+				if ($version !== null) {
+					$isMusl = true;
+				}
 			}
-
 		} elseif ($uname === 'aarch64') {
 			$binaryPath = $this->downloadNodeBinary(self::NODE_SERVER_OFFICIAL, self::NODE_VERSION, 'arm64');
-            $version = $this->testBinary($binaryPath);
-            if ($version !== null) {
-                $isARM = true;
-            }
+			$version = $this->testBinary($binaryPath);
+			if ($version !== null) {
+				$isARM = true;
+			}
 		} elseif ($uname === 'armv7l') {
 			$binaryPath = $this->downloadNodeBinary(self::NODE_SERVER_OFFICIAL, self::NODE_VERSION, 'armv7l');
 			$version = $this->testBinary($binaryPath);
-            if ($version !== null) {
-                $isARM = true;
-            }
-
+			if ($version !== null) {
+				$isARM = true;
+			}
 		} else {
 			$output->warning('CPU archtecture $uname is not supported.');
-            return;
+			return;
 		}
 
-        if ($version === null) {
-            $output->warning('Failed to install node binary');
-            return;
-        }
+		if ($version === null) {
+			$output->warning('Failed to install node binary');
+			return;
+		}
 
 		// Write the app config
 		$this->config->setAppValue('recognize', 'node_binary', $binaryPath);
 
-        $supportsAVX = $this->isAVXSupported();
-        if ($isARM || $isMusl || !$supportsAVX) {
-            $output->info('Enabling purejs mode (isMusl='.$isMusl.', isARM='.$isARM.', supportsAVX='.$supportsAVX.')');
-            $this->config->setAppValue('recognize', 'tensorflow.purejs', 'true');
-        }
+		$supportsAVX = $this->isAVXSupported();
+		if ($isARM || $isMusl || !$supportsAVX) {
+			$output->info('Enabling purejs mode (isMusl='.$isMusl.', isARM='.$isARM.', supportsAVX='.$supportsAVX.')');
+			$this->config->setAppValue('recognize', 'tensorflow.purejs', 'true');
+		}
 
 		$this->setBinariesPermissions();
 
@@ -139,10 +140,10 @@ class InstallDeps implements IRepairStep {
 	}
 
 	protected function downloadNodeBinary(string $server, string $version, string $arch, string $flavor = '') : string {
-        $name = 'node-'.$version.'-linux-'.$arch;
-        if ($flavor !== '') {
-            $name = $name . '-'.$flavor;
-        }
+		$name = 'node-'.$version.'-linux-'.$arch;
+		if ($flavor !== '') {
+			$name = $name . '-'.$flavor;
+		}
 		$url = $server.$version.'/'.$name.'.tar.gz';
 		$file = $this->binaryDir.'/'.$arch.'.tar.gz';
 		$archive = file_get_contents($url);
@@ -168,16 +169,16 @@ class InstallDeps implements IRepairStep {
 				throw new \Exception('Error when setting '.$this->preGypBinaryDir.'* permissions');
 			}
 		}
-        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->ffmpegDir));
-        foreach ($iterator as $item) {
-            if (chmod(realpath($item->getPathname()), 0755) === false) {
-                throw new \Exception('Error when setting '.$this->ffmpegDir.'* permissions');
-            }
-        }
+		$iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->ffmpegDir));
+		foreach ($iterator as $item) {
+			if (chmod(realpath($item->getPathname()), 0755) === false) {
+				throw new \Exception('Error when setting '.$this->ffmpegDir.'* permissions');
+			}
+		}
 	}
 
-    protected function isAVXSupported() {
-        $cpuinfo = file_get_contents('/proc/cpuinfo');
-        return str_contains($cpuinfo, 'avx');
-    }
+	protected function isAVXSupported(): bool {
+		$cpuinfo = file_get_contents('/proc/cpuinfo');
+		return str_contains($cpuinfo, 'avx');
+	}
 }

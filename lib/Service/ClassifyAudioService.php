@@ -9,14 +9,9 @@ use OCP\Files\NotPermittedException;
 use OCP\IConfig;
 
 class ClassifyAudioService {
-	/**
-	 * @var AudioFinderService
-	 */
-	private $audioFinder;
-	/**
-	 * @var IRootFolder
-	 */
-	private $rootFolder;
+	private AudioFinderService $audioFinder;
+
+	private IRootFolder $rootFolder;
 	/**
 	 * @var \Psr\Log\LoggerInterface
 	 */
@@ -24,11 +19,11 @@ class ClassifyAudioService {
 	/**
 	 * @var \OCP\IConfig
 	 */
-	private $config;
+	private IConfig $config;
 	/**
 	 * @var MusicnnClassifier
 	 */
-	private $musicnn;
+	private MusicnnClassifier $musicnn;
 
 	public function __construct(IRootFolder $rootFolder, AudioFinderService $audioFinder, Logger $logger, IConfig $config, MusicnnClassifier $musicnn) {
 		$this->rootFolder = $rootFolder;

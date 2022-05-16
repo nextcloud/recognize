@@ -17,16 +17,16 @@ jobs:
       # do not stop on another job's failure
       fail-fast: false
       matrix:
-        php-versions: ['7.3']
+        php-versions: ['7.4']
         databases: ['sqlite', 'mysql', 'pgsql']
-        server-versions: ['stable20', 'stable21', 'stable22', 'stable23']
+        server-versions: ['stable22', 'stable23', 'stable24']
         container: ['']
         include:
-          - server-versions: stable22
-            php-versions: 7.4
-            databases: sqlite
           - server-versions: stable23
             php-versions: 8.0
+            databases: sqlite
+          - server-versions: stable24
+            php-versions: 8.1
             databases: sqlite
           - server-versions: stable23
             php-versions: 8.0
