@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2.0.0 - 2022-05-16
+
+### Changed
+- Drop support for php v7.3
+- Drop support for Nextcloud v20 and v21
+
+### New
+- Support Nextcloud 24
+- ViewAdmin: Add status indicators for image and audio recognition
+- info.xml: Add instruction about post-install steps
+
+### Fixed
+- FileFinder: Fail graciously when storage is not available
+- FileFinder: Only check original owner for shares
+- ViewAdmin: Clarify node path setting description
+- ViewAdmin: Add examples for each tagging setting
+- ViewAdmin: Update Note about background job interval
+- InstallDeps: Fix ffmpeg
+- Settings: Allow enabling geo tagging
+- Fine-tune musicnn
+
 ## 1.12.0 - 2022-04-14
 ### New
  - Implement GeoClassifier
