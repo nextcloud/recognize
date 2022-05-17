@@ -31,7 +31,11 @@ class AdminController extends Controller {
 	}
 
 	public function avx(): JSONResponse {
-		$cpuinfo = file_get_contents('/proc/cpuinfo');
+        try {
+            $cpuinfo = file_get_contents('/proc/cpuinfo');
+        }catch(\Throwable $e) {
+            return new JSONResponse(['avx' => null]);
+        }
 		return new JSONResponse(['avx' => str_contains($cpuinfo, 'avx')]);
 	}
 
