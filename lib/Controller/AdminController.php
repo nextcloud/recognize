@@ -39,6 +39,7 @@ class AdminController extends Controller {
 		try {
 			exec('lscpu --json' . ' 2>&1', $output, $returnCode);
 		} catch (\Throwable $e) {
+            return new JSONResponse(['platform' => null]);
 		}
 
 		if ($returnCode !== 0) {
@@ -53,10 +54,11 @@ class AdminController extends Controller {
 		try {
 			exec('ldd /bin/ls' . ' 2>&1', $output, $returnCode);
 		} catch (\Throwable $e) {
+            return new JSONResponse(['musl' => null]);
 		}
 
 		if ($returnCode !== 0) {
-			return new JSONResponse(['platform' => null]);
+			return new JSONResponse(['musl' => null]);
 		}
 
 		$ldd = trim(implode("\n", $output));
