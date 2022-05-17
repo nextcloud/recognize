@@ -128,10 +128,11 @@ class InstallDeps implements IRepairStep {
 	protected function runTfjsInstall($nodeBinary) : void {
 		$oriCwd = getcwd();
 		chdir($this->tfjsPath);
-		$cmd = 'PATH='.escapeshellcmd($this->preGypBinaryDir).':'.escapeshellcmd($this->binaryDir).':$PATH ' . escapeshellcmd($nodeBinary) . ' ' . escapeshellarg($this->tfjsInstallScript) . ' ' . escapeshellarg('download');
+		$cmd = 'PATH='.escapeshellcmd($this->preGypBinaryDir).':'.escapeshellcmd($this->binaryDir).':$PATH ' . escapeshellcmd($nodeBinary) . ' ' . escapeshellarg($this->tfjsInstallScript) . ' cpu ' . escapeshellarg('download');
 		try {
 			exec($cmd . ' 2>&1', $output, $returnCode); // Appending  2>&1 to avoid leaking sterr
 		} catch (\Throwable $e) {
+            throw new \Exception('Failed to install Tensorflow.js: '.$e->getMessage());
 		}
 		chdir($oriCwd);
 		if ($returnCode !== 0) {

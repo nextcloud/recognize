@@ -125,6 +125,7 @@ jobs:
         run: |
           composer install --ignore-platform-req=php --no-dev
           make all
+          make remove-binaries
           rm -rf models # Make it download from github
 
       - name: Set up Nextcloud and install app
