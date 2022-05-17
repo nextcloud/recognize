@@ -178,7 +178,11 @@ class InstallDeps implements IRepairStep {
 	}
 
 	protected function isAVXSupported(): bool {
-		$cpuinfo = file_get_contents('/proc/cpuinfo');
+        try {
+            $cpuinfo = file_get_contents('/proc/cpuinfo');
+        }catch(\Throwable $e) {
+            return false;
+        }
 		return str_contains($cpuinfo, 'avx');
 	}
 }
