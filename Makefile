@@ -38,6 +38,9 @@ build-js:
 
 build-js-production:
 	npm run build
+	# make it download appropriate tf binaries
+	rm -rf node_modules/@tensorflow/tfjs-node/deps/lib/*
+	rm -rf node_modules/@tensorflow/tfjs-node/lib/*
 
 watch-js:
 	npm run watch
