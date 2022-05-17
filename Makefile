@@ -11,7 +11,7 @@ version+=2.0.0
 
 all: dev-setup build-js-production
 
-release: appstore create-tag
+release: remove-binaries appstore create-tag
 
 create-tag:
 	git tag -s -a v$(version) -m "Tagging the $(version) release."
@@ -38,6 +38,8 @@ build-js:
 
 build-js-production:
 	npm run build
+
+remove-binaries:
 	# make it download appropriate tf binaries
 	rm -rf node_modules/@tensorflow/tfjs-node/deps/lib/*
 	rm -rf node_modules/@tensorflow/tfjs-node/lib/*

@@ -123,6 +123,7 @@ jobs:
         run: |
           composer install --ignore-platform-req=php --no-dev
           make all
+          make remove-binaries # Make it download tfjs from scratch
           rm -rf models # Make it download from github
 
       - name: Install app on Alpine
