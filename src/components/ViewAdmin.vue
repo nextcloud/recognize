@@ -8,8 +8,7 @@
 	<div id="recognize">
 		<figure v-if="loading" class="icon-loading loading" />
 		<figure v-if="!loading && success" class="icon-checkmark success" />
-		<SettingsSection
-			:title="t('recognize', 'Status')">
+		<SettingsSection :title="t('recognize', 'Status')">
 			<template v-if="settings['faces.enabled'] || settings['geo.enabled'] || settings['imagenet.enabled'] || settings['musicnn.enabled']">
 				<p>The app is installed and will automatically classify up to 100 files every 30 minutes.</p>
 				<template v-if="settings['faces.enabled'] || settings['geo.enabled'] || settings['imagenet.enabled']">
@@ -46,8 +45,7 @@
 				None of the tagging options below are currently selected. The app will currently do nothing.
 			</p>
 		</SettingsSection>
-		<SettingsSection
-			:title="t('recognize', 'Image tagging')">
+		<SettingsSection :title="t('recognize', 'Image tagging')">
 			<p>
 				<label>
 					<input v-model="settings['faces.enabled']" type="checkbox" @change="onChange">
@@ -76,8 +74,7 @@
 				</label>
 			</p>
 		</SettingsSection>
-		<SettingsSection
-			:title="t('recognize', 'Audio tagging')">
+		<SettingsSection :title="t('recognize', 'Audio tagging')">
 			<p>
 				<label>
 					<input v-model="settings['musicnn.enabled']" type="checkbox" @change="onChange">
@@ -85,15 +82,13 @@
 				</label>
 			</p>
 		</SettingsSection>
-		<SettingsSection
-			:title="t('recognize', 'Reset')">
-			<p>Click the below button to remove all tags from all images that have been classified so far.</p>
+		<SettingsSection :title="t('recognize', 'Reset')">
+			<p>Click the below button to remove all tags from all files that have been classified so far.</p>
 			<button class="button" @click="onReset">
 				Reset tags for classified files
 			</button>
 		</SettingsSection>
-		<SettingsSection
-			:title="t('recognize', 'Manual operation') ">
+		<SettingsSection :title="t('recognize', 'Manual operation') ">
 			<p>To trigger a full classification run manually, run the following commands on the terminal. (The first time, this will download the machine learning model initially, so it will take longer.)</p>
 			<pre><code>occ recognize:classify-images</code></pre>
 			<pre><code>occ recognize:classify-audio</code></pre>
@@ -104,8 +99,7 @@
 			<p>You can delete all tags that no longer have any files associated with them with the following command:</p>
 			<pre><code>occ recognize:cleanup-tags</code></pre>
 		</SettingsSection>
-		<SettingsSection
-			:title="t('recognize', 'CPU cores') ">
+		<SettingsSection :title="t('recognize', 'CPU cores') ">
 			<p>By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used.</p>
 			<p>
 				<label>
@@ -119,8 +113,7 @@
 				</label>
 			</p>
 		</SettingsSection>
-		<SettingsSection
-			:title="t('recognize', 'Tensorflow plain mode')">
+		<SettingsSection :title="t('recognize', 'Tensorflow plain mode')">
 			<p v-if="avx === null || platform === null || musl === null">
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Checking CPU
 			</p>
@@ -137,8 +130,7 @@
 				</label>
 			</p>
 		</SettingsSection>
-		<SettingsSection
-			:title="t('recognize', 'Node.js path')">
+		<SettingsSection :title="t('recognize', 'Node.js path')">
 			<p>
 				If the shipped Node.js binary doesn't work on your system for some reason you can set the path to a custom node.js binary.
 				Currently supported is Node v14.17 and newer v14 releases.
@@ -154,6 +146,7 @@
 import SettingsSection from '@nextcloud/vue/dist/Components/SettingsSection'
 import axios from '@nextcloud/axios'
 import { generateUrl } from '@nextcloud/router'
+import { loadState } from '@nextcloud/initial-state'
 
 const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'geo.enabled', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'node_binary', 'audio.status', 'images.status']
 
@@ -198,19 +191,21 @@ export default {
 		},
 	},
 	async created() {
-		await Promise.all([
-			this.getCount(),
-			this.getAVX(),
-			this.getPlatform(),
-			this.getMusl(),
-		])
-		setInterval(() => {
+		this.getCount()
+		this.getAVX()
+		this.getPlatform()
+		this.getMusl()
+
+		setInterval(async () => {
 			this.getCount()
+			this.loadValue('audio.status')
+			this.loadValue('images.status')
 		}, 5 * 60 * 1000)
 
 		try {
+			const settings = loadState('recognize', 'settings')
 			for (const setting of SETTINGS) {
-				this.settings[setting] = await this.getValue(setting)
+				this.settings[setting] = settings[setting]
 				if (['true', 'false'].includes(this.settings[setting])) {
 					this.settings[setting] = (this.settings[setting] === 'true')
 				}
@@ -277,6 +272,13 @@ export default {
 			setTimeout(() => {
 				this.success = false
 			}, 3000)
+		},
+
+		async loadValue(setting) {
+			this.settings[setting] = await this.getValue(setting)
+			if (['true', 'false'].includes(this.settings[setting])) {
+				this.settings[setting] = (this.settings[setting] === 'true')
+			}
 		},
 		async setValue(setting, value) {
 			try {
