@@ -7,15 +7,11 @@ source_dir=$(build_dir)/source
 sign_dir=$(build_dir)/sign
 package_name=$(app_name)
 cert_dir=$(HOME)/.nextcloud/certificates
-version+=2.0.0
+version+=2.0.1
 
 all: dev-setup build-js-production
 
-release: remove-binaries appstore create-tag
-
-create-tag:
-	git tag -s -a v$(version) -m "Tagging the $(version) release."
-	git push origin v$(version)
+release: remove-binaries appstore
 
 # Dev env management
 dev-setup: clean clean-dev npm-init composer-install install-binaries
