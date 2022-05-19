@@ -19,7 +19,7 @@
 						An error occurred during image processing, please check the Nextcloud logs.
 					</p>
 					<p v-else>
-						<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Waiting for status reports on image processing. If this message persists beyond 30minutes, please check the Nextcloud logs.
+						<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Waiting for status reports on image processing. If this message persists beyond 30 minutes, please check the Nextcloud logs.
 					</p>
 				</template>
 				<template v-if="settings['musicnn.enabled']">
