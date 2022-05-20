@@ -23,7 +23,7 @@ async function main() {
 			const lat = ConvertDMSToDD(metadata.GPSLatitude, metadata.GPSLatitudeRef)
 			const long = ConvertDMSToDD(metadata.GPSLongitude, metadata.GPSLongitudeRef)
 			const countries = geoReverse.country(lat, long, 'en')
-			console.log(JSON.stringify(countries.map(c => c.name)))
+			console.log(JSON.stringify(countries.map(c => c.name).filter(Boolean)))
 		} catch (e) {
 			console.error(e)
 			console.log('[]')
