@@ -8,7 +8,7 @@ use OCP\SystemTag\ISystemTagObjectMapper;
 use OCP\SystemTag\TagNotFoundException;
 
 class TagManager {
-	public const RECOGNIZED_TAG = 'Tagged by recognize';
+	public const RECOGNIZED_TAG = 'Tagged by recognize v2.0.1';
 
 
 	private ISystemTagManager $tagManager;
@@ -43,7 +43,11 @@ class TagManager {
 			return $this->getTag($tag)->getId();
 		}, $tags);
 		$tags[] = $this->getProcessedTag()->getId();
-		$this->objectMapper->assignTags($fileId, 'files', $tags);
+		$oldTags = $this->objectMapper->getTagIdsForObjects([$fileId], 'files')[$fileId];
+        $removeTags = array_diff($oldTags, $tags);
+        $addTags = array_diff($tags, $oldTags);
+		$this->objectMapper->unassignTags($fileId, 'files', $removeTags);
+		$this->objectMapper->assignTags($fileId, 'files', $addTags);
 	}
 
 	public function getTagsForFiles(array $fileIds): array {
