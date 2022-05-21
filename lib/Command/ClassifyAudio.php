@@ -21,10 +21,10 @@ class ClassifyAudio extends Command {
 
 	private IConfig $config;
 
-	public function __construct(IUserManager $userManager, ClassifyAudioService $videoClassifier, Logger $logger, IConfig $config) {
+	public function __construct(IUserManager $userManager, ClassifyAudioService $audioClassifier, Logger $logger, IConfig $config) {
 		parent::__construct();
 		$this->userManager = $userManager;
-		$this->audioClassifier = $videoClassifier;
+		$this->audioClassifier = $audioClassifier;
 		$this->logger = $logger;
 		$this->config = $config;
 	}
