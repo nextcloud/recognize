@@ -30,9 +30,19 @@
 						An error occurred during audio recognition, please check the Nextcloud logs.
 					</p>
 					<p v-else>
-						<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Waiting for status reports on audio recognition. If this message persists beyond 30minutes, please check the Nextcloud logs.
+						<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Waiting for status reports on audio recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.
 					</p>
-				</template>
+					<template v-if="settings['movinet.enabled']">
+						<p v-if="settings['video.status'] === true">
+							Video recognition is working.
+						</p>
+						<p v-else-if="settings['video.status'] === false">
+							An error occurred during video recognition, please check the Nextcloud logs.
+						</p>
+						<p v-else>
+							<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Waiting for status reports on video recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.
+						</p>
+					</template>
 				<p v-if="count >= 0">
 					Processed files: {{ count }}<br>
 					Unrecognized files: {{ countMissed }}
@@ -82,6 +92,17 @@
 				</label>
 			</p>
 		</SettingsSection>
+		<SettingsSection :title="t('recognize', 'Video tagging')">
+			<p>
+				<label>
+					<input v-model="settings['movinet.enabled']"
+						type="checkbox"
+						:disabled="platform !== 'x86_64' || settings['tensorflow.purejs']"
+						@change="onChange">
+					<span>Enable human action recognition (e.g. arm wrestling, dribbling basketball, hula hooping)</span>
+				</label>
+			</p>
+		</SettingsSection>
 		<SettingsSection :title="t('recognize', 'Reset')">
 			<p>Click the below button to remove all tags from all files that have been classified so far.</p>
 			<button class="button" @click="onReset">
@@ -92,6 +113,7 @@
 			<p>To trigger a full classification run manually, run the following commands on the terminal. (The first time, this will download the machine learning model initially, so it will take longer.)</p>
 			<pre><code>occ recognize:classify-images</code></pre>
 			<pre><code>occ recognize:classify-audio</code></pre>
+			<pre><code>occ recognize:classify-video</code></pre>
 			<p>&nbsp;</p>
 			<p>You can reset the tags of all files that have been previously classified by recognize with the following command:</p>
 			<pre><code>occ recognize:reset-tags</code></pre>
@@ -148,7 +170,7 @@ import axios from '@nextcloud/axios'
 import { generateUrl } from '@nextcloud/router'
 import { loadState } from '@nextcloud/initial-state'
 
-const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'geo.enabled', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'node_binary', 'audio.status', 'images.status']
+const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'geo.enabled', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'audio.status', 'images.status', 'video.status']
 
 export default {
 	name: 'ViewAdmin',
