@@ -45,7 +45,7 @@
     "tar": "^6.1.11",
     "vue": "^2.6.12",
     "wav-decoder": "^1.3.0",
-    "yaml": "^1.10.2"
+    "yaml": "^2.1.0"
   },
   "devDependencies": {
     "@nextcloud/babel-config": "^1.0.0",
