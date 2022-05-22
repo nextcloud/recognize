@@ -54,6 +54,7 @@ class MovinetModel {
 		const frames = []
 
 		const process = execa(ffmpeg, [
+			'-t', '120', // read 120s max
 			'-i', videoPath,
 			'-s', `${FRAME_SIZE}x${FRAME_SIZE}`,
 			'-vf', 'fps=5',
