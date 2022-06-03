@@ -11,7 +11,7 @@ version+=2.0.1
 
 all: dev-setup build-js-production
 
-release: remove-binaries appstore
+release: remove-devdeps remove-binaries appstore
 
 # Dev env management
 dev-setup: clean clean-dev npm-init composer-install install-binaries
@@ -39,6 +39,10 @@ remove-binaries:
 	# make it download appropriate tf binaries
 	rm -rf node_modules/@tensorflow/tfjs-node/deps/lib/*
 	rm -rf node_modules/@tensorflow/tfjs-node/lib/*
+
+remove-devdeps:
+	rm -rf node_modules
+	npm install --omit dev
 
 watch-js:
 	npm run watch
