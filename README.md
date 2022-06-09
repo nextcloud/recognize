@@ -36,6 +36,7 @@ Recognize uses
  * a pre-trained [model trained on the Landmarks v1 dataset](https://tfhub.dev/google/collections/landmarks/1) for landmark recognition.
  * [face-api.js](https://github.com/justadudewhohacks/face-api.js) to extract and compare face features.
  * a [Musicnn](https://arxiv.org/abs/1909.06654) neural network architecture to classify audio files into music genres. Also see [the original musicnn repository](https://github.com/jordipons/musicnn).
+ * a pre-trained [MoViNet](https://tfhub.dev/google/collections/movinet) model for video classification
 
 ## Install
 
