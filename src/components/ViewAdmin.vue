@@ -32,17 +32,18 @@
 					<p v-else>
 						<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Waiting for status reports on audio recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.
 					</p>
-					<template v-if="settings['movinet.enabled']">
-						<p v-if="settings['video.status'] === true">
-							Video recognition is working.
-						</p>
-						<p v-else-if="settings['video.status'] === false">
-							An error occurred during video recognition, please check the Nextcloud logs.
-						</p>
-						<p v-else>
-							<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Waiting for status reports on video recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.
-						</p>
-					</template>
+				</template>
+				<template v-if="settings['movinet.enabled']">
+					<p v-if="settings['video.status'] === true">
+						Video recognition is working.
+					</p>
+					<p v-else-if="settings['video.status'] === false">
+						An error occurred during video recognition, please check the Nextcloud logs.
+					</p>
+					<p v-else>
+						<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Waiting for status reports on video recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.
+					</p>
+				</template>
 				<p v-if="count >= 0">
 					Processed files: {{ count }}<br>
 					Unrecognized files: {{ countMissed }}
