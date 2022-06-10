@@ -43,11 +43,8 @@ class TagManager {
 			return $this->getTag($tag)->getId();
 		}, $tags);
 		$tags[] = $this->getProcessedTag()->getId();
-		$oldTags = $this->objectMapper->getTagIdsForObjects([$fileId], 'files')[$fileId];
-        $removeTags = array_diff($oldTags, $tags);
-        $addTags = array_diff($tags, $oldTags);
-		$this->objectMapper->unassignTags($fileId, 'files', $removeTags);
-		$this->objectMapper->assignTags($fileId, 'files', $addTags);
+        $oldTags = $this->objectMapper->getTagIdsForObjects([$fileId], 'files')[$fileId];
+		$this->objectMapper->assignTags($fileId, 'files', array_merge($tags, $oldTags));
 	}
 
 	public function getTagsForFiles(array $fileIds): array {
@@ -64,11 +61,12 @@ class TagManager {
 		$classified = $this->findClassifiedFiles();
 		$classifiedChunks = array_chunk($classified, 999, true);
 		$missed = [];
+        $processedId = $this->getProcessedTag()->getId();
+        $unrecognizedId = $this->getTag('Unrecognized')->getId();
 		foreach ($classifiedChunks as $classifiedChunk) {
-			$missedChunk = array_keys(array_filter($this->objectMapper->getTagIdsForObjects($classifiedChunk, 'files'), function ($tags) {
-				$tags = $this->tagManager->getTagsByIds($tags);
-				return count(array_filter($tags, static function ($tag) {
-					return $tag->getName() !== 'Unrecognized' && $tag->getName() !== self::RECOGNIZED_TAG;
+			$missedChunk = array_keys(array_filter($this->objectMapper->getTagIdsForObjects($classifiedChunk, 'files'), function ($tags) use ($unrecognizedId, $processedId){
+				return count(array_filter($tags, static function ($tag) use ($unrecognizedId, $processedId) {
+					return $tag !== $unrecognizedId && $tag !== $processedId;
 				})) === 0;
 			}));
 			$missed = array_merge($missed, $missedChunk);
@@ -76,10 +74,10 @@ class TagManager {
 		$unrecognized = $this->objectMapper->getObjectIdsForTags($this->getTag('Unrecognized')->getId(), 'files');
 		$notMissedAnymore = array_diff($unrecognized, $missed);
 		foreach ($notMissedAnymore as $id) {
-			$this->objectMapper->unassignTags($id, 'files', [$this->getTag('Unrecognized')->getId()]);
+			$this->objectMapper->unassignTags($id, 'files', [$unrecognizedId, $processedId]);
 		}
 		foreach ($missed as $id) {
-			$this->objectMapper->assignTags($id, 'files', [$this->getTag('Unrecognized')->getId()]);
+			$this->objectMapper->assignTags($id, 'files', [$unrecognizedId, $processedId]);
 		}
 		return $missed;
 	}
