@@ -44,7 +44,7 @@ class TagManager {
 		}, $tags);
 		$tags[] = $this->getProcessedTag()->getId();
         $oldTags = $this->objectMapper->getTagIdsForObjects([$fileId], 'files')[$fileId];
-		$this->objectMapper->assignTags($fileId, 'files', $oldTags !== null ? array_merge($tags, $oldTags) : $tags);
+		$this->objectMapper->assignTags($fileId, 'files', array_unique(array_merge($tags, $oldTags)));
 	}
 
 	public function getTagsForFiles(array $fileIds): array {
