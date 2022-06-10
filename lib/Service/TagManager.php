@@ -44,7 +44,7 @@ class TagManager {
 		}, $tags);
 		$tags[] = $this->getProcessedTag()->getId();
         $oldTags = $this->objectMapper->getTagIdsForObjects([$fileId], 'files')[$fileId];
-		$this->objectMapper->assignTags($fileId, 'files', array_merge($tags, $oldTags));
+		$this->objectMapper->assignTags($fileId, 'files', $oldTags !== null ? array_merge($tags, $oldTags) : $tags);
 	}
 
 	public function getTagsForFiles(array $fileIds): array {
@@ -63,7 +63,7 @@ class TagManager {
 		$missed = [];
         $processedId = $this->getProcessedTag()->getId();
 		foreach ($classifiedChunks as $classifiedChunk) {
-			$missedChunk = array_keys(array_filter($this->objectMapper->getTagIdsForObjects($classifiedChunk, 'files'), function ($tags) use ($processedId){
+			$missedChunk = array_keys(array_filter($this->objectMapper->getTagIdsForObjects($classifiedChunk, 'files'), function ($tags) use ($processedId) {
 				return count($tags) === 1 && $tags[0] !== $processedId;
 			}));
 			$missed = array_merge($missed, $missedChunk);
