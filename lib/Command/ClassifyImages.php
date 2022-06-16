@@ -3,6 +3,7 @@
 namespace OCA\Recognize\Command;
 
 use OCA\Recognize\Service\ClassifyImagesService;
+use OCA\Recognize\Service\FaceClusterAnalyzer;
 use OCA\Recognize\Service\Logger;
 use OCP\IConfig;
 use OCP\IUser;
@@ -19,15 +20,20 @@ class ClassifyImages extends Command {
 	private Logger $logger;
 
 	private IConfig $config;
+    /**
+     * @var \OCA\Recognize\Service\FaceClusterAnalyzer
+     */
+    private FaceClusterAnalyzer $faceClusterAnalyzer;
 
 
-	public function __construct(IUserManager $userManager, ClassifyImagesService $imageClassifier, Logger $logger, IConfig $config) {
+    public function __construct(IUserManager $userManager, ClassifyImagesService $imageClassifier, Logger $logger, IConfig $config, FaceClusterAnalyzer $faceClusterAnalyzer) {
 		parent::__construct();
 		$this->userManager = $userManager;
 		$this->imageClassifier = $imageClassifier;
 		$this->logger = $logger;
 		$this->config = $config;
-	}
+        $this->faceClusterAnalyzer = $faceClusterAnalyzer;
+    }
 
 	/**
 	 * Configure the command
@@ -61,6 +67,7 @@ class ClassifyImages extends Command {
 						$this->config->setAppValue('recognize', 'images.status', 'true');
 					}
 				} while ($anythingClassified);
+                $this->faceClusterAnalyzer->findClusters($user);
 			}
 		} catch (\Exception $ex) {
 			$this->config->setAppValue('recognize', 'images.status', 'false');

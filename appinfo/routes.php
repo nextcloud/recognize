@@ -28,5 +28,6 @@ return [
 		['name' => 'admin#avx', 'url' => '/admin/avx', 'verb' => 'GET'],
 		['name' => 'admin#platform', 'url' => '/admin/platform', 'verb' => 'GET'],
 		['name' => 'admin#musl', 'url' => '/admin/musl', 'verb' => 'GET'],
+		['name' => 'user#update_cluster', 'url' => '/user/cluster/{id}', 'verb' => 'POST'],
 	],
 ];

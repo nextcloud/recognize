@@ -10,8 +10,17 @@ export default {
 		n,
 	},
 	computed: {
+		colorPrimary() {
+			return getComputedStyle(document.documentElement).getPropertyValue('--color-primary')
+		},
+		colorPrimaryLight() {
+			return getComputedStyle(document.documentElement).getPropertyValue('--color-primary-light')
+		},
 		colorPrimaryElement() {
 			return getComputedStyle(document.documentElement).getPropertyValue('--color-primary-element')
+		},
+		colorPrimaryElementLight() {
+			return getComputedStyle(document.documentElement).getPropertyValue('--color-primary-element-light')
 		},
 		colorPrimaryText() {
 			return getComputedStyle(document.documentElement).getPropertyValue('--color-primary-text')
