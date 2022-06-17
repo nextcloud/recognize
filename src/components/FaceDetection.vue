@@ -1,6 +1,9 @@
 <template>
 	<div class="face-detection">
-		<img ref="image" :src="`/index.php/core/preview?fileId=${fileId}&x=256&y=256&a=true`" @load="onLoaded">
+		<img ref="image"
+			:src="`/index.php/core/preview?fileId=${fileId}&x=256&y=256&a=true`"
+			loading="lazy"
+			@load="onLoaded">
 		<canvas ref="canvas" />
 	</div>
 </template>
