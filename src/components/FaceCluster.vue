@@ -16,7 +16,7 @@
 					@keydown.enter.stop.prevent="editingDone"></span>
 			</template>
 		</h3>
-		<div style="display: flex; flex-direction: row; overflow-x: scroll; width: 80vw;">
+		<div style="display: flex; flex-direction: row; overflow-x: scroll; overflow-y: hidden; width: 80vw;">
 			<FaceDetection v-for="detection in cluster.detections"
 				:key="detection.id"
 				:file-id="detection.fileId"
@@ -77,6 +77,6 @@ export default {
 
 <style scoped>
 .face-cluster {
-	padding-bottom: 20px;
+	margin-bottom: 20px;
 }
 </style>
