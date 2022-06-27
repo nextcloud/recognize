@@ -20,19 +20,15 @@ class ClassifyImages extends Command {
 	private Logger $logger;
 
 	private IConfig $config;
-    /**
-     * @var \OCA\Recognize\Service\FaceClusterAnalyzer
-     */
-    private FaceClusterAnalyzer $faceClusterAnalyzer;
 
 
-    public function __construct(IUserManager $userManager, ClassifyImagesService $imageClassifier, Logger $logger, IConfig $config, FaceClusterAnalyzer $faceClusterAnalyzer) {
+
+    public function __construct(IUserManager $userManager, ClassifyImagesService $imageClassifier, Logger $logger, IConfig $config) {
 		parent::__construct();
 		$this->userManager = $userManager;
 		$this->imageClassifier = $imageClassifier;
 		$this->logger = $logger;
 		$this->config = $config;
-        $this->faceClusterAnalyzer = $faceClusterAnalyzer;
     }
 
 	/**
@@ -67,7 +63,6 @@ class ClassifyImages extends Command {
 						$this->config->setAppValue('recognize', 'images.status', 'true');
 					}
 				} while ($anythingClassified);
-                $this->faceClusterAnalyzer->findClusters($user);
 			}
 		} catch (\Exception $ex) {
 			$this->config->setAppValue('recognize', 'images.status', 'false');

@@ -13,6 +13,8 @@ use OCP\AppFramework\Db\Entity;
  * @method int getY()
  * @method int getHeight()
  * @method int getWidth()
+ * @method array getVector()
+ * @method setVector(array $vector)
  * @method setX(int $x)
  * @method setY(int $y)
  * @method setHeight(int $height)

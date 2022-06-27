@@ -9,7 +9,9 @@ namespace OCA\Recognize\Classifiers\Images;
 
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
+use OCA\Recognize\Service\FaceClusterAnalyzer;
 use OCA\Recognize\Service\Logger;
+use OCA\Recognize\Service\TagManager;
 use OCP\DB\Exception;
 use OCP\Files\File;
 use OCP\IConfig;
@@ -20,20 +22,28 @@ use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Process\Process;
 
-class FaceVectorsClassifier {
+class ClusteringFaceClassifier {
 	public const IMAGE_TIMEOUT = 120; // seconds
 	public const IMAGE_PUREJS_TIMEOUT = 360; // seconds
+	public const MIN_FACE_RECOGNITION_SCORE = 0.8;
 
 	private LoggerInterface $logger;
 
 	private IConfig $config;
 
     private FaceDetectionMapper $faceDetections;
+    private FaceClusterAnalyzer $faceClusterAnalyzer;
+    /**
+     * @var \OCA\Recognize\Service\TagManager
+     */
+    private TagManager $tagManager;
 
-    public function __construct(Logger $logger, IConfig $config, FaceDetectionMapper $faceDetections) {
+    public function __construct(Logger $logger, IConfig $config, FaceDetectionMapper $faceDetections, FaceClusterAnalyzer $faceClusterAnalyzer, TagManager $tagManager) {
 		$this->logger = $logger;
 		$this->config = $config;
         $this->faceDetections = $faceDetections;
+        $this->faceClusterAnalyzer = $faceClusterAnalyzer;
+        $this->tagManager = $tagManager;
     }
 
 	/**
@@ -41,7 +51,7 @@ class FaceVectorsClassifier {
 	 * @return void
 	 * @throws \OCP\Files\NotFoundException
 	 */
-	public function classify(array $files): void {
+	public function classify(string $user, array $files): void {
 		$paths = array_map(static function ($file) {
 			return $file->getStorage()->getLocalFile($file->getInternalPath());
 		}, $files);
@@ -104,7 +114,9 @@ class FaceVectorsClassifier {
 						// decode json
 						$faces = json_decode($buffer, true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
 
-						// assign tags
+                        $this->tagManager->assignTags($files[$i]->getId(), []);
+
+						// remove exisiting detections
 						foreach($this->faceDetections->findByFileId($files[$i]->getId()) as $existingFaceDetection) {
                             try {
                                 $this->faceDetections->delete($existingFaceDetection);
@@ -114,6 +126,9 @@ class FaceVectorsClassifier {
                         }
 
                         foreach($faces as $face) {
+                            if ($face['score'] < self::MIN_FACE_RECOGNITION_SCORE) {
+                                continue;
+                            }
                             $faceDetection = new FaceDetection();
                             $faceDetection->setX($face['x']);
                             $faceDetection->setY($face['y']);
@@ -143,12 +158,23 @@ class FaceVectorsClassifier {
 				$this->logger->warning('Classifier process output: '.$errOut);
 				throw new \RuntimeException('Classifier process error');
 			}
+
+            $this->faceClusterAnalyzer->findClusters($user);
+
 		} catch (ProcessTimedOutException $e) {
 			$this->logger->warning($proc->getErrorOutput());
 			throw new \RuntimeException('Classifier process timeout');
 		} catch (RuntimeException $e) {
 			$this->logger->warning($proc->getErrorOutput());
 			throw new \RuntimeException('Classifier process could not be started');
-		}
-	}
+		} catch (\JsonException $e) {
+            $this->logger->warning('JSON exception');
+            $this->logger->warning($e->getMessage());
+            $this->logger->warning($result);
+        } catch (Exception $e) {
+            $this->logger->warning('Exception during face clustering');
+            $this->logger->warning($e->getMessage());
+            $this->logger->warning($result);
+        }
+    }
 }

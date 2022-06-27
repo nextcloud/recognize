@@ -3,7 +3,7 @@
 namespace OCA\Recognize\Service;
 
 use OC\User\NoUserException;
-use OCA\Recognize\Classifiers\Images\FaceVectorsClassifier;
+use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
 use OCA\Recognize\Classifiers\Images\GeoClassifier;
 use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
 use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
@@ -14,7 +14,7 @@ use OCP\Files\NotPermittedException;
 class ClassifyImagesService {
 	private ImagenetClassifier $imagenet;
 
-	private FaceVectorsClassifier $facenet;
+	private ClusteringFaceClassifier $facenet;
 
 	private ImagesFinderService $imagesFinder;
 
@@ -31,7 +31,7 @@ class ClassifyImagesService {
 
 	private GeoClassifier $geo;
 
-	public function __construct(FaceVectorsClassifier $facenet, ImagenetClassifier $imagenet, IRootFolder $rootFolder, ImagesFinderService $imagesFinder, Logger $logger, IConfig $config, LandmarksClassifier $landmarks, GeoClassifier $geo) {
+	public function __construct(ClusteringFaceClassifier $facenet, ImagenetClassifier $imagenet, IRootFolder $rootFolder, ImagesFinderService $imagesFinder, Logger $logger, IConfig $config, LandmarksClassifier $landmarks, GeoClassifier $geo) {
 		$this->facenet = $facenet;
 		$this->imagenet = $imagenet;
 		$this->rootFolder = $rootFolder;
@@ -85,18 +85,8 @@ class ClassifyImagesService {
 		}
 
 		if ($this->config->getAppValue('recognize', 'faces.enabled', 'false') !== 'false') {
-			//$this->logger->debug('Collecting contact photos of user '.$user);
-			//$faces = $this->referenceFacesFinder->findReferenceFacesForUser($user);
-			/*if (count($faces) === 0) {
-				//$this->logger->debug('No contact photos found of user '.$user);
-				if ($this->config->getAppValue('recognize', 'imagenet.enabled', 'false') !== 'true') {
-					return false;
-				} else {
-					return true;
-				}
-			}*/
 			$this->logger->debug('Classifying photos of user '.$user. ' using facenet');
-			$this->facenet->classify($images);
+			$this->facenet->classify($user, $images);
 		}
 		return true;
 	}
