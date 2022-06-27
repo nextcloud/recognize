@@ -8,7 +8,10 @@
 	<div id="recognize">
 		<SettingsSection :title="t('recognize', 'Face recognition')">
 			<p>These people have been spotted by Recognize in your photos. You can give each person a name.</p>
-			<FaceCluster v-for="cluster in faceClusters" :key="cluster.id" :cluster="cluster" />
+			<FaceCluster v-for="cluster in faceClusters"
+				v-if="cluster.detections.length"
+				:key="cluster.id"
+				:cluster="cluster" />
 		</SettingsSection>
 	</div>
 </template>

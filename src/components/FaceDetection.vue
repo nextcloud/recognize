@@ -38,9 +38,10 @@ export default {
 			const canvas = this.$refs.canvas
 			const ctx = canvas.getContext('2d')
 			ctx.strokeStyle = this.colorPrimaryElementLight
+			ctx.lineWidth = 4
 			const width = this.$refs.image.naturalWidth
 			const height = this.$refs.image.naturalHeight
-			ctx.strokeRect(width * this.x, height * this.y, width * this.width, height * this.height)
+			ctx.strokeRect(width * this.x - 2, height * this.y - 2, width * this.width + 2, height * this.height + 2)
 		},
 	},
 }
