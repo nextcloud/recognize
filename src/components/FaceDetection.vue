@@ -4,7 +4,7 @@
 			:src="`/index.php/core/preview?fileId=${fileId}&x=256&y=256&a=true`"
 			loading="lazy"
 			@load="onLoaded">
-		<canvas ref="canvas" />
+		<canvas ref="canvas" height="256" width="256" />
 	</div>
 </template>
 
@@ -37,6 +37,7 @@ export default {
 		onLoaded() {
 			const canvas = this.$refs.canvas
 			const ctx = canvas.getContext('2d')
+
 			ctx.strokeStyle = this.colorPrimaryElementLight
 			ctx.lineWidth = 4
 			const width = this.$refs.image.naturalWidth
@@ -60,5 +61,7 @@ canvas {
 	left: 0;
 	right: 0;
 	bottom: 0;
+	width: 256px;
+	height: 256px;
 }
 </style>
