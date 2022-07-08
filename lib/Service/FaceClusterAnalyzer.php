@@ -38,6 +38,10 @@ class FaceClusterAnalyzer {
          */
         $detections = $this->faceDetections->findByUserId($userId);
 
+        if (count($detections) === 0) {
+            return;
+        }
+
         // Here we use RubixMLs DBSCAN clustering algorithm
         $dataset = new Unlabeled(array_map(function (FaceDetection $detection) {
             return $detection->getVector();
