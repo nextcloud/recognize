@@ -357,8 +357,8 @@ figure[class^='icon-'] {
 
 #recognize .loading,
 #recognize .success {
-	position: absolute;
-	top: 20px;
+	position: fixed;
+	top: 70px;
 	right: 20px;
 }
 
