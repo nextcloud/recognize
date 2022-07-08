@@ -25,7 +25,7 @@ use Symfony\Component\Process\Process;
 class ClusteringFaceClassifier {
 	public const IMAGE_TIMEOUT = 120; // seconds
 	public const IMAGE_PUREJS_TIMEOUT = 360; // seconds
-	public const MIN_FACE_RECOGNITION_SCORE = 0.8;
+	public const MIN_FACE_RECOGNITION_SCORE = 0.5;
 
 	private LoggerInterface $logger;
 
@@ -87,32 +87,34 @@ class ClusteringFaceClassifier {
 
 			$i = 0;
 			$errOut = '';
+            $buffer = '';
 			foreach ($proc as $type => $data) {
 				if ($type !== $proc::OUT) {
 					$errOut .= $data;
 					$this->logger->debug('Classifier process output: '.$data);
 					continue;
 				}
-				$lines = explode("\n", $data);
+                $buffer .= $data;
+				$lines = explode("\n", $buffer);
                 $buffer = '';
 				foreach ($lines as $result) {
 					if (trim($result) === '') {
 						continue;
 					}
-                    $buffer .= $result;
                     try {
-                        json_decode($buffer, true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
+                        json_decode($result, true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
                         $invalid = false;
                     }catch(\JsonException $e) {
                         $invalid = true;
                     }
                     if ($invalid) {
+                        $buffer .= "\n".$result;
                         continue;
                     }
-					$this->logger->debug('Result for ' . $files[$i]->getName() . ' = ' . $buffer);
+					$this->logger->debug('Result for ' . $files[$i]->getName() . ' = ' . $result);
 					try {
 						// decode json
-						$faces = json_decode($buffer, true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
+						$faces = json_decode($result, true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
 
                         $this->tagManager->assignTags($files[$i]->getId(), []);
 
