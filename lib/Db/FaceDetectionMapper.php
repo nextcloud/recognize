@@ -57,4 +57,15 @@ class FaceDetectionMapper extends QBMapper {
             ->where($qb->expr()->eq('file_id', $qb->createPositionalParameter($fileId, IQueryBuilder::PARAM_INT)));
         return $this->findEntities($qb);
     }
+
+    /**
+     * @param \OCA\Recognize\Db\FaceDetection $faceDetection
+     * @param \OCA\Recognize\Db\FaceCluster $faceCluster
+     * @return void
+     * @throws \OCP\DB\Exception
+     */
+    public function assocWithCluster(FaceDetection $faceDetection, FaceCluster $faceCluster) {
+        $faceDetection->setClusterId($faceCluster->getId());
+        $this->update($faceDetection);
+    }
 }

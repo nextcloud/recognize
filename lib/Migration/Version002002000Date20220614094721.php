@@ -70,7 +70,13 @@ class Version002002000Date20220614094721 extends SimpleMigrationStep {
 			$table->addColumn('vector', Types::TEXT, [
 				'notnull' => true,
 			]);
+            $table->addColumn('cluster_id', 'bigint', [
+                'notnull' => false,
+                'length' => 64,
+            ]);
             $table->setPrimaryKey(['id'], 'recognize_facedet_id');
+            $table->addIndex(['cluster_id'], 'recognize_facedet_cluster');
+            $table->addIndex(['user_id'], 'recognize_facedet_user');
 		}
 
 		if (!$schema->hasTable('recognize_face_clusters')) {
@@ -91,19 +97,7 @@ class Version002002000Date20220614094721 extends SimpleMigrationStep {
 				'default' => '',
 			]);
 			$table->setPrimaryKey(['id'], 'recognize_faceclust_id');
-		}
-
-		if (!$schema->hasTable('recognize_faces2clusters')) {
-			$table = $schema->createTable('recognize_faces2clusters');
-			$table->addColumn('cluster_id', 'bigint', [
-				'notnull' => false,
-				'length' => 64,
-			]);
-			$table->addColumn('face_detection_id', 'bigint', [
-				'notnull' => false,
-				'length' => 64,
-			]);
-            $table->setPrimaryKey(['cluster_id', 'face_detection_id'], 'recognize_faces2clust');
+            $table->addIndex(['user_id'], 'recognize_faceclust_user');
 		}
 		return $schema;
 	}

@@ -91,12 +91,18 @@ class FaceClusterAnalyzer {
                 $cluster = new FaceCluster();
                 $cluster->setTitle('');
                 $cluster->setUserId($userId);
+
+                /**
+                 * @var FaceCluster $cluster
+                 */
                 $cluster = $this->faceClusters->insert($cluster);
             }
             foreach ($notYetClustered as $item) {
                 $detection = $item[0];
-                $this->faceClusters->assocFaceWithCluster($detection, $cluster);
-                $this->tagManager->assignTags($detection->getFileId(), ['face'.$i]);
+                $this->faceDetections->assocWithCluster($detection, $cluster);
+                if ($cluster->getTitle()) {
+                    $this->tagManager->assignTags($detection->getFileId(), [$cluster->getTitle()]);
+                }
             }
         }
     }

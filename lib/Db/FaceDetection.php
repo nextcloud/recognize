@@ -19,6 +19,8 @@ use OCP\AppFramework\Db\Entity;
  * @method setY(int $y)
  * @method setHeight(int $height)
  * @method setWidth(int $width)
+ * @method setClusterId(int $clusterId)
+ * @method int getClusterId()
  */
 class FaceDetection extends Entity {
 	protected $fileId;
@@ -29,8 +31,8 @@ class FaceDetection extends Entity {
 	protected $width;
 	protected $vector;
 
-	public static $columns = ['id', 'user_id', 'file_id', 'x', 'y', 'height', 'width', 'vector'];
-	public static $fields = ['id', 'userId', 'fileId', 'x', 'y', 'height', 'width', 'vector'];
+	public static $columns = ['id', 'user_id', 'file_id', 'x', 'y', 'height', 'width', 'vector', 'cluster_id'];
+	public static $fields = ['id', 'userId', 'fileId', 'x', 'y', 'height', 'width', 'vector', 'clusterId'];
 
 	public function __construct() {
 		// add types in constructor
@@ -42,6 +44,7 @@ class FaceDetection extends Entity {
 		$this->addType('height', 'float');
 		$this->addType('width', 'float');
 		$this->addType('vector', 'json');
+		$this->addType('clusterId', 'int');
 	}
 
 	public function toArray(): array {
