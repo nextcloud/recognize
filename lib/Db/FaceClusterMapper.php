@@ -40,10 +40,10 @@ class FaceClusterMapper extends QBMapper {
      */
     function findByDetectionId(int $detectionId): array {
         $qb = $this->db->getQueryBuilder();
-        $qb->select(FaceCluster::$columns)
+        $qb->select(array_map(function($c){ return 'f.'.$c; }, FaceCluster::$columns))
             ->from('recognize_face_clusters', 'f')
-            ->join('f', 'recognize_faces2clusters', 'c', 'f.id = c.cluster_id')
-            ->where($qb->expr()->eq('face_detection_id', $qb->createPositionalParameter($detectionId)));
+            ->join('f', 'recognize_face_detections', 'd', 'f.id = d.cluster_id')
+            ->where($qb->expr()->eq('d.id', $qb->createPositionalParameter($detectionId)));
         return $this->findEntities($qb);
     }
 

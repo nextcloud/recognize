@@ -30,6 +30,7 @@ class FaceDetection extends Entity {
 	protected $height;
 	protected $width;
 	protected $vector;
+	protected $clusterId;
 
 	public static $columns = ['id', 'user_id', 'file_id', 'x', 'y', 'height', 'width', 'vector', 'cluster_id'];
 	public static $fields = ['id', 'userId', 'fileId', 'x', 'y', 'height', 'width', 'vector', 'clusterId'];

@@ -14,7 +14,7 @@ use Rubix\ML\Kernels\Distance\Euclidean;
 class FaceClusterAnalyzer {
 
     public const MIN_CLUSTER_DENSITY = 4;
-    public const MAX_INNER_CLUSTER_RADIUS = 0.35;
+    public const MAX_INNER_CLUSTER_RADIUS = 0.4;
 
     private FaceDetectionMapper $faceDetections;
 
@@ -22,10 +22,13 @@ class FaceClusterAnalyzer {
 
     private TagManager $tagManager;
 
-    public function __construct(FaceDetectionMapper $faceDetections, FaceClusterMapper $faceClusters, TagManager $tagManager) {
+    private Logger $logger;
+
+    public function __construct(FaceDetectionMapper $faceDetections, FaceClusterMapper $faceClusters, TagManager $tagManager, Logger $logger) {
         $this->faceDetections = $faceDetections;
         $this->faceClusters = $faceClusters;
         $this->tagManager = $tagManager;
+        $this->logger = $logger;
     }
 
     /**
@@ -39,6 +42,7 @@ class FaceClusterAnalyzer {
         $detections = $this->faceDetections->findByUserId($userId);
 
         if (count($detections) === 0) {
+            $this->logger->debug('No face detections found');
             return;
         }
 
@@ -49,6 +53,8 @@ class FaceClusterAnalyzer {
         $clusterer = new DBSCAN(self::MAX_INNER_CLUSTER_RADIUS, self::MIN_CLUSTER_DENSITY, new BallTree(20, new Euclidean()));
         $results = $clusterer->predict($dataset);
         $numClusters = max($results);
+
+        $this->logger->debug('Found '.$numClusters.' face clusters');
 
         for($i = 0; $i <= $numClusters; $i++) {
             $keys = array_keys($results, $i);
