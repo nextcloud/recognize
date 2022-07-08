@@ -13,8 +13,8 @@ use Rubix\ML\Kernels\Distance\Euclidean;
 
 class FaceClusterAnalyzer {
 
-    public const MIN_CLUSTER_DENSITY = 4;
-    public const MAX_INNER_CLUSTER_RADIUS = 0.4;
+    public const MIN_CLUSTER_DENSITY = 3;
+    public const MAX_INNER_CLUSTER_RADIUS = 0.35;
 
     private FaceDetectionMapper $faceDetections;
 
@@ -67,9 +67,9 @@ class FaceClusterAnalyzer {
 
             // Since recognize works incrementally, we need to check if some of these face
             // detections have been added to an existing cluster already
-            $alreadyClustered = array_filter($detectionsWithClusters, function ($item) {
+            $alreadyClustered = array_values(array_filter($detectionsWithClusters, function ($item) {
                 return count($item[1]) >= 1;
-            });
+            }));
             $notYetClustered = array_filter($detectionsWithClusters, function ($item) {
                 return count($item[1]) === 0;
             });
