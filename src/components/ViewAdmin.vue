@@ -173,6 +173,8 @@ import { loadState } from '@nextcloud/initial-state'
 
 const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'geo.enabled', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'audio.status', 'images.status', 'video.status']
 
+const BOOLEAN_SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'geo.enabled', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'audio.status', 'images.status', 'video.status']
+
 export default {
 	name: 'ViewAdmin',
 	components: { SettingsSection },
@@ -229,7 +231,7 @@ export default {
 			const settings = loadState('recognize', 'settings')
 			for (const setting of SETTINGS) {
 				this.settings[setting] = settings[setting]
-				if (['true', 'false'].includes(this.settings[setting])) {
+				if (BOOLEAN_SETTINGS.includes(setting)) {
 					this.settings[setting] = (this.settings[setting] === 'true')
 				}
 				if (setting === 'tensorflow.cores' && this.settings[setting] === '') {
@@ -299,7 +301,7 @@ export default {
 
 		async loadValue(setting) {
 			this.settings[setting] = await this.getValue(setting)
-			if (['true', 'false'].includes(this.settings[setting])) {
+			if (BOOLEAN_SETTINGS.includes(setting)) {
 				this.settings[setting] = (this.settings[setting] === 'true')
 			}
 		},
