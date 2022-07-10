@@ -74,4 +74,8 @@ The app does not send any sensitive data to cloud providers or similar services.
 		<command>OCA\Recognize\Command\ResetTags</command>
 		<command>OCA\Recognize\Command\CleanupTags</command>
 	</commands>
+
+	<types>
+		<filesystem/>
+	</types>
 </info>
