@@ -20,13 +20,13 @@ class ClassifyVideo extends Command {
 
 	private IConfig $config;
 
-    public function __construct(IUserManager $userManager, ClassifyVideoService $videoClassifier, Logger $logger, IConfig $config) {
-        parent::__construct();
-        $this->userManager = $userManager;
-        $this->videoClassifier = $videoClassifier;
-        $this->logger = $logger;
-        $this->config = $config;
-    }
+	public function __construct(IUserManager $userManager, ClassifyVideoService $videoClassifier, Logger $logger, IConfig $config) {
+		parent::__construct();
+		$this->userManager = $userManager;
+		$this->videoClassifier = $videoClassifier;
+		$this->logger = $logger;
+		$this->config = $config;
+	}
 
 	/**
 	 * Configure the command

@@ -7,7 +7,6 @@
 
 namespace OCA\Recognize\BackgroundJobs;
 
-use OCA\Recognize\Service\ClassifyAudioService;
 use OCA\Recognize\Service\ClassifyVideoService;
 use OCA\Recognize\Service\Logger;
 use OCP\AppFramework\Utility\ITimeFactory;

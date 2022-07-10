@@ -10,7 +10,6 @@ namespace OCA\Recognize\Migration;
 use Closure;
 use OCP\DB\ISchemaWrapper;
 use OCP\DB\Types;
-use OCP\IDBConnection;
 use OCP\Migration\IOutput;
 use OCP\Migration\SimpleMigrationStep;
 
@@ -42,41 +41,41 @@ class Version002002000Date20220614094721 extends SimpleMigrationStep {
 
 		if (!$schema->hasTable('recognize_face_detections')) {
 			$table = $schema->createTable('recognize_face_detections');
-            $table->addColumn('id', 'bigint', [
-                'autoincrement' => true,
-                'notnull' => true,
-                'length' => 64,
-            ]);
-            $table->addColumn('user_id', 'string', [
-                'notnull' => false,
-                'length' => 64,
-            ]);
+			$table->addColumn('id', 'bigint', [
+				'autoincrement' => true,
+				'notnull' => true,
+				'length' => 64,
+			]);
+			$table->addColumn('user_id', 'string', [
+				'notnull' => false,
+				'length' => 64,
+			]);
 			$table->addColumn('file_id', 'bigint', [
 				'notnull' => false,
 				'length' => 64,
 			]);
-            $table->addColumn('x', Types::FLOAT, [
-                'notnull' => false,
-            ]);
-            $table->addColumn('y', Types::FLOAT, [
-                'notnull' => false,
-            ]);
-            $table->addColumn('height', Types::FLOAT, [
-                'notnull' => false,
-            ]);
-            $table->addColumn('width', Types::FLOAT, [
-                'notnull' => false,
-            ]);
+			$table->addColumn('x', Types::FLOAT, [
+				'notnull' => false,
+			]);
+			$table->addColumn('y', Types::FLOAT, [
+				'notnull' => false,
+			]);
+			$table->addColumn('height', Types::FLOAT, [
+				'notnull' => false,
+			]);
+			$table->addColumn('width', Types::FLOAT, [
+				'notnull' => false,
+			]);
 			$table->addColumn('vector', Types::TEXT, [
 				'notnull' => true,
 			]);
-            $table->addColumn('cluster_id', 'bigint', [
-                'notnull' => false,
-                'length' => 64,
-            ]);
-            $table->setPrimaryKey(['id'], 'recognize_facedet_id');
-            $table->addIndex(['cluster_id'], 'recognize_facedet_cluster');
-            $table->addIndex(['user_id'], 'recognize_facedet_user');
+			$table->addColumn('cluster_id', 'bigint', [
+				'notnull' => false,
+				'length' => 64,
+			]);
+			$table->setPrimaryKey(['id'], 'recognize_facedet_id');
+			$table->addIndex(['cluster_id'], 'recognize_facedet_cluster');
+			$table->addIndex(['user_id'], 'recognize_facedet_user');
 		}
 
 		if (!$schema->hasTable('recognize_face_clusters')) {
@@ -97,7 +96,7 @@ class Version002002000Date20220614094721 extends SimpleMigrationStep {
 				'default' => '',
 			]);
 			$table->setPrimaryKey(['id'], 'recognize_faceclust_id');
-            $table->addIndex(['user_id'], 'recognize_faceclust_user');
+			$table->addIndex(['user_id'], 'recognize_faceclust_user');
 		}
 		return $schema;
 	}
@@ -110,6 +109,5 @@ class Version002002000Date20220614094721 extends SimpleMigrationStep {
 	 * @return void
 	 */
 	public function postSchemaChange(IOutput $output, Closure $schemaClosure, array $options) {
-
 	}
 }

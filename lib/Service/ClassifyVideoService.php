@@ -3,7 +3,6 @@
 namespace OCA\Recognize\Service;
 
 use OC\User\NoUserException;
-use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
 use OCA\Recognize\Classifiers\Video\MovinetClassifier;
 use OCP\Files\IRootFolder;
 use OCP\Files\NotPermittedException;

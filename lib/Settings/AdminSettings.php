@@ -13,33 +13,32 @@ use OCP\IConfig;
 use OCP\Settings\ISettings;
 
 class AdminSettings implements ISettings {
-    const SETTINGS =  ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'geo.enabled', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'audio.status', 'images.status', 'video.status'];
+	public const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'geo.enabled', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'audio.status', 'images.status', 'video.status'];
 
-    /**
-     * @var \OCP\AppFramework\Services\IInitialState
-     */
-    private IInitialState $initialState;
-    /**
-     * @var \OCP\IConfig
-     */
-    private IConfig $config;
+	/**
+	 * @var \OCP\AppFramework\Services\IInitialState
+	 */
+	private IInitialState $initialState;
+	/**
+	 * @var \OCP\IConfig
+	 */
+	private IConfig $config;
 
-    public function __construct(IInitialState $initialState, IConfig $config)
-    {
-        $this->initialState = $initialState;
-        $this->config = $config;
-    }
+	public function __construct(IInitialState $initialState, IConfig $config) {
+		$this->initialState = $initialState;
+		$this->config = $config;
+	}
 
 
-    /**
+	/**
 	 * @return TemplateResponse
 	 */
 	public function getForm(): TemplateResponse {
-        $settings = [];
-        foreach (self::SETTINGS as $setting) {
-            $settings[$setting] = $this->config->getAppValue('recognize', $setting);
-        }
-        $this->initialState->provideInitialState('settings', $settings);
+		$settings = [];
+		foreach (self::SETTINGS as $setting) {
+			$settings[$setting] = $this->config->getAppValue('recognize', $setting);
+		}
+		$this->initialState->provideInitialState('settings', $settings);
 		return new TemplateResponse('recognize', 'admin');
 	}
 

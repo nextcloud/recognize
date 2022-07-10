@@ -20,20 +20,20 @@ class Application extends App implements IBootstrap {
 
 	public function __construct() {
 		parent::__construct(self::APP_ID);
-        /**
-         * @var IEventDispatcher $dispatcher
-         */
-        $dispatcher = $this->getContainer()->get(IEventDispatcher::class);
-        $dispatcher->addServiceListener('\OCP\Files::postDelete', FileListener::class);
-    }
-
-	public function register(IRegistrationContext $context): void {
-        @include_once __DIR__ . '/../../vendor/autoload.php';
+		/**
+		 * @var IEventDispatcher $dispatcher
+		 */
+		$dispatcher = $this->getContainer()->get(IEventDispatcher::class);
+		$dispatcher->addServiceListener('\OCP\Files::postDelete', FileListener::class);
 	}
 
-    /**
-     * @throws \Throwable
-     */
-    public function boot(IBootContext $context): void {
+	public function register(IRegistrationContext $context): void {
+		@include_once __DIR__ . '/../../vendor/autoload.php';
+	}
+
+	/**
+	 * @throws \Throwable
+	 */
+	public function boot(IBootContext $context): void {
 	}
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace OCA\Recognize\Db;
 
 use OCP\AppFramework\Db\Entity;
@@ -24,7 +25,7 @@ use OCP\AppFramework\Db\Entity;
  */
 class FaceDetection extends Entity {
 	protected $fileId;
-    protected $userId;
+	protected $userId;
 	protected $x;
 	protected $y;
 	protected $height;

@@ -3,7 +3,6 @@
 namespace OCA\Recognize\Command;
 
 use OCA\Recognize\Service\ClassifyImagesService;
-use OCA\Recognize\Service\FaceClusterAnalyzer;
 use OCA\Recognize\Service\Logger;
 use OCP\IConfig;
 use OCP\IUser;
@@ -23,13 +22,13 @@ class ClassifyImages extends Command {
 
 
 
-    public function __construct(IUserManager $userManager, ClassifyImagesService $imageClassifier, Logger $logger, IConfig $config) {
+	public function __construct(IUserManager $userManager, ClassifyImagesService $imageClassifier, Logger $logger, IConfig $config) {
 		parent::__construct();
 		$this->userManager = $userManager;
 		$this->imageClassifier = $imageClassifier;
 		$this->logger = $logger;
 		$this->config = $config;
-    }
+	}
 
 	/**
 	 * Configure the command

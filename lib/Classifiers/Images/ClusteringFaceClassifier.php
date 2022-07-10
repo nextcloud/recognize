@@ -31,20 +31,20 @@ class ClusteringFaceClassifier {
 
 	private IConfig $config;
 
-    private FaceDetectionMapper $faceDetections;
-    private FaceClusterAnalyzer $faceClusterAnalyzer;
-    /**
-     * @var \OCA\Recognize\Service\TagManager
-     */
-    private TagManager $tagManager;
+	private FaceDetectionMapper $faceDetections;
+	private FaceClusterAnalyzer $faceClusterAnalyzer;
+	/**
+	 * @var \OCA\Recognize\Service\TagManager
+	 */
+	private TagManager $tagManager;
 
-    public function __construct(Logger $logger, IConfig $config, FaceDetectionMapper $faceDetections, FaceClusterAnalyzer $faceClusterAnalyzer, TagManager $tagManager) {
+	public function __construct(Logger $logger, IConfig $config, FaceDetectionMapper $faceDetections, FaceClusterAnalyzer $faceClusterAnalyzer, TagManager $tagManager) {
 		$this->logger = $logger;
 		$this->config = $config;
-        $this->faceDetections = $faceDetections;
-        $this->faceClusterAnalyzer = $faceClusterAnalyzer;
-        $this->tagManager = $tagManager;
-    }
+		$this->faceDetections = $faceDetections;
+		$this->faceClusterAnalyzer = $faceClusterAnalyzer;
+		$this->tagManager = $tagManager;
+	}
 
 	/**
 	 * @param File[] $files
@@ -87,60 +87,60 @@ class ClusteringFaceClassifier {
 
 			$i = 0;
 			$errOut = '';
-            $buffer = '';
+			$buffer = '';
 			foreach ($proc as $type => $data) {
 				if ($type !== $proc::OUT) {
 					$errOut .= $data;
 					$this->logger->debug('Classifier process output: '.$data);
 					continue;
 				}
-                $buffer .= $data;
+				$buffer .= $data;
 				$lines = explode("\n", $buffer);
-                $buffer = '';
+				$buffer = '';
 				foreach ($lines as $result) {
 					if (trim($result) === '') {
 						continue;
 					}
-                    try {
-                        json_decode($result, true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
-                        $invalid = false;
-                    }catch(\JsonException $e) {
-                        $invalid = true;
-                    }
-                    if ($invalid) {
-                        $buffer .= "\n".$result;
-                        continue;
-                    }
+					try {
+						json_decode($result, true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
+						$invalid = false;
+					} catch (\JsonException $e) {
+						$invalid = true;
+					}
+					if ($invalid) {
+						$buffer .= "\n".$result;
+						continue;
+					}
 					$this->logger->debug('Result for ' . $files[$i]->getName() . ' = ' . $result);
 					try {
 						// decode json
 						$faces = json_decode($result, true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
 
-                        $this->tagManager->assignTags($files[$i]->getId(), []);
+						$this->tagManager->assignTags($files[$i]->getId(), []);
 
 						// remove exisiting detections
-						foreach($this->faceDetections->findByFileId($files[$i]->getId()) as $existingFaceDetection) {
-                            try {
-                                $this->faceDetections->delete($existingFaceDetection);
-                            } catch (Exception $e) {
-                                $this->logger->debug('Could not delete existing face detection');
-                            }
-                        }
+						foreach ($this->faceDetections->findByFileId($files[$i]->getId()) as $existingFaceDetection) {
+							try {
+								$this->faceDetections->delete($existingFaceDetection);
+							} catch (Exception $e) {
+								$this->logger->debug('Could not delete existing face detection');
+							}
+						}
 
-                        foreach($faces as $face) {
-                            if ($face['score'] < self::MIN_FACE_RECOGNITION_SCORE) {
-                                continue;
-                            }
-                            $faceDetection = new FaceDetection();
-                            $faceDetection->setX($face['x']);
-                            $faceDetection->setY($face['y']);
-                            $faceDetection->setWidth($face['width']);
-                            $faceDetection->setHeight($face['height']);
-                            $faceDetection->setVector($face['vector']);
-                            $faceDetection->setFileId($files[$i]->getId());
-                            $faceDetection->setUserId($files[$i]->getOwner()->getUID());
-                            $this->faceDetections->insert($faceDetection);
-                        }
+						foreach ($faces as $face) {
+							if ($face['score'] < self::MIN_FACE_RECOGNITION_SCORE) {
+								continue;
+							}
+							$faceDetection = new FaceDetection();
+							$faceDetection->setX($face['x']);
+							$faceDetection->setY($face['y']);
+							$faceDetection->setWidth($face['width']);
+							$faceDetection->setHeight($face['height']);
+							$faceDetection->setVector($face['vector']);
+							$faceDetection->setFileId($files[$i]->getId());
+							$faceDetection->setUserId($files[$i]->getOwner()->getUID());
+							$this->faceDetections->insert($faceDetection);
+						}
 					} catch (InvalidPathException $e) {
 						$this->logger->warning('File with invalid path encountered');
 					} catch (NotFoundException $e) {
@@ -150,10 +150,10 @@ class ClusteringFaceClassifier {
 						$this->logger->warning($e->getMessage());
 						$this->logger->warning($result);
 					} catch (Exception $e) {
-                        $this->logger->warning('Could not create DB entry for face detection');
-                        $this->logger->warning($e->getMessage());
-                    }
-                    $i++;
+						$this->logger->warning('Could not create DB entry for face detection');
+						$this->logger->warning($e->getMessage());
+					}
+					$i++;
 				}
 			}
 			if ($i !== count($files)) {
@@ -161,8 +161,7 @@ class ClusteringFaceClassifier {
 				throw new \RuntimeException('Classifier process error');
 			}
 
-            $this->faceClusterAnalyzer->findClusters($user);
-
+			$this->faceClusterAnalyzer->findClusters($user);
 		} catch (ProcessTimedOutException $e) {
 			$this->logger->warning($proc->getErrorOutput());
 			throw new \RuntimeException('Classifier process timeout');
@@ -170,13 +169,13 @@ class ClusteringFaceClassifier {
 			$this->logger->warning($proc->getErrorOutput());
 			throw new \RuntimeException('Classifier process could not be started');
 		} catch (\JsonException $e) {
-            $this->logger->warning('JSON exception');
-            $this->logger->warning($e->getMessage());
-            $this->logger->warning($result);
-        } catch (Exception $e) {
-            $this->logger->warning('Exception during face clustering');
-            $this->logger->warning($e->getMessage());
-            $this->logger->warning($result);
-        }
-    }
+			$this->logger->warning('JSON exception');
+			$this->logger->warning($e->getMessage());
+			$this->logger->warning($result);
+		} catch (Exception $e) {
+			$this->logger->warning('Exception during face clustering');
+			$this->logger->warning($e->getMessage());
+			$this->logger->warning($result);
+		}
+	}
 }

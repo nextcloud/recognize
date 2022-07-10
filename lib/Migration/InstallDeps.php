@@ -132,7 +132,7 @@ class InstallDeps implements IRepairStep {
 		try {
 			exec($cmd . ' 2>&1', $output, $returnCode); // Appending  2>&1 to avoid leaking sterr
 		} catch (\Throwable $e) {
-            throw new \Exception('Failed to install Tensorflow.js: '.$e->getMessage());
+			throw new \Exception('Failed to install Tensorflow.js: '.$e->getMessage());
 		}
 		chdir($oriCwd);
 		if ($returnCode !== 0) {
@@ -179,11 +179,11 @@ class InstallDeps implements IRepairStep {
 	}
 
 	protected function isAVXSupported(): bool {
-        try {
-            $cpuinfo = file_get_contents('/proc/cpuinfo');
-        }catch(\Throwable $e) {
-            return false;
-        }
+		try {
+			$cpuinfo = file_get_contents('/proc/cpuinfo');
+		} catch (\Throwable $e) {
+			return false;
+		}
 		return str_contains($cpuinfo, 'avx');
 	}
 }

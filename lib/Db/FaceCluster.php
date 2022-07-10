@@ -1,4 +1,5 @@
 <?php
+
 namespace OCA\Recognize\Db;
 
 use OCP\AppFramework\Db\Entity;
