@@ -19,15 +19,15 @@ jobs:
       matrix:
         php-versions: ['7.4']
         databases: ['sqlite', 'mysql', 'pgsql']
-        server-versions: ['stable22']
+        server-versions: ['stable24']
         pure-js-mode: ['false']
         imagenet-enabled: ['true', 'false']
         faces-enabled: ['true', 'false']
         landmarks-enabled: ['true', 'false']
         geo-enabled: ['true', 'false']
         include:
-          # stable23,sqlite,php8
-          - server-versions: stable23
+          # stable24,sqlite,php8
+          - server-versions: stable24
             databases: sqlite
             php-versions: 8.0
             pure-js-mode: false
