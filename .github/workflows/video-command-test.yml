@@ -19,11 +19,11 @@ jobs:
       matrix:
         php-versions: ['7.4']
         databases: ['sqlite', 'mysql', 'pgsql']
-        server-versions: ['stable22', 'stable23', 'stable24']
+        server-versions: ['stable24']
         pure-js-mode: ['false']
         include:
           # test php 8 once
-          - server-versions: stable23
+          - server-versions: stable24
             php-versions: 8.0
             databases: sqlite
             pure-js-mode: false

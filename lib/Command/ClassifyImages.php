@@ -21,6 +21,7 @@ class ClassifyImages extends Command {
 	private IConfig $config;
 
 
+
 	public function __construct(IUserManager $userManager, ClassifyImagesService $imageClassifier, Logger $logger, IConfig $config) {
 		parent::__construct();
 		$this->userManager = $userManager;

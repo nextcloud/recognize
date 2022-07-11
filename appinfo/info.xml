@@ -44,7 +44,7 @@ The app does not send any sensitive data to cloud providers or similar services.
 	<screenshot>https://raw.githubusercontent.com/marcelklehr/recognize/master/screenshots/imagenet_examples.jpg</screenshot>
 	<dependencies>
 		<php min-version="7.4" />
-		<nextcloud min-version="22" max-version="24" />
+		<nextcloud min-version="24" max-version="24" />
 	</dependencies>
 	<background-jobs>
 		<job>OCA\Recognize\BackgroundJobs\ClassifyImagesJob</job>
@@ -54,6 +54,8 @@ The app does not send any sensitive data to cloud providers or similar services.
 	<settings>
 		<admin>OCA\Recognize\Settings\AdminSettings</admin>
 		<admin-section>OCA\Recognize\Settings\AdminSection</admin-section>
+		<personal>OCA\Recognize\Settings\UserSettings</personal>
+		<personal-section>OCA\Recognize\Settings\UserSection</personal-section>
 	</settings>
 
 	<repair-steps>
@@ -72,4 +74,8 @@ The app does not send any sensitive data to cloud providers or similar services.
 		<command>OCA\Recognize\Command\ResetTags</command>
 		<command>OCA\Recognize\Command\CleanupTags</command>
 	</commands>
+
+	<types>
+		<filesystem/>
+	</types>
 </info>

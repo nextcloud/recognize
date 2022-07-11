@@ -13,7 +13,6 @@ use OCP\Files\File;
 use OCP\IConfig;
 use OCP\Files\InvalidPathException;
 use OCP\Files\NotFoundException;
-use OCP\SystemTag\ISystemTag;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Exception\RuntimeException;
@@ -63,7 +62,7 @@ class MovinetClassifier {
 			$proc->setEnv(['RECOGNIZE_GPU' => 'true']);
 		}
 		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
-            throw new \Exception('Movinet does not support WASM mode');
+			throw new \Exception('Movinet does not support WASM mode');
 		} else {
 			$proc->setTimeout(count($paths) * self::VIDEO_TIMEOUT + self::MODEL_DOWNLOAD_TIMEOUT);
 		}

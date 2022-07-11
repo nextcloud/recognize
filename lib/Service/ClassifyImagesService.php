@@ -2,25 +2,22 @@
 
 namespace OCA\Recognize\Service;
 
-use OC\User\NoUserException;
-use OCA\Recognize\Classifiers\Images\FacesClassifier;
+use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
 use OCA\Recognize\Classifiers\Images\GeoClassifier;
 use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
 use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
 use OCP\IConfig;
 use OCP\Files\IRootFolder;
-use OCP\Files\NotPermittedException;
 
 class ClassifyImagesService {
 	private ImagenetClassifier $imagenet;
 
-	private FacesClassifier $facenet;
+	private ClusteringFaceClassifier $facenet;
 
 	private ImagesFinderService $imagesFinder;
 
 	private IRootFolder $rootFolder;
 
-	private ReferenceFacesFinderService $referenceFacesFinder;
 	/**
 	 * @var \Psr\Log\LoggerInterface
 	 */
@@ -32,16 +29,18 @@ class ClassifyImagesService {
 
 	private GeoClassifier $geo;
 
-	public function __construct(FacesClassifier $facenet, ImagenetClassifier $imagenet, IRootFolder $rootFolder, ImagesFinderService $imagesFinder, ReferenceFacesFinderService $referenceFacesFinder, Logger $logger, IConfig $config, LandmarksClassifier $landmarks, GeoClassifier $geo) {
+	private FaceClusterAnalyzer $faceClusterAnalyzer;
+
+	public function __construct(ClusteringFaceClassifier $facenet, ImagenetClassifier $imagenet, IRootFolder $rootFolder, ImagesFinderService $imagesFinder, Logger $logger, IConfig $config, LandmarksClassifier $landmarks, GeoClassifier $geo, FaceClusterAnalyzer $faceClusterAnalyzer) {
 		$this->facenet = $facenet;
 		$this->imagenet = $imagenet;
 		$this->rootFolder = $rootFolder;
 		$this->imagesFinder = $imagesFinder;
-		$this->referenceFacesFinder = $referenceFacesFinder;
 		$this->logger = $logger;
 		$this->config = $config;
 		$this->landmarks = $landmarks;
 		$this->geo = $geo;
+		$this->faceClusterAnalyzer = $faceClusterAnalyzer;
 	}
 
 	/**
@@ -50,10 +49,12 @@ class ClassifyImagesService {
 	 * @param string $user
 	 * @param int $n The number of images to process at max, 0 for no limit (default)
 	 * @return bool whether any photos were processed
-	 * @throws \OCP\Files\NotFoundException
+	 * @throws \JsonException
+	 * @throws \OCP\DB\Exception
 	 * @throws \OCP\Files\InvalidPathException
-	 * @throws NotPermittedException
-	 * @throws NoUserException
+	 * @throws \OCP\Files\NotFoundException
+	 * @throws \OCP\Files\NotPermittedException
+	 * @throws \OC\User\NoUserException
 	 */
 	public function run(string $user, int $n = 0): bool {
 		if ($this->config->getAppValue('recognize', 'faces.enabled', 'false') !== 'true' &&
@@ -65,6 +66,12 @@ class ClassifyImagesService {
 		$images = $this->imagesFinder->findImagesInFolder($user, $this->rootFolder->getUserFolder($user));
 		if (count($images) === 0) {
 			$this->logger->debug('No unclassified photos found by user '.$user);
+
+			if ($this->config->getAppValue('recognize', 'faces.enabled', 'false') !== 'false') {
+				$this->logger->debug('Clustering faces in photos by user '.$user);
+				$this->faceClusterAnalyzer->findClusters($user);
+			}
+
 			return false;
 		}
 		if ($n !== 0) {
@@ -87,18 +94,8 @@ class ClassifyImagesService {
 		}
 
 		if ($this->config->getAppValue('recognize', 'faces.enabled', 'false') !== 'false') {
-			$this->logger->debug('Collecting contact photos of user '.$user);
-			$faces = $this->referenceFacesFinder->findReferenceFacesForUser($user);
-			if (count($faces) === 0) {
-				$this->logger->debug('No contact photos found of user '.$user);
-				if ($this->config->getAppValue('recognize', 'imagenet.enabled', 'false') !== 'true') {
-					return false;
-				} else {
-					return true;
-				}
-			}
 			$this->logger->debug('Classifying photos of user '.$user. ' using facenet');
-			$this->facenet->classify($faces, $images);
+			$this->facenet->classify($user, $images);
 		}
 		return true;
 	}

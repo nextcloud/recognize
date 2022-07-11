@@ -4,5 +4,8 @@ module.exports = {
 	],
 	parserOptions: {
 		requireConfigFile: false,
+	},
+	rules: {
+		"node/no-unpublished-import": "off"
 	}
 }

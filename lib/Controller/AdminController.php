@@ -31,11 +31,11 @@ class AdminController extends Controller {
 	}
 
 	public function avx(): JSONResponse {
-        try {
-            $cpuinfo = file_get_contents('/proc/cpuinfo');
-        }catch(\Throwable $e) {
-            return new JSONResponse(['avx' => null]);
-        }
+		try {
+			$cpuinfo = file_get_contents('/proc/cpuinfo');
+		} catch (\Throwable $e) {
+			return new JSONResponse(['avx' => null]);
+		}
 		return new JSONResponse(['avx' => str_contains($cpuinfo, 'avx')]);
 	}
 
@@ -43,7 +43,7 @@ class AdminController extends Controller {
 		try {
 			exec('lscpu --json' . ' 2>&1', $output, $returnCode);
 		} catch (\Throwable $e) {
-            return new JSONResponse(['platform' => null]);
+			return new JSONResponse(['platform' => null]);
 		}
 
 		if ($returnCode !== 0) {
@@ -58,7 +58,7 @@ class AdminController extends Controller {
 		try {
 			exec('ldd /bin/ls' . ' 2>&1', $output, $returnCode);
 		} catch (\Throwable $e) {
-            return new JSONResponse(['musl' => null]);
+			return new JSONResponse(['musl' => null]);
 		}
 
 		if ($returnCode !== 0) {
