@@ -9,7 +9,7 @@ namespace OCA\Recognize\Files;
 
 use OCA\Recognize\Service\Logger;
 
-class ImagesFinder extends FileFinder {
+abstract class ImagesFinder extends FileFinder {
 	public const FORMATS = ['image/jpeg', 'image/png', 'image/bmp', 'image/tiff'];
 	public const IGNORE_MARKERS = ['.noimage', '.nomedia'];
 	public const MAX_FILE_SIZE = 10000000;

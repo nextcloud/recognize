@@ -9,7 +9,7 @@ namespace OCA\Recognize\Files;
 
 use OCA\Recognize\Service\Logger;
 
-class VideoFinder extends FileFinder {
+abstract class VideoFinder extends FileFinder {
 	public const FORMATS = ['image/gif', 'video/mp4', 'video/MP2T', 'video/x-msvideo', 'video/x-ms-wmv', 'video/quicktime', 'video/ogg', 'video/mpeg', 'video/webm', 'video/x-matroska'];
 	public const IGNORE_MARKERS = ['.novideo', '.nomedia'];
 

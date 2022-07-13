@@ -9,7 +9,7 @@ namespace OCA\Recognize\Files;
 
 use OCA\Recognize\Service\Logger;
 
-class AudioFinder extends FileFinder {
+abstract class AudioFinder extends FileFinder {
 	public const FORMATS = ['audio/mpeg', 'audio/mp4', 'audio/ogg', 'audio/vnd.wav', 'audio/flac'];
 	public const IGNORE_MARKERS = ['.nomusic', '.nomedia'];
 

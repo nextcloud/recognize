@@ -10,11 +10,9 @@ namespace OCA\Recognize\Files;
 use OCA\Recognize\Service\Logger;
 use OCP\Files\File;
 use OCP\Files\Folder;
-use OCP\Files\InvalidPathException;
-use OCP\Files\NotFoundException;
 use Psr\Log\LoggerInterface;
 
-class FileFinder {
+abstract class FileFinder {
 	/**
 	 * @var LoggerInterface
 	 */
@@ -59,44 +57,18 @@ class FileFinder {
 	 * @param string[] $markerFilenames
 	 * @return $this
 	 */
-	public function setIgnoreMarkers(array $markerFilenames):self {
+	public function setIgnoreMarkers(array $markerFilenames): self {
 		$this->ignoreMarkers = $markerFilenames;
 		return $this;
 	}
 
-	/**
-	 * @throws NotFoundException|InvalidPathException
-	 */
-	public function findFilesInFolder(string $user, Folder $folder, &$results = []):array {
-		$this->logger->debug('Searching '.$folder->getInternalPath());
+    public function isDirectoryIgnored(Folder $folder): bool {
+        $foundMarkers = array_filter($this->ignoreMarkers, static function ($markerFile) use ($folder) {
+            return $folder->nodeExists($markerFile);
+        });
 
-		$foundMarkers = array_filter($this->ignoreMarkers, static function ($markerFile) use ($folder) {
-			return $folder->nodeExists($markerFile);
-		});
-
-		if (count($foundMarkers) > 0) {
-			$this->logger->debug('Passing '.$folder->getInternalPath());
-			return $results;
-		}
-
-		try {
-			$nodes = $folder->getDirectoryListing();
-		} catch (\Exception $e) {
-			$this->logger->debug('Error reading directory '.$folder->getInternalPath().': '.$e->getMessage());
-			return $results;
-		}
-		foreach ($nodes as $node) {
-			if ($node instanceof Folder) {
-				$this->findFilesInFolder($user, $node, $results);
-			} elseif ($node instanceof File) {
-				if($this->isFileEligible($user, $node)) {
-                    $this->logger->debug('Found ' . $node->getPath());
-                    $results[] = $node;
-                }
-			}
-		}
-		return $results;
-	}
+        return count($foundMarkers) > 0;
+    }
 
     public function isFileEligible(string $user, File $node) : bool {
         if ($node->getMountPoint()->getMountType() === 'shared' && $node->getOwner()->getUID() !== $user) {
@@ -115,4 +87,12 @@ class FileFinder {
 
         return true;
     }
+
+    /**
+     * @param string $user
+     * @param \OCP\Files\File $node
+     * @return void
+     * @throws \Throwable
+     */
+    public abstract function foundFile(string $user, File $node) : void;
 }
