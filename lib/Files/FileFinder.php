@@ -5,25 +5,20 @@
  * This file is licensed under the Affero General Public License version 3 or later. See the COPYING file.
  */
 
-namespace OCA\Recognize\Service;
+namespace OCA\Recognize\Files;
 
+use OCA\Recognize\Service\Logger;
 use OCP\Files\File;
 use OCP\Files\Folder;
 use OCP\Files\InvalidPathException;
 use OCP\Files\NotFoundException;
-use OCP\SystemTag\ISystemTag;
-use OCP\SystemTag\ISystemTagObjectMapper;
 use Psr\Log\LoggerInterface;
 
-class FileFinderService {
+class FileFinder {
 	/**
 	 * @var LoggerInterface
 	 */
 	private $logger;
-
-	private ISystemTagObjectMapper $objectMapper;
-
-	private ISystemTag $recognizedTag;
 
 	/**
 	 * @var string[] $formats
@@ -38,10 +33,8 @@ class FileFinderService {
 	 */
 	private array $ignoreMarkers;
 
-	public function __construct(Logger $logger, ISystemTagObjectMapper $objectMapper, TagManager $tagManager) {
+	public function __construct(Logger $logger) {
 		$this->logger = $logger;
-		$this->objectMapper = $objectMapper;
-		$this->recognizedTag = $tagManager->getProcessedTag();
 	}
 
 	/**
@@ -96,27 +89,30 @@ class FileFinderService {
 			if ($node instanceof Folder) {
 				$this->findFilesInFolder($user, $node, $results);
 			} elseif ($node instanceof File) {
-				if ($this->objectMapper->haveTag([$node->getId()], 'files', $this->recognizedTag->getId())) {
-					$this->logger->debug('Already processed '.$node->getPath());
-					continue;
-				}
-				if ($node->getMountPoint()->getMountType() === 'shared' && $node->getOwner()->getUID() !== $user) {
-					$this->logger->debug('Not original owner of '.$node->getPath());
-					continue;
-				}
-				$mimeType = $node->getMimetype();
-				if (!in_array($mimeType, $this->formats)) {
-					$this->logger->debug('Not a supported format: '.$node->getPath());
-					continue;
-				}
-				if ($this->maxFileSize !== 0 && $this->maxFileSize < $node->getSize()) {
-					$this->logger->debug('File is too large: '.$node->getPath());
-					continue;
-				}
-				$this->logger->debug('Found '.$node->getPath());
-				$results[] = $node;
+				if($this->isFileEligible($user, $node)) {
+                    $this->logger->debug('Found ' . $node->getPath());
+                    $results[] = $node;
+                }
 			}
 		}
 		return $results;
 	}
+
+    public function isFileEligible(string $user, File $node) : bool {
+        if ($node->getMountPoint()->getMountType() === 'shared' && $node->getOwner()->getUID() !== $user) {
+            $this->logger->debug('Not original owner of '.$node->getPath());
+            return false;
+        }
+        $mimeType = $node->getMimetype();
+        if (!in_array($mimeType, $this->formats)) {
+            $this->logger->debug('Not a supported format: '.$node->getPath());
+            return false;
+        }
+        if ($this->maxFileSize !== 0 && $this->maxFileSize < $node->getSize()) {
+            $this->logger->debug('File is too large: '.$node->getPath());
+            return false;
+        }
+
+        return true;
+    }
 }

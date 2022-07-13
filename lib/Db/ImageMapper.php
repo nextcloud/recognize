@@ -31,9 +31,8 @@ class ImageMapper extends QBMapper {
      * @throws \OCP\AppFramework\Db\DoesNotExistException
      * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
      * @throws \OCP\DB\Exception
-     * @returns Image[]
      */
-    public function findByFileId(int $fileId) : array {
+    public function findByFileId(int $fileId) : Image {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select(Image::$columns)
 			->from($this->tableName)

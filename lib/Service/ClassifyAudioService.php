@@ -4,12 +4,13 @@ namespace OCA\Recognize\Service;
 
 use OC\User\NoUserException;
 use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
+use OCA\Recognize\Files\AudioFinder;
 use OCP\Files\IRootFolder;
 use OCP\Files\NotPermittedException;
 use OCP\IConfig;
 
 class ClassifyAudioService {
-	private AudioFinderService $audioFinder;
+	private AudioFinder $audioFinder;
 
 	private IRootFolder $rootFolder;
 	/**
@@ -25,7 +26,7 @@ class ClassifyAudioService {
 	 */
 	private MusicnnClassifier $musicnn;
 
-	public function __construct(IRootFolder $rootFolder, AudioFinderService $audioFinder, Logger $logger, IConfig $config, MusicnnClassifier $musicnn) {
+	public function __construct(IRootFolder $rootFolder, AudioFinder $audioFinder, Logger $logger, IConfig $config, MusicnnClassifier $musicnn) {
 		$this->rootFolder = $rootFolder;
 		$this->audioFinder = $audioFinder;
 		$this->logger = $logger;
@@ -49,7 +50,7 @@ class ClassifyAudioService {
 			return false;
 		}
 		$this->logger->debug('Collecting audio files of user '.$user);
-		$files = $this->audioFinder->findAudioInFolder($user, $this->rootFolder->getUserFolder($user));
+		$files = $this->audioFinder->findFilesInFolder($user, $this->rootFolder->getUserFolder($user));
 		if (count($files) === 0) {
 			$this->logger->debug('No audio files found of user '.$user);
 			return false;

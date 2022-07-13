@@ -6,6 +6,7 @@ use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
 use OCA\Recognize\Classifiers\Images\GeoClassifier;
 use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
 use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
+use OCA\Recognize\Files\ImagesFinder;
 use OCP\IConfig;
 use OCP\Files\IRootFolder;
 
@@ -14,7 +15,7 @@ class ClassifyImagesService {
 
 	private ClusteringFaceClassifier $facenet;
 
-	private ImagesFinderService $imagesFinder;
+	private ImagesFinder $imagesFinder;
 
 	private IRootFolder $rootFolder;
 
@@ -31,7 +32,7 @@ class ClassifyImagesService {
 
 	private FaceClusterAnalyzer $faceClusterAnalyzer;
 
-	public function __construct(ClusteringFaceClassifier $facenet, ImagenetClassifier $imagenet, IRootFolder $rootFolder, ImagesFinderService $imagesFinder, Logger $logger, IConfig $config, LandmarksClassifier $landmarks, GeoClassifier $geo, FaceClusterAnalyzer $faceClusterAnalyzer) {
+	public function __construct(ClusteringFaceClassifier $facenet, ImagenetClassifier $imagenet, IRootFolder $rootFolder, ImagesFinder $imagesFinder, Logger $logger, IConfig $config, LandmarksClassifier $landmarks, GeoClassifier $geo, FaceClusterAnalyzer $faceClusterAnalyzer) {
 		$this->facenet = $facenet;
 		$this->imagenet = $imagenet;
 		$this->rootFolder = $rootFolder;
@@ -63,7 +64,7 @@ class ClassifyImagesService {
 			return false;
 		}
 		$this->logger->debug('Collecting photos of user '.$user);
-		$images = $this->imagesFinder->findImagesInFolder($user, $this->rootFolder->getUserFolder($user));
+		$images = $this->imagesFinder->findFilesInFolder($user, $this->rootFolder->getUserFolder($user));
 		if (count($images) === 0) {
 			$this->logger->debug('No unclassified photos found by user '.$user);
 

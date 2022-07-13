@@ -4,12 +4,13 @@ namespace OCA\Recognize\Service;
 
 use OC\User\NoUserException;
 use OCA\Recognize\Classifiers\Video\MovinetClassifier;
+use OCA\Recognize\Files\VideoFinder;
 use OCP\Files\IRootFolder;
 use OCP\Files\NotPermittedException;
 use OCP\IConfig;
 
 class ClassifyVideoService {
-	private VideoFinderService $videoFinder;
+	private VideoFinder $videoFinder;
 
 	private IRootFolder $rootFolder;
 	/**
@@ -25,7 +26,7 @@ class ClassifyVideoService {
 	 */
 	private MovinetClassifier $movinet;
 
-	public function __construct(IRootFolder $rootFolder, VideoFinderService $videoFinder, Logger $logger, IConfig $config, MovinetClassifier $movinet) {
+	public function __construct(IRootFolder $rootFolder, VideoFinder $videoFinder, Logger $logger, IConfig $config, MovinetClassifier $movinet) {
 		$this->rootFolder = $rootFolder;
 		$this->videoFinder = $videoFinder;
 		$this->logger = $logger;
@@ -49,7 +50,7 @@ class ClassifyVideoService {
 			return false;
 		}
 		$this->logger->debug('Collecting video files of user '.$user);
-		$files = $this->videoFinder->findVideoInFolder($user, $this->rootFolder->getUserFolder($user));
+		$files = $this->videoFinder->findFilesInFolder($user, $this->rootFolder->getUserFolder($user));
 		if (count($files) === 0) {
 			$this->logger->debug('No video files found of user '.$user);
 			return false;
