@@ -48,18 +48,10 @@ class Version002003000Date20220713094721 extends SimpleMigrationStep {
 				'notnull' => false,
 				'length' => 64,
 			]);
-			$table->addColumn('processed_geo', 'boolean', [
-				'notnull' => true,
-			]);
-			$table->addColumn('processed_imagenet', 'boolean', [
-				'notnull' => true,
-			]);
-			$table->addColumn('processed_landmarks', 'boolean', [
-				'notnull' => true,
-			]);
-			$table->addColumn('processed_faces', 'boolean', [
-				'notnull' => true,
-			]);
+			$table->addColumn('processed_geo', 'boolean');
+			$table->addColumn('processed_imagenet', 'boolean');
+			$table->addColumn('processed_landmarks', 'boolean');
+			$table->addColumn('processed_faces', 'boolean');
 			$table->setPrimaryKey(['file_id'], 'recognize_images_id');
 			$table->addIndex(['user_id'], 'recognize_images_user');
 			$table->addIndex(['user_id', 'processed_imagenet'], 'recognize_imagenet_user');
@@ -78,9 +70,7 @@ class Version002003000Date20220713094721 extends SimpleMigrationStep {
 				'notnull' => false,
 				'length' => 64,
 			]);
-			$table->addColumn('processed_movinet', 'boolean', [
-				'notnull' => true,
-			]);
+			$table->addColumn('processed_movinet', 'boolean');
 			$table->setPrimaryKey(['file_id'], 'recognize_video_id');
 			$table->addIndex(['user_id'], 'recognize_video_user');
 			$table->addIndex(['user_id', 'processed_movinet'], 'recognize_movinet_user');
@@ -96,9 +86,7 @@ class Version002003000Date20220713094721 extends SimpleMigrationStep {
 				'notnull' => false,
 				'length' => 64,
 			]);
-			$table->addColumn('processed_musicnn', 'boolean', [
-				'notnull' => true,
-			]);
+			$table->addColumn('processed_musicnn', 'boolean');
 			$table->setPrimaryKey(['file_id'], 'recognize_audio_id');
 			$table->addIndex(['user_id'], 'recognize_audio_user');
 			$table->addIndex(['user_id', 'processed_musicnn'], 'recognize_musicnn_user');
