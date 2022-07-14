@@ -31,18 +31,15 @@ class ClusteringFaceClassifier  extends Classifier {
 
 	private FaceDetectionMapper $faceDetections;
 
-	private FaceClusterAnalyzer $faceClusterAnalyzer;
-
     private IRootFolder $rootFolder;
 
     private ImageMapper $imageMapper;
 
-    public function __construct(Logger $logger, IConfig $config, FaceDetectionMapper $faceDetections, FaceClusterAnalyzer $faceClusterAnalyzer, IRootFolder $rootFolder, ImageMapper $imageMapper) {
+    public function __construct(Logger $logger, IConfig $config, FaceDetectionMapper $faceDetections, IRootFolder $rootFolder, ImageMapper $imageMapper) {
         parent::__construct($logger, $config);
 		$this->logger = $logger;
 		$this->config = $config;
 		$this->faceDetections = $faceDetections;
-		$this->faceClusterAnalyzer = $faceClusterAnalyzer;
         $this->rootFolder = $rootFolder;
         $this->imageMapper = $imageMapper;
     }
@@ -98,13 +95,6 @@ class ClusteringFaceClassifier  extends Classifier {
             } catch (Exception $e) {
                 $this->logger->warning($e->getMessage());
             }
-        }
-
-        try {
-            $this->faceClusterAnalyzer->calculateClusters($user);
-        } catch (\JsonException|Exception $e) {
-            $this->logger->warning('Error during face clustering for user '.$user);
-            $this->logger->warning($e->getMessage());
         }
     }
 }

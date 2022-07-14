@@ -37,23 +37,21 @@ class ClassifyAudioService {
      * @throws \OCP\DB\Exception
      */
 	public function run(string $user, int $n = 0): bool {
-		if ($this->config->getAppValue('recognize', 'musicnn.enabled', 'false') !== 'true') {
-			return false;
-		}
-		$this->logger->debug('Collecting audio files of user '.$user);
-		$audios = $this->audioMapper->findUnprocessedByUserId($user, 'musicnn');
-		if (count($audios) === 0) {
-			$this->logger->debug('No audio files found of user '.$user);
-			return false;
-		}
-		if ($n !== 0) {
-            $audios = array_slice($audios, 0, $n);
-		}
-
 		if ($this->config->getAppValue('recognize', 'musicnn.enabled', 'false') !== 'false') {
+            $audios = $this->audioMapper->findUnprocessedByUserId($user, 'musicnn');
+            if (count($audios) === 0) {
+                $this->logger->debug('No audio files found of user '.$user);
+                return false;
+            }
+            if ($n !== 0) {
+                $audios = array_slice($audios, 0, $n);
+            }
+
 			$this->logger->debug('Classifying '.count($audios).' audio files of user '.$user. ' using musicnn');
 			$this->musicnn->classify($audios);
+            return count($audios) > 0;
 		}
-		return true;
+
+		return false;
 	}
 }
