@@ -34,7 +34,7 @@ class FaceClusterAnalyzer {
 	 * @throws \OCP\DB\Exception
 	 * @throws \JsonException
 	 */
-	public function findClusters(string $userId) {
+	public function calculateClusters(string $userId) {
 		/**
 		 * @var $detections FaceDetection[]
 		 */

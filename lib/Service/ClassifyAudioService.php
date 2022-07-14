@@ -4,64 +4,55 @@ namespace OCA\Recognize\Service;
 
 use OC\User\NoUserException;
 use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
+use OCA\Recognize\Db\Audio;
+use OCA\Recognize\Db\AudioMapper;
 use OCA\Recognize\Files\AudioFinder;
 use OCP\Files\IRootFolder;
 use OCP\Files\NotPermittedException;
 use OCP\IConfig;
 
 class ClassifyAudioService {
-	private AudioFinder $audioFinder;
+	private AudioMapper $audioMapper;
 
-	private IRootFolder $rootFolder;
-	/**
-	 * @var \Psr\Log\LoggerInterface
-	 */
 	private $logger;
-	/**
-	 * @var \OCP\IConfig
-	 */
+
 	private IConfig $config;
-	/**
-	 * @var MusicnnClassifier
-	 */
+
 	private MusicnnClassifier $musicnn;
 
-	public function __construct(IRootFolder $rootFolder, AudioFinder $audioFinder, Logger $logger, IConfig $config, MusicnnClassifier $musicnn) {
-		$this->rootFolder = $rootFolder;
-		$this->audioFinder = $audioFinder;
+	public function __construct(AudioMapper $audioMapper, Logger $logger, IConfig $config, MusicnnClassifier $musicnn) {
+		$this->audioMapper = $audioMapper;
 		$this->logger = $logger;
 		$this->config = $config;
 		$this->musicnn = $musicnn;
 	}
 
-	/**
-	 * Run image classifiers
-	 *
-	 * @param string $user
-	 * @param int $n The number of images to process at max, 0 for no limit (default)
-	 * @return bool whether any photos were processed
-	 * @throws \OCP\Files\NotFoundException
-	 * @throws \OCP\Files\InvalidPathException
-	 * @throws NotPermittedException
-	 * @throws NoUserException
-	 */
+    /**
+     * Run image classifiers
+     *
+     * @param string $user
+     * @param int $n The number of images to process at max, 0 for no limit (default)
+     * @return bool whether any photos were processed
+     * @throws \OCP\Files\NotFoundException
+     * @throws \OCP\DB\Exception
+     */
 	public function run(string $user, int $n = 0): bool {
 		if ($this->config->getAppValue('recognize', 'musicnn.enabled', 'false') !== 'true') {
 			return false;
 		}
 		$this->logger->debug('Collecting audio files of user '.$user);
-		$files = $this->audioFinder->findFilesInFolder($user, $this->rootFolder->getUserFolder($user));
-		if (count($files) === 0) {
+		$audios = $this->audioMapper->findUnprocessedByUserId($user, 'musicnn');
+		if (count($audios) === 0) {
 			$this->logger->debug('No audio files found of user '.$user);
 			return false;
 		}
 		if ($n !== 0) {
-			$files = array_slice($files, 0, $n);
+            $audios = array_slice($audios, 0, $n);
 		}
 
 		if ($this->config->getAppValue('recognize', 'musicnn.enabled', 'false') !== 'false') {
-			$this->logger->debug('Classifying audio files of user '.$user. ' using musicnn');
-			$this->musicnn->classify($files);
+			$this->logger->debug('Classifying '.count($audios).' audio files of user '.$user. ' using musicnn');
+			$this->musicnn->classify($audios);
 		}
 		return true;
 	}

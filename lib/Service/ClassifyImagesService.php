@@ -70,7 +70,7 @@ class ClassifyImagesService {
 
 			if ($this->config->getAppValue('recognize', 'faces.enabled', 'false') !== 'false') {
 				$this->logger->debug('Clustering faces in photos by user '.$user);
-				$this->faceClusterAnalyzer->findClusters($user);
+				$this->faceClusterAnalyzer->calculateClusters($user);
 			}
 
 			return false;

@@ -7,20 +7,20 @@
 
 namespace OCA\Recognize\Classifiers\Video;
 
+use OCA\Recognize\Classifiers\Classifier;
+use OCA\Recognize\Db\Image;
+use OCA\Recognize\Db\VideoMapper;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\TagManager;
-use OCP\Files\File;
+use OCP\DB\Exception;
+use OCP\Files\IRootFolder;
 use OCP\IConfig;
-use OCP\Files\InvalidPathException;
-use OCP\Files\NotFoundException;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Process\Exception\ProcessTimedOutException;
-use Symfony\Component\Process\Exception\RuntimeException;
-use Symfony\Component\Process\Process;
 
-class MovinetClassifier {
+class MovinetClassifier extends Classifier {
 	public const VIDEO_TIMEOUT = 480; // seconds
 	public const MODEL_DOWNLOAD_TIMEOUT = 180; // seconds
+    public const MODEL_NAME = 'movinet';
 
 	/**
 	 * @var LoggerInterface
@@ -30,94 +30,50 @@ class MovinetClassifier {
 	private TagManager $tagManager;
 
 	private IConfig $config;
+    /**
+     * @var \OCP\Files\IRootFolder
+     */
+    private IRootFolder $rootFolder;
+    /**
+     * @var \OCA\Recognize\Db\VideoMapper
+     */
+    private VideoMapper $videoMapper;
 
-	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager) {
+    public function __construct(Logger $logger, IConfig $config, TagManager $tagManager, IRootFolder $rootFolder, VideoMapper $videoMapper) {
+        parent::__construct($logger, $config);
 		$this->logger = $logger;
 		$this->config = $config;
 		$this->tagManager = $tagManager;
-	}
+        $this->rootFolder = $rootFolder;
+        $this->videoMapper = $videoMapper;
+    }
+    /**
+     * @param \OCA\Recognize\Db\Video[] $videos
+     * @return void
+     * @throws \OCP\Files\NotFoundException
+     */
+    public function classify(array $videos): void {
+        $paths = array_map(static function (Image $image) {
+            $file = $this->rootFolder->getById($image->getFileId())[0];
+            return $file->getStorage()->getLocalFile($file->getInternalPath());
+        }, $videos);
+        if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
+            throw new \Exception('Movinet does not support WASM mode');
+        } else {
+            $timeout = count($paths) * self::VIDEO_TIMEOUT + self::MODEL_DOWNLOAD_TIMEOUT;
+        }
+        $classifierProcess = $this->classifyFiles(self::MODEL_NAME, $paths, $timeout);
 
-	/**
-	 * @param File[] $files
-	 * @return void
-	 * @throws \OCP\Files\NotFoundException
-	 * @throws \OCP\Files\InvalidPathException
-	 */
-	public function classify(array $files): void {
-		$paths = array_map(function ($file) {
-			return $file->getStorage()->getLocalFile($file->getInternalPath());
-		}, $files);
-
-		$this->logger->debug('Classifying videos with movinet: '.var_export($paths, true));
-
-		$command = [
-			$this->config->getAppValue('recognize', 'node_binary'),
-			dirname(__DIR__, 3) . '/src/classifier_movinet.js',
-			'-'
-		];
-
-		$this->logger->debug('Running '.var_export($command, true));
-		$proc = new Process($command, __DIR__);
-		if ($this->config->getAppValue('recognize', 'tensorflow.gpu', 'false') === 'true') {
-			$proc->setEnv(['RECOGNIZE_GPU' => 'true']);
-		}
-		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
-			throw new \Exception('Movinet does not support WASM mode');
-		} else {
-			$proc->setTimeout(count($paths) * self::VIDEO_TIMEOUT + self::MODEL_DOWNLOAD_TIMEOUT);
-		}
-		$proc->setInput(implode("\n", $paths));
-		try {
-			$proc->start();
-
-			// Set cores
-			$cores = $this->config->getAppValue('recognize', 'tensorflow.cores', '0');
-			if ($cores !== '0') {
-				@exec('taskset -cp ' . implode(',', range(0, (int)$cores, 1)) . ' ' . $proc->getPid());
-			}
-
-			$i = 0;
-			$errOut = '';
-			foreach ($proc as $type => $data) {
-				if ($type !== $proc::OUT) {
-					$errOut .= $data;
-					$this->logger->debug('Classifier process output: '.$data);
-					continue;
-				}
-				$lines = explode("\n", $data);
-				foreach ($lines as $result) {
-					if (trim($result) === '') {
-						continue;
-					}
-					$this->logger->debug('Result for ' . $files[$i]->getName() . ' = ' . $result);
-					try {
-						// decode json
-						$tags = json_decode($result, true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
-
-						// assign tags
-						$this->tagManager->assignTags($files[$i]->getId(), $tags);
-					} catch (InvalidPathException $e) {
-						$this->logger->warning('File with invalid path encountered');
-					} catch (NotFoundException $e) {
-						$this->logger->warning('File to tag was not found');
-					} catch (\JsonException $e) {
-						$this->logger->warning('JSON exception');
-						$this->logger->warning($e->getMessage());
-						$this->logger->warning($result);
-					}
-					$i++;
-				}
-			}
-			if ($i !== count($files)) {
-				$this->logger->warning('Classifier process output: '.$errOut);
-				throw new \RuntimeException('Classifier process error');
-			}
-		} catch (ProcessTimedOutException $e) {
-			$this->logger->warning($proc->getErrorOutput());
-			throw new \RuntimeException('Classifier process timeout');
-		} catch (RuntimeException $e) {
-			$this->logger->warning($proc->getErrorOutput());
-			throw new \RuntimeException('Classifier process could not be started');
-		}
-	}
+        foreach ($classifierProcess as $i => $results) {
+            // assign tags
+            $this->tagManager->assignTags($videos[$i]->getFileId(), $results);
+            // Update processed status
+            $videos[$i]->setProcessedMovinet(true);
+            try {
+                $this->videoMapper->update($videos[$i]);
+            } catch (Exception $e) {
+                $this->logger->warning($e->getMessage());
+            }
+        }
+    }
 }
