@@ -65,7 +65,7 @@ class Version002003000Date20220713094721 extends SimpleMigrationStep {
 			$table->addIndex(['user_id', 'processed_imagenet'], 'recognize_imagenet_user');
 			$table->addIndex(['user_id', 'processed_landmarks'], 'recognize_landmarks_user');
 			$table->addIndex(['user_id', 'processed_faces'], 'recognize_faces_user');
-			$table->addIndex(['user_id', 'processed_geo'], 'recognize_faces_user');
+			$table->addIndex(['user_id', 'processed_geo'], 'recognize_geo_user');
 		}
 
 		if (!$schema->hasTable('recognize_files_video')) {
