@@ -3,6 +3,7 @@
 namespace OCA\Recognize\Command;
 
 use OCA\Recognize\Service\ClassifyVideoService;
+use OCA\Recognize\Service\FileCrawlerService;
 use OCA\Recognize\Service\Logger;
 use OCP\IConfig;
 use OCP\IUser;
@@ -20,13 +21,16 @@ class ClassifyVideo extends Command {
 
 	private IConfig $config;
 
-	public function __construct(IUserManager $userManager, ClassifyVideoService $videoClassifier, Logger $logger, IConfig $config) {
+    private FileCrawlerService $fileCrawlerService;
+
+    public function __construct(IUserManager $userManager, ClassifyVideoService $videoClassifier, Logger $logger, IConfig $config, FileCrawlerService $fileCrawlerService) {
 		parent::__construct();
 		$this->userManager = $userManager;
 		$this->videoClassifier = $videoClassifier;
 		$this->logger = $logger;
 		$this->config = $config;
-	}
+        $this->fileCrawlerService = $fileCrawlerService;
+    }
 
 	/**
 	 * Configure the command
@@ -54,6 +58,11 @@ class ClassifyVideo extends Command {
 			});
 			$this->logger->setCliOutput($output);
 			foreach ($users as $user) {
+                if ($this->config->getUserValue($user, 'recognize', 'crawl.done', 'false') === 'false') {
+                    $this->fileCrawlerService->crawlForUser($user);
+                    $this->config->setUserValue($user, 'recognize', 'crawl.done', 'true');
+                }
+
 				do {
 					$anythingClassified = $this->videoClassifier->run($user, 500);
 					if ($anythingClassified) {
