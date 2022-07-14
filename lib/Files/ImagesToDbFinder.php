@@ -8,34 +8,32 @@ use OCA\Recognize\Service\Logger;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\Files\File;
 
-class ImagesToDbFinder extends ImagesFinder
-{
-    private Logger $logger;
+class ImagesToDbFinder extends ImagesFinder {
+	private Logger $logger;
 
-    private ImageMapper $imageMapper;
+	private ImageMapper $imageMapper;
 
-    public function __construct(Logger $logger, ImageMapper $imageMapper)
-    {
-        parent::__construct($logger);
-        $this->logger = $logger;
-        $this->imageMapper = $imageMapper;
-    }
+	public function __construct(Logger $logger, ImageMapper $imageMapper) {
+		parent::__construct($logger);
+		$this->logger = $logger;
+		$this->imageMapper = $imageMapper;
+	}
 
 
-    /**
-     * @throws \OCP\Files\InvalidPathException
-     * @throws \OCP\Files\NotFoundException
-     * @throws \OCP\DB\Exception
-     * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
-     */
-    public function foundFile(string $user, File $node) {
-        try {
-            $this->imageMapper->findByFileId($node->getId());
-        } catch (DoesNotExistException $e) {
-            $image = new Image();
-            $image->setUserId($user);
-            $image->setFileId($node->getId());
-            $this->imageMapper->insert($image);
-        }
-    }
+	/**
+	 * @throws \OCP\Files\InvalidPathException
+	 * @throws \OCP\Files\NotFoundException
+	 * @throws \OCP\DB\Exception
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 */
+	public function foundFile(string $user, File $node) {
+		try {
+			$this->imageMapper->findByFileId($node->getId());
+		} catch (DoesNotExistException $e) {
+			$image = new Image();
+			$image->setUserId($user);
+			$image->setFileId($node->getId());
+			$this->imageMapper->insert($image);
+		}
+	}
 }

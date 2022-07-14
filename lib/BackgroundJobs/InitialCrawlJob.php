@@ -7,7 +7,6 @@
 
 namespace OCA\Recognize\BackgroundJobs;
 
-use OCA\Recognize\Service\ClassifyAudioService;
 use OCA\Recognize\Service\FileCrawlerService;
 use OCA\Recognize\Service\Logger;
 use OCP\AppFramework\Utility\ITimeFactory;
@@ -25,21 +24,21 @@ class InitialCrawlJob extends TimedJob {
 
 	private IConfig $config;
 
-    private FileCrawlerService $fileCrawler;
+	private FileCrawlerService $fileCrawler;
 
-    private IUserManager $userManager;
+	private IUserManager $userManager;
 
 
-    public function __construct(
-        ITimeFactory $timeFactory, Logger $logger, IConfig $config, FileCrawlerService $fileCrawler, IUserManager $userManager) {
+	public function __construct(
+		ITimeFactory $timeFactory, Logger $logger, IConfig $config, FileCrawlerService $fileCrawler, IUserManager $userManager) {
 		parent::__construct($timeFactory);
 
 		$this->setInterval(self::INTERVAL);
 		$this->logger = $logger;
 		$this->config = $config;
-        $this->fileCrawler = $fileCrawler;
-        $this->userManager = $userManager;
-    }
+		$this->fileCrawler = $fileCrawler;
+		$this->userManager = $userManager;
+	}
 
 	protected function run($argument) {
 		$users = [];
@@ -53,18 +52,18 @@ class InitialCrawlJob extends TimedJob {
 				$this->logger->debug('No users left to crawl');
 				return;
 			}
-            if ($this->config->getUserValue($user, 'recognize', 'crawl.done', 'false') !== 'false') {
-                continue;
-            }
+			if ($this->config->getUserValue($user, 'recognize', 'crawl.done', 'false') !== 'false') {
+				continue;
+			}
 			try {
 				$this->fileCrawler->crawlForUser($user);
-                $this->config->setUserValue($user, 'recognize', 'crawl.done', 'true');
-                return;
+				$this->config->setUserValue($user, 'recognize', 'crawl.done', 'true');
+				return;
 			} catch (\Exception $e) {
 				$this->logger->warning('Crawl process errored');
 				$this->logger->warning($e->getMessage());
 				return;
 			}
-		} while(true);
+		} while (true);
 	}
 }

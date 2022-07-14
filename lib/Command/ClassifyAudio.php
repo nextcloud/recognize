@@ -22,16 +22,16 @@ class ClassifyAudio extends Command {
 
 	private IConfig $config;
 
-    private FileCrawlerService $fileCrawlerService;
+	private FileCrawlerService $fileCrawlerService;
 
-    public function __construct(IUserManager $userManager, ClassifyAudioService $audioClassifier, Logger $logger, IConfig $config, FileCrawlerService $fileCrawlerService) {
+	public function __construct(IUserManager $userManager, ClassifyAudioService $audioClassifier, Logger $logger, IConfig $config, FileCrawlerService $fileCrawlerService) {
 		parent::__construct();
 		$this->userManager = $userManager;
 		$this->audioClassifier = $audioClassifier;
 		$this->logger = $logger;
 		$this->config = $config;
-        $this->fileCrawlerService = $fileCrawlerService;
-    }
+		$this->fileCrawlerService = $fileCrawlerService;
+	}
 
 	/**
 	 * Configure the command
@@ -59,10 +59,10 @@ class ClassifyAudio extends Command {
 			});
 			$this->logger->setCliOutput($output);
 			foreach ($users as $user) {
-                if ($this->config->getUserValue($user, 'recognize', 'crawl.done', 'false') === 'false') {
-                    $this->fileCrawlerService->crawlForUser($user);
-                    $this->config->setUserValue($user, 'recognize', 'crawl.done', 'true');
-                }
+				if ($this->config->getUserValue($user, 'recognize', 'crawl.done', 'false') === 'false') {
+					$this->fileCrawlerService->crawlForUser($user);
+					$this->config->setUserValue($user, 'recognize', 'crawl.done', 'true');
+				}
 				do {
 					$anythingClassified = $this->audioClassifier->run($user, 500);
 					if ($anythingClassified) {

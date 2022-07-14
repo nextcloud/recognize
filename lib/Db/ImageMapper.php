@@ -27,12 +27,12 @@ class ImageMapper extends QBMapper {
 		return $this->findEntity($qb);
 	}
 
-    /**
-     * @throws \OCP\AppFramework\Db\DoesNotExistException
-     * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
-     * @throws \OCP\DB\Exception
-     */
-    public function findByFileId(int $fileId) : Image {
+	/**
+	 * @throws \OCP\AppFramework\Db\DoesNotExistException
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws \OCP\DB\Exception
+	 */
+	public function findByFileId(int $fileId) : Image {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select(Image::$columns)
 			->from($this->tableName)
@@ -42,7 +42,7 @@ class ImageMapper extends QBMapper {
 
 	/**
 	 * @throws \OCP\DB\Exception
-     * @returns Image[]
+	 * @returns Image[]
 	 */
 	public function findByUserId(string $userId): array {
 		$qb = $this->db->getQueryBuilder();
@@ -52,20 +52,20 @@ class ImageMapper extends QBMapper {
 		return $this->findEntities($qb);
 	}
 
-    /**
-     * @throws \OCP\DB\Exception
-     * @returns Image[]
-     */
-    public function findUnprocessedByUserId(string $userId, string $modelName): array {
-        $column = 'processed_'.$modelName;
-        if (!in_array($column, Image::$columns)) {
-            throw new \Exception('No image model with name '.$modelName.' exists');
-        }
-        $qb = $this->db->getQueryBuilder();
-        $qb->select(Image::$columns)
-            ->from($this->tableName)
-            ->where($qb->expr()->eq('user_id', $qb->createPositionalParameter($userId)))
-            ->andWhere($qb->expr()->eq($column, $qb->createPositionalParameter(false, IQueryBuilder::PARAM_BOOL)));
-        return $this->findEntities($qb);
-    }
+	/**
+	 * @throws \OCP\DB\Exception
+	 * @returns Image[]
+	 */
+	public function findUnprocessedByUserId(string $userId, string $modelName): array {
+		$column = 'processed_'.$modelName;
+		if (!in_array($column, Image::$columns)) {
+			throw new \Exception('No image model with name '.$modelName.' exists');
+		}
+		$qb = $this->db->getQueryBuilder();
+		$qb->select(Image::$columns)
+			->from($this->tableName)
+			->where($qb->expr()->eq('user_id', $qb->createPositionalParameter($userId)))
+			->andWhere($qb->expr()->eq($column, $qb->createPositionalParameter(false, IQueryBuilder::PARAM_BOOL)));
+		return $this->findEntities($qb);
+	}
 }

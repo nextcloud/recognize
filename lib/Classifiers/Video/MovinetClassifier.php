@@ -20,7 +20,7 @@ use Psr\Log\LoggerInterface;
 class MovinetClassifier extends Classifier {
 	public const VIDEO_TIMEOUT = 480; // seconds
 	public const MODEL_DOWNLOAD_TIMEOUT = 180; // seconds
-    public const MODEL_NAME = 'movinet';
+	public const MODEL_NAME = 'movinet';
 
 	/**
 	 * @var LoggerInterface
@@ -30,50 +30,50 @@ class MovinetClassifier extends Classifier {
 	private TagManager $tagManager;
 
 	private IConfig $config;
-    /**
-     * @var \OCP\Files\IRootFolder
-     */
-    private IRootFolder $rootFolder;
-    /**
-     * @var \OCA\Recognize\Db\VideoMapper
-     */
-    private VideoMapper $videoMapper;
+	/**
+	 * @var \OCP\Files\IRootFolder
+	 */
+	private IRootFolder $rootFolder;
+	/**
+	 * @var \OCA\Recognize\Db\VideoMapper
+	 */
+	private VideoMapper $videoMapper;
 
-    public function __construct(Logger $logger, IConfig $config, TagManager $tagManager, IRootFolder $rootFolder, VideoMapper $videoMapper) {
-        parent::__construct($logger, $config);
+	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager, IRootFolder $rootFolder, VideoMapper $videoMapper) {
+		parent::__construct($logger, $config);
 		$this->logger = $logger;
 		$this->config = $config;
 		$this->tagManager = $tagManager;
-        $this->rootFolder = $rootFolder;
-        $this->videoMapper = $videoMapper;
-    }
-    /**
-     * @param \OCA\Recognize\Db\Video[] $videos
-     * @return void
-     * @throws \OCP\Files\NotFoundException
-     */
-    public function classify(array $videos): void {
-        $paths = array_map(static function (Image $image) {
-            $file = $this->rootFolder->getById($image->getFileId())[0];
-            return $file->getStorage()->getLocalFile($file->getInternalPath());
-        }, $videos);
-        if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
-            throw new \Exception('Movinet does not support WASM mode');
-        } else {
-            $timeout = count($paths) * self::VIDEO_TIMEOUT + self::MODEL_DOWNLOAD_TIMEOUT;
-        }
-        $classifierProcess = $this->classifyFiles(self::MODEL_NAME, $paths, $timeout);
+		$this->rootFolder = $rootFolder;
+		$this->videoMapper = $videoMapper;
+	}
+	/**
+	 * @param \OCA\Recognize\Db\Video[] $videos
+	 * @return void
+	 * @throws \OCP\Files\NotFoundException
+	 */
+	public function classify(array $videos): void {
+		$paths = array_map(static function (Image $image) {
+			$file = $this->rootFolder->getById($image->getFileId())[0];
+			return $file->getStorage()->getLocalFile($file->getInternalPath());
+		}, $videos);
+		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
+			throw new \Exception('Movinet does not support WASM mode');
+		} else {
+			$timeout = count($paths) * self::VIDEO_TIMEOUT + self::MODEL_DOWNLOAD_TIMEOUT;
+		}
+		$classifierProcess = $this->classifyFiles(self::MODEL_NAME, $paths, $timeout);
 
-        foreach ($classifierProcess as $i => $results) {
-            // assign tags
-            $this->tagManager->assignTags($videos[$i]->getFileId(), $results);
-            // Update processed status
-            $videos[$i]->setProcessedMovinet(true);
-            try {
-                $this->videoMapper->update($videos[$i]);
-            } catch (Exception $e) {
-                $this->logger->warning($e->getMessage());
-            }
-        }
-    }
+		foreach ($classifierProcess as $i => $results) {
+			// assign tags
+			$this->tagManager->assignTags($videos[$i]->getFileId(), $results);
+			// Update processed status
+			$videos[$i]->setProcessedMovinet(true);
+			try {
+				$this->videoMapper->update($videos[$i]);
+			} catch (Exception $e) {
+				$this->logger->warning($e->getMessage());
+			}
+		}
+	}
 }

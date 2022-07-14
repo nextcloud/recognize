@@ -16,7 +16,7 @@ use OCP\AppFramework\Db\Entity;
  * @method bool getProcessedMusicnn()
  */
 class Audio extends Entity {
-    public $id;
+	public $id;
 	protected int $fileId;
 	protected string $userId;
 	protected bool $processedMusicnn;

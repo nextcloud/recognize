@@ -21,7 +21,7 @@ class ImagenetClassifier extends Classifier {
 	public const IMAGE_TIMEOUT = 480; // seconds
 	public const IMAGE_PUREJS_TIMEOUT = 600; // seconds
 	public const MODEL_DOWNLOAD_TIMEOUT = 180; // seconds
-    public const MODEL_NAME = 'imagenet';
+	public const MODEL_NAME = 'imagenet';
 
 	/**
 	 * @var LoggerInterface
@@ -31,23 +31,23 @@ class ImagenetClassifier extends Classifier {
 	private TagManager $tagManager;
 
 	private IConfig $config;
-    /**
-     * @var \OCP\Files\IRootFolder
-     */
-    private IRootFolder $rootFolder;
-    /**
-     * @var \OCA\Recognize\Db\ImageMapper
-     */
-    private ImageMapper $imageMapper;
+	/**
+	 * @var \OCP\Files\IRootFolder
+	 */
+	private IRootFolder $rootFolder;
+	/**
+	 * @var \OCA\Recognize\Db\ImageMapper
+	 */
+	private ImageMapper $imageMapper;
 
-    public function __construct(Logger $logger, IConfig $config, TagManager $tagManager, IRootFolder $rootFolder, ImageMapper $imageMapper) {
-        parent::__construct($logger, $config);
+	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager, IRootFolder $rootFolder, ImageMapper $imageMapper) {
+		parent::__construct($logger, $config);
 		$this->logger = $logger;
 		$this->config = $config;
 		$this->tagManager = $tagManager;
-        $this->rootFolder = $rootFolder;
-        $this->imageMapper = $imageMapper;
-    }
+		$this->rootFolder = $rootFolder;
+		$this->imageMapper = $imageMapper;
+	}
 
 	/**
 	 * @param \OCA\Recognize\Db\Image[] $images
@@ -55,27 +55,27 @@ class ImagenetClassifier extends Classifier {
 	 * @throws \OCP\Files\NotFoundException
 	 */
 	public function classify(array $images): void {
-        $paths = array_map(static function (Image $image) {
-            $file = $this->rootFolder->getById($image->getFileId())[0];
-            return $file->getStorage()->getLocalFile($file->getInternalPath());
-        }, $images);
-        if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
-            $timeout = count($paths) * self::IMAGE_PUREJS_TIMEOUT + self::MODEL_DOWNLOAD_TIMEOUT;
-        } else {
-            $timeout = count($paths) * self::IMAGE_TIMEOUT + self::MODEL_DOWNLOAD_TIMEOUT;
-        }
-        $classifierProcess = $this->classifyFiles(self::MODEL_NAME, $paths, $timeout);
+		$paths = array_map(static function (Image $image) {
+			$file = $this->rootFolder->getById($image->getFileId())[0];
+			return $file->getStorage()->getLocalFile($file->getInternalPath());
+		}, $images);
+		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
+			$timeout = count($paths) * self::IMAGE_PUREJS_TIMEOUT + self::MODEL_DOWNLOAD_TIMEOUT;
+		} else {
+			$timeout = count($paths) * self::IMAGE_TIMEOUT + self::MODEL_DOWNLOAD_TIMEOUT;
+		}
+		$classifierProcess = $this->classifyFiles(self::MODEL_NAME, $paths, $timeout);
 
-        foreach ($classifierProcess as $i => $results) {
-            // assign tags
-            $this->tagManager->assignTags($images[$i]->getFileId(), $results);
-            // Update processed status
-            $images[$i]->setProcessedImagenet(true);
-            try {
-                $this->imageMapper->update($images[$i]);
-            } catch (Exception $e) {
-                $this->logger->warning($e->getMessage());
-            }
-        }
+		foreach ($classifierProcess as $i => $results) {
+			// assign tags
+			$this->tagManager->assignTags($images[$i]->getFileId(), $results);
+			// Update processed status
+			$images[$i]->setProcessedImagenet(true);
+			try {
+				$this->imageMapper->update($images[$i]);
+			} catch (Exception $e) {
+				$this->logger->warning($e->getMessage());
+			}
+		}
 	}
 }

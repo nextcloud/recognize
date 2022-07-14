@@ -19,7 +19,7 @@ use Psr\Log\LoggerInterface;
 
 class GeoClassifier extends Classifier {
 	public const IMAGE_TIMEOUT = 5; // seconds
-    public const MODEL_NAME = 'geo';
+	public const MODEL_NAME = 'geo';
 
 	/**
 	 * @var LoggerInterface
@@ -28,46 +28,46 @@ class GeoClassifier extends Classifier {
 
 	private TagManager $tagManager;
 
-    /**
-     * @var \OCP\Files\IRootFolder
-     */
-    private IRootFolder $rootFolder;
-    /**
-     * @var \OCA\Recognize\Db\ImageMapper
-     */
-    private ImageMapper $imageMapper;
+	/**
+	 * @var \OCP\Files\IRootFolder
+	 */
+	private IRootFolder $rootFolder;
+	/**
+	 * @var \OCA\Recognize\Db\ImageMapper
+	 */
+	private ImageMapper $imageMapper;
 
-    public function __construct(Logger $logger, IConfig $config, TagManager $tagManager, IRootFolder $rootFolder, ImageMapper $imageMapper) {
-        parent::__construct($logger, $config);
+	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager, IRootFolder $rootFolder, ImageMapper $imageMapper) {
+		parent::__construct($logger, $config);
 		$this->logger = $logger;
-        $this->tagManager = $tagManager;
-        $this->rootFolder = $rootFolder;
-        $this->imageMapper = $imageMapper;
-    }
+		$this->tagManager = $tagManager;
+		$this->rootFolder = $rootFolder;
+		$this->imageMapper = $imageMapper;
+	}
 
-    /**
-     * @param \OCA\Recognize\Db\Image[] $images
-     * @return void
-     * @throws \OCP\Files\NotFoundException
-     */
-    public function classify(array $images): void {
-        $paths = array_map(static function (Image $image) {
-            $file = $this->rootFolder->getById($image->getFileId())[0];
-            return $file->getStorage()->getLocalFile($file->getInternalPath());
-        }, $images);
-        $timeout = count($paths) * self::IMAGE_TIMEOUT;
-        $classifierProcess = $this->classifyFiles(self::MODEL_NAME, $paths, $timeout);
+	/**
+	 * @param \OCA\Recognize\Db\Image[] $images
+	 * @return void
+	 * @throws \OCP\Files\NotFoundException
+	 */
+	public function classify(array $images): void {
+		$paths = array_map(static function (Image $image) {
+			$file = $this->rootFolder->getById($image->getFileId())[0];
+			return $file->getStorage()->getLocalFile($file->getInternalPath());
+		}, $images);
+		$timeout = count($paths) * self::IMAGE_TIMEOUT;
+		$classifierProcess = $this->classifyFiles(self::MODEL_NAME, $paths, $timeout);
 
-        foreach ($classifierProcess as $i => $results) {
-            // assign tags
-            $this->tagManager->assignTags($images[$i]->getFileId(), $results);
-            // Update processed status
-            $images[$i]->setProcessedGeo(true);
-            try {
-                $this->imageMapper->update($images[$i]);
-            } catch (Exception $e) {
-                $this->logger->warning($e->getMessage());
-            }
-        }
-    }
+		foreach ($classifierProcess as $i => $results) {
+			// assign tags
+			$this->tagManager->assignTags($images[$i]->getFileId(), $results);
+			// Update processed status
+			$images[$i]->setProcessedGeo(true);
+			try {
+				$this->imageMapper->update($images[$i]);
+			} catch (Exception $e) {
+				$this->logger->warning($e->getMessage());
+			}
+		}
+	}
 }

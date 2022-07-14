@@ -27,13 +27,13 @@ class VideoMapper extends QBMapper {
 		return $this->findEntity($qb);
 	}
 
-    /**
-     * @throws \OCP\AppFramework\Db\DoesNotExistException
-     * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
-     * @throws \OCP\DB\Exception
-     * @returns Video[]
-     */
-    public function findByFileId(int $fileId) : array {
+	/**
+	 * @throws \OCP\AppFramework\Db\DoesNotExistException
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws \OCP\DB\Exception
+	 * @returns Video[]
+	 */
+	public function findByFileId(int $fileId) : array {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select(Video::$columns)
 			->from($this->tableName)
@@ -43,7 +43,7 @@ class VideoMapper extends QBMapper {
 
 	/**
 	 * @throws \OCP\DB\Exception
-     * @returns Video[]
+	 * @returns Video[]
 	 */
 	public function findByUserId(string $userId): array {
 		$qb = $this->db->getQueryBuilder();
@@ -53,20 +53,20 @@ class VideoMapper extends QBMapper {
 		return $this->findEntities($qb);
 	}
 
-    /**
-     * @throws \OCP\DB\Exception
-     * @returns Video[]
-     */
-    public function findUnprocessedByUserId(string $userId, string $modelName): array {
-        $column = 'processed_'.$modelName;
-        if (!in_array($column, Video::$columns)) {
-            throw new \Exception('No video model with name '.$modelName.' exists');
-        }
-        $qb = $this->db->getQueryBuilder();
-        $qb->select(Image::$columns)
-            ->from($this->tableName)
-            ->where($qb->expr()->eq('user_id', $qb->createPositionalParameter($userId)))
-            ->andWhere($qb->expr()->eq($column, $qb->createPositionalParameter(false, IQueryBuilder::PARAM_BOOL)));
-        return $this->findEntities($qb);
-    }
+	/**
+	 * @throws \OCP\DB\Exception
+	 * @returns Video[]
+	 */
+	public function findUnprocessedByUserId(string $userId, string $modelName): array {
+		$column = 'processed_'.$modelName;
+		if (!in_array($column, Video::$columns)) {
+			throw new \Exception('No video model with name '.$modelName.' exists');
+		}
+		$qb = $this->db->getQueryBuilder();
+		$qb->select(Image::$columns)
+			->from($this->tableName)
+			->where($qb->expr()->eq('user_id', $qb->createPositionalParameter($userId)))
+			->andWhere($qb->expr()->eq($column, $qb->createPositionalParameter(false, IQueryBuilder::PARAM_BOOL)));
+		return $this->findEntities($qb);
+	}
 }

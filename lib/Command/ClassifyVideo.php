@@ -21,16 +21,16 @@ class ClassifyVideo extends Command {
 
 	private IConfig $config;
 
-    private FileCrawlerService $fileCrawlerService;
+	private FileCrawlerService $fileCrawlerService;
 
-    public function __construct(IUserManager $userManager, ClassifyVideoService $videoClassifier, Logger $logger, IConfig $config, FileCrawlerService $fileCrawlerService) {
+	public function __construct(IUserManager $userManager, ClassifyVideoService $videoClassifier, Logger $logger, IConfig $config, FileCrawlerService $fileCrawlerService) {
 		parent::__construct();
 		$this->userManager = $userManager;
 		$this->videoClassifier = $videoClassifier;
 		$this->logger = $logger;
 		$this->config = $config;
-        $this->fileCrawlerService = $fileCrawlerService;
-    }
+		$this->fileCrawlerService = $fileCrawlerService;
+	}
 
 	/**
 	 * Configure the command
@@ -58,10 +58,10 @@ class ClassifyVideo extends Command {
 			});
 			$this->logger->setCliOutput($output);
 			foreach ($users as $user) {
-                if ($this->config->getUserValue($user, 'recognize', 'crawl.done', 'false') === 'false') {
-                    $this->fileCrawlerService->crawlForUser($user);
-                    $this->config->setUserValue($user, 'recognize', 'crawl.done', 'true');
-                }
+				if ($this->config->getUserValue($user, 'recognize', 'crawl.done', 'false') === 'false') {
+					$this->fileCrawlerService->crawlForUser($user);
+					$this->config->setUserValue($user, 'recognize', 'crawl.done', 'true');
+				}
 
 				do {
 					$anythingClassified = $this->videoClassifier->run($user, 500);

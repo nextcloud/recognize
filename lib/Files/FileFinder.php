@@ -62,37 +62,37 @@ abstract class FileFinder {
 		return $this;
 	}
 
-    public function isDirectoryIgnored(Folder $folder): bool {
-        $foundMarkers = array_filter($this->ignoreMarkers, static function ($markerFile) use ($folder) {
-            return $folder->nodeExists($markerFile);
-        });
+	public function isDirectoryIgnored(Folder $folder): bool {
+		$foundMarkers = array_filter($this->ignoreMarkers, static function ($markerFile) use ($folder) {
+			return $folder->nodeExists($markerFile);
+		});
 
-        return count($foundMarkers) > 0;
-    }
+		return count($foundMarkers) > 0;
+	}
 
-    public function isFileEligible(string $user, File $node) : bool {
-        if ($node->getMountPoint()->getMountType() === 'shared' && $node->getOwner()->getUID() !== $user) {
-            $this->logger->debug('Not original owner of '.$node->getPath());
-            return false;
-        }
-        $mimeType = $node->getMimetype();
-        if (!in_array($mimeType, $this->formats)) {
-            $this->logger->debug('Not a supported format: '.$node->getPath());
-            return false;
-        }
-        if ($this->maxFileSize !== 0 && $this->maxFileSize < $node->getSize()) {
-            $this->logger->debug('File is too large: '.$node->getPath());
-            return false;
-        }
+	public function isFileEligible(string $user, File $node) : bool {
+		if ($node->getMountPoint()->getMountType() === 'shared' && $node->getOwner()->getUID() !== $user) {
+			$this->logger->debug('Not original owner of '.$node->getPath());
+			return false;
+		}
+		$mimeType = $node->getMimetype();
+		if (!in_array($mimeType, $this->formats)) {
+			$this->logger->debug('Not a supported format: '.$node->getPath());
+			return false;
+		}
+		if ($this->maxFileSize !== 0 && $this->maxFileSize < $node->getSize()) {
+			$this->logger->debug('File is too large: '.$node->getPath());
+			return false;
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    /**
-     * @param string $user
-     * @param \OCP\Files\File $node
-     * @return void
-     * @throws \Throwable
-     */
-    public abstract function foundFile(string $user, File $node) : void;
+	/**
+	 * @param string $user
+	 * @param \OCP\Files\File $node
+	 * @return void
+	 * @throws \Throwable
+	 */
+	abstract public function foundFile(string $user, File $node) : void;
 }
