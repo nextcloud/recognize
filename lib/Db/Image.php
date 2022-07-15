@@ -23,12 +23,12 @@ use OCP\AppFramework\Db\Entity;
  */
 class Image extends Entity {
 	public $id;
-	protected int $fileId;
-	protected string $userId;
-	protected bool $processedGeo;
-	protected bool $processedImagenet;
-	protected bool $processedLandmarks;
-	protected bool $processedFaces;
+	protected $fileId;
+	protected $userId;
+	protected $processedGeo;
+	protected $processedImagenet;
+	protected $processedLandmarks;
+	protected $processedFaces;
 
 	public static array $columns = ['id', 'file_id', 'user_id', 'processed_geo', 'processed_imagenet', 'processed_landmarks', 'processed_faces'];
 	public static array $fields = ['id', 'fileId', 'userId', 'processedGeo', 'processedImagenet', 'processedLandmarks', 'processedFaces'];

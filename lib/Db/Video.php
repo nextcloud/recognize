@@ -17,9 +17,9 @@ use OCP\AppFramework\Db\Entity;
  */
 class Video extends Entity {
 	public $id;
-	protected int $fileId;
-	protected string $userId;
-	protected bool $processedMovinet;
+	protected $fileId;
+	protected $userId;
+	protected $processedMovinet;
 
 	public static array $columns = ['id', 'file_id', 'user_id', 'processed_movinet'];
 	public static array $fields = ['id', 'fileId', 'userId', 'processedMovinet'];

@@ -17,9 +17,9 @@ use OCP\AppFramework\Db\Entity;
  */
 class Audio extends Entity {
 	public $id;
-	protected int $fileId;
-	protected string $userId;
-	protected bool $processedMusicnn;
+	protected $fileId;
+	protected $userId;
+	protected $processedMusicnn;
 
 	public static array $columns = ['id', 'file_id', 'user_id', 'processed_musicnn'];
 	public static array $fields = ['id', 'fileId', 'userId', 'processedMusicnn'];
