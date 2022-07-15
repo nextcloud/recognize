@@ -26,13 +26,17 @@ class ImagesToDbFinder extends ImagesFinder {
 	 * @throws \OCP\DB\Exception
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 */
-	public function foundFile(string $user, File $node) {
+	public function foundFile(string $user, File $node) :void {
 		try {
 			$this->imageMapper->findByFileId($node->getId());
 		} catch (DoesNotExistException $e) {
 			$image = new Image();
 			$image->setUserId($user);
 			$image->setFileId($node->getId());
+			$image->setProcessedFaces(false);
+			$image->setProcessedImagenet(false);
+			$image->setProcessedLandmarks(false);
+			$image->setProcessedGeo(false);
 			$this->imageMapper->insert($image);
 		}
 	}

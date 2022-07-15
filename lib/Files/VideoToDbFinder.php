@@ -31,13 +31,14 @@ class VideoToDbFinder extends VideoFinder {
 	 * @throws \OCP\DB\Exception
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 */
-	public function foundFile(string $user, File $node) {
+	public function foundFile(string $user, File $node) :void{
 		try {
 			$this->videoMapper->findByFileId($node->getId());
 		} catch (DoesNotExistException $e) {
 			$video = new Video();
 			$video->setUserId($user);
 			$video->setFileId($node->getId());
+			$video->setProcessedMovinet(false);
 			$this->videoMapper->insert($video);
 		}
 	}
