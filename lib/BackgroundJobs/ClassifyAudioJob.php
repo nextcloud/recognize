@@ -38,7 +38,7 @@ class ClassifyAudioJob extends TimedJob {
 		$this->config = $config;
 	}
 
-	protected function run($argument) {
+	protected function run($argument): void {
 		$users = [];
 		$this->userManager->callForSeenUsers(function (IUser $user) use (&$users) {
 			$users[] = $user->getUID();

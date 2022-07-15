@@ -35,7 +35,7 @@ class InitialCrawlJob extends TimedJob {
 		$this->userManager = $userManager;
 	}
 
-	protected function run($argument) {
+	protected function run($argument): void {
 		$users = [];
 		$this->userManager->callForSeenUsers(function (IUser $user) use (&$users) {
 			$users[] = $user->getUID();
