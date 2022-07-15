@@ -77,7 +77,6 @@ abstract class FileFinder {
 		}
 		$mimeType = $node->getMimetype();
 		if (!in_array($mimeType, $this->formats)) {
-			$this->logger->debug('Not a supported format: '.$node->getPath());
 			return false;
 		}
 		if ($this->maxFileSize !== 0 && $this->maxFileSize < $node->getSize()) {
