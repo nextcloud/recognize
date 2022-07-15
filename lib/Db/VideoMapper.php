@@ -31,9 +31,9 @@ class VideoMapper extends QBMapper {
 	 * @throws \OCP\AppFramework\Db\DoesNotExistException
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws \OCP\DB\Exception
-	 * @returns Video[]
+	 * @returns Video
 	 */
-	public function findByFileId(int $fileId) : array {
+	public function findByFileId(int $fileId) : Video {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select(Video::$columns)
 			->from($this->tableName)

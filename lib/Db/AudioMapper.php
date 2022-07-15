@@ -33,7 +33,7 @@ class AudioMapper extends QBMapper {
 	 * @throws \OCP\DB\Exception
 	 * @returns \OCA\Recognize\Db\Audio[]
 	 */
-	public function findByFileId(int $fileId) : array {
+	public function findByFileId(int $fileId) : Audio {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select(Audio::$columns)
 			->from($this->tableName)
