@@ -31,7 +31,7 @@ class Classifier {
 
 		$command = [
 			$this->config->getAppValue('recognize', 'node_binary'),
-			dirname(__DIR__, 3) . '/src/classifier_'.$model.'.js',
+			dirname(__DIR__, 2) . '/src/classifier_'.$model.'.js',
 			'-'
 		];
 
