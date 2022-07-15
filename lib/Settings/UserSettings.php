@@ -19,15 +19,9 @@ use OCP\Settings\ISettings;
 
 class UserSettings implements ISettings {
 	private IInitialState $initialState;
-
 	private IConfig $config;
-
 	private FaceDetectionMapper $faceDetections;
-
 	private FaceClusterMapper $faceClusters;
-	/**
-	 * @var \OCP\IUserSession
-	 */
 	private IUserSession $userSession;
 
 	public function __construct(IInitialState $initialState, IConfig $config, FaceDetectionMapper $faceDetections, FaceClusterMapper $faceClusters, IUserSession $userSession) {

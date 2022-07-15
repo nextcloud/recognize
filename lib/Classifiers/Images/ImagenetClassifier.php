@@ -15,7 +15,6 @@ use OCA\Recognize\Service\TagManager;
 use OCP\DB\Exception;
 use OCP\Files\IRootFolder;
 use OCP\IConfig;
-use Psr\Log\LoggerInterface;
 
 class ImagenetClassifier extends Classifier {
 	public const IMAGE_TIMEOUT = 480; // seconds
@@ -23,21 +22,10 @@ class ImagenetClassifier extends Classifier {
 	public const MODEL_DOWNLOAD_TIMEOUT = 180; // seconds
 	public const MODEL_NAME = 'imagenet';
 
-	/**
-	 * @var LoggerInterface
-	 */
-	private $logger;
-
+	private Logger $logger;
 	private TagManager $tagManager;
-
 	private IConfig $config;
-	/**
-	 * @var \OCP\Files\IRootFolder
-	 */
 	private IRootFolder $rootFolder;
-	/**
-	 * @var \OCA\Recognize\Db\ImageMapper
-	 */
 	private ImageMapper $imageMapper;
 
 	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager, IRootFolder $rootFolder, ImageMapper $imageMapper) {

@@ -8,13 +8,8 @@ use OCP\IConfig;
 
 class ClassifyVideoService {
 	private Logger $logger;
-
 	private IConfig $config;
-
 	private MovinetClassifier $movinet;
-	/**
-	 * @var \OCA\Recognize\Db\VideoMapper
-	 */
 	private VideoMapper $videoMapper;
 
 	public function __construct(Logger $logger, IConfig $config, MovinetClassifier $movinet, VideoMapper $videoMapper) {

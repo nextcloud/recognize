@@ -25,13 +25,9 @@ class ClusteringFaceClassifier extends Classifier {
 	public const MODEL_NAME = 'facevectors';
 
 	private LoggerInterface $logger;
-
 	private IConfig $config;
-
 	private FaceDetectionMapper $faceDetections;
-
 	private IRootFolder $rootFolder;
-
 	private ImageMapper $imageMapper;
 
 	public function __construct(Logger $logger, IConfig $config, FaceDetectionMapper $faceDetections, IRootFolder $rootFolder, ImageMapper $imageMapper) {

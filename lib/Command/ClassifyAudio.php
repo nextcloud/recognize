@@ -14,14 +14,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ClassifyAudio extends Command {
 	private IUserManager $userManager;
-
 	private ClassifyAudioService $audioClassifier;
-
-
 	private Logger $logger;
-
 	private IConfig $config;
-
 	private FileCrawlerService $fileCrawlerService;
 
 	public function __construct(IUserManager $userManager, ClassifyAudioService $audioClassifier, Logger $logger, IConfig $config, FileCrawlerService $fileCrawlerService) {

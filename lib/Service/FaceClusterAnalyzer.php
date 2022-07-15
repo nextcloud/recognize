@@ -16,11 +16,8 @@ class FaceClusterAnalyzer {
 	public const MAX_INNER_CLUSTER_RADIUS = 0.35;
 
 	private FaceDetectionMapper $faceDetections;
-
 	private FaceClusterMapper $faceClusters;
-
 	private TagManager $tagManager;
-
 	private Logger $logger;
 
 	public function __construct(FaceDetectionMapper $faceDetections, FaceClusterMapper $faceClusters, TagManager $tagManager, Logger $logger) {

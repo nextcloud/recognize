@@ -13,7 +13,6 @@ use OCP\Settings\IIconSection;
 
 class AdminSection implements IIconSection {
 	private IL10N $l;
-
 	private IURLGenerator $urlgen;
 
 	public function __construct(IL10N $l, IURLGenerator $urlgen) {

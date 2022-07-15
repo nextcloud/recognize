@@ -13,21 +13,12 @@ use OCP\IConfig;
 
 class ClassifyImagesService {
 	private ImagenetClassifier $imagenet;
-
 	private ClusteringFaceClassifier $facenet;
-
 	private $logger;
-
 	private IConfig $config;
-
 	private LandmarksClassifier $landmarks;
-
 	private GeoClassifier $geo;
-
 	private FaceClusterAnalyzer $faceClusterAnalyzer;
-	/**
-	 * @var \OCA\Recognize\Db\ImageMapper
-	 */
 	private ImageMapper $imageMapper;
 
 	public function __construct(ClusteringFaceClassifier $facenet, ImagenetClassifier $imagenet, Logger $logger, IConfig $config, LandmarksClassifier $landmarks, GeoClassifier $geo, FaceClusterAnalyzer $faceClusterAnalyzer, ImageMapper $imageMapper) {

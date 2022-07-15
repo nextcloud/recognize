@@ -25,13 +25,10 @@ class LandmarksClassifier extends Classifier {
 	public const MODEL_NAME = 'landmarks';
 
 
-	private $logger;
-
+	private Logger $logger;
 	private TagManager $tagManager;
-
 	private IConfig $config;
 	private IRootFolder $rootFolder;
-
 	private ImageMapper $imageMapper;
 
 	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager, IRootFolder $rootFolder, ImageMapper $imageMapper) {

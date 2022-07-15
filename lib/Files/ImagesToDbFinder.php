@@ -10,7 +10,6 @@ use OCP\Files\File;
 
 class ImagesToDbFinder extends ImagesFinder {
 	private Logger $logger;
-
 	private ImageMapper $imageMapper;
 
 	public function __construct(Logger $logger, ImageMapper $imageMapper) {

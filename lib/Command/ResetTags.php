@@ -10,7 +10,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ResetTags extends Command {
 	private TagManager $tagManager;
 
-
 	public function __construct(TagManager $tagManager) {
 		parent::__construct();
 		$this->tagManager = $tagManager;

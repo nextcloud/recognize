@@ -25,17 +25,9 @@ class MusicnnClassifier extends Classifier {
 
 
 	private LoggerInterface $logger;
-
 	private TagManager $tagManager;
-
 	private IConfig $config;
-	/**
-	 * @var \OCP\Files\IRootFolder
-	 */
 	private IRootFolder $rootFolder;
-	/**
-	 * @var \OCA\Recognize\Db\AudioMapper
-	 */
 	private AudioMapper $audioMapper;
 
 	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager, IRootFolder $rootFolder, AudioMapper $audioMapper) {

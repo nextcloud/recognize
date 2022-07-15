@@ -8,11 +8,8 @@ use OCP\IConfig;
 
 class ClassifyAudioService {
 	private AudioMapper $audioMapper;
-
 	private $logger;
-
 	private IConfig $config;
-
 	private MusicnnClassifier $musicnn;
 
 	public function __construct(AudioMapper $audioMapper, Logger $logger, IConfig $config, MusicnnClassifier $musicnn) {

@@ -10,20 +10,10 @@ namespace OCA\Recognize\Files;
 use OCA\Recognize\Service\Logger;
 use OCP\Files\File;
 use OCP\Files\Folder;
-use Psr\Log\LoggerInterface;
 
 abstract class FileFinder {
-	/**
-	 * @var LoggerInterface
-	 */
-	private $logger;
-
-	/**
-	 * @var string[] $formats
-	 */
+	private Logger $logger;
 	private array $formats;
-
-
 	private int $maxFileSize = 0;
 
 	/**

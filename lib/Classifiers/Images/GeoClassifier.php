@@ -15,26 +15,14 @@ use OCA\Recognize\Service\TagManager;
 use OCP\DB\Exception;
 use OCP\Files\IRootFolder;
 use OCP\IConfig;
-use Psr\Log\LoggerInterface;
 
 class GeoClassifier extends Classifier {
 	public const IMAGE_TIMEOUT = 5; // seconds
 	public const MODEL_NAME = 'geo';
 
-	/**
-	 * @var LoggerInterface
-	 */
-	private $logger;
-
+	private Logger $logger;
 	private TagManager $tagManager;
-
-	/**
-	 * @var \OCP\Files\IRootFolder
-	 */
 	private IRootFolder $rootFolder;
-	/**
-	 * @var \OCA\Recognize\Db\ImageMapper
-	 */
 	private ImageMapper $imageMapper;
 
 	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager, IRootFolder $rootFolder, ImageMapper $imageMapper) {

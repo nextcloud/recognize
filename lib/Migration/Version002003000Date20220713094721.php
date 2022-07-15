@@ -40,11 +40,11 @@ class Version002003000Date20220713094721 extends SimpleMigrationStep {
 
 		if (!$schema->hasTable('recognize_files_images')) {
 			$table = $schema->createTable('recognize_files_images');
-            $table->addColumn('id', 'bigint', [
-                'autoincrement' => true,
-                'notnull' => true,
-                'length' => 64,
-            ]);
+			$table->addColumn('id', 'bigint', [
+				'autoincrement' => true,
+				'notnull' => true,
+				'length' => 64,
+			]);
 			$table->addColumn('file_id', 'bigint', [
 				'notnull' => true,
 				'length' => 64,
@@ -54,17 +54,17 @@ class Version002003000Date20220713094721 extends SimpleMigrationStep {
 				'length' => 64,
 			]);
 			$table->addColumn('processed_geo', 'boolean', [
-                'notnull' => false,
-            ]);
+				'notnull' => false,
+			]);
 			$table->addColumn('processed_imagenet', 'boolean', [
-                'notnull' => false,
-            ]);
+				'notnull' => false,
+			]);
 			$table->addColumn('processed_landmarks', 'boolean', [
-                'notnull' => false,
-            ]);
+				'notnull' => false,
+			]);
 			$table->addColumn('processed_faces', 'boolean', [
-                'notnull' => false,
-            ]);
+				'notnull' => false,
+			]);
 			$table->setPrimaryKey(['id'], 'recognize_images_id');
 			$table->addIndex(['file_id'], 'recognize_images_file');
 			$table->addIndex(['user_id'], 'recognize_images_user');
@@ -76,11 +76,11 @@ class Version002003000Date20220713094721 extends SimpleMigrationStep {
 
 		if (!$schema->hasTable('recognize_files_video')) {
 			$table = $schema->createTable('recognize_files_video');
-            $table->addColumn('id', 'bigint', [
-                'autoincrement' => true,
-                'notnull' => true,
-                'length' => 64,
-            ]);
+			$table->addColumn('id', 'bigint', [
+				'autoincrement' => true,
+				'notnull' => true,
+				'length' => 64,
+			]);
 			$table->addColumn('file_id', 'bigint', [
 				'notnull' => true,
 				'length' => 64,
@@ -90,8 +90,8 @@ class Version002003000Date20220713094721 extends SimpleMigrationStep {
 				'length' => 64,
 			]);
 			$table->addColumn('processed_movinet', 'boolean', [
-                'notnull' => false,
-            ]);
+				'notnull' => false,
+			]);
 			$table->setPrimaryKey(['id'], 'recognize_video_id');
 			$table->addIndex(['file_id'], 'recognize_video_file');
 			$table->addIndex(['user_id'], 'recognize_video_user');
@@ -100,11 +100,11 @@ class Version002003000Date20220713094721 extends SimpleMigrationStep {
 
 		if (!$schema->hasTable('recognize_files_audio')) {
 			$table = $schema->createTable('recognize_files_audio');
-            $table->addColumn('id', 'bigint', [
-                'autoincrement' => true,
-                'notnull' => true,
-                'length' => 64,
-            ]);
+			$table->addColumn('id', 'bigint', [
+				'autoincrement' => true,
+				'notnull' => true,
+				'length' => 64,
+			]);
 			$table->addColumn('file_id', 'bigint', [
 				'notnull' => true,
 				'length' => 64,
@@ -114,8 +114,8 @@ class Version002003000Date20220713094721 extends SimpleMigrationStep {
 				'length' => 64,
 			]);
 			$table->addColumn('processed_musicnn', 'boolean', [
-                'notnull' => false,
-            ]);
+				'notnull' => false,
+			]);
 
 			$table->setPrimaryKey(['id'], 'recognize_audio_id');
 			$table->addIndex(['file_id'], 'recognize_audio_file');

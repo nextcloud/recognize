@@ -11,8 +11,6 @@ use Symfony\Component\Process\Process;
 
 class Classifier {
 	private LoggerInterface $logger;
-
-
 	private IConfig $config;
 
 	public function __construct(Logger $logger, IConfig $config) {

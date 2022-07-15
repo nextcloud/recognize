@@ -9,13 +9,7 @@ use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\Files\File;
 
 class VideoToDbFinder extends VideoFinder {
-	/**
-	 * @var \OCA\Recognize\Service\Logger
-	 */
 	private Logger $logger;
-	/**
-	 * @var \OCA\Recognize\Db\VideoMapper
-	 */
 	private VideoMapper $videoMapper;
 
 	public function __construct(Logger $logger, VideoMapper $videoMapper) {
@@ -31,7 +25,7 @@ class VideoToDbFinder extends VideoFinder {
 	 * @throws \OCP\DB\Exception
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 */
-	public function foundFile(string $user, File $node) :void{
+	public function foundFile(string $user, File $node) :void {
 		try {
 			$this->videoMapper->findByFileId($node->getId());
 		} catch (DoesNotExistException $e) {

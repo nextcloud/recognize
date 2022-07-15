@@ -14,13 +14,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ClassifyImages extends Command {
 	private IUserManager $userManager;
-
 	private ClassifyImagesService $imageClassifier;
-
 	private Logger $logger;
-
 	private IConfig $config;
-
 	private FileCrawlerService $fileCrawlerService;
 
 

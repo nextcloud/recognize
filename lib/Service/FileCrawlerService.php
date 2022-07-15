@@ -10,13 +10,9 @@ use OCP\Files\IRootFolder;
 
 class FileCrawlerService {
 	private FileCrawler $fileCrawler;
-
 	private ImagesToDbFinder $imagesFinder;
-
 	private AudioToDbFinder $audioFinder;
-
 	private VideoToDbFinder $videoFinder;
-
 	private IRootFolder $rootFolder;
 
 	public function __construct(FileCrawler $fileCrawler, ImagesToDbFinder $imagesFinder, AudioToDbFinder $audioFinder, VideoToDbFinder $videoFinder, IRootFolder $rootFolder) {

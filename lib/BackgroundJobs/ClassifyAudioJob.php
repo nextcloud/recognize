@@ -21,13 +21,9 @@ class ClassifyAudioJob extends TimedJob {
 	public const BATCH_SIZE_PUREJS = 10; // 10 files
 	public const INTERVAL = 30 * 60; // 30 minutes
 
-
 	private LoggerInterface $logger;
-
 	private IUserManager $userManager;
-
 	private ClassifyAudioService $audioClassifier;
-
 	private IConfig $config;
 
 

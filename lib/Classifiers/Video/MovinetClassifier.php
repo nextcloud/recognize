@@ -15,28 +15,16 @@ use OCA\Recognize\Service\TagManager;
 use OCP\DB\Exception;
 use OCP\Files\IRootFolder;
 use OCP\IConfig;
-use Psr\Log\LoggerInterface;
 
 class MovinetClassifier extends Classifier {
 	public const VIDEO_TIMEOUT = 480; // seconds
 	public const MODEL_DOWNLOAD_TIMEOUT = 180; // seconds
 	public const MODEL_NAME = 'movinet';
 
-	/**
-	 * @var LoggerInterface
-	 */
-	private $logger;
-
+	private Logger $logger;
 	private TagManager $tagManager;
-
 	private IConfig $config;
-	/**
-	 * @var \OCP\Files\IRootFolder
-	 */
 	private IRootFolder $rootFolder;
-	/**
-	 * @var \OCA\Recognize\Db\VideoMapper
-	 */
 	private VideoMapper $videoMapper;
 
 	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager, IRootFolder $rootFolder, VideoMapper $videoMapper) {

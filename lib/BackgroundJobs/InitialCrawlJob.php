@@ -19,15 +19,10 @@ use Psr\Log\LoggerInterface;
 class InitialCrawlJob extends TimedJob {
 	public const INTERVAL = 30 * 60; // 30 minutes
 
-
 	private LoggerInterface $logger;
-
 	private IConfig $config;
-
 	private FileCrawlerService $fileCrawler;
-
 	private IUserManager $userManager;
-
 
 	public function __construct(
 		ITimeFactory $timeFactory, Logger $logger, IConfig $config, FileCrawlerService $fileCrawler, IUserManager $userManager) {

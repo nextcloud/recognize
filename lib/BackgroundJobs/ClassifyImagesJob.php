@@ -22,11 +22,8 @@ class ClassifyImagesJob extends TimedJob {
 	public const INTERVAL = 30 * 60; // 30 minutes
 
 	private LoggerInterface $logger;
-
 	private IUserManager $userManager;
-
 	private ClassifyImagesService $imageClassifier;
-
 	private IConfig $config;
 
 

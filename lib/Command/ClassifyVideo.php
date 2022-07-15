@@ -14,13 +14,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ClassifyVideo extends Command {
 	private IUserManager $userManager;
-
 	private ClassifyVideoService $videoClassifier;
-
 	private Logger $logger;
-
 	private IConfig $config;
-
 	private FileCrawlerService $fileCrawlerService;
 
 	public function __construct(IUserManager $userManager, ClassifyVideoService $videoClassifier, Logger $logger, IConfig $config, FileCrawlerService $fileCrawlerService) {
