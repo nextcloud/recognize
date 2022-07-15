@@ -65,11 +65,12 @@ class Version002003000Date20220713094721 extends SimpleMigrationStep {
 			$table->addColumn('processed_faces', 'boolean', [
                 'notnull' => false,
             ]);
-			$table->setPrimaryKey(['file_id'], 'recognize_images_id');
+			$table->setPrimaryKey(['id'], 'recognize_images_id');
+			$table->addIndex(['file_id'], 'recognize_images_file');
 			$table->addIndex(['user_id'], 'recognize_images_user');
 			$table->addIndex(['user_id', 'processed_imagenet'], 'recognize_imagenet_user');
 			$table->addIndex(['user_id', 'processed_landmarks'], 'recognize_landmarks_user');
-			$table->addIndex(['user_id', 'processed_faces'], 'recognize_faces_user');
+			$table->addIndex(['user_id', 'processed_faces'], 'recognize_images_faces');
 			$table->addIndex(['user_id', 'processed_geo'], 'recognize_geo_user');
 		}
 
