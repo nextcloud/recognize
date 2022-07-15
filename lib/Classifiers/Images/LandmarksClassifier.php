@@ -57,7 +57,7 @@ class LandmarksClassifier extends Classifier {
 			return;
 		}
 
-		$paths = array_map(static function (Image $image) {
+		$paths = array_map(function (Image $image) {
 			$file = $this->rootFolder->getById($image->getFileId())[0];
 			return $file->getStorage()->getLocalFile($file->getInternalPath());
 		}, $landmarkImages);

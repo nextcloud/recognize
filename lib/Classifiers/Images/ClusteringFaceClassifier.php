@@ -51,7 +51,7 @@ class ClusteringFaceClassifier extends Classifier {
 	 * @throws \OCP\Files\NotFoundException
 	 */
 	public function classify(string $user, array $images): void {
-		$paths = array_map(static function (Image $image) {
+		$paths = array_map(function (Image $image) {
 			$file = $this->rootFolder->getById($image->getFileId())[0];
 			return $file->getStorage()->getLocalFile($file->getInternalPath());
 		}, $images);
