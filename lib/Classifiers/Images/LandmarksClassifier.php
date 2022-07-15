@@ -79,10 +79,11 @@ class LandmarksClassifier extends Classifier {
 		}
 	}
 
-	/**
-	 * @param Image[] $images
-	 * @return Image[]
-	 */
+    /**
+     * @param Image[] $images
+     * @return Image[]
+     * @throws \OCP\DB\Exception
+     */
 	private function filterImagesForLandmarks(array $images) : array {
 		$tagsByFile = $this->tagManager->getTagsForFiles(array_map(function (Image $image) {
 			return $image->getFileId();
@@ -93,7 +94,12 @@ class LandmarksClassifier extends Classifier {
 			}, $tags);
 		}, $tagsByFile);
 		$landmarkFiles = array_values(array_filter($images, function (Image $image) use ($tagsByFile) {
-			return count(array_intersect(self::PRECONDITION_TAGS, $tagsByFile[$image->getFileId()])) !== 0;
+			if (count(array_intersect(self::PRECONDITION_TAGS, $tagsByFile[$image->getFileId()])) !== 0) {
+                return true;
+            }
+            $image->setProcessedLandmarks(true);
+            $this->imageMapper->update($image);
+            return false;
 		}));
 
 		return $landmarkFiles;
