@@ -59,7 +59,7 @@ class AudioMapper extends QBMapper {
 	 */
 	public function findUnprocessedByUserId(string $userId, string $modelName): array {
 		$column = 'processed_'.$modelName;
-		if (!in_array($column, Image::$columns)) {
+		if (!in_array($column, Audio::$columns)) {
 			throw new \Exception('No audio model with name '.$modelName.' exists');
 		}
 		$qb = $this->db->getQueryBuilder();
