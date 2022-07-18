@@ -8,7 +8,6 @@
 namespace OCA\Recognize\Classifiers\Video;
 
 use OCA\Recognize\Classifiers\Classifier;
-use OCA\Recognize\Db\Image;
 use OCA\Recognize\Db\Video;
 use OCA\Recognize\Db\VideoMapper;
 use OCA\Recognize\Service\Logger;

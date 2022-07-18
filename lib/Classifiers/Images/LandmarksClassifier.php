@@ -79,11 +79,11 @@ class LandmarksClassifier extends Classifier {
 		}
 	}
 
-    /**
-     * @param Image[] $images
-     * @return Image[]
-     * @throws \OCP\DB\Exception
-     */
+	/**
+	 * @param Image[] $images
+	 * @return Image[]
+	 * @throws \OCP\DB\Exception
+	 */
 	private function filterImagesForLandmarks(array $images) : array {
 		$tagsByFile = $this->tagManager->getTagsForFiles(array_map(function (Image $image) : string {
 			return $image->getFileId();
