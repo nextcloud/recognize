@@ -68,7 +68,7 @@ class ClassifyVideo extends Command {
 			}
 		} catch (\Exception $ex) {
 			$this->config->setAppValue('recognize', 'video.status', 'false');
-			$output->writeln('<error>Failed to classify audio</error>');
+			$output->writeln('<error>Failed to classify video</error>');
 			$output->writeln($ex->getMessage());
 			return 1;
 		}

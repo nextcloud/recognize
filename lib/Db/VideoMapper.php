@@ -63,7 +63,7 @@ class VideoMapper extends QBMapper {
 			throw new \Exception('No video model with name '.$modelName.' exists');
 		}
 		$qb = $this->db->getQueryBuilder();
-		$qb->select(Image::$columns)
+		$qb->select(Video::$columns)
 			->from($this->tableName)
 			->where($qb->expr()->eq('user_id', $qb->createPositionalParameter($userId)))
 			->andWhere($qb->expr()->eq($column, $qb->createPositionalParameter(false, IQueryBuilder::PARAM_BOOL)));
