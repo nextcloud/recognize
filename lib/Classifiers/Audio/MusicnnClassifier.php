@@ -45,7 +45,7 @@ class MusicnnClassifier extends Classifier {
 	 * @throws \OCP\Files\NotFoundException
 	 */
 	public function classify(array $audios): void {
-		$paths = array_map(static function (Audio $audio) {
+		$paths = array_map(function (Audio $audio) {
 			$file = $this->rootFolder->getById($audio->getFileId())[0];
 			return $file->getStorage()->getLocalFile($file->getInternalPath());
 		}, $audios);
