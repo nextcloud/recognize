@@ -39,7 +39,7 @@ class GeoClassifier extends Classifier {
 	 * @throws \OCP\Files\NotFoundException
 	 */
 	public function classify(array $images): void {
-		$paths = array_map(function (Image $image) {
+		$paths = array_map(function (Image $image) : string {
 			$file = $this->rootFolder->getById($image->getFileId())[0];
 			return $file->getStorage()->getLocalFile($file->getInternalPath());
 		}, $images);

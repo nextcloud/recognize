@@ -53,7 +53,7 @@ abstract class FileFinder {
 	}
 
 	public function isDirectoryIgnored(Folder $folder): bool {
-		$foundMarkers = array_filter($this->ignoreMarkers, static function ($markerFile) use ($folder) {
+		$foundMarkers = array_filter($this->ignoreMarkers, static function ($markerFile) use ($folder) : bool {
 			return $folder->nodeExists($markerFile);
 		});
 

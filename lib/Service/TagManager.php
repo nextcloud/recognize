@@ -63,7 +63,7 @@ class TagManager {
 	 * @return void
 	 */
 	public function assignTags(int $fileId, array $tags): void {
-		$tags = array_map(function ($tag) {
+		$tags = array_map(function ($tag) : string {
 			return $this->getTag($tag)->getId();
 		}, $tags);
 		$tags[] = $this->getProcessedTag()->getId();
@@ -76,7 +76,7 @@ class TagManager {
 	 * @return array
 	 */
 	public function getTagsForFiles(array $fileIds): array {
-		return array_map(function ($tags) {
+		return array_map(function ($tags) : array {
 			return $this->tagManager->getTagsByIds($tags);
 		}, $this->objectMapper->getTagIdsForObjects($fileIds, 'files'));
 	}
@@ -97,7 +97,7 @@ class TagManager {
 		$missed = [];
 		$processedId = $this->getProcessedTag()->getId();
 		foreach ($classifiedChunks as $classifiedChunk) {
-			$missedChunk = array_keys(array_filter($this->objectMapper->getTagIdsForObjects($classifiedChunk, 'files'), function ($tags) use ($processedId) {
+			$missedChunk = array_keys(array_filter($this->objectMapper->getTagIdsForObjects($classifiedChunk, 'files'), function ($tags) use ($processedId) : bool {
 				return count($tags) === 1 && $tags[0] !== $processedId;
 			}));
 			$missed = array_merge($missed, $missedChunk);

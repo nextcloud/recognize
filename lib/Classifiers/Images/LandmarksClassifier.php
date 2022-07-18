@@ -54,7 +54,7 @@ class LandmarksClassifier extends Classifier {
 			return;
 		}
 
-		$paths = array_map(function (Image $image) {
+		$paths = array_map(function (Image $image) : string {
 			$file = $this->rootFolder->getById($image->getFileId())[0];
 			return $file->getStorage()->getLocalFile($file->getInternalPath());
 		}, $landmarkImages);
@@ -85,21 +85,21 @@ class LandmarksClassifier extends Classifier {
      * @throws \OCP\DB\Exception
      */
 	private function filterImagesForLandmarks(array $images) : array {
-		$tagsByFile = $this->tagManager->getTagsForFiles(array_map(function (Image $image) {
+		$tagsByFile = $this->tagManager->getTagsForFiles(array_map(function (Image $image) : string {
 			return $image->getFileId();
 		}, $images));
-		$tagsByFile = array_map(function ($tags) {
-			return array_map(function (ISystemTag $tag) {
+		$tagsByFile = array_map(function ($tags) : array {
+			return array_map(function (ISystemTag $tag) : string {
 				return $tag->getName();
 			}, $tags);
 		}, $tagsByFile);
-		$landmarkFiles = array_values(array_filter($images, function (Image $image) use ($tagsByFile) {
+		$landmarkFiles = array_values(array_filter($images, function (Image $image) use ($tagsByFile) : bool {
 			if (count(array_intersect(self::PRECONDITION_TAGS, $tagsByFile[$image->getFileId()])) !== 0) {
-                return true;
-            }
-            $image->setProcessedLandmarks(true);
-            $this->imageMapper->update($image);
-            return false;
+				return true;
+			}
+			$image->setProcessedLandmarks(true);
+			$this->imageMapper->update($image);
+			return false;
 		}));
 
 		return $landmarkFiles;

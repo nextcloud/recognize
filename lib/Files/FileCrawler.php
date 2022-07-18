@@ -20,7 +20,7 @@ class FileCrawler {
 	 * @return void
 	 */
 	public function crawlFolder(string $user, $folder, array $finders) {
-		$interestedFinders = array_filter($finders, function (FileFinder $finder) use ($folder) {
+		$interestedFinders = array_filter($finders, function (FileFinder $finder) use ($folder) : bool {
 			return !$finder->isDirectoryIgnored($folder);
 		});
 
@@ -39,7 +39,7 @@ class FileCrawler {
 			if ($node instanceof Folder) {
 				$this->crawlFolder($user, $node, $interestedFinders);
 			} elseif ($node instanceof File) {
-				$wantedFinders = array_filter($interestedFinders, function (FileFinder $finder) use ($user, $node) {
+				$wantedFinders = array_filter($interestedFinders, function (FileFinder $finder) use ($user, $node) : bool {
 					return $finder->isFileEligible($user, $node);
 				});
 
