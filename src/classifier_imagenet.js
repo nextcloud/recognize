@@ -164,7 +164,7 @@ async function main(modelName, imgSize, minInput) {
 					labels.push(category)
 				})
 
-			console.log(JSON.stringify(_.uniq(labels)))
+			console.log(JSON.stringify(_.uniq(labels.map(uppercaseWords))))
 		} catch (e) {
 			console.error(e)
 			console.log('[]')
@@ -187,3 +187,13 @@ tf.setBackend(process.env.RECOGNIZE_PUREJS === 'true' ? 'wasm' : 'tensorflow')
 		console.error(e)
 		process.exit(1)
 	})
+
+/**
+ *
+ * @param string
+ */
+function uppercaseWords(string) {
+	return string.split(' ').map(word => {
+		return word[0].toUpperCase() + word.substring(1)
+	}).join(' ')
+}
