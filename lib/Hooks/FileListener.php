@@ -65,11 +65,21 @@ class FileListener implements IEventListener {
 		try {
 			$image = $this->imageMapper->findByFileId($node->getId());
 			$this->imageMapper->delete($image);
+        } catch (DoesNotExistException|MultipleObjectsReturnedException|Exception $e) {
+            $this->logger->debug($e->getMessage());
+        } catch (InvalidPathException|NotFoundException $e) {
+            $this->logger->warning($e->getMessage());
+        }
 
-
+        try {
 			$video = $this->videoMapper->findByFileId($node->getId());
 			$this->videoMapper->delete($video);
-
+        } catch (DoesNotExistException|MultipleObjectsReturnedException|Exception $e) {
+            $this->logger->debug($e->getMessage());
+        } catch (InvalidPathException|NotFoundException $e) {
+            $this->logger->warning($e->getMessage());
+        }
+        try {
 			$audio = $this->audioMapper->findByFileId($node->getId());
 			$this->videoMapper->delete($audio);
 		} catch (DoesNotExistException|MultipleObjectsReturnedException|Exception $e) {
