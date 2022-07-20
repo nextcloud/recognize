@@ -32,7 +32,7 @@ class DownloadModelsService {
     }
 
     public function getArchiveUrl(string $ref): string {
-        return "https://github.com/marcelklehr/recognize/archive/$ref.tar.gz";
+        return "https://github.com/nextcloud/recognize/archive/$ref.tar.gz";
     }
 
     public function getRecognizeVersion() : string {
