@@ -41,23 +41,29 @@ class LandmarksClassifier extends Classifier {
 	}
 
 	/**
-	 * @param \OCA\Recognize\Db\Image[] $images
+	 * @param Image[] $inputImages
 	 * @return void
+	 * @throws \OCP\DB\Exception
 	 * @throws \OCP\Files\NotFoundException
 	 */
-	public function classify(array $images): void {
-		$landmarkImages = $this->filterImagesForLandmarks($images);
+	public function classify(array $inputImages): void {
+		$landmarkImages = $this->filterImagesForLandmarks($inputImages);
 
 		if (count($landmarkImages) === 0) {
-			// TODO: Mark filtered out images as processed
 			$this->logger->debug('No potential landmarks found');
 			return;
 		}
 
-		$paths = array_map(function (Image $image) : string {
-			$file = $this->rootFolder->getById($image->getFileId())[0];
-			return $file->getStorage()->getLocalFile($file->getInternalPath());
-		}, $landmarkImages);
+		$paths = [];
+		$images = [];
+		foreach ($landmarkImages as $image) {
+			$files = $this->rootFolder->getById($image->getFileId());
+			if (count($files) === 0) {
+				continue;
+			}
+			$images[] = $image;
+			$paths[] = $files[0]->getStorage()->getLocalFile($files[0]->getInternalPath());
+		}
 
 		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
 			$timeout = count($paths) * self::IMAGE_PUREJS_TIMEOUT + self::MODEL_DOWNLOAD_TIMEOUT;
@@ -68,11 +74,11 @@ class LandmarksClassifier extends Classifier {
 
 		foreach ($classifierProcess as $i => $results) {
 			// assign tags
-			$this->tagManager->assignTags($landmarkImages[$i]->getFileId(), $results);
+			$this->tagManager->assignTags($images[$i]->getFileId(), $results);
 			// Update processed status
 			$landmarkImages[$i]->setProcessedLandmarks(true);
 			try {
-				$this->imageMapper->update($landmarkImages[$i]);
+				$this->imageMapper->update($images[$i]);
 			} catch (Exception $e) {
 				$this->logger->warning($e->getMessage(), ['exception' => $e]);
 			}

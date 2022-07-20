@@ -8,7 +8,6 @@
 namespace OCA\Recognize\Classifiers\Images;
 
 use OCA\Recognize\Classifiers\Classifier;
-use OCA\Recognize\Db\Image;
 use OCA\Recognize\Db\ImageMapper;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\TagManager;
@@ -38,11 +37,17 @@ class GeoClassifier extends Classifier {
 	 * @return void
 	 * @throws \OCP\Files\NotFoundException
 	 */
-	public function classify(array $images): void {
-		$paths = array_map(function (Image $image) : string {
-			$file = $this->rootFolder->getById($image->getFileId())[0];
-			return $file->getStorage()->getLocalFile($file->getInternalPath());
-		}, $images);
+	public function classify(array $inputImages): void {
+		$paths = [];
+		$images = [];
+		foreach ($inputImages as $image) {
+			$files = $this->rootFolder->getById($image->getFileId());
+			if (count($files) === 0) {
+				continue;
+			}
+			$images[] = $image;
+			$paths[] = $files[0]->getStorage()->getLocalFile($files[0]->getInternalPath());
+		}
 		$timeout = count($paths) * self::IMAGE_TIMEOUT;
 		$classifierProcess = $this->classifyFiles(self::MODEL_NAME, $paths, $timeout);
 

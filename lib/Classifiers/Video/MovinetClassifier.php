@@ -8,7 +8,6 @@
 namespace OCA\Recognize\Classifiers\Video;
 
 use OCA\Recognize\Classifiers\Classifier;
-use OCA\Recognize\Db\Video;
 use OCA\Recognize\Db\VideoMapper;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\TagManager;
@@ -40,11 +39,18 @@ class MovinetClassifier extends Classifier {
 	 * @return void
 	 * @throws \OCP\Files\NotFoundException
 	 */
-	public function classify(array $videos): void {
-		$paths = array_map(function (Video $image) : string {
-			$file = $this->rootFolder->getById($image->getFileId())[0];
-			return $file->getStorage()->getLocalFile($file->getInternalPath());
-		}, $videos);
+	public function classify(array $inputVideos): void {
+		$paths = [];
+		$videos = [];
+		foreach ($inputVideos as $video) {
+			$files = $this->rootFolder->getById($video->getFileId());
+			if (count($files) === 0) {
+				continue;
+			}
+			$videos[] = $video;
+			$paths[] = $files[0]->getStorage()->getLocalFile($files[0]->getInternalPath());
+		}
+
 		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
 			throw new \Exception('Movinet does not support WASM mode');
 		} else {

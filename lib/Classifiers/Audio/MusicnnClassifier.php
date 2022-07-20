@@ -8,7 +8,6 @@
 namespace OCA\Recognize\Classifiers\Audio;
 
 use OCA\Recognize\Classifiers\Classifier;
-use OCA\Recognize\Db\Audio;
 use OCA\Recognize\Db\AudioMapper;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\TagManager;
@@ -44,11 +43,17 @@ class MusicnnClassifier extends Classifier {
 	 * @return void
 	 * @throws \OCP\Files\NotFoundException
 	 */
-	public function classify(array $audios): void {
-		$paths = array_map(function (Audio $audio) : string {
-			$file = $this->rootFolder->getById($audio->getFileId())[0];
-			return $file->getStorage()->getLocalFile($file->getInternalPath());
-		}, $audios);
+	public function classify(array $inputAudios): void {
+		$paths = [];
+		$audios = [];
+		foreach ($inputAudios as $audio) {
+			$files = $this->rootFolder->getById($audio->getFileId());
+			if (count($files) === 0) {
+				continue;
+			}
+			$audios[] = $audio;
+			$paths[] = $files[0]->getStorage()->getLocalFile($files[0]->getInternalPath());
+		}
 		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
 			$timeout = count($paths) * self::FILE_PUREJS_TIMEOUT + self::MODEL_DOWNLOAD_TIMEOUT;
 		} else {

@@ -10,7 +10,6 @@ namespace OCA\Recognize\Classifiers\Images;
 use OCA\Recognize\Classifiers\Classifier;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
-use OCA\Recognize\Db\Image;
 use OCA\Recognize\Db\ImageMapper;
 use OCA\Recognize\Service\Logger;
 use OCP\DB\Exception;
@@ -46,11 +45,17 @@ class ClusteringFaceClassifier extends Classifier {
 	 * @throws \OCP\DB\Exception
 	 * @throws \OCP\Files\NotFoundException
 	 */
-	public function classify(string $user, array $images): void {
-		$paths = array_map(function (Image $image) : string {
-			$file = $this->rootFolder->getById($image->getFileId())[0];
-			return $file->getStorage()->getLocalFile($file->getInternalPath());
-		}, $images);
+	public function classify(string $user, array $inputImages): void {
+		$paths = [];
+		$images = [];
+		foreach ($inputImages as $image) {
+			$files = $this->rootFolder->getById($image->getFileId());
+			if (count($files) === 0) {
+				continue;
+			}
+			$images[] = $image;
+			$paths[] = $files[0]->getStorage()->getLocalFile($files[0]->getInternalPath());
+		}
 		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
 			$timeout = count($paths) * self::IMAGE_PUREJS_TIMEOUT;
 		} else {
