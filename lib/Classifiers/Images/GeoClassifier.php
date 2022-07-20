@@ -54,7 +54,7 @@ class GeoClassifier extends Classifier {
 			try {
 				$this->imageMapper->update($images[$i]);
 			} catch (Exception $e) {
-				$this->logger->warning($e->getMessage());
+				$this->logger->warning($e->getMessage(), ['exception' => $e]);
 			}
 		}
 	}

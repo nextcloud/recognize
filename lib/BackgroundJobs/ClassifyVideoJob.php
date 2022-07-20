@@ -57,7 +57,7 @@ class ClassifyVideoJob extends TimedJob {
 			} catch (\Exception $e) {
 				$this->config->setAppValue('recognize', 'video.status', 'false');
 				$this->logger->warning('Classifier process errored');
-				$this->logger->warning($e->getMessage());
+				$this->logger->warning($e->getMessage(), ['exception' => $e]);
 				return;
 			}
 			if ($processed) {

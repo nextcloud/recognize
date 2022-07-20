@@ -60,7 +60,7 @@ class MovinetClassifier extends Classifier {
 			try {
 				$this->videoMapper->update($videos[$i]);
 			} catch (Exception $e) {
-				$this->logger->warning($e->getMessage());
+				$this->logger->warning($e->getMessage(), ['exception' => $e]);
 			}
 		}
 	}

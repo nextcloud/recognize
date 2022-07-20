@@ -100,7 +100,7 @@ class ClassifyImagesService {
 					$this->faceClusterAnalyzer->calculateClusters($user);
 				} catch (\JsonException|Exception $e) {
 					$this->logger->warning('Error during face clustering for user '.$user);
-					$this->logger->warning($e->getMessage());
+					$this->logger->warning($e->getMessage(), ['exception' => $e]);
 				}
 			}
 		}

@@ -48,7 +48,7 @@ class FileCrawler {
 						$finder->foundFile($user, $node);
 					} catch (\Throwable $e) {
 						$this->logger->debug('Error crawling file '.$node->getPath());
-						$this->logger->debug($e->getMessage());
+						$this->logger->debug($e->getMessage(), ['exception' => $e]);
 					}
 				}
 			}

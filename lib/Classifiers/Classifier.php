@@ -91,7 +91,7 @@ class Classifier {
 						yield $i => $results;
 					} catch (\JsonException $e) {
 						$this->logger->warning('JSON exception');
-						$this->logger->warning($e->getMessage());
+						$this->logger->warning($e->getMessage(), ['exception' => $e]);
 						$this->logger->warning($result);
 					}
 					$i++;

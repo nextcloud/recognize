@@ -56,7 +56,7 @@ class InitialCrawlJob extends TimedJob {
 				return;
 			} catch (\Exception $e) {
 				$this->logger->warning('Crawl process errored');
-				$this->logger->warning($e->getMessage());
+				$this->logger->warning($e->getMessage(), ['exception' => $e]);
 				return;
 			}
 		} while (true);

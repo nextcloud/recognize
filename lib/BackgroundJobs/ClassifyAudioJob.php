@@ -57,7 +57,7 @@ class ClassifyAudioJob extends TimedJob {
 			} catch (\Exception $e) {
 				$this->config->setAppValue('recognize', 'audio.status', 'false');
 				$this->logger->warning('Classifier process errored');
-				$this->logger->warning($e->getMessage());
+				$this->logger->warning($e->getMessage(), ['exception' => $e]);
 				return;
 			}
 			if ($processed) {

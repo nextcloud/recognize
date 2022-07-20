@@ -56,9 +56,9 @@ class FileListener implements IEventListener {
 				$this->faceDetectionMapper->delete($detection);
 			}
 		} catch (NotFoundException $e) {
-			$this->logger->debug($e->getMessage());
+			$this->logger->debug($e->getMessage(), ['exception' => $e]);
 		} catch (Exception|InvalidPathException $e) {
-			$this->logger->warning($e->getMessage());
+			$this->logger->warning($e->getMessage(), ['exception' => $e]);
 		}
 
 
@@ -66,26 +66,26 @@ class FileListener implements IEventListener {
 			$image = $this->imageMapper->findByFileId($node->getId());
 			$this->imageMapper->delete($image);
         } catch (DoesNotExistException|MultipleObjectsReturnedException|Exception $e) {
-            $this->logger->debug($e->getMessage());
+            $this->logger->debug($e->getMessage(), ['exception' => $e]);
         } catch (InvalidPathException|NotFoundException $e) {
-            $this->logger->warning($e->getMessage());
+            $this->logger->warning($e->getMessage(), ['exception' => $e]);
         }
 
         try {
 			$video = $this->videoMapper->findByFileId($node->getId());
 			$this->videoMapper->delete($video);
         } catch (DoesNotExistException|MultipleObjectsReturnedException|Exception $e) {
-            $this->logger->debug($e->getMessage());
+            $this->logger->debug($e->getMessage(), ['exception' => $e]);
         } catch (InvalidPathException|NotFoundException $e) {
-            $this->logger->warning($e->getMessage());
+            $this->logger->warning($e->getMessage(), ['exception' => $e]);
         }
         try {
 			$audio = $this->audioMapper->findByFileId($node->getId());
 			$this->videoMapper->delete($audio);
 		} catch (DoesNotExistException|MultipleObjectsReturnedException|Exception $e) {
-			$this->logger->debug($e->getMessage());
+			$this->logger->debug($e->getMessage(), ['exception' => $e]);
 		} catch (InvalidPathException|NotFoundException $e) {
-			$this->logger->warning($e->getMessage());
+			$this->logger->warning($e->getMessage(), ['exception' => $e]);
 		}
 	}
 

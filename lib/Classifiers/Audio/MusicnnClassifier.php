@@ -67,7 +67,7 @@ class MusicnnClassifier extends Classifier {
 			try {
 				$this->audioMapper->update($audios[$i]);
 			} catch (Exception $e) {
-				$this->logger->warning($e->getMessage());
+				$this->logger->warning($e->getMessage(), ['exception' => $e]);
 			}
 		}
 	}
