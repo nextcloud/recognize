@@ -193,7 +193,5 @@ tf.setBackend(process.env.RECOGNIZE_PUREJS === 'true' ? 'wasm' : 'tensorflow')
  * @param string
  */
 function uppercaseWords(string) {
-	return string.split(' ').map(word => {
-		return word[0].toUpperCase() + word.substring(1)
-	}).join(' ')
+	return string[0].toUpperCase() + string.substring(1)
 }
