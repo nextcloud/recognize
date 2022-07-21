@@ -7,7 +7,7 @@
 
 namespace OCA\Recognize\BackgroundJobs;
 
-use OCA\Recognize\Service\ClassifyVideoService;
+use OCA\Recognize\Service\FileCrawlerService;
 use OCA\Recognize\Service\Logger;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\TimedJob;
@@ -16,26 +16,23 @@ use OCP\IUser;
 use OCP\IUserManager;
 use Psr\Log\LoggerInterface;
 
-class ClassifyVideoJob extends TimedJob {
-	public const BATCH_SIZE = 100; // 100 files
-	public const BATCH_SIZE_PUREJS = 10; // 10 files
+class InitialCrawlJob extends TimedJob {
 	public const INTERVAL = 30 * 60; // 30 minutes
 
 	private LoggerInterface $logger;
-	private IUserManager $userManager;
-	private ClassifyVideoService $videoClassifier;
 	private IConfig $config;
-
+	private FileCrawlerService $fileCrawler;
+	private IUserManager $userManager;
 
 	public function __construct(
-		ITimeFactory $timeFactory, Logger $logger, IUserManager $userManager, ClassifyVideoService $videoClassifier, IConfig $config) {
+		ITimeFactory $timeFactory, Logger $logger, IConfig $config, FileCrawlerService $fileCrawler, IUserManager $userManager) {
 		parent::__construct($timeFactory);
 
 		$this->setInterval(self::INTERVAL);
 		$this->logger = $logger;
-		$this->userManager = $userManager;
-		$this->videoClassifier = $videoClassifier;
 		$this->config = $config;
+		$this->fileCrawler = $fileCrawler;
+		$this->userManager = $userManager;
 	}
 
 	protected function run($argument): void {
@@ -44,25 +41,24 @@ class ClassifyVideoJob extends TimedJob {
 			$users[] = $user->getUID();
 		});
 
-		$pureJS = $this->config->getAppValue('bookmarks', 'tensorflow.purejs', 'false');
-
 		do {
 			$user = array_pop($users);
 			if (!$user) {
-				$this->logger->debug('No users left, whose photos could be classified ');
+				$this->logger->debug('No users left to crawl');
 				return;
 			}
+			if ($this->config->getUserValue($user, 'recognize', 'crawl.done', 'false') !== 'false') {
+				continue;
+			}
 			try {
-				$processed = $this->videoClassifier->run($user, $pureJS === 'false' ? self::BATCH_SIZE : self::BATCH_SIZE_PUREJS);
+				$this->fileCrawler->crawlForUser($user);
+				$this->config->setUserValue($user, 'recognize', 'crawl.done', 'true');
+				return;
 			} catch (\Exception $e) {
-				$this->config->setAppValue('recognize', 'video.status', 'false');
-				$this->logger->warning('Classifier process errored');
+				$this->logger->warning('Crawl process errored');
 				$this->logger->warning($e->getMessage(), ['exception' => $e]);
 				return;
 			}
-			if ($processed) {
-				$this->config->setAppValue('recognize', 'video.status', 'true');
-			}
-		} while (!$processed);
+		} while (true);
 	}
 }

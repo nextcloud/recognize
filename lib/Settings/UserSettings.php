@@ -19,15 +19,9 @@ use OCP\Settings\ISettings;
 
 class UserSettings implements ISettings {
 	private IInitialState $initialState;
-
 	private IConfig $config;
-
 	private FaceDetectionMapper $faceDetections;
-
 	private FaceClusterMapper $faceClusters;
-	/**
-	 * @var \OCP\IUserSession
-	 */
 	private IUserSession $userSession;
 
 	public function __construct(IInitialState $initialState, IConfig $config, FaceDetectionMapper $faceDetections, FaceClusterMapper $faceClusters, IUserSession $userSession) {
@@ -44,11 +38,11 @@ class UserSettings implements ISettings {
 	 */
 	public function getForm(): TemplateResponse {
 		$faceClusters = $this->faceClusters->findByUserId($this->userSession->getUser()->getUID());
-		$faceClusters = array_map(function (FaceCluster $cluster) {
+		$faceClusters = array_map(function (FaceCluster $cluster) : array {
 			return [
 				'title' => $cluster->getTitle(),
 				'id' => $cluster->getId(),
-				'detections' => array_map(function (FaceDetection $detection) {
+				'detections' => array_map(function (FaceDetection $detection) : array {
 					return $detection->toArray();
 				}, $this->faceDetections->findByClusterId($cluster->getId())),
 			];

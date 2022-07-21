@@ -3,6 +3,7 @@
 namespace OCA\Recognize\Command;
 
 use OCA\Recognize\Service\ClassifyVideoService;
+use OCA\Recognize\Service\FileCrawlerService;
 use OCA\Recognize\Service\Logger;
 use OCP\IConfig;
 use OCP\IUser;
@@ -13,19 +14,18 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ClassifyVideo extends Command {
 	private IUserManager $userManager;
-
 	private ClassifyVideoService $videoClassifier;
-
 	private Logger $logger;
-
 	private IConfig $config;
+	private FileCrawlerService $fileCrawlerService;
 
-	public function __construct(IUserManager $userManager, ClassifyVideoService $videoClassifier, Logger $logger, IConfig $config) {
+	public function __construct(IUserManager $userManager, ClassifyVideoService $videoClassifier, Logger $logger, IConfig $config, FileCrawlerService $fileCrawlerService) {
 		parent::__construct();
 		$this->userManager = $userManager;
 		$this->videoClassifier = $videoClassifier;
 		$this->logger = $logger;
 		$this->config = $config;
+		$this->fileCrawlerService = $fileCrawlerService;
 	}
 
 	/**
@@ -54,6 +54,11 @@ class ClassifyVideo extends Command {
 			});
 			$this->logger->setCliOutput($output);
 			foreach ($users as $user) {
+				if ($this->config->getUserValue($user, 'recognize', 'crawl.done', 'false') === 'false') {
+					$this->fileCrawlerService->crawlForUser($user);
+					$this->config->setUserValue($user, 'recognize', 'crawl.done', 'true');
+				}
+
 				do {
 					$anythingClassified = $this->videoClassifier->run($user, 500);
 					if ($anythingClassified) {
@@ -63,7 +68,7 @@ class ClassifyVideo extends Command {
 			}
 		} catch (\Exception $ex) {
 			$this->config->setAppValue('recognize', 'video.status', 'false');
-			$output->writeln('<error>Failed to classify audio</error>');
+			$output->writeln('<error>Failed to classify video</error>');
 			$output->writeln($ex->getMessage());
 			return 1;
 		}

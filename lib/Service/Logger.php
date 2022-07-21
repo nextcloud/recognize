@@ -7,9 +7,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Logger implements LoggerInterface {
 	private LoggerInterface $logger;
-
 	private OutputInterface $cliOutput;
-
 
 	public function __construct(LoggerInterface $logger) {
 		$this->logger = $logger;

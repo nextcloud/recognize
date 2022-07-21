@@ -21,13 +21,9 @@ class ClassifyAudioJob extends TimedJob {
 	public const BATCH_SIZE_PUREJS = 10; // 10 files
 	public const INTERVAL = 30 * 60; // 30 minutes
 
-
 	private LoggerInterface $logger;
-
 	private IUserManager $userManager;
-
 	private ClassifyAudioService $audioClassifier;
-
 	private IConfig $config;
 
 
@@ -42,7 +38,7 @@ class ClassifyAudioJob extends TimedJob {
 		$this->config = $config;
 	}
 
-	protected function run($argument) {
+	protected function run($argument): void {
 		$users = [];
 		$this->userManager->callForSeenUsers(function (IUser $user) use (&$users) {
 			$users[] = $user->getUID();
@@ -61,7 +57,7 @@ class ClassifyAudioJob extends TimedJob {
 			} catch (\Exception $e) {
 				$this->config->setAppValue('recognize', 'audio.status', 'false');
 				$this->logger->warning('Classifier process errored');
-				$this->logger->warning($e->getMessage());
+				$this->logger->warning($e->getMessage(), ['exception' => $e]);
 				return;
 			}
 			if ($processed) {

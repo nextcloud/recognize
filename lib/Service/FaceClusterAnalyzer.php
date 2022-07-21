@@ -16,11 +16,8 @@ class FaceClusterAnalyzer {
 	public const MAX_INNER_CLUSTER_RADIUS = 0.35;
 
 	private FaceDetectionMapper $faceDetections;
-
 	private FaceClusterMapper $faceClusters;
-
 	private TagManager $tagManager;
-
 	private Logger $logger;
 
 	public function __construct(FaceDetectionMapper $faceDetections, FaceClusterMapper $faceClusters, TagManager $tagManager, Logger $logger) {
@@ -34,7 +31,7 @@ class FaceClusterAnalyzer {
 	 * @throws \OCP\DB\Exception
 	 * @throws \JsonException
 	 */
-	public function findClusters(string $userId) {
+	public function calculateClusters(string $userId) {
 		/**
 		 * @var $detections FaceDetection[]
 		 */
@@ -46,7 +43,7 @@ class FaceClusterAnalyzer {
 		}
 
 		// Here we use RubixMLs DBSCAN clustering algorithm
-		$dataset = new Unlabeled(array_map(function (FaceDetection $detection) {
+		$dataset = new Unlabeled(array_map(function (FaceDetection $detection) : array {
 			return $detection->getVector();
 		}, $detections));
 		$clusterer = new DBSCAN(self::MAX_INNER_CLUSTER_RADIUS, self::MIN_CLUSTER_DENSITY, new BallTree(20, new Euclidean()));
@@ -57,19 +54,19 @@ class FaceClusterAnalyzer {
 
 		for ($i = 0; $i <= $numClusters; $i++) {
 			$keys = array_keys($results, $i);
-			$clusterDetections = array_map(function ($key) use ($detections) {
+			$clusterDetections = array_map(function ($key) use ($detections) : FaceDetection {
 				return $detections[$key];
 			}, $keys);
-			$detectionsWithClusters = array_map(function ($detection) {
+			$detectionsWithClusters = array_map(function ($detection) : array {
 				return [$detection, $this->faceClusters->findByDetectionId($detection->getId())];
 			}, $clusterDetections);
 
 			// Since recognize works incrementally, we need to check if some of these face
 			// detections have been added to an existing cluster already
-			$alreadyClustered = array_values(array_filter($detectionsWithClusters, function ($item) {
+			$alreadyClustered = array_values(array_filter($detectionsWithClusters, function ($item) : bool {
 				return count($item[1]) >= 1;
 			}));
-			$notYetClustered = array_filter($detectionsWithClusters, function ($item) {
+			$notYetClustered = array_filter($detectionsWithClusters, function ($item) : bool {
 				return count($item[1]) === 0;
 			});
 

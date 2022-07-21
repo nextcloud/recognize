@@ -22,11 +22,8 @@ class ClassifyImagesJob extends TimedJob {
 	public const INTERVAL = 30 * 60; // 30 minutes
 
 	private LoggerInterface $logger;
-
 	private IUserManager $userManager;
-
 	private ClassifyImagesService $imageClassifier;
-
 	private IConfig $config;
 
 
@@ -41,7 +38,7 @@ class ClassifyImagesJob extends TimedJob {
 		$this->config = $config;
 	}
 
-	protected function run($argument) {
+	protected function run($argument): void {
 		$users = [];
 		$this->userManager->callForSeenUsers(function (IUser $user) use (&$users) {
 			$users[] = $user->getUID();
@@ -59,7 +56,7 @@ class ClassifyImagesJob extends TimedJob {
 			} catch (\Exception $e) {
 				$this->config->setAppValue('recognize', 'images.status', 'false');
 				$this->logger->warning('Classifier process errored');
-				$this->logger->warning($e->getMessage());
+				$this->logger->warning($e->getMessage(), ['exception' => $e]);
 				return;
 			}
 			if ($processed) {

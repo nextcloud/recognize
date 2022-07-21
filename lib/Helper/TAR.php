@@ -356,7 +356,7 @@ class TAR extends Archive {
 			return fopen($tmpFile, $mode);
 		} else {
 			$handle = fopen($tmpFile, $mode);
-			return CallbackWrapper::wrap($handle, null, null, function () use ($path, $tmpFile) {
+			return CallbackWrapper::wrap($handle, null, null, function () use ($path, $tmpFile) : void {
 				$this->writeBack($tmpFile, $path);
 			});
 		}

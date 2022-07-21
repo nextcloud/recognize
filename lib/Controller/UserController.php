@@ -13,22 +13,9 @@ use OCP\IRequest;
 use OCP\IUserSession;
 
 class UserController extends Controller {
-
-	/**
-	 * @var \OCA\Recognize\Db\FaceClusterMapper
-	 */
 	private FaceClusterMapper $clusters;
-	/**
-	 * @var \OCP\IUserSession
-	 */
 	private IUserSession $userSession;
-	/**
-	 * @var \OCA\Recognize\Db\FaceDetectionMapper
-	 */
 	private FaceDetectionMapper $faceDetections;
-	/**
-	 * @var \OCA\Recognize\Service\TagManager
-	 */
 	private TagManager $tagManager;
 
 	public function __construct($appName, IRequest $request, FaceClusterMapper $clusters, IUserSession $userSession, FaceDetectionMapper $faceDetections, TagManager $tagManager) {

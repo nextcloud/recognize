@@ -39,7 +39,7 @@ class FaceClusterMapper extends QBMapper {
 	 */
 	public function findByDetectionId(int $detectionId): array {
 		$qb = $this->db->getQueryBuilder();
-		$qb->select(array_map(function ($c) {
+		$qb->select(array_map(function ($c) : string {
 			return 'f.'.$c;
 		}, FaceCluster::$columns))
 			->from('recognize_face_clusters', 'f')

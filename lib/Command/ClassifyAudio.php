@@ -3,6 +3,7 @@
 namespace OCA\Recognize\Command;
 
 use OCA\Recognize\Service\ClassifyAudioService;
+use OCA\Recognize\Service\FileCrawlerService;
 use OCA\Recognize\Service\Logger;
 use OCP\IConfig;
 use OCP\IUser;
@@ -13,20 +14,18 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ClassifyAudio extends Command {
 	private IUserManager $userManager;
-
 	private ClassifyAudioService $audioClassifier;
-
-
 	private Logger $logger;
-
 	private IConfig $config;
+	private FileCrawlerService $fileCrawlerService;
 
-	public function __construct(IUserManager $userManager, ClassifyAudioService $audioClassifier, Logger $logger, IConfig $config) {
+	public function __construct(IUserManager $userManager, ClassifyAudioService $audioClassifier, Logger $logger, IConfig $config, FileCrawlerService $fileCrawlerService) {
 		parent::__construct();
 		$this->userManager = $userManager;
 		$this->audioClassifier = $audioClassifier;
 		$this->logger = $logger;
 		$this->config = $config;
+		$this->fileCrawlerService = $fileCrawlerService;
 	}
 
 	/**
@@ -55,6 +54,10 @@ class ClassifyAudio extends Command {
 			});
 			$this->logger->setCliOutput($output);
 			foreach ($users as $user) {
+				if ($this->config->getUserValue($user, 'recognize', 'crawl.done', 'false') === 'false') {
+					$this->fileCrawlerService->crawlForUser($user);
+					$this->config->setUserValue($user, 'recognize', 'crawl.done', 'true');
+				}
 				do {
 					$anythingClassified = $this->audioClassifier->run($user, 500);
 					if ($anythingClassified) {
