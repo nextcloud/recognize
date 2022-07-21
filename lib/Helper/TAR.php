@@ -284,17 +284,17 @@ class TAR extends Archive {
 		return $this->tar->extract($dest);
 	}
 
-    /**
-     * extract a list of files from the archive
-     *
-     * @param array $list
-     * @param string $path
-     * @param string $removePath
-     * @return bool
-     */
-    public function extractList(array $list, string $path, string $removePath = '', bool $symlinks = true) {
-        return $this->tar->extractList($list, $path, $removePath, $symlinks);
-    }
+	/**
+	 * extract a list of files from the archive
+	 *
+	 * @param array $list
+	 * @param string $path
+	 * @param string $removePath
+	 * @return bool
+	 */
+	public function extractList(array $list, string $path, string $removePath = '', bool $symlinks = true) : bool {
+		return $this->tar->extractList($list, $path, $removePath, $symlinks);
+	}
 
 	/**
 	 * check if a file or folder exists in the archive
