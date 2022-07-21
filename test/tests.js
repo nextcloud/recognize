@@ -53,6 +53,7 @@ const labels = uniq(flatten(Object.entries(rules)
 			const { stdout } = await execa('node', [__dirname + '/../src/classifier_imagenet.js'].concat(files))
 			const predictions = stdout.split('\n')
 				.map(line => JSON.parse(line))
+				.map(predictions => predictions.map(tag => tag.toLowerCase()))
 			const matches = predictions
 				.map((labels, i) => labels.includes(label) ? files[i] : labels)
 
