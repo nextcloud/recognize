@@ -14,7 +14,8 @@
     "lint": "eslint --ext .js,.vue src",
     "lint:fix": "eslint --ext .js,.vue src --fix",
     "stylelint": "stylelint src",
-    "stylelint:fix": "stylelint src --fix"
+    "stylelint:fix": "stylelint src --fix",
+    "build:translatables": "node scripts/generate-translatable-file.js > src/things.js"
   },
   "repository": {
     "type": "git",
