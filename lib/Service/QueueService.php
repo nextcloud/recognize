@@ -10,6 +10,7 @@ use OCA\Recognize\BackgroundJobs\ClassifyMusicnnJob;
 use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Db\QueueMapper;
 use OCP\BackgroundJob\IJobList;
+use OCP\IConfig;
 
 class QueueService {
 	/**
@@ -25,16 +26,25 @@ class QueueService {
 
 	private QueueMapper $queueMapper;
 	private IJobList $jobList;
+	/**
+	 * @var \OCP\IConfig
+	 */
+	private IConfig $config;
 
-	public function __construct(QueueMapper $queueMapper, IJobList $jobList) {
+	public function __construct(QueueMapper $queueMapper, IJobList $jobList, IConfig $config) {
 		$this->queueMapper = $queueMapper;
 		$this->jobList = $jobList;
+		$this->config = $config;
 	}
 
 	/**
 	 * @throws \OCP\DB\Exception
 	 */
 	public function insertIntoQueue(string $model, QueueFile $file, ?string $userId = null) : void {
+		// Only add to queue if this model is actually enabled
+		if ($this->config->getAppValue('recognize', $model.'.enabled', 'false') !== 'true') {
+			return;
+		}
 		$this->queueMapper->insertIntoQueue($model, $file);
 		$this->scheduleJob($model, $file, $userId);
 	}
