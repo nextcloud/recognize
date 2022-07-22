@@ -8,6 +8,10 @@
 namespace OCA\Recognize\Classifiers;
 
 use OCA\Recognize\Service\Logger;
+use OCA\Recognize\Service\QueueService;
+use OCP\DB\Exception;
+use OCP\Files\IRootFolder;
+use OCP\Files\NotFoundException;
 use OCP\IConfig;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
@@ -17,19 +21,38 @@ use Symfony\Component\Process\Process;
 class Classifier {
 	private LoggerInterface $logger;
 	private IConfig $config;
+	private IRootFolder $rootFolder;
+	private QueueService $queue;
 
-	public function __construct(Logger $logger, IConfig $config) {
+	public function __construct(Logger $logger, IConfig $config, IRootFolder $rootFolder, QueueService $queue) {
 		$this->logger = $logger;
 		$this->config = $config;
+		$this->rootFolder = $rootFolder;
+		$this->queue = $queue;
 	}
 
 	/**
 	 * @param string $model
-	 * @param string[] $paths
+	 * @param \OCA\Recognize\Db\QueueFile[] $paths
 	 * @param int $timeout
 	 * @return \Generator
 	 */
-	public function classifyFiles(string $model, array $paths, int $timeout): \Generator {
+	public function classifyFiles(string $model, array $queueFiles, int $timeout): \Generator {
+		$paths = [];
+		$processedFiles = [];
+		foreach ($queueFiles as $queueFile) {
+			$files = $this->rootFolder->getById($queueFile->getFileId());
+			if (count($files) === 0) {
+				continue;
+			}
+			try {
+				$paths[] = $files[0]->getStorage()->getLocalFile($files[0]->getInternalPath());
+				$processedFiles[] = $queueFile;
+			} catch (NotFoundException $e) {
+				$this->logger->warning('Could not find file', ['exception' => $e]);
+				continue;
+			}
+		}
 		$this->logger->debug('Classifying '.var_export($paths, true));
 
 		$command = [
@@ -47,7 +70,7 @@ class Classifier {
 		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
 			$proc->setEnv(['RECOGNIZE_PUREJS' => 'true']);
 		}
-		$proc->setTimeout($timeout);
+		$proc->setTimeout(count($paths) * $timeout);
 		$proc->setInput(implode("\n", $paths));
 		try {
 			$proc->start();
@@ -88,11 +111,14 @@ class Classifier {
 					try {
 						// decode json
 						$results = json_decode($result, true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
-						yield $i => $results;
+						yield $processedFiles[$i] => $results;
+						$this->queue->removeFromQueue($model, $queueFiles[$i]);
 					} catch (\JsonException $e) {
 						$this->logger->warning('JSON exception');
 						$this->logger->warning($e->getMessage(), ['exception' => $e]);
 						$this->logger->warning($result);
+					} catch (Exception $e) {
+						$this->logger->warning($e->getMessage(), ['exception' => $e]);
 					}
 					$i++;
 				}

@@ -62,4 +62,14 @@ class QueueService {
 	public function getFromQueue(string $model, $storageId, int $batchSize) : array {
 		return $this->queueMapper->getFromQueue($model, $storageId, $batchSize);
 	}
+
+	/**
+	 * @param string $model
+	 * @param \OCA\Recognize\Db\QueueFile $queueFile
+	 * @return void
+	 * @throws \OCP\DB\Exception
+	 */
+	public function removeFromQueue(string $model, QueueFile $queueFile) : void {
+		$this->queueMapper->removeFromQueue($model, $queueFile);
+	}
 }

@@ -10,6 +10,8 @@ use OCP\AppFramework\Db\Entity;
  * @package OCA\Recognize\Db
  * @method int getFileId()
  * @method setFileId(int $fileId)
+ * @method setUserId(string $userId)
+ * @method string getUserId()
  * @method int getX()
  * @method int getY()
  * @method int getHeight()

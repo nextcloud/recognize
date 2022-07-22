@@ -8,9 +8,9 @@
 namespace OCA\Recognize\Classifiers\Images;
 
 use OCA\Recognize\Classifiers\Classifier;
-use OCA\Recognize\Db\Image;
-use OCA\Recognize\Db\ImageMapper;
+use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Service\Logger;
+use OCA\Recognize\Service\QueueService;
 use OCA\Recognize\Service\TagManager;
 use OCP\DB\Exception;
 use OCP\Files\IRootFolder;
@@ -20,91 +20,75 @@ use OCP\SystemTag\ISystemTag;
 class LandmarksClassifier extends Classifier {
 	public const IMAGE_TIMEOUT = 480; // seconds
 	public const IMAGE_PUREJS_TIMEOUT = 600; // seconds
-	public const MODEL_DOWNLOAD_TIMEOUT = 180; // seconds
-	public const PRECONDITION_TAGS = ['architecture', 'tower', 'monument', 'bridge', 'historic'];
 	public const MODEL_NAME = 'landmarks';
-
+	public const PRECONDITION_TAGS = ['architecture', 'tower', 'monument', 'bridge', 'historic'];
 
 	private Logger $logger;
 	private TagManager $tagManager;
 	private IConfig $config;
-	private IRootFolder $rootFolder;
-	private ImageMapper $imageMapper;
+	private QueueService $queue;
 
-	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager, IRootFolder $rootFolder, ImageMapper $imageMapper) {
-		parent::__construct($logger, $config);
+	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager, QueueService $queue, IRootFolder $rootFolder) {
+		parent::__construct($logger, $config, $rootFolder, $queue);
 		$this->logger = $logger;
 		$this->config = $config;
 		$this->tagManager = $tagManager;
-		$this->rootFolder = $rootFolder;
-		$this->imageMapper = $imageMapper;
+		$this->queue = $queue;
 	}
 
 	/**
-	 * @param Image[] $inputImages
+	 * @param \OCA\Recognize\Db\QueueFile[] $queueFiles
 	 * @return void
-	 * @throws \OCP\DB\Exception
-	 * @throws \OCP\Files\NotFoundException
 	 */
-	public function classify(array $inputImages): void {
-		$landmarkImages = $this->filterImagesForLandmarks($inputImages);
+	public function classify(array $queueFiles): void {
+		$landmarkImages = $this->filterImagesForLandmarks($queueFiles);
 
 		if (count($landmarkImages) === 0) {
 			$this->logger->debug('No potential landmarks found');
 			return;
 		}
 
-		$paths = [];
-		$images = [];
-		foreach ($landmarkImages as $image) {
-			$files = $this->rootFolder->getById($image->getFileId());
-			if (count($files) === 0) {
-				continue;
-			}
-			$images[] = $image;
-			$paths[] = $files[0]->getStorage()->getLocalFile($files[0]->getInternalPath());
-		}
-
 		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
-			$timeout = count($paths) * self::IMAGE_PUREJS_TIMEOUT + self::MODEL_DOWNLOAD_TIMEOUT;
+			$timeout = self::IMAGE_PUREJS_TIMEOUT;
 		} else {
-			$timeout = count($paths) * self::IMAGE_TIMEOUT + self::MODEL_DOWNLOAD_TIMEOUT;
+			$timeout = self::IMAGE_TIMEOUT;
 		}
-		$classifierProcess = $this->classifyFiles(self::MODEL_NAME, $paths, $timeout);
+		$classifierProcess = $this->classifyFiles(self::MODEL_NAME, $queueFiles, $timeout);
 
-		foreach ($classifierProcess as $i => $results) {
-			// assign tags
-			$this->tagManager->assignTags($images[$i]->getFileId(), $results);
-			// Update processed status
-			$landmarkImages[$i]->setProcessedLandmarks(true);
-			try {
-				$this->imageMapper->update($images[$i]);
-			} catch (Exception $e) {
-				$this->logger->warning($e->getMessage(), ['exception' => $e]);
-			}
+		foreach ($classifierProcess as $queueFile => $results) {
+			$this->tagManager->assignTags($queueFile->getFileId(), $results);
 		}
 	}
 
+
 	/**
-	 * @param Image[] $images
-	 * @return Image[]
-	 * @throws \OCP\DB\Exception
+	 * Filters out only images that have promising imagenet tags
+	 *
+	 * @param QueueFile[] $queueFiles
+	 * @return QueueFile[]
 	 */
-	private function filterImagesForLandmarks(array $images) : array {
-		$tagsByFile = $this->tagManager->getTagsForFiles(array_map(function (Image $image) : string {
+	private function filterImagesForLandmarks(array $queueFiles) : array {
+		// Get tags for each file
+		$tagsByFile = $this->tagManager->getTagsForFiles(array_map(function (QueueFile $image) : string {
 			return $image->getFileId();
-		}, $images));
+		}, $queueFiles));
+		// Map tag objects to strings
 		$tagsByFile = array_map(function ($tags) : array {
 			return array_map(function (ISystemTag $tag) : string {
 				return $tag->getName();
 			}, $tags);
 		}, $tagsByFile);
-		$landmarkFiles = array_values(array_filter($images, function (Image $image) use ($tagsByFile) : bool {
-			if (count(array_intersect(self::PRECONDITION_TAGS, $tagsByFile[$image->getFileId()])) !== 0) {
+
+		// filter out only those files that might contain a landmark based on the imagenet tags
+		$landmarkFiles = array_values(array_filter($queueFiles, function (QueueFile $queueFile) use ($tagsByFile) : bool {
+			if (count(array_intersect(self::PRECONDITION_TAGS, $tagsByFile[$queueFile->getFileId()])) !== 0) {
 				return true;
 			}
-			$image->setProcessedLandmarks(true);
-			$this->imageMapper->update($image);
+			try {
+				$this->queue->removeFromQueue('landmarks', $queueFile);
+			} catch (Exception $e) {
+				$this->logger->error('Could not remove file from queue', ['exception' => $e]);
+			}
 			return false;
 		}));
 
