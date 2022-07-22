@@ -26,9 +26,6 @@ class QueueService {
 
 	private QueueMapper $queueMapper;
 	private IJobList $jobList;
-	/**
-	 * @var \OCP\IConfig
-	 */
 	private IConfig $config;
 
 	public function __construct(QueueMapper $queueMapper, IJobList $jobList, IConfig $config) {
@@ -55,10 +52,10 @@ class QueueService {
 	 * @param string|null $userId
 	 * @return void
 	 */
-	public function scheduleJob(string $model, QueueFile $file, ?string $userId = null) : void {
+	public function scheduleJob(string $model, QueueFile $file) : void {
 		$this->jobList->add(self::JOB_CLASSES[$model], [
 			'storageId' => $file->getStorageId(),
-			'userId' => $userId,
+			'rootId' => $file->getRootId(),
 		]);
 	}
 
