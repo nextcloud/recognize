@@ -11,6 +11,7 @@ use OCA\Recognize\Classifiers\Classifier;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
 use OCA\Recognize\Service\TagManager;
+use OCP\DB\Exception;
 use OCP\Files\IRootFolder;
 use OCP\IConfig;
 
@@ -21,11 +22,15 @@ class ImagenetClassifier extends Classifier {
 
 	private TagManager $tagManager;
 	private IConfig $config;
+	private QueueService $queue;
+	private Logger $logger;
 
 	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager, QueueService $queue, IRootFolder $rootFolder) {
 		parent::__construct($logger, $config, $rootFolder, $queue);
 		$this->config = $config;
 		$this->tagManager = $tagManager;
+		$this->queue = $queue;
+		$this->logger = $logger;
 	}
 
 	/**
@@ -42,6 +47,16 @@ class ImagenetClassifier extends Classifier {
 
 		foreach ($classifierProcess as $queueFile => $results) {
 			$this->tagManager->assignTags($queueFile->getFileId(), $results);
+			$landmarkTags = array_filter($results, function($tagName) {
+				return in_array($tagName, LandmarksClassifier::PRECONDITION_TAGS);
+			});
+			if (count($landmarkTags) > 0) {
+				try {
+					$this->queue->insertIntoQueue(LandmarksClassifier::MODEL_NAME, $queueFile);
+				} catch (Exception $e) {
+					$this->logger->error('Cannot insert file into queue', ['exception' => $e]);
+				}
+			}
 		}
 	}
 }
