@@ -1,0 +1,65 @@
+<?php
+
+namespace OCA\Recognize\Service;
+
+use OCA\Recognize\BackgroundJobs\ClassifyFacesJob;
+use OCA\Recognize\BackgroundJobs\ClassifyImagenetJob;
+use OCA\Recognize\BackgroundJobs\ClassifyLandmarksJob;
+use OCA\Recognize\BackgroundJobs\ClassifyMovinetJob;
+use OCA\Recognize\BackgroundJobs\ClassifyMusicnnJob;
+use OCA\Recognize\Db\QueueFile;
+use OCA\Recognize\Db\QueueMapper;
+use OCP\BackgroundJob\IJobList;
+
+class QueueService {
+	/**
+	 * @const array<string, string> JOB_CLASSES
+	 */
+	public const JOB_CLASSES = [
+		'imagenet' => ClassifyImagenetJob::class,
+		'faces' => ClassifyFacesJob::class,
+		'landmarks' => ClassifyLandmarksJob::class,
+		'movinet' => ClassifyMovinetJob::class,
+		'musicnn' => ClassifyMusicnnJob::class,
+	];
+
+	private QueueMapper $queueMapper;
+	private IJobList $jobList;
+
+	public function __construct(QueueMapper $queueMapper, IJobList $jobList) {
+		$this->queueMapper = $queueMapper;
+		$this->jobList = $jobList;
+	}
+
+	/**
+	 * @throws \OCP\DB\Exception
+	 */
+	public function insertIntoQueue(string $model, QueueFile $file, ?string $userId = null) : void {
+		$this->queueMapper->insertIntoQueue($model, $file);
+		$this->scheduleJob($model, $file, $userId);
+	}
+
+	/**
+	 * @param string $model
+	 * @param \OCA\Recognize\Db\QueueFile $file
+	 * @param string|null $userId
+	 * @return void
+	 */
+	public function scheduleJob(string $model, QueueFile $file, ?string $userId = null) : void {
+		$this->jobList->add(self::JOB_CLASSES[$model], [
+			'storageId' => $file->getStorageId(),
+			'userId' => $userId,
+		]);
+	}
+
+	/**
+	 * @param string $model
+	 * @param $storageId
+	 * @param int $batchSize
+	 * @return array
+	 * @throws \OCP\DB\Exception
+	 */
+	public function getFromQueue(string $model, $storageId, int $batchSize) : array {
+		return $this->queueMapper->getFromQueue($model, $storageId, $batchSize);
+	}
+}
