@@ -27,7 +27,7 @@ abstract class ClassifierJob extends Job {
 		$rootId = $argument['rootId'];
 		$this->logger->debug('Classifying files of storage '.$storageId. ' using '.$model);
 		try {
-			$files = $this->queue->getFromQueue($model, $storageId, $this->getBatchSize());
+			$files = $this->queue->getFromQueue($model, $storageId, $rootId, $this->getBatchSize());
 		} catch (Exception $e) {
 			$this->logger->error('Cannot retrieve items from imagenet queue', ['exception' => $e]);
 			return;
@@ -36,7 +36,7 @@ abstract class ClassifierJob extends Job {
 
 		try {
 			// If there is at least one file left in the queue, reschedule this job
-			$files = $this->queue->getFromQueue($model, $storageId, 1);
+			$files = $this->queue->getFromQueue($model, $storageId, $rootId, 1);
 			if (count($files) > 0) {
 				$this->queue->scheduleJob($model, $files[0]);
 			}
