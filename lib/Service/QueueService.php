@@ -37,13 +37,13 @@ class QueueService {
 	/**
 	 * @throws \OCP\DB\Exception
 	 */
-	public function insertIntoQueue(string $model, QueueFile $file, ?string $userId = null) : void {
+	public function insertIntoQueue(string $model, QueueFile $file) : void {
 		// Only add to queue if this model is actually enabled
 		if ($this->config->getAppValue('recognize', $model.'.enabled', 'false') !== 'true') {
 			return;
 		}
 		$this->queueMapper->insertIntoQueue($model, $file);
-		$this->scheduleJob($model, $file, $userId);
+		$this->scheduleJob($model, $file);
 	}
 
 	/**
@@ -66,8 +66,8 @@ class QueueService {
 	 * @return array
 	 * @throws \OCP\DB\Exception
 	 */
-	public function getFromQueue(string $model, $storageId, int $batchSize) : array {
-		return $this->queueMapper->getFromQueue($model, $storageId, $batchSize);
+	public function getFromQueue(string $model, int $storageId, int $rootId, int $batchSize) : array {
+		return $this->queueMapper->getFromQueue($model, $storageId, $rootId, $batchSize);
 	}
 
 	/**
@@ -78,5 +78,12 @@ class QueueService {
 	 */
 	public function removeFromQueue(string $model, QueueFile $queueFile) : void {
 		$this->queueMapper->removeFromQueue($model, $queueFile);
+	}
+
+	/**
+	 * @throws \OCP\DB\Exception
+	 */
+	public function removeFileFromAllQueues(int $fileId) : void {
+		$this->queueMapper->removeFileFromAllQueues($fileId);
 	}
 }
