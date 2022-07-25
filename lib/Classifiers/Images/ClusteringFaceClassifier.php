@@ -79,7 +79,7 @@ class ClusteringFaceClassifier extends Classifier {
 				}, $mounts);
 
 				// Insert face detection for all users with access
-				foreach($userIds as $userId) {
+				foreach ($userIds as $userId) {
 					$faceDetection->setUserId($userId);
 					try {
 						$this->faceDetections->insert($faceDetection);
@@ -91,7 +91,7 @@ class ClusteringFaceClassifier extends Classifier {
 		}
 	}
 
-	private function removeExistingFaces(QueueFile $queueFile) : void{
+	private function removeExistingFaces(QueueFile $queueFile) : void {
 		try {
 			$existingFaceDetections = $this->faceDetections->findByFileId($queueFile->getFileId());
 			foreach ($existingFaceDetections as $existingFaceDetection) {

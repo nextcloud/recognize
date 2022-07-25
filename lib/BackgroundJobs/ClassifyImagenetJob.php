@@ -16,8 +16,7 @@ class ClassifyImagenetJob extends ClassifierJob {
 	private IConfig $config;
 	private ImagenetClassifier $imagenet;
 
-	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IConfig $config, ImagenetClassifier $imagenet)
-	{
+	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IConfig $config, ImagenetClassifier $imagenet) {
 		parent::__construct($time, $logger, $queue);
 		$this->config = $config;
 		$this->imagenet = $imagenet;
@@ -38,6 +37,6 @@ class ClassifyImagenetJob extends ClassifierJob {
 	 * @return int
 	 */
 	protected function getBatchSize() :int {
-		return $this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'false' ? self::BATCH_SIZE : self:: BATCH_SIZE_PUREJS;
+		return $this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'false' ? self::BATCH_SIZE : self::BATCH_SIZE_PUREJS;
 	}
 }

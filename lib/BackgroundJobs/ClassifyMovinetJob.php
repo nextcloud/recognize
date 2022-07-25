@@ -2,7 +2,6 @@
 
 namespace OCA\Recognize\BackgroundJobs;
 
-use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
 use OCA\Recognize\Classifiers\Video\MovinetClassifier;
 use OCA\Recognize\Service\QueueService;
 use OCP\AppFramework\Utility\ITimeFactory;
@@ -17,8 +16,7 @@ class ClassifyMovinetJob extends ClassifierJob {
 	private IConfig $config;
 	private MovinetClassifier $movinet;
 
-	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IConfig $config, MovinetClassifier $movinet)
-	{
+	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IConfig $config, MovinetClassifier $movinet) {
 		parent::__construct($time, $logger, $queue);
 		$this->config = $config;
 		$this->movinet = $movinet;
@@ -45,6 +43,6 @@ class ClassifyMovinetJob extends ClassifierJob {
 	 * @return int
 	 */
 	protected function getBatchSize() :int {
-		return $this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'false' ? self::BATCH_SIZE : self:: BATCH_SIZE_PUREJS;
+		return $this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'false' ? self::BATCH_SIZE : self::BATCH_SIZE_PUREJS;
 	}
 }

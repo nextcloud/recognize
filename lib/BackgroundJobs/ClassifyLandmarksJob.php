@@ -2,7 +2,6 @@
 
 namespace OCA\Recognize\BackgroundJobs;
 
-use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
 use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
 use OCA\Recognize\Service\QueueService;
 use OCP\AppFramework\Utility\ITimeFactory;
@@ -17,8 +16,7 @@ class ClassifyLandmarksJob extends ClassifierJob {
 	private IConfig $config;
 	private LandmarksClassifier $landmarks;
 
-	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IConfig $config, LandmarksClassifier $landmarks)
-	{
+	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IConfig $config, LandmarksClassifier $landmarks) {
 		parent::__construct($time, $logger, $queue);
 		$this->config = $config;
 		$this->landmarks = $landmarks;
@@ -39,6 +37,6 @@ class ClassifyLandmarksJob extends ClassifierJob {
 	 * @return int
 	 */
 	protected function getBatchSize() :int {
-		return $this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'false' ? self::BATCH_SIZE : self:: BATCH_SIZE_PUREJS;
+		return $this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'false' ? self::BATCH_SIZE : self::BATCH_SIZE_PUREJS;
 	}
 }

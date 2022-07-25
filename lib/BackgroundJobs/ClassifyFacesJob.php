@@ -3,7 +3,6 @@
 namespace OCA\Recognize\BackgroundJobs;
 
 use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
-use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
 use OCA\Recognize\Service\QueueService;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\IConfig;
@@ -17,8 +16,7 @@ class ClassifyFacesJob extends ClassifierJob {
 	private IConfig $config;
 	private ClusteringFaceClassifier $faces;
 
-	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IConfig $config, ClusteringFaceClassifier $faceClassifier)
-	{
+	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IConfig $config, ClusteringFaceClassifier $faceClassifier) {
 		parent::__construct($time, $logger, $queue);
 		$this->config = $config;
 		$this->faces = $faceClassifier;
@@ -39,6 +37,6 @@ class ClassifyFacesJob extends ClassifierJob {
 	 * @return int
 	 */
 	protected function getBatchSize() :int {
-		return $this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'false' ? self::BATCH_SIZE : self:: BATCH_SIZE_PUREJS;
+		return $this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'false' ? self::BATCH_SIZE : self::BATCH_SIZE_PUREJS;
 	}
 }

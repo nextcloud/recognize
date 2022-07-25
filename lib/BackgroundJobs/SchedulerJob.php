@@ -41,7 +41,7 @@ class SchedulerJob extends TimedJob {
 			->from('oc_mounts')
 			->where($qb->expr()->in('mount_provider_class', self::ALLOWED_MOUNT_TYPES));
 		$result = $qb->executeQuery();
-		while($row = $result->fetchOne()) {
+		while ($row = $result->fetchOne()) {
 			$this->jobList->add(StorageCrawlJob::class, [
 				'storage_id' => $row['storage_id'],
 				'root_id' => $row['root_id'],

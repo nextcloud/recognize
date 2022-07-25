@@ -12,7 +12,6 @@ use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 
 class QueueMapper extends QBMapper {
-
 	public const MODELS = [
 		ImagenetClassifier::MODEL_NAME,
 		ClusteringFaceClassifier::MODEL_NAME,
@@ -71,7 +70,7 @@ class QueueMapper extends QBMapper {
 	 * @throws \OCP\DB\Exception
 	 */
 	public function removeFileFromAllQueues(int $fileId) : void {
-		foreach(self::MODELS as $model) {
+		foreach (self::MODELS as $model) {
 			$qb = $this->db->getQueryBuilder();
 			$qb->delete($this->getQueueTable($model))
 				->where($qb->expr()->eq('file_id', $qb->createPositionalParameter($fileId)))

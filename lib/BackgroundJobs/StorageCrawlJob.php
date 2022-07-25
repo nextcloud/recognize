@@ -95,7 +95,6 @@ class StorageCrawlJob extends Job {
 					case $audioType:
 						$this->queue->insertIntoQueue(MusicnnClassifier::MODEL_NAME, $queueFile);
 				}
-
 			} catch (Exception $e) {
 				$this->logger->error('Failed to add file to queue', ['exception' => $e]);
 				return;

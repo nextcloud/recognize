@@ -2,21 +2,17 @@
 
 namespace OCA\Recognize\BackgroundJobs;
 
-use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
-use OCA\Recognize\Db\QueueMapper;
 use OCA\Recognize\Service\QueueService;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\Job;
 use OCP\DB\Exception;
-use OCP\IConfig;
 use Psr\Log\LoggerInterface;
 
 abstract class ClassifierJob extends Job {
 	private LoggerInterface $logger;
 	private QueueService $queue;
 
-	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue)
-	{
+	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue) {
 		parent::__construct($time);
 		$this->logger = $logger;
 		$this->queue = $queue;
@@ -44,7 +40,6 @@ abstract class ClassifierJob extends Job {
 			$this->logger->error('Cannot retrieve items from imagenet queue', ['exception' => $e]);
 			return;
 		}
-
 	}
 
 	/**

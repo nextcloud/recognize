@@ -47,7 +47,7 @@ class ImagenetClassifier extends Classifier {
 
 		foreach ($classifierProcess as $queueFile => $results) {
 			$this->tagManager->assignTags($queueFile->getFileId(), $results);
-			$landmarkTags = array_filter($results, function($tagName) {
+			$landmarkTags = array_filter($results, function ($tagName) {
 				return in_array($tagName, LandmarksClassifier::PRECONDITION_TAGS);
 			});
 			if (count($landmarkTags) > 0) {

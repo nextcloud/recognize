@@ -35,8 +35,7 @@ class LandmarksClassifier extends Classifier {
 	 * @param \OCA\Recognize\Db\QueueFile[] $queueFiles
 	 * @return void
 	 */
-	public function classify(array $queueFiles): void
-	{
+	public function classify(array $queueFiles): void {
 		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
 			$timeout = self::IMAGE_PUREJS_TIMEOUT;
 		} else {

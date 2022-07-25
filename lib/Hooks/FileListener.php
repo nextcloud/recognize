@@ -6,14 +6,9 @@ use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
 use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
 use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
 use OCA\Recognize\Classifiers\Video\MovinetClassifier;
-use OCA\Recognize\Db\AudioMapper;
 use OCA\Recognize\Db\FaceDetectionMapper;
-use OCA\Recognize\Db\ImageMapper;
 use OCA\Recognize\Db\QueueFile;
-use OCA\Recognize\Db\VideoMapper;
 use OCA\Recognize\Service\QueueService;
-use OCP\AppFramework\Db\DoesNotExistException;
-use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 use OCP\DB\Exception;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
@@ -23,7 +18,6 @@ use OCP\Files\IMimeTypeLoader;
 use OCP\Files\InvalidPathException;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
-use OCP\IConfig;
 use Psr\Log\LoggerInterface;
 
 class FileListener implements IEventListener {
@@ -103,10 +97,9 @@ class FileListener implements IEventListener {
 				case $audioType:
 					$this->queue->insertIntoQueue(MusicnnClassifier::MODEL_NAME, $queueFile);
 			}
-		} catch
-			(Exception $e) {
-				$this->logger->error('Failed to add file to queue', ['exception' => $e]);
-				return;
-			}
+		} catch (Exception $e) {
+			$this->logger->error('Failed to add file to queue', ['exception' => $e]);
+			return;
 		}
+	}
 }
