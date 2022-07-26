@@ -5,6 +5,7 @@ namespace OCA\Recognize\BackgroundJobs;
 use OC\Files\SetupManager;
 use OCA\Recognize\Service\QueueService;
 use OCP\AppFramework\Utility\ITimeFactory;
+use OCP\BackgroundJob\IJobList;
 use OCP\BackgroundJob\Job;
 use OCP\DB\Exception;
 use OCP\Files\Config\ICachedMountInfo;
@@ -16,12 +17,14 @@ abstract class ClassifierJob extends Job {
 	private LoggerInterface $logger;
 	private QueueService $queue;
 	private IUserMountCache $userMountCache;
+	private IJobList $jobList;
 
-	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IUserMountCache $userMountCache) {
+	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IUserMountCache $userMountCache, IJobList $jobList) {
 		parent::__construct($time);
 		$this->logger = $logger;
 		$this->queue = $queue;
 		$this->userMountCache = $userMountCache;
+		$this->jobList = $jobList;
 	}
 
 	protected function runClassifier(string $model, $argument) {
@@ -46,8 +49,9 @@ abstract class ClassifierJob extends Job {
 		try {
 			// If there is at least one file left in the queue, reschedule this job
 			$files = $this->queue->getFromQueue($model, $storageId, $rootId, 1);
-			if (count($files) > 0) {
-				$this->queue->scheduleJob($model, $files[0]);
+			if (count($files) === 0) {
+				// `static` to get extending subclasse name
+				$this->jobList->remove(static::class, $argument);
 			}
 		} catch (Exception $e) {
 			$this->logger->error('Cannot retrieve items from imagenet queue', ['exception' => $e]);
