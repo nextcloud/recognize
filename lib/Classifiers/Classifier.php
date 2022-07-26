@@ -33,7 +33,7 @@ class Classifier {
 
 	/**
 	 * @param string $model
-	 * @param \OCA\Recognize\Db\QueueFile[] $paths
+	 * @param \OCA\Recognize\Db\QueueFile[] $queueFiles
 	 * @param int $timeout
 	 * @return \Generator
 	 */
@@ -53,6 +53,12 @@ class Classifier {
 				continue;
 			}
 		}
+
+		if (count($paths) === 0) {
+			$this->logger->debug('No files left to classify');
+			return;
+		}
+
 		$this->logger->debug('Classifying '.var_export($paths, true));
 
 		$command = [
@@ -112,7 +118,7 @@ class Classifier {
 						// decode json
 						$results = json_decode($result, true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
 						yield $processedFiles[$i] => $results;
-						$this->queue->removeFromQueue($model, $queueFiles[$i]);
+						$this->queue->removeFromQueue($model, $processedFiles[$i]);
 					} catch (\JsonException $e) {
 						$this->logger->warning('JSON exception');
 						$this->logger->warning($e->getMessage(), ['exception' => $e]);
