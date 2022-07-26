@@ -88,10 +88,10 @@ class QueueMapper extends QBMapper {
 		$qb = $this->db->getQueryBuilder();
 		$qb->insert($this->getQueueTable($model))
 			->values([
-				'file_id' => $qb->createPositionalParameter($file->getFileId()),
-				'storage_id' => $qb->createPositionalParameter($file->getStorageId()),
-				'root_id' => $qb->createPositionalParameter($file->getRootId()),
-				'update' => $qb->createPositionalParameter($file->getUpdate())
+				'file_id' => $qb->createPositionalParameter($file->getFileId(), IQueryBuilder::PARAM_INT),
+				'storage_id' => $qb->createPositionalParameter($file->getStorageId(), IQueryBuilder::PARAM_INT),
+				'root_id' => $qb->createPositionalParameter($file->getRootId(), IQueryBuilder::PARAM_INT),
+				'update' => $qb->createPositionalParameter($file->getUpdate(), IQueryBuilder::PARAM_BOOL)
 			])
 			->executeStatement();
 		$file->setId($qb->getLastInsertId());

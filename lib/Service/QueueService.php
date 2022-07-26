@@ -61,7 +61,8 @@ class QueueService {
 
 	/**
 	 * @param string $model
-	 * @param $storageId
+	 * @param int $storageId
+	 * @param int $rootId
 	 * @param int $batchSize
 	 * @return array
 	 * @throws \OCP\DB\Exception

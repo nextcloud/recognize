@@ -14,7 +14,7 @@ use OCP\AppFramework\Db\Entity;
  * @method setStorageId(string $storageId)
  * @method string getRootId()
  * @method setRootId(string $rootId)
- * @method setUpdate(boolean $processed)
+ * @method setUpdate(boolean $update)
  * @method bool getUpdate()
  */
 class QueueFile extends Entity {

@@ -11,6 +11,7 @@ use OCA\Recognize\Service\Logger;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\IJobList;
 use OCP\BackgroundJob\TimedJob;
+use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 use Psr\Log\LoggerInterface;
 
@@ -39,10 +40,11 @@ class SchedulerJob extends TimedJob {
 	protected function run($argument): void {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('root_id', 'storage_id')
-			->from('oc_mounts')
-			->where($qb->expr()->in('mount_provider_class', self::ALLOWED_MOUNT_TYPES));
+			->from('mounts')
+			->where($qb->expr()->in('mount_provider_class', $qb->createPositionalParameter(self::ALLOWED_MOUNT_TYPES, IQueryBuilder::PARAM_STR_ARRAY)));
 		$result = $qb->executeQuery();
-		while ($row = $result->fetchOne()) {
+
+		while ($row = $result->fetch()) {
 			$this->jobList->add(StorageCrawlJob::class, [
 				'storage_id' => $row['storage_id'],
 				'root_id' => $row['root_id'],
