@@ -47,13 +47,7 @@ The app does not send any sensitive data to cloud providers or similar services.
 		<nextcloud min-version="24" max-version="24" />
 	</dependencies>
 	<background-jobs>
-		<job>OCA\Recognize\BackgroundJobs\ClassifyFacesJob</job>
-		<job>OCA\Recognize\BackgroundJobs\ClassifyImagenetJob</job>
-		<job>OCA\Recognize\BackgroundJobs\ClassifyLandmarksJob</job>
-		<job>OCA\Recognize\BackgroundJobs\ClassifyMovinetJob</job>
-		<job>OCA\Recognize\BackgroundJobs\ClassifyMusicnnJob</job>
 		<job>OCA\Recognize\BackgroundJobs\SchedulerJob</job>
-		<job>OCA\Recognize\BackgroundJobs\StorageCrawlJob</job>
 	</background-jobs>
 
 	<settings>
