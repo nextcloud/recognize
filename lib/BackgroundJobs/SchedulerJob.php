@@ -18,6 +18,7 @@ class SchedulerJob extends TimedJob {
 	public const INTERVAL = 30 * 60; // 30 minutes
 	public const ALLOWED_MOUNT_TYPES = [
 		'OC\Files\Mount\LocalHomeMountProvider',
+		'OC\Files\Mount\ObjectHomeMountProvider',
 		'OCA\Files_External\Config\ConfigAdapter',
 		'OCA\GroupFolders\Mount\MountProvider'
 	];
