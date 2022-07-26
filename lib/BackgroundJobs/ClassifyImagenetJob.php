@@ -5,6 +5,7 @@ namespace OCA\Recognize\BackgroundJobs;
 use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
 use OCA\Recognize\Service\QueueService;
 use OCP\AppFramework\Utility\ITimeFactory;
+use OCP\Files\Config\IUserMountCache;
 use OCP\IConfig;
 use Psr\Log\LoggerInterface;
 
@@ -16,8 +17,8 @@ class ClassifyImagenetJob extends ClassifierJob {
 	private IConfig $config;
 	private ImagenetClassifier $imagenet;
 
-	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IConfig $config, ImagenetClassifier $imagenet) {
-		parent::__construct($time, $logger, $queue);
+	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IConfig $config, ImagenetClassifier $imagenet, IUserMountCache $mountCache) {
+		parent::__construct($time, $logger, $queue, $mountCache);
 		$this->config = $config;
 		$this->imagenet = $imagenet;
 	}

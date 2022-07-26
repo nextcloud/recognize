@@ -5,6 +5,7 @@ namespace OCA\Recognize\BackgroundJobs;
 use OCA\Recognize\Classifiers\Video\MovinetClassifier;
 use OCA\Recognize\Service\QueueService;
 use OCP\AppFramework\Utility\ITimeFactory;
+use OCP\Files\Config\IUserMountCache;
 use OCP\IConfig;
 use Psr\Log\LoggerInterface;
 
@@ -16,8 +17,8 @@ class ClassifyMovinetJob extends ClassifierJob {
 	private IConfig $config;
 	private MovinetClassifier $movinet;
 
-	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IConfig $config, MovinetClassifier $movinet) {
-		parent::__construct($time, $logger, $queue);
+	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IConfig $config, MovinetClassifier $movinet, IUserMountCache $mountCache) {
+		parent::__construct($time, $logger, $queue, $mountCache);
 		$this->config = $config;
 		$this->movinet = $movinet;
 	}

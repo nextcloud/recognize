@@ -5,6 +5,7 @@ namespace OCA\Recognize\BackgroundJobs;
 use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
 use OCA\Recognize\Service\QueueService;
 use OCP\AppFramework\Utility\ITimeFactory;
+use OCP\Files\Config\IUserMountCache;
 use OCP\IConfig;
 use Psr\Log\LoggerInterface;
 
@@ -16,8 +17,8 @@ class ClassifyLandmarksJob extends ClassifierJob {
 	private IConfig $config;
 	private LandmarksClassifier $landmarks;
 
-	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IConfig $config, LandmarksClassifier $landmarks) {
-		parent::__construct($time, $logger, $queue);
+	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IConfig $config, LandmarksClassifier $landmarks, IUserMountCache $mountCache) {
+		parent::__construct($time, $logger, $queue, $mountCache);
 		$this->config = $config;
 		$this->landmarks = $landmarks;
 	}
