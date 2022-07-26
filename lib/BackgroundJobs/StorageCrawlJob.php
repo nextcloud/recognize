@@ -8,6 +8,7 @@
 namespace OCA\Recognize\BackgroundJobs;
 
 use OC\Files\Cache\CacheQueryBuilder;
+use OC\SystemConfig;
 use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
 use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
 use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
@@ -18,37 +19,41 @@ use OCA\Recognize\Service\QueueService;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\IJobList;
 use OCP\BackgroundJob\Job;
+use OCP\BackgroundJob\QueuedJob;
 use OCP\DB\Exception;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\Files\IMimeTypeLoader;
+use OCP\IDBConnection;
 use Psr\Log\LoggerInterface;
 
-class StorageCrawlJob extends Job {
+class StorageCrawlJob extends QueuedJob {
 	private LoggerInterface $logger;
-	private CacheQueryBuilder $cacheQueryBuilder;
 	private IMimeTypeLoader $mimeTypes;
 	private QueueService $queue;
 	private IJobList $jobList;
+	private IDBConnection $db;
+	private SystemConfig $systemConfig;
 
-	public function __construct(ITimeFactory $timeFactory, Logger $logger, CacheQueryBuilder $cacheQueryBuilder, IMimeTypeLoader $mimeTypes, QueueService $queue, IJobList $jobList) {
+	public function __construct(ITimeFactory $timeFactory, Logger $logger, IMimeTypeLoader $mimeTypes, QueueService $queue, IJobList $jobList, IDBConnection $db, SystemConfig $systemConfig) {
 		parent::__construct($timeFactory);
 		$this->logger = $logger;
-		$this->cacheQueryBuilder = $cacheQueryBuilder;
 		$this->mimeTypes = $mimeTypes;
 		$this->queue = $queue;
 		$this->jobList = $jobList;
+		$this->db = $db;
+		$this->systemConfig = $systemConfig;
 	}
 
 	protected function run($argument): void {
 		$storageId = $argument['storage_id'];
 		$rootId = $argument['root_id'];
 		$lastFileId = $argument['last_file_id'];
-		$qb = $this->cacheQueryBuilder;
+		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
 		try {
 			$root = $qb->selectFileCache()
 				->whereStorageId($storageId)
-				->where($qb->expr()->eq('fileid', $qb->createPositionalParameter($rootId, IQueryBuilder::PARAM_INT)))
-				->executeQuery()->fetchOne();
+				->andWhere($qb->expr()->eq('filecache.fileid', $qb->createNamedParameter($rootId, IQueryBuilder::PARAM_INT)))
+				->executeQuery()->fetch();
 		} catch (Exception $e) {
 			$this->logger->error('Could not fetch storage root', ['exception' => $e]);
 			return;
@@ -59,13 +64,15 @@ class StorageCrawlJob extends Job {
 		$audioType = $this->mimeTypes->getId('audio');
 
 		try {
+			$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
 			$files = $qb->selectFileCache()
 				->whereStorageId($storageId)
-				->where($qb->expr()->like('path', $qb->createPositionalParameter($root['path'] . '%')))
-				->andWhere($qb->expr()->in('mimetype', $qb->createPositionalParameter([
+				->andWhere($qb->expr()->like('path', $qb->createNamedParameter($root['path'] . '%')))
+				->andWhere($qb->expr()->in('mimepart', $qb->createNamedParameter([
 					$imageType, $videoType, $audioType
-				])))
-				->andWhere($qb->expr()->gt('fileid', $lastFileId))
+				], IQueryBuilder::PARAM_INT_ARRAY)))
+				->andWhere($qb->expr()->gt('filecache.fileid', $qb->createNamedParameter($lastFileId)))
+				->orderBy('filecache.fileid', 'ASC')
 				->setMaxResults(100)
 				->executeQuery();
 		} catch (Exception $e) {
@@ -73,18 +80,21 @@ class StorageCrawlJob extends Job {
 			return;
 		}
 
+		// Remove current iteration
+		$this->jobList->remove(self::class, $argument);
+
 		if ($files->rowCount() === 0) {
 			return;
 		}
 
-		while ($file = $files->fetchOne()) {
+		while ($file = $files->fetch()) {
 			$queueFile = new QueueFile();
 			$queueFile->setStorageId($storageId);
 			$queueFile->setRootId($rootId);
 			$queueFile->setFileId($file['fileid']);
 			$queueFile->setUpdate(false);
 			try {
-				switch ($file['mimetype']) {
+				switch ($file['mimepart']) {
 					case $imageType:
 						$this->queue->insertIntoQueue(ImagenetClassifier::MODEL_NAME, $queueFile);
 						$this->queue->insertIntoQueue(ClusteringFaceClassifier::MODEL_NAME, $queueFile);
@@ -101,10 +111,11 @@ class StorageCrawlJob extends Job {
 			}
 		}
 
+		// Schedule next iteration
 		$this->jobList->add(self::class, [
 			'storage_id' => $storageId,
 			'root_id' => $rootId,
-			'last_file_id' => $file['fileid']
+			'last_file_id' => $queueFile->getFileId()
 		]);
 	}
 }
