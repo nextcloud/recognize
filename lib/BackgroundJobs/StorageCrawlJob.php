@@ -18,7 +18,6 @@ use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\IJobList;
-use OCP\BackgroundJob\Job;
 use OCP\BackgroundJob\QueuedJob;
 use OCP\DB\Exception;
 use OCP\DB\QueryBuilder\IQueryBuilder;

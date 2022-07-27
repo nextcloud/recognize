@@ -2,7 +2,6 @@
 
 namespace OCA\Recognize\BackgroundJobs;
 
-use OC\Files\SetupManager;
 use OCA\Recognize\Service\QueueService;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\IJobList;
@@ -10,7 +9,6 @@ use OCP\BackgroundJob\Job;
 use OCP\DB\Exception;
 use OCP\Files\Config\ICachedMountInfo;
 use OCP\Files\Config\IUserMountCache;
-use OCP\Util;
 use Psr\Log\LoggerInterface;
 
 abstract class ClassifierJob extends Job {
@@ -39,7 +37,7 @@ abstract class ClassifierJob extends Job {
 		}
 
 		// Setup Filesystem for a users that can access this mount
-		$mounts = array_filter($this->userMountCache->getMountsForStorageId($storageId), function(ICachedMountInfo $mount) use ($rootId){
+		$mounts = array_filter($this->userMountCache->getMountsForStorageId($storageId), function (ICachedMountInfo $mount) use ($rootId) {
 			return $mount->getRootId() === $rootId;
 		});
 		\OC_Util::setupFS($mounts[0]->getUser()->getUID());
