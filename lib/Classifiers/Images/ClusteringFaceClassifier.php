@@ -7,12 +7,14 @@
 
 namespace OCA\Recognize\Classifiers\Images;
 
+use OCA\Recognize\BackgroundJobs\ClusterFacesJob;
 use OCA\Recognize\Classifiers\Classifier;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
+use OCP\BackgroundJob\IJobList;
 use OCP\DB\Exception;
 use OCP\Files\Config\ICachedMountInfo;
 use OCP\Files\Config\IUserMountCache;
@@ -30,14 +32,16 @@ class ClusteringFaceClassifier extends Classifier {
 	private FaceDetectionMapper $faceDetections;
 	private IRootFolder $rootFolder;
 	private IUserMountCache $userMountCache;
+	private IJobList $jobList;
 
-	public function __construct(Logger $logger, IConfig $config, FaceDetectionMapper $faceDetections, QueueService $queue, IRootFolder $rootFolder, IUserMountCache $userMountCache) {
+	public function __construct(Logger $logger, IConfig $config, FaceDetectionMapper $faceDetections, QueueService $queue, IRootFolder $rootFolder, IUserMountCache $userMountCache, IJobList $jobList) {
 		parent::__construct($logger, $config, $rootFolder, $queue);
 		$this->logger = $logger;
 		$this->config = $config;
 		$this->faceDetections = $faceDetections;
 		$this->rootFolder = $rootFolder;
 		$this->userMountCache = $userMountCache;
+		$this->jobList = $jobList;
 	}
 
 	/**
@@ -85,7 +89,9 @@ class ClusteringFaceClassifier extends Classifier {
 						$this->faceDetections->insert($faceDetection);
 					} catch (Exception $e) {
 						$this->logger->error('Could not store face detection in database', ['exception' => $e]);
+						continue;
 					}
+					$this->jobList->add(ClusterFacesJob::class, ['userId' => $userId]);
 				}
 			}
 		}
