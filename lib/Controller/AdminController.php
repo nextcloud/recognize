@@ -2,21 +2,33 @@
 
 namespace OCA\Recognize\Controller;
 
+use OCA\Recognize\BackgroundJobs\SchedulerJob;
 use OCA\Recognize\Service\TagManager;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\JSONResponse;
+use OCP\BackgroundJob\IJobList;
 use OCP\IRequest;
 
 class AdminController extends Controller {
 	private TagManager $tagManager;
+	/**
+	 * @var \OCP\BackgroundJob\IJobList
+	 */
+	private IJobList $jobList;
 
-	public function __construct($appName, IRequest $request, TagManager $tagManager) {
+	public function __construct($appName, IRequest $request, TagManager $tagManager, IJobList $jobList) {
 		parent::__construct($appName, $request);
 		$this->tagManager = $tagManager;
+		$this->jobList = $jobList;
 	}
 
 	public function reset(): JSONResponse {
 		$this->tagManager->resetClassifications();
+		return new JSONResponse([]);
+	}
+
+	public function recrawl(): JSONResponse {
+		$this->jobList->add(SchedulerJob::class);
 		return new JSONResponse([]);
 	}
 

@@ -10,12 +10,12 @@ namespace OCA\Recognize\BackgroundJobs;
 use OCA\Recognize\Service\Logger;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\IJobList;
-use OCP\BackgroundJob\TimedJob;
+use OCP\BackgroundJob\QueuedJob;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 use Psr\Log\LoggerInterface;
 
-class SchedulerJob extends TimedJob {
+class SchedulerJob extends QueuedJob {
 	public const INTERVAL = 30 * 60; // 30 minutes
 	public const ALLOWED_MOUNT_TYPES = [
 		'OC\Files\Mount\LocalHomeMountProvider',
@@ -30,8 +30,6 @@ class SchedulerJob extends TimedJob {
 
 	public function __construct(ITimeFactory $timeFactory, Logger $logger, IDBConnection $db, IJobList $jobList) {
 		parent::__construct($timeFactory);
-
-		$this->setInterval(self::INTERVAL);
 		$this->logger = $logger;
 		$this->db = $db;
 		$this->jobList = $jobList;
@@ -51,5 +49,7 @@ class SchedulerJob extends TimedJob {
 				'last_file_id' => 0,
 			]);
 		}
+
+		$this->jobList->remove(self::class);
 	}
 }
