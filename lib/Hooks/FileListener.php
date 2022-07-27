@@ -14,7 +14,6 @@ use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
 use OCP\Files\Events\Node\NodeCreatedEvent;
 use OCP\Files\Events\Node\NodeDeletedEvent;
-use OCP\Files\IMimeTypeLoader;
 use OCP\Files\InvalidPathException;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
@@ -24,13 +23,11 @@ class FileListener implements IEventListener {
 	private FaceDetectionMapper $faceDetectionMapper;
 	private LoggerInterface $logger;
 	private QueueService $queue;
-	private IMimeTypeLoader $mimeTypes;
 
-	public function __construct(FaceDetectionMapper $faceDetectionMapper, LoggerInterface $logger, QueueService $queue, IMimeTypeLoader $mimeTypes) {
+	public function __construct(FaceDetectionMapper $faceDetectionMapper, LoggerInterface $logger, QueueService $queue) {
 		$this->faceDetectionMapper = $faceDetectionMapper;
 		$this->logger = $logger;
 		$this->queue = $queue;
-		$this->mimeTypes = $mimeTypes;
 	}
 
 	public function handle(Event $event): void {
@@ -83,18 +80,15 @@ class FileListener implements IEventListener {
 
 		$queueFile->setUpdate(false);
 		try {
-			$imageType = $this->mimeTypes->getId('image');
-			$videoType = $this->mimeTypes->getId('video');
-			$audioType = $this->mimeTypes->getId('audio');
-			switch ($node->getMimetype()) {
-				case $imageType:
+			switch ($node->getMimePart()) {
+				case 'image':
 					$this->queue->insertIntoQueue(ImagenetClassifier::MODEL_NAME, $queueFile);
 					$this->queue->insertIntoQueue(ClusteringFaceClassifier::MODEL_NAME, $queueFile);
 					break;
-				case $videoType:
+				case 'video':
 					$this->queue->insertIntoQueue(MovinetClassifier::MODEL_NAME, $queueFile);
 					break;
-				case $audioType:
+				case 'audio':
 					$this->queue->insertIntoQueue(MusicnnClassifier::MODEL_NAME, $queueFile);
 			}
 		} catch (Exception $e) {
