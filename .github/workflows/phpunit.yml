@@ -76,9 +76,14 @@ jobs:
           extensions: mbstring, iconv, fileinfo, intl, mysql, pdo_mysql, gd, zip
           coverage: none
 
-      - name: Set up PHPUnit
+      - name: Install app
+        if: ${{ matrix.container == ''}}
         working-directory: apps/${{ env.APP_NAME }}
-        run: composer install --ignore-platform-req=php
+        run: |
+          composer install --ignore-platform-req=php --no-dev
+          make all
+          make remove-binaries # Make it download tfjs from scratch
+          rm -rf models # Make it download from github
 
       - name: Set up Nextcloud with mysql
         if: ${{matrix.databases == 'mysql' }}
@@ -107,5 +112,6 @@ jobs:
         run: ./vendor/bin/phpunit -c test/phpunit.xml
 
       - name: Show log
+        if: always()
         run: |
           tail -50 data/nextcloud.log
