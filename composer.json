@@ -3,7 +3,8 @@
         "symfony/process": "^5.2",
         "ext-json": "*",
         "php": ">=7.4",
-        "rubix/ml": "^2.0"
+        "rubix/ml": "^2.0",
+        "phpunit/phpunit": "^9.5"
     },
     "autoload": {
         "psr-4": {
