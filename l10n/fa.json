@@ -1,0 +1,8 @@
+{ "translations": {
+    "People" : "مردم",
+    "Office" : "دفتر",
+    "Train" : "رشته",
+    "Computer" : "کامپیوتر",
+    "Parking" : "توقفگاه خودرو"
+},"pluralForm" :"nplurals=2; plural=(n > 1);"
+}

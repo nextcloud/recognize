@@ -1,0 +1,11 @@
+{ "translations": {
+    "Failed to save settings" : "Неуспешно зачувување на параметрите",
+    "People" : "Луѓе",
+    "Office" : "Канцеларија",
+    "Train" : "Воз",
+    "Car" : "Автомобил",
+    "Computer" : "Компјутер",
+    "Library" : "Библиотека",
+    "Parking" : "Паркинг"
+},"pluralForm" :"nplurals=2; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : 1;"
+}

@@ -1,0 +1,27 @@
+OC.L10N.register(
+    "recognize",
+    {
+    "Failed to load settings" : "Caricamento impostazioni non riuscito",
+    "Failed to save settings" : "Salvataggio impostazioni non riuscito",
+    "Farm" : "Fattoria",
+    "People" : "Persone",
+    "Dog" : "Cane",
+    "Music" : "Musica",
+    "Office" : "Ufficio",
+    "Train" : "Treno",
+    "Car" : "Automobile",
+    "Computer" : "Computer",
+    "Screen" : "Schermo",
+    "Library" : "Libreria",
+    "Display" : "Visualizza",
+    "Theater" : "Teatro",
+    "Pizza" : "Pizza",
+    "Info" : "Info",
+    "Document" : "Documento",
+    "Bucket" : "Bucket",
+    "Festival" : "Festival",
+    "Gas station" : "Stazione di rifornimento",
+    "Parking" : "Parcheggio",
+    "Gallery" : "Galleria"
+},
+"nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;");

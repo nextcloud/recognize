@@ -1,0 +1,11 @@
+{ "translations": {
+    "Office" : "Kontor",
+    "Car" : "Auto",
+    "Display" : "Vaade",
+    "Pizza" : "Pitsa",
+    "Info" : "Info",
+    "Bucket" : "Korv",
+    "Gallery" : "Galerii",
+    "Park" : "Park"
+},"pluralForm" :"nplurals=2; plural=(n != 1);"
+}

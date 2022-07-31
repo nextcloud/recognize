@@ -1,0 +1,14 @@
+{ "translations": {
+    "Failed to save settings" : "Asetusten tallentaminen epäonnistui",
+    "Farm" : "Maatila",
+    "People" : "Ihmiset",
+    "Office" : "Toimisto",
+    "Train" : "Juna",
+    "Car" : "Auto",
+    "Computer" : "Tietokone",
+    "Library" : "Kirjasto",
+    "Theater" : "Teatteri",
+    "Festival" : "Festivaali",
+    "Parking" : "Pysäköinti"
+},"pluralForm" :"nplurals=2; plural=(n != 1);"
+}

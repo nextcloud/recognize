@@ -1,0 +1,11 @@
+{ "translations": {
+    "Farm" : "Bòria",
+    "Dog" : "Can",
+    "Display" : "Afichatge",
+    "Theater" : "Teatre",
+    "Pizza" : "Pizza",
+    "Info" : "Info",
+    "Festival" : "Festenal",
+    "Gallery" : "Galariá"
+},"pluralForm" :"nplurals=2; plural=(n > 1);"
+}

@@ -1,0 +1,11 @@
+{ "translations": {
+    "Failed to save settings" : "Produciuse un fallo ao gardar os axustes",
+    "People" : "Xente",
+    "Office" : "Oficina",
+    "Train" : "Tren",
+    "Car" : "Coche",
+    "Computer" : "Computador",
+    "Library" : "Biblioteca",
+    "Parking" : "Aparcadoiro"
+},"pluralForm" :"nplurals=2; plural=(n != 1);"
+}

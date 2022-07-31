@@ -1,0 +1,12 @@
+{ "translations": {
+    "Failed to save settings" : "No at fatu a sarvare is informatziones",
+    "People" : "Gente",
+    "Office" : "Ofìtziu",
+    "Train" : "Trenu",
+    "Car" : "Vetura",
+    "Computer" : "Computer",
+    "Library" : "Libreria",
+    "Gas station" : "Distribudore de benzina",
+    "Parking" : "Allogu po veturas"
+},"pluralForm" :"nplurals=2; plural=(n != 1);"
+}
