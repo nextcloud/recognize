@@ -1,0 +1,25 @@
+{ "translations": {
+    "Status" : "وضعیت",
+    "Reset" : "بازنشاندن",
+    "Failed to load settings" : "تنظیمات بارگیری نشد",
+    "Failed to save settings" : "تنظیمات ذخیره نشدند",
+    "People" : "مردم",
+    "Music" : "موسیقی",
+    "Office" : "دفتر",
+    "Train" : "رشته",
+    "Computer" : "کامپیوتر",
+    "Clock" : "ساعت",
+    "Screen" : "صفحه نمایش",
+    "Library" : "کتابخانه",
+    "Display" : "نمایش",
+    "Camping" : "چادر زدن",
+    "Camera" : "دوربین",
+    "Pizza" : "پیتزا",
+    "Info" : "اطلاعات",
+    "Bucket" : "باکت",
+    "Gas station" : "پمپ بنزین",
+    "Parking" : "توقفگاه خودرو",
+    "Gallery" : "گالری",
+    "Park" : "پارک"
+},"pluralForm" :"nplurals=2; plural=(n > 1);"
+}
