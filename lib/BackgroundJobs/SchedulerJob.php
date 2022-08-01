@@ -44,8 +44,8 @@ class SchedulerJob extends QueuedJob {
 
 		while ($row = $result->fetch()) {
 			$this->jobList->add(StorageCrawlJob::class, [
-				'storage_id' => $row['storage_id'],
-				'root_id' => $row['root_id'],
+				'storage_id' => (int)$row['storage_id'],
+				'root_id' => (int)$row['root_id'],
 				'last_file_id' => 0,
 			]);
 		}
