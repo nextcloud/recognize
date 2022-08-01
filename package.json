@@ -31,7 +31,7 @@
     "@vladmandic/face-api": "^1.7.1",
     "download": "^8.0.0",
     "exifer": "^1.0.0-beta.2",
-    "ffmpeg-static": "^4.4.0",
+    "ffmpeg-static": "^5.0.2",
     "geo-reverse": "^1.0.13",
     "get-port": "^5.1.1",
     "get-stdin": "^9.0.0",
