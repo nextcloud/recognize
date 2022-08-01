@@ -44,7 +44,7 @@
     "execa": "^5.1.1"
   },
   "devDependencies": {
-    "vue": "^2.6.12",
+    "vue": "^2.7.8",
     "@nextcloud/axios": "^1.9.0",
     "@nextcloud/initial-state": "^1.2.1",
     "@nextcloud/router": "^2.0.0",
