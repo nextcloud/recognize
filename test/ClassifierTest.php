@@ -7,7 +7,6 @@ use OCA\Recognize\BackgroundJobs\StorageCrawlJob;
 use OCA\Recognize\Classifiers\Classifier;
 use OCA\Recognize\Db\QueueFile;
 use OCP\BackgroundJob\IJobList;
-use OCP\Files\Cache\IScanner;
 use OCP\Files\IRootFolder;
 use Test\TestCase;
 
@@ -67,6 +66,7 @@ class ClassifierTest extends TestCase {
 	}
 
 	public function testStorageCrawlJob() : void {
+		\OC::$server->getConfig()->setAppValue('recognize', 'imagenet.enabled', 'true');
 		/** @var StorageCrawlJob $scheduler */
 		$crawler = \OC::$server->get(StorageCrawlJob::class);
 		/** @var IJobList $jobList */

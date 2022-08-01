@@ -82,11 +82,9 @@ class StorageCrawlJob extends QueuedJob {
 		// Remove current iteration
 		$this->jobList->remove(self::class, $argument);
 
-		if ($files->rowCount() === 0) {
-			return;
-		}
-
+		$i = 0;
 		while ($file = $files->fetch()) {
+			$i++;
 			$queueFile = new QueueFile();
 			$queueFile->setStorageId($storageId);
 			$queueFile->setRootId($rootId);
@@ -110,11 +108,13 @@ class StorageCrawlJob extends QueuedJob {
 			}
 		}
 
-		// Schedule next iteration
-		$this->jobList->add(self::class, [
-			'storage_id' => $storageId,
-			'root_id' => $rootId,
-			'last_file_id' => $queueFile->getFileId()
-		]);
+		if ($i > 0) {
+			// Schedule next iteration
+			$this->jobList->add(self::class, [
+				'storage_id' => $storageId,
+				'root_id' => $rootId,
+				'last_file_id' => $queueFile->getFileId()
+			]);
+		}
 	}
 }
