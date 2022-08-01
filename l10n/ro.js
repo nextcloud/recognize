@@ -1,10 +1,13 @@
 OC.L10N.register(
     "recognize",
     {
+    "Status" : "Stare",
+    "Reset" : "Resetare",
     "Music" : "Muzică",
     "Car" : "Mașina",
     "Screen" : "Ecran",
     "Display" : "Display",
+    "Food" : "Mâncare",
     "Camera" : "Camera",
     "Pizza" : "Pizza",
     "Info" : "Info",

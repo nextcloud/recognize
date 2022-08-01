@@ -1,6 +1,8 @@
 OC.L10N.register(
     "recognize",
     {
+    "Status" : "Stato",
+    "Reset" : "Ripristina",
     "Failed to load settings" : "Caricamento impostazioni non riuscito",
     "Failed to save settings" : "Salvataggio impostazioni non riuscito",
     "Farm" : "Fattoria",
@@ -11,9 +13,15 @@ OC.L10N.register(
     "Train" : "Treno",
     "Car" : "Automobile",
     "Computer" : "Computer",
+    "Clock" : "Orologio",
     "Screen" : "Schermo",
     "Library" : "Libreria",
     "Display" : "Visualizza",
+    "Bike" : "Bicicletta",
+    "Camping" : "Campeggio",
+    "Food" : "Cibo",
+    "Camera" : "Fotocamera",
+    "Barbecue" : "Grigliata",
     "Theater" : "Teatro",
     "Pizza" : "Pizza",
     "Info" : "Info",
@@ -22,6 +30,8 @@ OC.L10N.register(
     "Festival" : "Festival",
     "Gas station" : "Stazione di rifornimento",
     "Parking" : "Parcheggio",
-    "Gallery" : "Galleria"
+    "Sign" : "Firma",
+    "Gallery" : "Galleria",
+    "Park" : "Parco"
 },
 "nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;");

@@ -1,6 +1,9 @@
 OC.L10N.register(
     "recognize",
     {
+    "Recognize" : "Recognise",
+    "Status" : "Status",
+    "Reset" : "Reset",
     "Music" : "Music",
     "Office" : "Office",
     "Car" : "Car",

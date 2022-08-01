@@ -1,13 +1,26 @@
 OC.L10N.register(
     "recognize",
     {
+    "Status" : "Статус",
+    "Reset" : "Ресетирање",
     "Failed to save settings" : "Неуспешно зачувување на параметрите",
     "People" : "Луѓе",
+    "Music" : "Музика",
     "Office" : "Канцеларија",
     "Train" : "Воз",
     "Car" : "Автомобил",
     "Computer" : "Компјутер",
+    "Clock" : "Часовник",
+    "Screen" : "Екран",
     "Library" : "Библиотека",
-    "Parking" : "Паркинг"
+    "Display" : "Прикажи",
+    "Camping" : "Кампување",
+    "Camera" : "Камера",
+    "Pizza" : "Пица",
+    "Info" : "Инфо",
+    "Gas station" : "Бензиска пумпа",
+    "Parking" : "Паркинг",
+    "Gallery" : "Галерија",
+    "Park" : "Парк"
 },
 "nplurals=2; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : 1;");

@@ -1,6 +1,8 @@
 OC.L10N.register(
     "recognize",
     {
+    "Status" : "Būsena",
+    "Reset" : "Atstatyti",
     "Failed to load settings" : "Nepavyko įkelti nustatymų",
     "Failed to save settings" : "Nepavyko įrašyti nustatymų",
     "Farm" : "Ūkis",
@@ -10,10 +12,13 @@ OC.L10N.register(
     "Train" : "Traukinys",
     "Car" : "Automobilis",
     "Computer" : "Kompiuteris",
+    "Clock" : "Laikrodis",
     "Screen" : "Ekranas",
     "Library" : "Biblioteka",
     "Display" : "Ekranas",
+    "Camping" : "Stovyklavimas",
     "Camera" : "Kamera",
+    "Barbecue" : "Piknikas",
     "Theater" : "Teatras",
     "Pizza" : "Pica",
     "Info" : "Informacija",

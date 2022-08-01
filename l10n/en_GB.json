@@ -1,4 +1,7 @@
 { "translations": {
+    "Recognize" : "Recognise",
+    "Status" : "Status",
+    "Reset" : "Reset",
     "Music" : "Music",
     "Office" : "Office",
     "Car" : "Car",

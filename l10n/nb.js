@@ -1,16 +1,26 @@
 OC.L10N.register(
     "recognize",
     {
+    "Status" : "Status",
+    "Reset" : "Tilbakestill",
+    "Failed to load settings" : "Klarte ikke å laste inn innstillinger",
     "Failed to save settings" : "Klarte ikke å lagre innstillinger",
+    "Music" : "Musikk",
     "Office" : "Office",
     "Car" : "Bil",
     "Computer" : "Datamaskin",
+    "Clock" : "Klokke",
     "Library" : "Bibliotek",
+    "Display" : "Vis",
+    "Camping" : "Camping",
+    "Camera" : "Kamera",
     "Pizza" : "Pizza",
     "Info" : "Info",
     "Document" : "Dokument",
     "Bucket" : "Bøtte",
     "Gas station" : "Bensinstasjon",
-    "Parking" : "Parkering"
+    "Parking" : "Parkering",
+    "Gallery" : "Galleri",
+    "Park" : "Park"
 },
 "nplurals=2; plural=(n != 1);");

@@ -1,14 +1,29 @@
 OC.L10N.register(
     "recognize",
     {
+    "Status" : "Status",
+    "Reset" : "Torra a impostare",
+    "Failed to load settings" : "No at fatuu a carrigare is impostatziones",
     "Failed to save settings" : "No at fatu a sarvare is informatziones",
     "People" : "Gente",
+    "Music" : "Mùsica",
     "Office" : "Ofìtziu",
     "Train" : "Trenu",
     "Car" : "Vetura",
     "Computer" : "Computer",
+    "Screen" : "Ischermu",
     "Library" : "Libreria",
+    "Display" : "Ischermu",
+    "Bike" : "Bici",
+    "Camping" : "Campègiu",
+    "Camera" : "Fotocàmera",
+    "Pizza" : "Pitza",
+    "Info" : "Informatziones",
+    "Bucket" : "Bucket",
     "Gas station" : "Distribudore de benzina",
-    "Parking" : "Allogu po veturas"
+    "Parking" : "Allogu po veturas",
+    "Sign" : "Firma",
+    "Gallery" : "Galleria",
+    "Park" : "Parcu"
 },
 "nplurals=2; plural=(n != 1);");

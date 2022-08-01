@@ -1,9 +1,26 @@
 { "translations": {
+    "Status" : "상태",
+    "Reset" : "초기화",
+    "Failed to load settings" : "환경설정 로딩 실패",
     "Failed to save settings" : "환경설정 저장 실패",
+    "Music" : "음악",
     "Office" : "사무실",
     "Train" : "열차",
     "Car" : "카폰",
     "Computer" : "컴퓨터",
-    "Bucket" : "버킷"
+    "Clock" : "시계",
+    "Screen" : "화면",
+    "Display" : "표시",
+    "Bike" : "오토바이",
+    "Camping" : "캠핑하기",
+    "Food" : "음식",
+    "Camera" : "카메라",
+    "Pizza" : "피자",
+    "Info" : "정보",
+    "Document" : "문서",
+    "Bucket" : "버킷",
+    "Sign" : "서명",
+    "Gallery" : "갤러리",
+    "Park" : "공원"
 },"pluralForm" :"nplurals=1; plural=0;"
 }

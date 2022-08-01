@@ -1,13 +1,27 @@
 { "translations": {
+    "Status" : "Staða",
+    "Reset" : "Endurstilla",
+    "Failed to load settings" : "Mistókst að hlaða inn stillingum",
     "Failed to save settings" : "Mistókst að vista stillingar",
     "People" : "Fólk",
+    "Music" : "Tónlist",
     "Office" : "Skrifstofa",
     "Train" : "Lest",
     "Car" : "Bíll",
     "Computer" : "Tölva",
+    "Clock" : "Klukka",
+    "Screen" : "Screen",
     "Library" : "Bókasafn",
+    "Display" : "Birting",
+    "Camping" : "Tjaldútilega",
+    "Camera" : "Myndavél",
+    "Pizza" : "Flatbaka",
+    "Info" : "Upplýsingar",
+    "Document" : "Skjal",
     "Bucket" : "Bucket",
     "Gas station" : "Bensínstöð",
-    "Parking" : "Bílastæði"
+    "Parking" : "Bílastæði",
+    "Gallery" : "Myndasafn",
+    "Park" : "Almenningsgarður"
 },"pluralForm" :"nplurals=2; plural=(n % 10 != 1 || n % 100 == 11);"
 }

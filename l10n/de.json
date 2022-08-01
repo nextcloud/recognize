@@ -1,0 +1,27 @@
+{ "translations": {
+    "Reset" : "Zurücksetzen",
+    "Failed to load settings" : "Einstellungen konnten nicht geladen werden",
+    "Failed to save settings" : "Einstellungen konnten nicht gespeichert werden",
+    "Farm" : "Bauernhof",
+    "People" : "Personen",
+    "Dog" : "Hund",
+    "Office" : "Office",
+    "Train" : "Zug",
+    "Car" : "Auto",
+    "Computer" : "Computer",
+    "Clock" : "Uhr",
+    "Library" : "Bibliothek",
+    "Bike" : "Fahrrad",
+    "Camping" : "Camping",
+    "Barbecue" : "Grillen",
+    "Theater" : "Theater",
+    "Pizza" : "Pizza",
+    "Document" : "Dokument",
+    "Bucket" : "Bucket",
+    "Festival" : "Festival",
+    "Gas station" : "Tankstelle",
+    "Parking" : "Parken",
+    "Sign" : "Signiere",
+    "Park" : "Park"
+},"pluralForm" :"nplurals=2; plural=(n != 1);"
+}
