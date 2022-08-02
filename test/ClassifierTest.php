@@ -1,4 +1,5 @@
 <?php
+
 use OCA\Recognize\BackgroundJobs\ClassifyImagenetJob;
 use OCA\Recognize\BackgroundJobs\SchedulerJob;
 use OCA\Recognize\BackgroundJobs\StorageCrawlJob;

@@ -6,6 +6,7 @@ use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
 use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
 use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
 use OCA\Recognize\Classifiers\Video\MovinetClassifier;
+use OCA\Recognize\Constants;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Service\QueueService;
@@ -80,16 +81,15 @@ class FileListener implements IEventListener {
 
 		$queueFile->setUpdate(false);
 		try {
-			switch ($node->getMimePart()) {
-				case 'image':
-					$this->queue->insertIntoQueue(ImagenetClassifier::MODEL_NAME, $queueFile);
-					$this->queue->insertIntoQueue(ClusteringFaceClassifier::MODEL_NAME, $queueFile);
-					break;
-				case 'video':
-					$this->queue->insertIntoQueue(MovinetClassifier::MODEL_NAME, $queueFile);
-					break;
-				case 'audio':
-					$this->queue->insertIntoQueue(MusicnnClassifier::MODEL_NAME, $queueFile);
+			if (in_array($node->getMimetype(), Constants::IMAGE_FORMATS)) {
+				$this->queue->insertIntoQueue(ImagenetClassifier::MODEL_NAME, $queueFile);
+				$this->queue->insertIntoQueue(ClusteringFaceClassifier::MODEL_NAME, $queueFile);
+			}
+			if (in_array($node->getMimetype(), Constants::VIDEO_FORMATS)) {
+				$this->queue->insertIntoQueue(MovinetClassifier::MODEL_NAME, $queueFile);
+			}
+			if (in_array($node->getMimetype(), Constants::AUDIO_FORMATS)) {
+				$this->queue->insertIntoQueue(MusicnnClassifier::MODEL_NAME, $queueFile);
 			}
 		} catch (Exception $e) {
 			$this->logger->error('Failed to add file to queue', ['exception' => $e]);

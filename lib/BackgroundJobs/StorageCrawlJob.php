@@ -13,6 +13,7 @@ use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
 use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
 use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
 use OCA\Recognize\Classifiers\Video\MovinetClassifier;
+use OCA\Recognize\Constants;
 use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
@@ -58,18 +59,16 @@ class StorageCrawlJob extends QueuedJob {
 			return;
 		}
 
-		$imageType = $this->mimeTypes->getId('image');
-		$videoType = $this->mimeTypes->getId('video');
-		$audioType = $this->mimeTypes->getId('audio');
+		$imageTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::IMAGE_FORMATS);
+		$videoTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::VIDEO_FORMATS);
+		$audioTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::AUDIO_FORMATS);
 
 		try {
 			$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
 			$files = $qb->selectFileCache()
 				->whereStorageId($storageId)
 				->andWhere($qb->expr()->like('path', $qb->createNamedParameter($root['path'] . '%')))
-				->andWhere($qb->expr()->in('mimepart', $qb->createNamedParameter([
-					$imageType, $videoType, $audioType
-				], IQueryBuilder::PARAM_INT_ARRAY)))
+				->andWhere($qb->expr()->in('mimetype', $qb->createNamedParameter($imageTypes + $videoTypes + $audioTypes, IQueryBuilder::PARAM_INT_ARRAY)))
 				->andWhere($qb->expr()->gt('filecache.fileid', $qb->createNamedParameter($lastFileId)))
 				->orderBy('filecache.fileid', 'ASC')
 				->setMaxResults(100)
@@ -91,16 +90,15 @@ class StorageCrawlJob extends QueuedJob {
 			$queueFile->setFileId($file['fileid']);
 			$queueFile->setUpdate(false);
 			try {
-				switch ($file['mimepart']) {
-					case $imageType:
-						$this->queue->insertIntoQueue(ImagenetClassifier::MODEL_NAME, $queueFile);
-						$this->queue->insertIntoQueue(ClusteringFaceClassifier::MODEL_NAME, $queueFile);
-						break;
-					case $videoType:
-						$this->queue->insertIntoQueue(MovinetClassifier::MODEL_NAME, $queueFile);
-						break;
-					case $audioType:
-						$this->queue->insertIntoQueue(MusicnnClassifier::MODEL_NAME, $queueFile);
+				if (in_array($file['mimetype'], $imageTypes)) {
+					$this->queue->insertIntoQueue(ImagenetClassifier::MODEL_NAME, $queueFile);
+					$this->queue->insertIntoQueue(ClusteringFaceClassifier::MODEL_NAME, $queueFile);
+				}
+				if (in_array($file['mimetype'], $videoTypes)) {
+					$this->queue->insertIntoQueue(MovinetClassifier::MODEL_NAME, $queueFile);
+				}
+				if (in_array($file['mimetype'], $audioTypes)) {
+					$this->queue->insertIntoQueue(MusicnnClassifier::MODEL_NAME, $queueFile);
 				}
 			} catch (Exception $e) {
 				$this->logger->error('Failed to add file to queue', ['exception' => $e]);
