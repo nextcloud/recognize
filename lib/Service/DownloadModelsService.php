@@ -3,10 +3,16 @@
 namespace OCA\Recognize\Service;
 
 use OCA\Recognize\Helper\TAR;
+use OCP\Http\Client\IClientService;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
 class DownloadModelsService {
+	private IClientService $clientService;
+
+	public function __construct(IClientService $clientService) {
+		$this->clientService = $clientService;
+	}
 
 	/**
 	 * @return void
@@ -29,16 +35,14 @@ class DownloadModelsService {
 			rmdir($targetPath);
 		}
 
-		$archiveURL = $this->getArchiveUrl($this->getNeededArchiveRef());
+		$archiveUrl = $this->getArchiveUrl($this->getNeededArchiveRef());
 		$archivePath = __DIR__ . '/../../models.tar.gz';
-		$read = fopen($archiveURL, 'r');
-		$write = fopen($archivePath, 'w');
-		stream_copy_to_stream($read, $write);
+		$this->clientService->newClient()->get($archiveUrl, ['sink' => $archivePath, 'timeout' => 60]);
 		$tarManager = new TAR($archivePath);
-		$files = $tarManager->getFiles();
-		$mainFolder = $files[0];
+		$tarFiles = $tarManager->getFiles();
+		$mainFolder = $tarFiles[0];
 		$modelFolder = $mainFolder . 'models';
-		$modelFiles = array_filter($files, function ($path) use ($modelFolder) {
+		$modelFiles = array_filter($tarFiles, function ($path) use ($modelFolder) {
 			return strpos($path, $modelFolder . '/') === 0 || strpos($path, $modelFolder) === 0;
 		});
 		$tarManager->extractList($modelFiles, $targetPath, $modelFolder . '/');
