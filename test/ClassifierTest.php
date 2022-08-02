@@ -1,6 +1,4 @@
 <?php
-
-
 use OCA\Recognize\BackgroundJobs\ClassifyImagenetJob;
 use OCA\Recognize\BackgroundJobs\SchedulerJob;
 use OCA\Recognize\BackgroundJobs\StorageCrawlJob;
@@ -33,20 +31,11 @@ class ClassifierTest extends TestCase {
 		$this->classifier = \OC::$server->get(Classifier::class);
 		$this->rootFolder = \OC::$server->getRootFolder();
 		$this->userFolder = $this->loginAndGetUserFolder(self::TEST_USER1);
-		$this->testFile = $this->userFolder->newFile('/alpine.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
-	}
-
-	public function testClassifier() : void {
-		$queueFile = new QueueFile();
-		$queueFile->setFileId($this->testFile->getId());
-		$queueFile->setId(1);
-		$generator = $this->classifier->classifyFiles('imagenet', [$queueFile], 100);
-		$classifications = iterator_to_array($generator, false);
-		$this->assertCount(1, $classifications);
-		$this->assertEquals('Alpine', $classifications[0][0]);
 	}
 
 	public function testSchedulerJob() : void {
+		$this->testFile = $this->userFolder->newFile('/alpine.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
+
 		/** @var SchedulerJob $scheduler */
 		$scheduler = \OC::$server->get(SchedulerJob::class);
 		/** @var IJobList $jobList */
@@ -66,6 +55,7 @@ class ClassifierTest extends TestCase {
 	}
 
 	public function testStorageCrawlJob() : void {
+		$this->testFile = $this->userFolder->newFile('/alpine.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
 		\OC::$server->getConfig()->setAppValue('recognize', 'imagenet.enabled', 'true');
 		/** @var StorageCrawlJob $scheduler */
 		$crawler = \OC::$server->get(StorageCrawlJob::class);
@@ -89,6 +79,37 @@ class ClassifierTest extends TestCase {
 			'storageId' => $storageId,
 			'rootId' => $rootId
 		]));
+	}
+
+	/**
+	 * @dataProvider classifierFilesProvider
+	 * @return void
+	 * @throws \OCP\Files\InvalidPathException
+	 * @throws \OCP\Files\NotFoundException
+	 * @throws \OCP\Files\NotPermittedException
+	 */
+	public function testClassifier($file, $model, $tag) : void {
+		$this->testFile = $this->userFolder->newFile('/'.$file, file_get_contents(__DIR__.'/res/'.$file));
+		$queueFile = new QueueFile();
+		$queueFile->setFileId($this->testFile->getId());
+		$queueFile->setId(1);
+		$generator = $this->classifier->classifyFiles($model, [$queueFile], 100);
+		$classifications = iterator_to_array($generator, false);
+		$this->assertCount(1, $classifications);
+		$this->assertContains($tag, $classifications[0]);
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function classifierFilesProvider() {
+		return [
+			['alpine.JPG', 'imagenet', 'Alpine'],
+			['eiffeltower.jpg', 'landmarks', 'Eiffel Tower'],
+			['Rock_Rejam.mp3', 'musicnn', 'electronic'],
+			['jumpingjack.gif', 'movinet', 'jumping jacks']
+		];
 	}
 
 	private function loginAndGetUserFolder(string $userId) {
