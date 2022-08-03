@@ -87,4 +87,8 @@ class QueueService {
 	public function removeFileFromAllQueues(int $fileId) : void {
 		$this->queueMapper->removeFileFromAllQueues($fileId);
 	}
+
+	public function clearQueue(string $model) {
+		$this->queueMapper->clearQueue($model);
+	}
 }

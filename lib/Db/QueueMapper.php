@@ -97,4 +97,9 @@ class QueueMapper extends QBMapper {
 		$file->setId($qb->getLastInsertId());
 		return $file;
 	}
+
+	public function clearQueue(string $model) {
+		$qb = $this->db->getQueryBuilder();
+		$qb->delete($this->getQueueTable($model))->executeStatement();
+	}
 }
