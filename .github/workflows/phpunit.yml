@@ -80,9 +80,9 @@ jobs:
       - name: Checkout submodules
         shell: bash
         run: |
-          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git config --global --add safe.directory /__w/recognize/recognize
           git submodule sync --recursive
-          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+          git submodule update --init --force --recursive --depth=1
 
       - name: Checkout app
         uses: actions/checkout@v2
@@ -90,6 +90,7 @@ jobs:
           path: apps/${{ env.APP_NAME }}
 
       - name: Set up php ${{ matrix.php-versions }}
+        if: ${{ matrix.container == ''}}
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
