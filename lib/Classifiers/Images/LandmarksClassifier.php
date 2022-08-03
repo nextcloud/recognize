@@ -18,7 +18,7 @@ class LandmarksClassifier extends Classifier {
 	public const IMAGE_TIMEOUT = 480; // seconds
 	public const IMAGE_PUREJS_TIMEOUT = 600; // seconds
 	public const MODEL_NAME = 'landmarks';
-	public const PRECONDITION_TAGS = ['architecture', 'tower', 'monument', 'bridge', 'historic'];
+	public const PRECONDITION_TAGS = ['Architecture', 'Tower', 'Monument', 'Bridge', 'Historic'];
 
 	private Logger $logger;
 	private TagManager $tagManager;
