@@ -24,12 +24,19 @@ jobs:
         php-versions: ['7.4', '8.0', '8.1']
         databases: ['sqlite', 'mysql', 'pgsql']
         server-versions: ['master']
+        container: ['']
         include:
           - server-versions: master
             databases: 'mysql'
             php-versions: '8.1'
+          - server-versions: master
+            php-versions: 8.0
+            databases: sqlite
+            container: nextcloud:fpm-alpine
 
-    name: php${{ matrix.php-versions }}-${{ matrix.databases }}-${{ matrix.server-versions }}
+    name: php${{ matrix.php-versions }} ${{ matrix.databases }} ${{ matrix.server-versions }} ${{ matrix.container }}
+
+    container: ${{ matrix.container }}
 
     services:
       mysql:
@@ -50,6 +57,20 @@ jobs:
         options: --health-cmd pg_isready --health-interval 5s --health-timeout 2s --health-retries 5
 
     steps:
+      - name: Get Alpine Linux ready
+        if: ${{ matrix.container != ''}}
+        run: |
+          apk update
+          apk upgrade
+          apk add bash
+          apk add git
+          apk add composer
+          apk add nodejs
+          apk add npm
+          apk add make
+          apk add curl
+          apk add grep
+
       - name: Checkout server
         uses: actions/checkout@v2
         with:
@@ -84,6 +105,16 @@ jobs:
           make all
           make remove-binaries # Make it download tfjs from scratch
           rm -rf models # Make it download from github
+
+      - name: Install app on Alpine
+        if: ${{ matrix.container != ''}}
+        working-directory: apps/${{ env.APP_NAME }}
+        run: |
+          composer install --ignore-platform-req=php --no-dev
+          npm ci --ignore-scripts
+          npm run build
+          mkdir -p bin
+          rm -rf models
 
       - name: Set up Nextcloud with mysql
         if: ${{matrix.databases == 'mysql' }}
