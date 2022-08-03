@@ -44,7 +44,7 @@ The app does not send any sensitive data to cloud providers or similar services.
 	<screenshot>https://raw.githubusercontent.com/marcelklehr/recognize/master/screenshots/imagenet_examples.jpg</screenshot>
 	<dependencies>
 		<php min-version="7.4" />
-		<nextcloud min-version="24" max-version="24" />
+		<nextcloud min-version="24" max-version="25" />
 	</dependencies>
 	<background-jobs>
 		<job>OCA\Recognize\BackgroundJobs\SchedulerJob</job>
