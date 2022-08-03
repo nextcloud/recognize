@@ -35,6 +35,7 @@ class ClassifierTest extends TestCase {
 	private \OCP\Files\Folder $userFolder;
 	private QueueService $queue;
 	private FaceDetectionMapper $faceDetectionMapper;
+	private IJobList $jobList;
 
 	public static function setUpBeforeClass(): void {
 		parent::setUpBeforeClass();
@@ -49,6 +50,7 @@ class ClassifierTest extends TestCase {
 		$this->rootFolder = \OC::$server->getRootFolder();
 		$this->userFolder = $this->loginAndGetUserFolder(self::TEST_USER1);
 		$this->faceDetectionMapper = \OC::$server->get(FaceDetectionMapper::class);
+		$this->jobList = \OC::$server->get(IJobList::class);
 		$this->queue = \OC::$server->get(QueueService::class);
 		foreach (self::TEST_FILES as $filename) {
 			try {
@@ -68,23 +70,21 @@ class ClassifierTest extends TestCase {
 
 		/** @var SchedulerJob $scheduler */
 		$scheduler = \OC::$server->get(SchedulerJob::class);
-		/** @var IJobList $jobList */
-		$jobList = \OC::$server->get(IJobList::class);
 
 		$scheduler->setId(1);
 		$scheduler->setLastRun(0);
-		$scheduler->execute($jobList);
+		$scheduler->execute($this->jobList);
 
 		$storageId = $this->testFile->getMountPoint()->getNumericStorageId();
 		$rootId = $this->testFile->getMountPoint()->getStorageRootId();
-		self::assertTrue($jobList->has(StorageCrawlJob::class, [
+		self::assertTrue($this->jobList->has(StorageCrawlJob::class, [
 			'storage_id' => $storageId,
 			'root_id' => $rootId,
 			'last_file_id' => 0
 		]));
 
 		// cleanup
-		$jobList->remove(StorageCrawlJob::class, [
+		$this->jobList->remove(StorageCrawlJob::class, [
 			'storage_id' => $storageId,
 			'root_id' => $rootId,
 			'last_file_id' => 0
@@ -96,8 +96,8 @@ class ClassifierTest extends TestCase {
 		\OC::$server->getConfig()->setAppValue('recognize', 'imagenet.enabled', 'true');
 		/** @var StorageCrawlJob $scheduler */
 		$crawler = \OC::$server->get(StorageCrawlJob::class);
-		/** @var IJobList $jobList */
-		$jobList = \OC::$server->get(IJobList::class);
+		/** @var IJobList $this->jobList */
+		$this->jobList = \OC::$server->get(IJobList::class);
 		/** @var QueueService $queue */
 
 		$storageId = $this->testFile->getMountPoint()->getNumericStorageId();
@@ -112,12 +112,12 @@ class ClassifierTest extends TestCase {
 		]);
 		$crawler->setId(1);
 		$crawler->setLastRun(0);
-		$crawler->execute($jobList);
+		$crawler->execute($this->jobList);
 
 		// clean up
-		$jobList->remove(StorageCrawlJob::class);
+		$this->jobList->remove(StorageCrawlJob::class);
 
-		self::assertTrue($jobList->has(ClassifyImagenetJob::class, [
+		self::assertTrue($this->jobList->has(ClassifyImagenetJob::class, [
 			'storageId' => $storageId,
 			'rootId' => $rootId
 		]), 'ClassifyImagenetJob should have been scheduled');
@@ -126,8 +126,8 @@ class ClassifierTest extends TestCase {
 			$this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100),
 			'imagenet queue should contain image');
 
-		list($classifier) = $jobList->getJobs(ClassifyImagenetJob::class, 1, 0);
-		$classifier->execute($jobList);
+		list($classifier) = $this->jobList->getJobs(ClassifyImagenetJob::class, 1, 0);
+		$classifier->execute($this->jobList);
 
 		/** @var \OCP\SystemTag\ISystemTagObjectMapper $objectMapper */
 		$objectMapper = \OC::$server->get(ISystemTagObjectMapper::class);
@@ -150,8 +150,8 @@ class ClassifierTest extends TestCase {
 		\OC::$server->getConfig()->setAppValue('recognize', 'landmarks.enabled', 'true');
 		/** @var StorageCrawlJob $scheduler */
 		$crawler = \OC::$server->get(StorageCrawlJob::class);
-		/** @var IJobList $jobList */
-		$jobList = \OC::$server->get(IJobList::class);
+		/** @var IJobList $this->jobList */
+		$this->jobList = \OC::$server->get(IJobList::class);
 
 		$storageId = $this->testFile->getMountPoint()->getNumericStorageId();
 		$rootId = $this->testFile->getMountPoint()->getStorageRootId();
@@ -170,12 +170,12 @@ class ClassifierTest extends TestCase {
 		]);
 		$crawler->setId(1);
 		$crawler->setLastRun(0);
-		$crawler->execute($jobList);
+		$crawler->execute($this->jobList);
 
 		// clean up
-		$jobList->remove(StorageCrawlJob::class);
+		$this->jobList->remove(StorageCrawlJob::class);
 
-		self::assertTrue($jobList->has(ClassifyImagenetJob::class, [
+		self::assertTrue($this->jobList->has(ClassifyImagenetJob::class, [
 			'storageId' => $storageId,
 			'rootId' => $rootId
 		]), 'ClassifyImagenetJob should have been created');
@@ -187,10 +187,10 @@ class ClassifierTest extends TestCase {
 			$this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100),
 			'imagenet queue should contain image');
 
-		list($classifier, ) = $jobList->getJobs(ClassifyImagenetJob::class, 1, 0);
-		$classifier->execute($jobList);
+		list($classifier, ) = $this->jobList->getJobs(ClassifyImagenetJob::class, 1, 0);
+		$classifier->execute($this->jobList);
 
-		self::assertTrue($jobList->has(ClassifyLandmarksJob::class, [
+		self::assertTrue($this->jobList->has(ClassifyLandmarksJob::class, [
 			'storageId' => $storageId,
 			'rootId' => $rootId
 		]), 'ClassifyLandmarksJob should have been scheduled');
@@ -199,8 +199,8 @@ class ClassifierTest extends TestCase {
 			$this->queue->getFromQueue(LandmarksClassifier::MODEL_NAME, $storageId, $rootId, 100),
 			'landmarks queue should contain image');
 
-		list($classifier, ) = $jobList->getJobs(ClassifyLandmarksJob::class, 1, 0);
-		$classifier->execute($jobList);
+		list($classifier, ) = $this->jobList->getJobs(ClassifyLandmarksJob::class, 1, 0);
+		$classifier->execute($this->jobList);
 
 		/** @var \OCP\SystemTag\ISystemTagObjectMapper $objectMapper */
 		$objectMapper = \OC::$server->get(ISystemTagObjectMapper::class);
@@ -237,8 +237,8 @@ class ClassifierTest extends TestCase {
 
 		/** @var StorageCrawlJob $scheduler */
 		$crawler = \OC::$server->get(StorageCrawlJob::class);
-		/** @var IJobList $jobList */
-		$jobList = \OC::$server->get(IJobList::class);
+		/** @var IJobList $this->jobList */
+		$this->jobList = \OC::$server->get(IJobList::class);
 
 		$storageId = $testFiles[0]->getMountPoint()->getNumericStorageId();
 		$rootId = $testFiles[0]->getMountPoint()->getStorageRootId();
@@ -254,14 +254,14 @@ class ClassifierTest extends TestCase {
 		]);
 		$crawler->setId(1);
 		$crawler->setLastRun(0);
-		$crawler->execute($jobList);
+		$crawler->execute($this->jobList);
 
-		while (count($jobs = $jobList->getJobs(StorageCrawlJob::class, 1, 0)) > 0) {
+		while (count($jobs = $this->jobList->getJobs(StorageCrawlJob::class, 1, 0)) > 0) {
 			list($crawler) = $jobs;
-			$crawler->execute($jobList);
+			$crawler->execute($this->jobList);
 		}
 
-		self::assertTrue($jobList->has(ClassifyFacesJob::class, [
+		self::assertTrue($this->jobList->has(ClassifyFacesJob::class, [
 			'storageId' => $storageId,
 			'rootId' => $rootId
 		]), 'ClassifyFacesJob should have been created');
@@ -270,19 +270,19 @@ class ClassifierTest extends TestCase {
 			$this->queue->getFromQueue(ClusteringFaceClassifier::MODEL_NAME, $storageId, $rootId, 500),
 			'faces queue should contain images');
 
-		list($classifier, ) = $jobList->getJobs(ClassifyFacesJob::class, 1, 0);
-		$classifier->execute($jobList);
+		list($classifier, ) = $this->jobList->getJobs(ClassifyFacesJob::class, 1, 0);
+		$classifier->execute($this->jobList);
 
 		self::assertGreaterThan(10,
 			count($this->faceDetectionMapper->findByUserId(self::TEST_USER1)),
 			'at least 10 face detections should have been created');
 
-		self::assertTrue($jobList->has(ClusterFacesJob::class, [
+		self::assertTrue($this->jobList->has(ClusterFacesJob::class, [
 			'userId' => self::TEST_USER1,
 		]), 'ClusterFacesJob should have been scheduled');
 
-		list($clusterer, ) = $jobList->getJobs(ClusterFacesJob::class, 1, 0);
-		$clusterer->execute($jobList);
+		list($clusterer, ) = $this->jobList->getJobs(ClusterFacesJob::class, 1, 0);
+		$clusterer->execute($this->jobList);
 
 		/** @var FaceClusterMapper $clusterMapper */
 		$clusterMapper = \OC::$server->get(FaceClusterMapper::class);
