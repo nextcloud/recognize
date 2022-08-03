@@ -4,6 +4,7 @@ use OCA\Recognize\BackgroundJobs\ClassifyFacesJob;
 use OCA\Recognize\BackgroundJobs\ClassifyImagenetJob;
 use OCA\Recognize\BackgroundJobs\ClassifyLandmarksJob;
 use OCA\Recognize\BackgroundJobs\ClassifyMovinetJob;
+use OCA\Recognize\BackgroundJobs\ClassifyMusicnnJob;
 use OCA\Recognize\BackgroundJobs\ClusterFacesJob;
 use OCA\Recognize\BackgroundJobs\SchedulerJob;
 use OCA\Recognize\BackgroundJobs\StorageCrawlJob;
@@ -365,6 +366,62 @@ class ClassifierTest extends TestCase {
 				(string)$this->testFile->getId(),
 				'files',
 				$tagManager->getTag('jumping jacks', true, true)->getId()
+			),
+			'Correct tag should have been set on gif file'
+		);
+	}
+
+	public function testMusicnnPipeline() : void {
+		$this->testFile = $this->userFolder->newFile('/Rock_Rejam.mp3', file_get_contents(__DIR__.'/res/Rock_Rejam.mp3'));
+		\OC::$server->getConfig()->setAppValue('recognize', 'musicnn.enabled', 'true');
+		/** @var StorageCrawlJob $scheduler */
+		$crawler = \OC::$server->get(StorageCrawlJob::class);
+		/** @var IJobList $this->jobList */
+		$this->jobList = \OC::$server->get(IJobList::class);
+
+		$storageId = $this->testFile->getMountPoint()->getNumericStorageId();
+		$rootId = $this->testFile->getMountPoint()->getStorageRootId();
+
+		self::assertCount(0,
+			$this->queue->getFromQueue(MusicnnClassifier::MODEL_NAME, $storageId, $rootId, 100),
+			'musicnn queue should be empty initially');
+
+		$crawler->setArgument([
+			'storage_id' => $storageId,
+			'root_id' => $rootId,
+			'last_file_id' => 0
+		]);
+		$crawler->setId(1);
+		$crawler->setLastRun(0);
+		$crawler->execute($this->jobList);
+
+		while (count($jobs = $this->jobList->getJobs(StorageCrawlJob::class, 1, 0)) > 0) {
+			list($crawler) = $jobs;
+			$crawler->execute($this->jobList);
+		}
+
+		self::assertTrue($this->jobList->has(ClassifyMusicnnJob::class, [
+			'storageId' => $storageId,
+			'rootId' => $rootId
+		]), 'ClassifyMovinetJob should have been scheduled');
+
+		self::assertCount(1,
+			$this->queue->getFromQueue(MusicnnClassifier::MODEL_NAME, $storageId, $rootId, 100),
+			'movinet queue should contain gif');
+
+		list($classifier) = $this->jobList->getJobs(ClassifyMusicnnJob::class, 1, 0);
+		$classifier->execute($this->jobList);
+
+		/** @var \OCP\SystemTag\ISystemTagObjectMapper $objectMapper */
+		$objectMapper = \OC::$server->get(ISystemTagObjectMapper::class);
+		/** @var \OCP\SystemTag\ISystemTagManager $tagManager */
+		$tagManager = \OC::$server->get(OCP\SystemTag\ISystemTagManager::class);
+
+		self::assertTrue(
+			$objectMapper->haveTag(
+				(string)$this->testFile->getId(),
+				'files',
+				$tagManager->getTag('electronic', true, true)->getId()
 			),
 			'Correct tag should have been set on gif file'
 		);
