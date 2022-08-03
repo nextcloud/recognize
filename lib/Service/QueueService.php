@@ -7,6 +7,11 @@ use OCA\Recognize\BackgroundJobs\ClassifyImagenetJob;
 use OCA\Recognize\BackgroundJobs\ClassifyLandmarksJob;
 use OCA\Recognize\BackgroundJobs\ClassifyMovinetJob;
 use OCA\Recognize\BackgroundJobs\ClassifyMusicnnJob;
+use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
+use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
+use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
+use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
+use OCA\Recognize\Classifiers\Video\MovinetClassifier;
 use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Db\QueueMapper;
 use OCP\BackgroundJob\IJobList;
@@ -17,11 +22,11 @@ class QueueService {
 	 * @const array<string, string> JOB_CLASSES
 	 */
 	public const JOB_CLASSES = [
-		'imagenet' => ClassifyImagenetJob::class,
-		'faces' => ClassifyFacesJob::class,
-		'landmarks' => ClassifyLandmarksJob::class,
-		'movinet' => ClassifyMovinetJob::class,
-		'musicnn' => ClassifyMusicnnJob::class,
+		ImagenetClassifier::MODEL_NAME => ClassifyImagenetJob::class,
+		ClusteringFaceClassifier::MODEL_NAME => ClassifyFacesJob::class,
+		LandmarksClassifier::MODEL_NAME => ClassifyLandmarksJob::class,
+		MovinetClassifier::MODEL_NAME => ClassifyMovinetJob::class,
+		MusicnnClassifier::MODEL_NAME => ClassifyMusicnnJob::class,
 	];
 
 	private QueueMapper $queueMapper;
