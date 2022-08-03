@@ -11,7 +11,7 @@ use OCP\IConfig;
 use Psr\Log\LoggerInterface;
 
 class ClassifyMusicnnJob extends ClassifierJob {
-	public const MODEL_NAME = 'imagenet';
+	public const MODEL_NAME = 'musicnn';
 	public const BATCH_SIZE = 100; // 100 files
 	public const BATCH_SIZE_PUREJS = 25; // 10 files
 
