@@ -40,7 +40,9 @@ abstract class ClassifierJob extends Job {
 		$mounts = array_filter($this->userMountCache->getMountsForStorageId($storageId), function (ICachedMountInfo $mount) use ($rootId) {
 			return $mount->getRootId() === $rootId;
 		});
-		\OC_Util::setupFS($mounts[0]->getUser()->getUID());
+		if (count($mounts) > 0) {
+			\OC_Util::setupFS($mounts[0]->getUser()->getUID());
+		}
 
 		$this->classify($files);
 
