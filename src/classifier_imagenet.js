@@ -27,6 +27,8 @@ if (process.env.RECOGNIZE_PUREJS === 'true') {
 		console.error('Trying js-only mode')
 		tf = require('@tensorflow/tfjs')
 		require('@tensorflow/tfjs-backend-wasm')
+		getPort = require('get-port')
+		StaticServer = require('static-server')
 		PUREJS = true
 	}
 }
@@ -172,10 +174,12 @@ async function main(modelName, imgSize, minInput) {
 	}
 }
 
-tf.setBackend(process.env.RECOGNIZE_PUREJS === 'true' ? 'wasm' : 'tensorflow')
+tf.setBackend(PUREJS ? 'wasm' : 'tensorflow')
 	.then(() => {
-		let modelName = 'efficientnetv2'; let imgSize = 512; let minInput = -1
-		if (process.env.RECOGNIZE_PUREJS === 'true') {
+		let modelName = 'efficientnetv2'
+		let imgSize = 512
+		let minInput = -1
+		if (PUREJS) {
 			modelName = 'efficientnet_lite4'
 			imgSize = 380
 			minInput = 0
