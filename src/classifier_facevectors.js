@@ -77,7 +77,7 @@ async function main() {
 	}
 }
 
-tf.setBackend(process.env.RECOGNIZE_PUREJS === 'true' ? 'wasm' : 'tensorflow')
+tf.setBackend(PUREJS ? 'wasm' : 'tensorflow')
 	.then(() => main())
 	.catch(e => {
 		console.error(e)
