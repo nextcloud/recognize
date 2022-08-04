@@ -149,6 +149,10 @@ class ClassifierTest extends TestCase {
 	}
 
 	public function testLandmarksPipeline() : void {
+		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
+			// landmarks will fail with purejs/WASM mode, sadly, because we use a worse imagenet model in WASM mode
+			self::markTestSkipped();
+		}
 		$this->testFile = $this->userFolder->newFile('/eiffeltower.jpg', file_get_contents(__DIR__.'/res/eiffeltower.jpg'));
 		$this->config->setAppValue('recognize', 'imagenet.enabled', 'true');
 		$this->config->setAppValue('recognize', 'landmarks.enabled', 'true');
@@ -443,7 +447,7 @@ class ClassifierTest extends TestCase {
 	 * @throws \OCP\Files\NotPermittedException
 	 */
 	public function testClassifier($file, $model, $tag) : void {
-		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true' && in_array($model, ['movinet', 'musicnn']) ) {
+		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true' && in_array($model, ['movinet', 'musicnn'])) {
 			// Cannot run musicnn/movinet with purejs/WASM mode
 			self::markTestSkipped();
 		}
