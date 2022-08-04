@@ -73,6 +73,7 @@ The app does not send any sensitive data to cloud providers or similar services.
 		<command>OCA\Recognize\Command\ClassifyVideo</command>
 		<command>OCA\Recognize\Command\ResetTags</command>
 		<command>OCA\Recognize\Command\CleanupTags</command>
+		<command>OCA\Recognize\Command\DownloadModels</command>
 	</commands>
 
 	<types>
