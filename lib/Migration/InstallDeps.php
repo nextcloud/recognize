@@ -27,9 +27,11 @@ declare(strict_types=1);
 namespace OCA\Recognize\Migration;
 
 use OCA\Recognize\Helper\TAR;
+use OCP\Http\Client\IClientService;
 use OCP\IConfig;
 use OCP\Migration\IOutput;
 use OCP\Migration\IRepairStep;
+use Psr\Log\LoggerInterface;
 
 class InstallDeps implements IRepairStep {
 	public const NODE_VERSION = 'v14.18.2';
@@ -42,14 +44,18 @@ class InstallDeps implements IRepairStep {
 	private string $ffmpegDir;
 	private string $tfjsInstallScript;
 	private string $tfjsPath;
+	private IClientService $clientService;
+	private LoggerInterface $logger;
 
-	public function __construct(IConfig $config) {
+	public function __construct(IConfig $config, IClientService $clientService, LoggerInterface $logger) {
 		$this->config = $config;
 		$this->binaryDir = dirname(__DIR__, 2) . '/bin/';
 		$this->preGypBinaryDir = dirname(__DIR__, 2) . '/node_modules/@mapbox/node-pre-gyp/bin/';
 		$this->ffmpegDir = dirname(__DIR__, 2) . '/node_modules/ffmpeg-static/';
 		$this->tfjsInstallScript = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node/scripts/install.js';
 		$this->tfjsPath = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node/';
+		$this->clientService = $clientService;
+		$this->logger = $logger;
 	}
 
 	public function getName(): string {
@@ -132,6 +138,7 @@ class InstallDeps implements IRepairStep {
 		try {
 			exec($cmd . ' 2>&1', $output, $returnCode); // Appending  2>&1 to avoid leaking sterr
 		} catch (\Throwable $e) {
+			$this->logger->error('Failed to install Tensorflow.js: '.$e->getMessage(), ['exception' => $e]);
 			throw new \Exception('Failed to install Tensorflow.js: '.$e->getMessage());
 		}
 		chdir($oriCwd);
@@ -147,13 +154,11 @@ class InstallDeps implements IRepairStep {
 		}
 		$url = $server.$version.'/'.$name.'.tar.gz';
 		$file = $this->binaryDir.'/'.$arch.'.tar.gz';
-		$archive = file_get_contents($url);
-		if ($archive === false) {
+		try {
+			$this->clientService->newClient()->get($url, ['timeout' => 60, 'sink' => $file]);
+		} catch (\Exception $e) {
+			$this->logger->error('Downloading of node binary failed', ['exception' => $e]);
 			throw new \Exception('Downloading of node binary failed');
-		}
-		$saved = file_put_contents($file, $archive);
-		if ($saved === false) {
-			throw new \Exception('Saving of node binary failed');
 		}
 		$tar = new TAR($file);
 		$tar->extractFile($name.'/bin/node', $this->binaryDir.'/node');
