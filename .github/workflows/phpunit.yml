@@ -70,6 +70,13 @@ jobs:
           apk add make
           apk add curl
           apk add grep
+          apk add php8
+          apk add php8-tokenizer
+          apk add php8-dom
+          apk add php8-xml
+          apk add php8-xmlwriter
+          apk add php8-ctype
+          
 
       - name: Checkout server
         uses: actions/checkout@v2
