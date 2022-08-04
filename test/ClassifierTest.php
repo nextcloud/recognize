@@ -38,6 +38,7 @@ class ClassifierTest extends TestCase {
 	private QueueService $queue;
 	private FaceDetectionMapper $faceDetectionMapper;
 	private IJobList $jobList;
+	private \OCP\IConfig $config;
 
 	public static function setUpBeforeClass(): void {
 		parent::setUpBeforeClass();
@@ -53,6 +54,7 @@ class ClassifierTest extends TestCase {
 		$this->userFolder = $this->loginAndGetUserFolder(self::TEST_USER1);
 		$this->faceDetectionMapper = \OC::$server->get(FaceDetectionMapper::class);
 		$this->jobList = \OC::$server->get(IJobList::class);
+		$this->config = \OC::$server->getConfig();
 		$this->queue = \OC::$server->get(QueueService::class);
 		foreach (self::TEST_FILES as $filename) {
 			try {
@@ -95,7 +97,7 @@ class ClassifierTest extends TestCase {
 
 	public function testImagenetPipeline() : void {
 		$this->testFile = $this->userFolder->newFile('/alpine.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
-		\OC::$server->getConfig()->setAppValue('recognize', 'imagenet.enabled', 'true');
+		$this->config->setAppValue('recognize', 'imagenet.enabled', 'true');
 		/** @var StorageCrawlJob $scheduler */
 		$crawler = \OC::$server->get(StorageCrawlJob::class);
 		/** @var IJobList $this->jobList */
@@ -148,8 +150,8 @@ class ClassifierTest extends TestCase {
 
 	public function testLandmarksPipeline() : void {
 		$this->testFile = $this->userFolder->newFile('/eiffeltower.jpg', file_get_contents(__DIR__.'/res/eiffeltower.jpg'));
-		\OC::$server->getConfig()->setAppValue('recognize', 'imagenet.enabled', 'true');
-		\OC::$server->getConfig()->setAppValue('recognize', 'landmarks.enabled', 'true');
+		$this->config->setAppValue('recognize', 'imagenet.enabled', 'true');
+		$this->config->setAppValue('recognize', 'landmarks.enabled', 'true');
 		/** @var StorageCrawlJob $scheduler */
 		$crawler = \OC::$server->get(StorageCrawlJob::class);
 		/** @var IJobList $this->jobList */
@@ -235,7 +237,7 @@ class ClassifierTest extends TestCase {
 			}
 		}
 
-		\OC::$server->getConfig()->setAppValue('recognize', 'faces.enabled', 'true');
+		$this->config->setAppValue('recognize', 'faces.enabled', 'true');
 
 		/** @var StorageCrawlJob $scheduler */
 		$crawler = \OC::$server->get(StorageCrawlJob::class);
@@ -316,12 +318,14 @@ class ClassifierTest extends TestCase {
 	}
 
 	public function testMovinetPipeline() : void {
+		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
+			// Cannot run musicnn with purejs/WASM mode
+			self::markTestSkipped();
+		}
 		$this->testFile = $this->userFolder->newFile('/jumpingjack.gif', file_get_contents(__DIR__.'/res/jumpingjack.gif'));
-		\OC::$server->getConfig()->setAppValue('recognize', 'movinet.enabled', 'true');
+		$this->config->setAppValue('recognize', 'movinet.enabled', 'true');
 		/** @var StorageCrawlJob $scheduler */
 		$crawler = \OC::$server->get(StorageCrawlJob::class);
-		/** @var IJobList $this->jobList */
-		$this->jobList = \OC::$server->get(IJobList::class);
 
 		$storageId = $this->testFile->getMountPoint()->getNumericStorageId();
 		$rootId = $this->testFile->getMountPoint()->getStorageRootId();
@@ -372,8 +376,12 @@ class ClassifierTest extends TestCase {
 	}
 
 	public function testMusicnnPipeline() : void {
+		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
+			// Cannot run musicnn with purejs/WASM mode
+			self::markTestSkipped();
+		}
 		$this->testFile = $this->userFolder->newFile('/Rock_Rejam.mp3', file_get_contents(__DIR__.'/res/Rock_Rejam.mp3'));
-		\OC::$server->getConfig()->setAppValue('recognize', 'musicnn.enabled', 'true');
+		$this->config->setAppValue('recognize', 'musicnn.enabled', 'true');
 		/** @var StorageCrawlJob $scheduler */
 		$crawler = \OC::$server->get(StorageCrawlJob::class);
 		/** @var IJobList $this->jobList */
@@ -435,6 +443,10 @@ class ClassifierTest extends TestCase {
 	 * @throws \OCP\Files\NotPermittedException
 	 */
 	public function testClassifier($file, $model, $tag) : void {
+		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true' && in_array($model, ['movinet', 'musicnn']) ) {
+			// Cannot run musicnn/movinet with purejs/WASM mode
+			self::markTestSkipped();
+		}
 		$this->testFile = $this->userFolder->newFile('/'.$file, file_get_contents(__DIR__.'/res/'.$file));
 		$queueFile = new QueueFile();
 		$queueFile->setFileId($this->testFile->getId());
