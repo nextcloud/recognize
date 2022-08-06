@@ -7,6 +7,7 @@ OC.L10N.register(
     "Failed to save settings" : "Klarte ikke å lagre innstillinger",
     "Music" : "Musikk",
     "Office" : "Office",
+    "Train" : "Tog",
     "Car" : "Bil",
     "Computer" : "Datamaskin",
     "Clock" : "Klokke",
