@@ -61,8 +61,8 @@
     "google-img-scrap": "^1.0.6"
   },
   "engines": {
-    "node": ">=14.0.0",
-    "npm": ">=7.0.0"
+    "node": "^16.0.0",
+    "npm": "^7.0.0 || ^8.0.0"
   },
   "browserslist": [
     "extends @nextcloud/browserslist-config"
