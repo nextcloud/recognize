@@ -1,6 +1,7 @@
 OC.L10N.register(
     "recognize",
     {
+    "Smart media tagging for Nextcloud" : "智能的媒体文件标签分类",
     "Status" : "状态",
     "Reset" : "重置",
     "Failed to load settings" : "无法加载设置",
