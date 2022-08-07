@@ -58,7 +58,7 @@
     "async-parallel": "^1.2.3",
     "fast-glob": "^3.2.11",
     "flickr-sdk": "^6.0.0",
-    "google-img-scrap": "^1.0.6"
+    "google-img-scrap": "^1.0.7"
   },
   "engines": {
     "node": "^16.0.0",
