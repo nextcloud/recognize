@@ -10,7 +10,7 @@
     "Manual operation" : "Manuelle Ausführung",
     "CPU cores" : "CPU-Kerne",
     "Tensorflow plain mode" : "Tensorflow-Plain-Modus",
-    "Node.js path" : "Node.js Pfad",
+    "Node.js path" : "Node.js-Pfad",
     "Failed to load settings" : "Einstellungen konnten nicht geladen werden",
     "Failed to save settings" : "Einstellungen konnten nicht gespeichert werden",
     "Face recognition" : "Gesichtserkennung",
@@ -188,7 +188,7 @@
     "Crib" : "Krippe",
     "Fan" : "Ventilator",
     "Gas station" : "Tankstelle",
-    "Wood" : "Holf",
+    "Wood" : "Holz",
     "Bench" : "Bank",
     "Parking" : "Parken",
     "Traffic" : "Verkehr",
@@ -198,7 +198,7 @@
     "Toy" : "Spielzeug",
     "Vase" : "Vase",
     "Mailbox" : "Briefkasten",
-    "Sign" : "Signieren",
+    "Sign" : "Zeichen",
     "Gallery" : "Galerie",
     "Park" : "Park"
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
