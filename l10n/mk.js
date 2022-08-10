@@ -4,6 +4,7 @@ OC.L10N.register(
     "Status" : "Статус",
     "Reset" : "Ресетирање",
     "Failed to save settings" : "Неуспешно зачувување на параметрите",
+    "Face recognition" : "Препознавање на ликови",
     "People" : "Луѓе",
     "Music" : "Музика",
     "Office" : "Канцеларија",
