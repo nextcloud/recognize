@@ -2,6 +2,10 @@
 
 namespace OCA\Recognize\Dav\Faces;
 
+use OCA\DAV\Connector\Sabre\File;
+use OCA\Recognize\Db\FaceClusterMapper;
+use OCA\Recognize\Db\FaceDetection;
+use OCA\Recognize\Db\FaceDetectionMapper;
 use Sabre\DAV\INode;
 use Sabre\DAV\PropFind;
 use Sabre\DAV\Server;
@@ -9,6 +13,18 @@ use Sabre\DAV\ServerPlugin;
 
 class PropFindPlugin extends ServerPlugin {
 	private Server $server;
+	private FaceDetectionMapper $faceDetectionMapper;
+	private FaceClusterMapper $clusterMapper;
+
+	public const INTERNAL_FILEID_PROPERTYNAME = '{http://owncloud.org/ns}fileid';
+	public const FILE_METADATA_SIZE = '{http://nextcloud.org/ns}file-metadata-size';
+	public const HAS_PREVIEW_PROPERTYNAME = '{http://nextcloud.org/ns}has-preview';
+	public const FAVORITE_PROPERTYNAME = '{http://owncloud.org/ns}favorite';
+
+	public function __construct(FaceDetectionMapper $faceDetectionMapper, FaceClusterMapper $clusterMapper) {
+		$this->faceDetectionMapper = $faceDetectionMapper;
+		$this->clusterMapper = $clusterMapper;
+	}
 
 	public function initialize(Server $server) {
 		$this->server = $server;
@@ -18,12 +34,35 @@ class PropFindPlugin extends ServerPlugin {
 
 
 	public function propFind(PropFind $propFind, INode $node) {
-		if (!($node instanceof FacePhoto)) {
-			return;
+		if ($node instanceof FacePhoto) {
+			$propFind->handle('{http://nextcloud.org/ns}file-name', function () use ($node) {
+				return $node->getFile()->getName();
+			});
+
+			$propFind->handle('{http://nextcloud.org/ns}face-detections', function () use ($node) {
+				return json_encode(array_map(function (FaceDetection $face) {
+					$array = $face->toArray();
+					$array['faceName'] = $this->clusterMapper->find($face->getClusterId())->getTitle() === ''? 'Person ' . $face->getClusterId() : $this->clusterMapper->find($face->getClusterId())->getTitle();
+					return $array;
+				}, array_values(array_filter($this->faceDetectionMapper->findByFileId($node->getFile()->getId()), fn (FaceDetection $face) => $face->getClusterId() !== null))));
+			});
+
+			$propFind->handle(self::INTERNAL_FILEID_PROPERTYNAME, fn () => $node->getFile()->getId());
+			$propFind->handle('{http://nextcloud.org/ns}file-name', fn () => $node->getFile()->getName());
+			$propFind->handle('{http://nextcloud.org/ns}realpath', fn () => $node->getFileInfo()->getPath());
+			$propFind->handle(self::FILE_METADATA_SIZE, fn () => json_encode($node->getMetadata()));
+			$propFind->handle(self::HAS_PREVIEW_PROPERTYNAME, fn () => json_encode($node->hasPreview()));
+			$propFind->handle(self::FAVORITE_PROPERTYNAME, fn () => $node->isFavorite() ? 1 : 0);
 		}
 
-		$propFind->handle('{http://nextcloud.org/ns}file-name', function () use ($node) {
-			return $node->getFile()->getName();
-		});
+		if ($node instanceof File) {
+			$propFind->handle('{http://nextcloud.org/ns}face-detections', function () use ($node) {
+				return json_encode(array_map(function (FaceDetection $face) {
+					$array = $face->toArray();
+					$array['faceName'] = $this->clusterMapper->find($face->getClusterId())->getTitle() === ''? 'Person ' . $face->getClusterId() : $this->clusterMapper->find($face->getClusterId())->getTitle();
+					return $array;
+				}, array_values(array_filter($this->faceDetectionMapper->findByFileId($node->getId()), fn (FaceDetection $face) => $face->getClusterId() !== null))));
+			});
+		}
 	}
 }

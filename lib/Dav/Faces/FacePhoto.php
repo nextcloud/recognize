@@ -15,6 +15,8 @@ class FacePhoto implements IFile {
 	private FaceDetection $faceDetection;
 	private Folder $userFolder;
 
+	public const TAG_FAVORITE = '_$!<Favorite>!$_';
+
 	public function __construct(FaceDetectionMapper $detectionMapper, FaceDetection $faceDetection, Folder $userFolder) {
 		$this->detectionMapper = $detectionMapper;
 		$this->faceDetection = $faceDetection;
@@ -104,5 +106,40 @@ class FacePhoto implements IFile {
 	 */
 	public function getLastModified() {
 		return $this->getFile()->getMTime();
+	}
+
+
+	public function getFileInfo() {
+		$nodes = $this->userFolder->getById($this->getFile()->getId());
+		$node = current($nodes);
+		if ($node) {
+			return $node->getFileInfo();
+		} else {
+			throw new NotFound("Photo not found for user");
+		}
+	}
+
+	public function getMetadata(): array {
+		$metadataManager = \OCP\Server::get(\OC\Metadata\IMetadataManager::class);
+		$file = $this->getFile();
+		$sizeMetadata = $metadataManager->fetchMetadataFor('size', [$file->getId()])[$file->getId()];
+		return $sizeMetadata->getMetadata();
+	}
+
+	public function hasPreview(): bool {
+		$previewManager = \OCP\Server::get(\OCP\IPreview::class);
+		return $previewManager->isAvailable($this->getFileInfo());
+	}
+
+	public function isFavorite(): bool {
+		$tagManager = \OCP\Server::get(\OCP\ITagManager::class);
+		$tagger = $tagManager->load('files');
+		$tags = $tagger->getTagsForObjects([$this->getFile()->getId()]);
+
+		if ($tags === false || empty($tags)) {
+			return false;
+		}
+
+		return array_search(self::TAG_FAVORITE, current($tags)) !== false;
 	}
 }
