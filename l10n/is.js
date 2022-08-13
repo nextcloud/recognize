@@ -21,6 +21,7 @@ OC.L10N.register(
     "Camping" : "Tjaldútilega",
     "Camera" : "Myndavél",
     "Barbecue" : "Grill",
+    "Theater" : "Leikhús",
     "Pizza" : "Flatbaka",
     "Info" : "Upplýsingar",
     "Document" : "Skjal",
