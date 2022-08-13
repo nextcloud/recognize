@@ -53,26 +53,29 @@ class MovinetModel {
 
 		const frames = []
 
-		const process = execa(ffmpeg, [
-			'-t', '120', // read 120s max
+		console.error('Starting transcoding')
+		const proc = execa(ffmpeg, [
+			'-t', '30', // read 120s max
 			'-i', videoPath,
 			'-s', `${FRAME_SIZE}x${FRAME_SIZE}`,
-			'-vf', 'fps=5',
+			'-vf', 'fps=2',
 			'-c:v', 'mjpeg',
 			'-f', 'image2pipe',
 			'-',
 		], { encoding: null, stripFinalNewline: false })
 
-		process.stdout.on('data', buffer => {
+		proc.stderr.pipe(process.stderr)
+
+		proc.stdout.on('data', buffer => {
 			frames.push(buffer)
 		})
 
-		const { stderr } = await process
+		await proc
 
-		console.error(stderr.toString('utf8'))
+		console.error('finished transcoding')
 
 		const frameTensors = []
-
+		let i=0
 		for (const frame of frames) {
 			let image
 			if (PUREJS) {
@@ -82,6 +85,7 @@ class MovinetModel {
 				image = await tf.node.decodeImage(frame, 3)
 			}
 			frameTensors.push(image)
+			console.error('decoded '+(++i)+'/'+frames.length+' images')
 		}
 
 		const values = tf.tidy(() => {
