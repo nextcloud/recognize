@@ -2,9 +2,11 @@
 
 namespace OCA\Recognize\Dav\Faces;
 
+use OCA\Recognize\Db\FaceCluster;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCP\Files\File;
+use OCP\Files\FileInfo;
 use OCP\Files\Folder;
 use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAV\Exception\NotFound;
@@ -13,12 +15,16 @@ use Sabre\DAV\IFile;
 class FacePhoto implements IFile {
 	private FaceDetectionMapper $detectionMapper;
 	private FaceDetection $faceDetection;
+	private FaceCluster $cluster;
 	private Folder $userFolder;
+	private ?File $file = null;
+	private ?FileInfo $fileInfo = null;
 
 	public const TAG_FAVORITE = '_$!<Favorite>!$_';
 
-	public function __construct(FaceDetectionMapper $detectionMapper, FaceDetection $faceDetection, Folder $userFolder) {
+	public function __construct(FaceDetectionMapper $detectionMapper, FaceCluster $cluster, FaceDetection $faceDetection, Folder $userFolder) {
 		$this->detectionMapper = $detectionMapper;
+		$this->cluster = $cluster;
 		$this->faceDetection = $faceDetection;
 		$this->userFolder = $userFolder;
 	}
@@ -54,17 +60,25 @@ class FacePhoto implements IFile {
 		throw new Forbidden('Can\'t write to photos trough the faces api');
 	}
 
+	public function getCluster() : FaceCluster {
+		return $this->cluster;
+	}
+
 	public function getFile() : File {
-		$nodes = $this->userFolder->getById($this->faceDetection->getFileId());
-		$node = current($nodes);
-		if ($node) {
-			if ($node instanceof File) {
-				return $node;
+		if ($this->file === null) {
+			$nodes = $this->userFolder->getById($this->faceDetection->getFileId());
+			$node = current($nodes);
+			if ($node) {
+				if ($node instanceof File) {
+					return $this->file = $node;
+				} else {
+					throw new NotFound("Photo is a folder");
+				}
 			} else {
-				throw new NotFound("Photo is a folder");
+				throw new NotFound("Photo not found for user");
 			}
 		} else {
-			throw new NotFound("Photo not found for user");
+			return $this->file;
 		}
 	}
 
@@ -109,14 +123,17 @@ class FacePhoto implements IFile {
 	}
 
 
-	public function getFileInfo() {
-		$nodes = $this->userFolder->getById($this->getFile()->getId());
-		$node = current($nodes);
-		if ($node) {
-			return $node->getFileInfo();
-		} else {
-			throw new NotFound("Photo not found for user");
+	public function getFileInfo() : FileInfo {
+		if ($this->fileInfo === null) {
+			$nodes = $this->userFolder->getById($this->getFile()->getId());
+			$node = current($nodes);
+			if ($node) {
+				return $this->fileInfo = $node->getFileInfo();
+			} else {
+				throw new NotFound("Photo not found for user");
+			}
 		}
+		return $this->fileInfo;
 	}
 
 	public function getMetadata(): array {

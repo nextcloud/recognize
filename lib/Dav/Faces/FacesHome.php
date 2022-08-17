@@ -16,6 +16,7 @@ class FacesHome implements ICollection {
 	private IUser $user;
 	private FaceDetectionMapper $faceDetectionMapper;
 	private IRootFolder $rootFolder;
+	private array $children = [];
 
 	public function __construct(FaceClusterMapper $faceClusterMapper, IUser $user, FaceDetectionMapper $faceDetectionMapper, IRootFolder $rootFolder) {
 		$this->faceClusterMapper = $faceClusterMapper;
@@ -60,9 +61,12 @@ class FacesHome implements ICollection {
 	 */
 	public function getChildren(): array {
 		$clusters = $this->faceClusterMapper->findByUserId($this->user->getUID());
-		return array_map(function (FaceCluster $cluster) {
-			return new FaceRoot($this->faceClusterMapper, $cluster, $this->user, $this->faceDetectionMapper, $this->rootFolder);
-		}, $clusters);
+		if (count($this->children) === 0) {
+			$this->children = array_map(function (FaceCluster $cluster) {
+				return new FaceRoot($this->faceClusterMapper, $cluster, $this->user, $this->faceDetectionMapper, $this->rootFolder);
+			}, $clusters);
+		}
+		return $this->children;
 	}
 
 	public function childExists($name): bool {

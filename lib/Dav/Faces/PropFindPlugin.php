@@ -6,6 +6,7 @@ use OCA\DAV\Connector\Sabre\File;
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
+use OCA\Recognize\Db\FaceDetectionWithTitle;
 use Sabre\DAV\INode;
 use Sabre\DAV\PropFind;
 use Sabre\DAV\Server;
@@ -40,11 +41,7 @@ class PropFindPlugin extends ServerPlugin {
 			});
 
 			$propFind->handle('{http://nextcloud.org/ns}face-detections', function () use ($node) {
-				return json_encode(array_map(function (FaceDetection $face) {
-					$array = $face->toArray();
-					$array['faceName'] = $this->clusterMapper->find($face->getClusterId())->getTitle() === ''? 'Person ' . $face->getClusterId() : $this->clusterMapper->find($face->getClusterId())->getTitle();
-					return $array;
-				}, array_values(array_filter($this->faceDetectionMapper->findByFileId($node->getFile()->getId()), fn (FaceDetection $face) => $face->getClusterId() !== null))));
+				return json_encode(array_map(fn (FaceDetectionWithTitle $face) => $face->toArray(), array_values(array_filter($this->faceDetectionMapper->findByFileIdWithTitle($node->getFile()->getId()), fn (FaceDetection $face) => $face->getClusterId() !== null))));
 			});
 
 			$propFind->handle(self::INTERNAL_FILEID_PROPERTYNAME, fn () => $node->getFile()->getId());
@@ -57,11 +54,7 @@ class PropFindPlugin extends ServerPlugin {
 
 		if ($node instanceof File) {
 			$propFind->handle('{http://nextcloud.org/ns}face-detections', function () use ($node) {
-				return json_encode(array_map(function (FaceDetection $face) {
-					$array = $face->toArray();
-					$array['faceName'] = $this->clusterMapper->find($face->getClusterId())->getTitle() === ''? 'Person ' . $face->getClusterId() : $this->clusterMapper->find($face->getClusterId())->getTitle();
-					return $array;
-				}, array_values(array_filter($this->faceDetectionMapper->findByFileId($node->getId()), fn (FaceDetection $face) => $face->getClusterId() !== null))));
+				return json_encode(array_map(fn (FaceDetectionWithTitle $face) => $face->toArray(), array_values(array_filter($this->faceDetectionMapper->findByFileIdWithTitle($node->getId()), fn (FaceDetection $face) => $face->getClusterId() !== null))));
 			});
 		}
 	}
