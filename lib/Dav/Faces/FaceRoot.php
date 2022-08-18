@@ -33,7 +33,7 @@ class FaceRoot implements ICollection, IMoveTarget {
 	 * @inheritDoc
 	 */
 	public function getName() {
-		return $this->cluster->getTitle() !== '' ? $this->cluster->getTitle() : 'Person '.$this->cluster->getId();
+		return $this->cluster->getTitle() !== '' ? $this->cluster->getTitle() : ''.$this->cluster->getId();
 	}
 
 	/**

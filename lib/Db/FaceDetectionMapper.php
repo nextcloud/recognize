@@ -84,7 +84,7 @@ class FaceDetectionMapper extends QBMapper {
 		} catch (\Exception $e) {
 			$entity = FaceDetectionWithTitle::fromRow($row);
 			if ($entity->getTitle() === '') {
-				$entity->setTitle('Person '.$entity->getClusterId());
+				$entity->setTitle($entity->getClusterId());
 			}
 			return $entity;
 		}
