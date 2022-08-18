@@ -46,7 +46,7 @@ class PropFindPlugin extends ServerPlugin {
 
 			$propFind->handle(self::INTERNAL_FILEID_PROPERTYNAME, fn () => $node->getFile()->getId());
 			$propFind->handle('{http://nextcloud.org/ns}file-name', fn () => $node->getFile()->getName());
-			$propFind->handle('{http://nextcloud.org/ns}realpath', fn () => $node->getFileInfo()->getPath());
+			$propFind->handle('{http://nextcloud.org/ns}realpath', fn () => $node->getFile()->getPath());
 			$propFind->handle(self::FILE_METADATA_SIZE, fn () => json_encode($node->getMetadata()));
 			$propFind->handle(self::HAS_PREVIEW_PROPERTYNAME, fn () => json_encode($node->hasPreview()));
 			$propFind->handle(self::FAVORITE_PROPERTYNAME, fn () => $node->isFavorite() ? 1 : 0);

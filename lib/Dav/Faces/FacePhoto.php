@@ -6,7 +6,6 @@ use OCA\Recognize\Db\FaceCluster;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCP\Files\File;
-use OCP\Files\FileInfo;
 use OCP\Files\Folder;
 use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAV\Exception\NotFound;
@@ -18,7 +17,6 @@ class FacePhoto implements IFile {
 	private FaceCluster $cluster;
 	private Folder $userFolder;
 	private ?File $file = null;
-	private ?FileInfo $fileInfo = null;
 
 	public const TAG_FAVORITE = '_$!<Favorite>!$_';
 
@@ -122,20 +120,6 @@ class FacePhoto implements IFile {
 		return $this->getFile()->getMTime();
 	}
 
-
-	public function getFileInfo() : FileInfo {
-		if ($this->fileInfo === null) {
-			$nodes = $this->userFolder->getById($this->getFile()->getId());
-			$node = current($nodes);
-			if ($node) {
-				return $this->fileInfo = $node->getFileInfo();
-			} else {
-				throw new NotFound("Photo not found for user");
-			}
-		}
-		return $this->fileInfo;
-	}
-
 	public function getMetadata(): array {
 		$metadataManager = \OCP\Server::get(\OC\Metadata\IMetadataManager::class);
 		$file = $this->getFile();
@@ -145,7 +129,7 @@ class FacePhoto implements IFile {
 
 	public function hasPreview(): bool {
 		$previewManager = \OCP\Server::get(\OCP\IPreview::class);
-		return $previewManager->isAvailable($this->getFileInfo());
+		return $previewManager->isAvailable($this->getFile());
 	}
 
 	public function isFavorite(): bool {
