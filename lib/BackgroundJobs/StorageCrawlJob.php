@@ -51,7 +51,6 @@ class StorageCrawlJob extends QueuedJob {
 		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
 		try {
 			$root = $qb->selectFileCache()
-				->whereStorageId($storageId)
 				->andWhere($qb->expr()->eq('filecache.fileid', $qb->createNamedParameter($rootId, IQueryBuilder::PARAM_INT)))
 				->executeQuery()->fetch();
 		} catch (Exception $e) {
