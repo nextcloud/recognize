@@ -2,11 +2,14 @@
 
 namespace OCA\Recognize\Dav\Faces;
 
+use OC\Metadata\IMetadataManager;
 use OCA\Recognize\Db\FaceCluster;
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCP\Files\IRootFolder;
+use OCP\IPreview;
+use OCP\ITagManager;
 use OCP\IUser;
 use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAV\Exception\NotFound;
@@ -20,13 +23,19 @@ class FaceRoot implements ICollection, IMoveTarget {
 	private IUser $user;
 	private FaceDetectionMapper $detectionMapper;
 	private IRootFolder $rootFolder;
+	private IMetadataManager $metadataManager;
+	private ITagManager $tagManager;
+	private IPreview $previewManager;
 
-	public function __construct(FaceClusterMapper $clusterMapper, FaceCluster $cluster, IUser $user, FaceDetectionMapper $detectionMapper, IRootFolder $rootFolder) {
+	public function __construct(FaceClusterMapper $clusterMapper, FaceCluster $cluster, IUser $user, FaceDetectionMapper $detectionMapper, IRootFolder $rootFolder, IMetadataManager $metadataManager, ITagManager $tagManager, IPreview $previewManager) {
 		$this->clusterMapper = $clusterMapper;
 		$this->cluster = $cluster;
 		$this->user = $user;
 		$this->detectionMapper = $detectionMapper;
 		$this->rootFolder = $rootFolder;
+		$this->metadataManager = $metadataManager;
+		$this->tagManager = $tagManager;
+		$this->previewManager = $previewManager;
 	}
 
 	/**
@@ -64,7 +73,7 @@ class FaceRoot implements ICollection, IMoveTarget {
 	 */
 	public function getChildren(): array {
 		return array_map(function (FaceDetection $detection) {
-			return new FacePhoto($this->detectionMapper, $this->cluster, $detection, $this->rootFolder->getUserFolder($this->user->getUID()));
+			return new FacePhoto($this->detectionMapper, $this->cluster, $detection, $this->rootFolder->getUserFolder($this->user->getUID()), $this->tagManager, $this->metadataManager, $this->previewManager);
 		}, $this->detectionMapper->findByClusterId($this->cluster->getId()));
 	}
 

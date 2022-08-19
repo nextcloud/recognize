@@ -2,11 +2,15 @@
 
 namespace OCA\Recognize\Dav\Faces;
 
+use OC\Metadata\IMetadataManager;
 use OCA\Recognize\Db\FaceCluster;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCP\Files\File;
 use OCP\Files\Folder;
+use OCP\IPreview;
+use OCP\ITagManager;
+use OCP\ITags;
 use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAV\Exception\NotFound;
 use Sabre\DAV\IFile;
@@ -17,14 +21,18 @@ class FacePhoto implements IFile {
 	private FaceCluster $cluster;
 	private Folder $userFolder;
 	private ?File $file = null;
+	private ITagManager $tagManager;
+	private IMetadataManager $metadataManager;
+	private IPreview $preview;
 
-	public const TAG_FAVORITE = '_$!<Favorite>!$_';
-
-	public function __construct(FaceDetectionMapper $detectionMapper, FaceCluster $cluster, FaceDetection $faceDetection, Folder $userFolder) {
+	public function __construct(FaceDetectionMapper $detectionMapper, FaceCluster $cluster, FaceDetection $faceDetection, Folder $userFolder, ITagManager $tagManager, IMetadataManager $metadataManager, IPreview $preview) {
 		$this->detectionMapper = $detectionMapper;
 		$this->cluster = $cluster;
 		$this->faceDetection = $faceDetection;
 		$this->userFolder = $userFolder;
+		$this->tagManager = $tagManager;
+		$this->metadataManager = $metadataManager;
+		$this->preview = $preview;
 	}
 
 	/**
@@ -120,27 +128,24 @@ class FacePhoto implements IFile {
 		return $this->getFile()->getMTime();
 	}
 
-	public function getMetadata(): array {
-		$metadataManager = \OCP\Server::get(\OC\Metadata\IMetadataManager::class);
+	public function getMetadata(): string {
 		$file = $this->getFile();
-		$sizeMetadata = $metadataManager->fetchMetadataFor('size', [$file->getId()])[$file->getId()];
+		$sizeMetadata = $this->metadataManager->fetchMetadataFor('size', [$file->getId()])[$file->getId()];
 		return $sizeMetadata->getMetadata();
 	}
 
 	public function hasPreview(): bool {
-		$previewManager = \OCP\Server::get(\OCP\IPreview::class);
-		return $previewManager->isAvailable($this->getFile());
+		return $this->preview->isAvailable($this->getFile());
 	}
 
 	public function isFavorite(): bool {
-		$tagManager = \OCP\Server::get(\OCP\ITagManager::class);
-		$tagger = $tagManager->load('files');
+		$tagger = $this->tagManager->load('files');
 		$tags = $tagger->getTagsForObjects([$this->getFile()->getId()]);
 
 		if ($tags === false || empty($tags)) {
 			return false;
 		}
 
-		return array_search(self::TAG_FAVORITE, current($tags)) !== false;
+		return array_search(ITags::TAG_FAVORITE, current($tags)) !== false;
 	}
 }

@@ -2,10 +2,13 @@
 
 namespace OCA\Recognize\Dav;
 
+use OC\Metadata\IMetadataManager;
 use OCA\Recognize\Dav\Faces\FacesHome;
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCP\Files\IRootFolder;
+use OCP\IPreview;
+use OCP\ITagManager;
 use OCP\IUser;
 use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAV\Exception\NotFound;
@@ -15,21 +18,21 @@ class RecognizeHome implements ICollection {
 	private array $principalInfo;
 	private FaceClusterMapper $faceClusterMapper;
 	private IUser $user;
-	/**
-	 * @var \OCA\Recognize\Db\FaceDetectionMapper
-	 */
 	private FaceDetectionMapper $faceDetectionMapper;
-	/**
-	 * @var \OCP\Files\IRootFolder
-	 */
 	private IRootFolder $rootFolder;
+	private ITagManager $tagManager;
+	private IMetadataManager $metadataManager;
+	private IPreview $previewManager;
 
-	public function __construct(array $principalInfo, FaceClusterMapper $faceClusterMapper, IUser $user, FaceDetectionMapper $faceDetectionMapper, IRootFolder $rootFolder) {
+	public function __construct(array $principalInfo, FaceClusterMapper $faceClusterMapper, IUser $user, FaceDetectionMapper $faceDetectionMapper, IRootFolder $rootFolder, ITagManager $tagManager, IMetadataManager $metadataManager, IPreview $previewManager) {
 		$this->principalInfo = $principalInfo;
 		$this->faceClusterMapper = $faceClusterMapper;
 		$this->user = $user;
 		$this->faceDetectionMapper = $faceDetectionMapper;
 		$this->rootFolder = $rootFolder;
+		$this->tagManager = $tagManager;
+		$this->metadataManager = $metadataManager;
+		$this->previewManager = $previewManager;
 	}
 
 	public function getName(): string {
@@ -53,9 +56,13 @@ class RecognizeHome implements ICollection {
 		throw new Forbidden('Permission denied to create folders in this folder');
 	}
 
+	private function getFacesHome() {
+		return new FacesHome($this->faceClusterMapper, $this->user, $this->faceDetectionMapper, $this->rootFolder, $this->tagManager, $this->metadataManager, $this->previewManager);
+	}
+
 	public function getChild($name) {
 		if ($name === 'faces') {
-			return new FacesHome($this->faceClusterMapper, $this->user, $this->faceDetectionMapper, $this->rootFolder);
+			return $this->getFacesHome();
 		}
 
 		throw new NotFound();
@@ -65,7 +72,7 @@ class RecognizeHome implements ICollection {
 	 * @return FacesHome[]
 	 */
 	public function getChildren(): array {
-		return [new FacesHome($this->faceClusterMapper, $this->user, $this->faceDetectionMapper, $this->rootFolder)];
+		return [$this->getFacesHome()];
 	}
 
 	public function childExists($name): bool {

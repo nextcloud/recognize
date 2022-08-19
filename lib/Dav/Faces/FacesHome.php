@@ -2,10 +2,13 @@
 
 namespace OCA\Recognize\Dav\Faces;
 
+use OC\Metadata\IMetadataManager;
 use OCA\Recognize\Db\FaceCluster;
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCP\Files\IRootFolder;
+use OCP\IPreview;
+use OCP\ITagManager;
 use OCP\IUser;
 use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAV\Exception\NotFound;
@@ -17,12 +20,18 @@ class FacesHome implements ICollection {
 	private FaceDetectionMapper $faceDetectionMapper;
 	private IRootFolder $rootFolder;
 	private array $children = [];
+	private ITagManager $tagManager;
+	private IMetadataManager $metadataManager;
+	private IPreview $previewManager;
 
-	public function __construct(FaceClusterMapper $faceClusterMapper, IUser $user, FaceDetectionMapper $faceDetectionMapper, IRootFolder $rootFolder) {
+	public function __construct(FaceClusterMapper $faceClusterMapper, IUser $user, FaceDetectionMapper $faceDetectionMapper, IRootFolder $rootFolder, ITagManager $tagManager, IMetadataManager $metadataManager, IPreview $previewManager) {
 		$this->faceClusterMapper = $faceClusterMapper;
 		$this->user = $user;
 		$this->faceDetectionMapper = $faceDetectionMapper;
 		$this->rootFolder = $rootFolder;
+		$this->tagManager = $tagManager;
+		$this->metadataManager = $metadataManager;
+		$this->previewManager = $previewManager;
 	}
 
 	public function delete() {
@@ -63,7 +72,7 @@ class FacesHome implements ICollection {
 		$clusters = $this->faceClusterMapper->findByUserId($this->user->getUID());
 		if (count($this->children) === 0) {
 			$this->children = array_map(function (FaceCluster $cluster) {
-				return new FaceRoot($this->faceClusterMapper, $cluster, $this->user, $this->faceDetectionMapper, $this->rootFolder);
+				return new FaceRoot($this->faceClusterMapper, $cluster, $this->user, $this->faceDetectionMapper, $this->rootFolder, $this->metadataManager, $this->tagManager, $this->previewManager);
 			}, $clusters);
 		}
 		return $this->children;
