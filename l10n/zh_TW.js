@@ -6,6 +6,8 @@ OC.L10N.register(
     "Failed to load settings" : "設定載入失敗",
     "Failed to save settings" : "設定儲存失敗",
     "Farm" : "農場",
+    "Landscape" : "風景",
+    "Portrait" : "人像",
     "People" : "人物",
     "Dog" : "狗",
     "Music" : "音樂",
