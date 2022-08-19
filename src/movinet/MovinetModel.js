@@ -75,7 +75,7 @@ class MovinetModel {
 		console.error('finished transcoding')
 
 		const frameTensors = []
-		let i=0
+		let i = 0
 		for (const frame of frames) {
 			let image
 			if (PUREJS) {
@@ -85,7 +85,7 @@ class MovinetModel {
 				image = await tf.node.decodeImage(frame, 3)
 			}
 			frameTensors.push(image)
-			console.error('decoded '+(++i)+'/'+frames.length+' images')
+			console.error('decoded ' + (++i) + '/' + frames.length + ' images')
 		}
 
 		const values = tf.tidy(() => {

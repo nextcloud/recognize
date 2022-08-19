@@ -13,7 +13,6 @@ use OCP\IRequest;
 use OCP\IUserSession;
 
 class UserController extends Controller {
-
 	/**
 	 * @var \OCA\Recognize\Db\FaceClusterMapper
 	 */

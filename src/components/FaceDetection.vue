@@ -35,6 +35,11 @@ export default {
 			required: true,
 		},
 	},
+	computed: {
+		src() {
+			return generateUrl(`/core/preview?fileId=${this.fileId}&x=256&y=256&a=1`)
+		},
+	},
 	methods: {
 		onLoaded() {
 			const canvas = this.$refs.canvas
@@ -45,11 +50,6 @@ export default {
 			const width = this.$refs.image.naturalWidth
 			const height = this.$refs.image.naturalHeight
 			ctx.strokeRect(width * this.x - 2, height * this.y - 2, width * this.width + 2, height * this.height + 2)
-		},
-	},
-	computed: {
-		src() {
-			return generateUrl(`/core/preview?fileId=${this.fileId}&x=256&y=256&a=1`)
 		},
 	},
 }
