@@ -26,6 +26,10 @@ class FaceRoot implements ICollection, IMoveTarget {
 	private IMetadataManager $metadataManager;
 	private ITagManager $tagManager;
 	private IPreview $previewManager;
+	/**
+	 * @var \OCA\Recognize\Dav\Faces\FacePhoto[]
+	 */
+	private array $children;
 
 	public function __construct(FaceClusterMapper $clusterMapper, FaceCluster $cluster, IUser $user, FaceDetectionMapper $detectionMapper, IRootFolder $rootFolder, IMetadataManager $metadataManager, ITagManager $tagManager, IPreview $previewManager) {
 		$this->clusterMapper = $clusterMapper;
@@ -72,9 +76,12 @@ class FaceRoot implements ICollection, IMoveTarget {
 	 * @throws \OC\User\NoUserException
 	 */
 	public function getChildren(): array {
-		return array_map(function (FaceDetection $detection) {
-			return new FacePhoto($this->detectionMapper, $this->cluster, $detection, $this->rootFolder->getUserFolder($this->user->getUID()), $this->tagManager, $this->metadataManager, $this->previewManager);
-		}, $this->detectionMapper->findByClusterId($this->cluster->getId()));
+		if (count($this->children) === 0) {
+			$this->children = array_map(function (FaceDetection $detection) {
+				return new FacePhoto($this->detectionMapper, $this->cluster, $detection, $this->rootFolder->getUserFolder($this->user->getUID()), $this->tagManager, $this->metadataManager, $this->previewManager);
+			}, $this->detectionMapper->findByClusterId($this->cluster->getId()));
+		}
+		return $this->children;
 	}
 
 	public function getChild($name): FacePhoto {
