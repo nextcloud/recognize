@@ -29,7 +29,7 @@ class FaceRoot implements ICollection, IMoveTarget {
 	/**
 	 * @var \OCA\Recognize\Dav\Faces\FacePhoto[]
 	 */
-	private array $children;
+	private array $children = [];
 
 	public function __construct(FaceClusterMapper $clusterMapper, FaceCluster $cluster, IUser $user, FaceDetectionMapper $detectionMapper, IRootFolder $rootFolder, IMetadataManager $metadataManager, ITagManager $tagManager, IPreview $previewManager) {
 		$this->clusterMapper = $clusterMapper;
