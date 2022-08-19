@@ -3,8 +3,7 @@
         "symfony/process": "^5.2",
         "ext-json": "*",
         "php": ">=7.4",
-        "rubix/ml": "^2.0",
-        "phpunit/phpunit": "^9.5"
+        "rubix/ml": "^2.0"
     },
     "autoload": {
         "psr-4": {
@@ -13,7 +12,8 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3",
-        "nextcloud/coding-standard": "^1"
+        "nextcloud/coding-standard": "^1",
+        "phpunit/phpunit": "^9.5"
     },
     "scripts": {
         "lint": "find . -name \\*.php -not -path './vendor/*' -print0 | xargs -0 -n1 php -l",
