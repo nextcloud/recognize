@@ -63,7 +63,9 @@ jobs:
           apk update
           apk upgrade
           apk add bash
+          apk add wget
           apk add git
+          apk add unzip
           apk add composer
           apk add nodejs
           apk add npm
@@ -114,6 +116,8 @@ jobs:
           make all
           make remove-binaries # Make it download tfjs from scratch
           rm -rf models # Make it download from github
+          wget https://github.com/nextcloud/recognize/releases/download/v2.2.0/test-files.zip
+          unzip test-files.zip -d test/res/
 
       - name: Install app on Alpine
         if: ${{ matrix.container != ''}}
@@ -125,6 +129,8 @@ jobs:
           npm run build
           mkdir -p bin
           rm -rf models
+          wget https://github.com/nextcloud/recognize/releases/download/v2.2.0/test-files.zip
+          unzip test-files.zip -d test/res/
 
       - name: Set up Nextcloud with mysql
         if: ${{matrix.databases == 'mysql' }}
