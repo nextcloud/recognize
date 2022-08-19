@@ -29,6 +29,10 @@ class QueueMapper extends QBMapper {
 		parent::__construct($db, '', QueueFile::class);
 	}
 
+	public function getTableName():string {
+		throw new \Exception('Invalid invokation: This class handles multiple tables');
+	}
+
 	private function getQueueTable(string $model) {
 		return 'recognize_queue_'.$model;
 	}
