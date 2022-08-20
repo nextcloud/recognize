@@ -109,6 +109,10 @@
 			<button class="button" @click="onReset">
 				Reset tags for classified files
 			</button>
+			<p>Click the below button to rescan all files in this instance and add them to the classifier queues.</p>
+			<button class="button" @click="onRescan">
+				Rescan all files
+			</button>
 		</SettingsSection>
 		<SettingsSection :title="t('recognize', 'Manual operation') ">
 			<p>To trigger a full classification run manually, run the following commands on the terminal. (The first time, this will download the machine learning model initially, so it will take longer.)</p>
@@ -249,6 +253,15 @@ export default {
 			this.loading = true
 			await axios.get(generateUrl('/apps/recognize/admin/reset'))
 			await this.getCount()
+			this.loading = false
+			this.success = true
+			setTimeout(() => {
+				this.success = false
+			}, 3000)
+		},
+		async onRescan() {
+			this.loading = true
+			await axios.get(generateUrl('/apps/recognize/admin/recrawl'))
 			this.loading = false
 			this.success = true
 			setTimeout(() => {

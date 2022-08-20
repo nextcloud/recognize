@@ -7,72 +7,59 @@
 
 namespace OCA\Recognize\Classifiers\Images;
 
+use OCA\Recognize\BackgroundJobs\ClusterFacesJob;
 use OCA\Recognize\Classifiers\Classifier;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
-use OCA\Recognize\Db\ImageMapper;
+use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Service\Logger;
+use OCA\Recognize\Service\QueueService;
+use OCP\BackgroundJob\IJobList;
 use OCP\DB\Exception;
+use OCP\Files\Config\ICachedMountInfo;
+use OCP\Files\Config\IUserMountCache;
 use OCP\Files\IRootFolder;
 use OCP\IConfig;
-use Psr\Log\LoggerInterface;
 
 class ClusteringFaceClassifier extends Classifier {
 	public const IMAGE_TIMEOUT = 120; // seconds
 	public const IMAGE_PUREJS_TIMEOUT = 360; // seconds
 	public const MIN_FACE_RECOGNITION_SCORE = 0.5;
-	public const MODEL_NAME = 'facevectors';
+	public const MODEL_NAME = 'faces';
 
-	private LoggerInterface $logger;
+	private Logger $logger;
 	private IConfig $config;
 	private FaceDetectionMapper $faceDetections;
 	private IRootFolder $rootFolder;
-	private ImageMapper $imageMapper;
+	private IUserMountCache $userMountCache;
+	private IJobList $jobList;
 
-	public function __construct(Logger $logger, IConfig $config, FaceDetectionMapper $faceDetections, IRootFolder $rootFolder, ImageMapper $imageMapper) {
-		parent::__construct($logger, $config);
+	public function __construct(Logger $logger, IConfig $config, FaceDetectionMapper $faceDetections, QueueService $queue, IRootFolder $rootFolder, IUserMountCache $userMountCache, IJobList $jobList) {
+		parent::__construct($logger, $config, $rootFolder, $queue);
 		$this->logger = $logger;
 		$this->config = $config;
 		$this->faceDetections = $faceDetections;
 		$this->rootFolder = $rootFolder;
-		$this->imageMapper = $imageMapper;
+		$this->userMountCache = $userMountCache;
+		$this->jobList = $jobList;
 	}
 
 	/**
 	 * @param string $user
-	 * @param \OCA\Recognize\Db\Image[] $images
+	 * @param \OCA\Recognize\Db\QueueFile[] $queueFiles
 	 * @return void
-	 * @throws \OCP\DB\Exception
-	 * @throws \OCP\Files\NotFoundException
 	 */
-	public function classify(string $user, array $inputImages): void {
-		$paths = [];
-		$images = [];
-		foreach ($inputImages as $image) {
-			$files = $this->rootFolder->getById($image->getFileId());
-			if (count($files) === 0) {
-				continue;
-			}
-			$images[] = $image;
-			$paths[] = $files[0]->getStorage()->getLocalFile($files[0]->getInternalPath());
-		}
+	public function classify(array $queueFiles): void {
 		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
-			$timeout = count($paths) * self::IMAGE_PUREJS_TIMEOUT;
+			$timeout = self::IMAGE_PUREJS_TIMEOUT;
 		} else {
-			$timeout = count($paths) * self::IMAGE_TIMEOUT;
+			$timeout = self::IMAGE_TIMEOUT;
 		}
-		$classifierProcess = $this->classifyFiles(self::MODEL_NAME, $paths, $timeout);
 
-		foreach ($classifierProcess as $i => $faces) {
-			// remove exisiting detections
-			foreach ($this->faceDetections->findByFileId($images[$i]->getFileId()) as $existingFaceDetection) {
-				try {
-					$this->faceDetections->delete($existingFaceDetection);
-				} catch (Exception $e) {
-					$this->logger->debug('Could not delete existing face detection');
-				}
-			}
+		$classifierProcess = $this->classifyFiles(self::MODEL_NAME, $queueFiles, $timeout);
 
+		foreach ($classifierProcess as $queueFile => $faces) {
+			$this->removeExistingFaces($queueFile);
 			foreach ($faces as $face) {
 				if ($face['score'] < self::MIN_FACE_RECOGNITION_SCORE) {
 					continue;
@@ -83,18 +70,45 @@ class ClusteringFaceClassifier extends Classifier {
 				$faceDetection->setWidth($face['width']);
 				$faceDetection->setHeight($face['height']);
 				$faceDetection->setVector($face['vector']);
-				$faceDetection->setFileId($images[$i]->getFileId());
-				$faceDetection->setUserId($user);
-				$this->faceDetections->insert($faceDetection);
-			}
+				$faceDetection->setFileId($queueFile->getFileId());
 
-			// Update processed status
-			$images[$i]->setProcessedFaces(true);
-			try {
-				$this->imageMapper->update($images[$i]);
-			} catch (Exception $e) {
-				$this->logger->warning($e->getMessage(), ['exception' => $e]);
+
+				$nodes = $this->rootFolder->getById($queueFile->getFileId());
+				if (count($nodes) === 0) {
+					continue;
+				}
+				$mounts = $this->userMountCache->getMountsForRootId($queueFile->getRootId());
+				$userIds = array_map(function (ICachedMountInfo $mount) {
+					return $mount->getUser()->getUID();
+				}, $mounts);
+
+				// Insert face detection for all users with access
+				foreach ($userIds as $userId) {
+					$faceDetection->setUserId($userId);
+					try {
+						$this->faceDetections->insert($faceDetection);
+					} catch (Exception $e) {
+						$this->logger->error('Could not store face detection in database', ['exception' => $e]);
+						continue;
+					}
+					$this->jobList->add(ClusterFacesJob::class, ['userId' => $userId]);
+				}
 			}
+		}
+	}
+
+	private function removeExistingFaces(QueueFile $queueFile) : void {
+		try {
+			$existingFaceDetections = $this->faceDetections->findByFileId($queueFile->getFileId());
+			foreach ($existingFaceDetections as $existingFaceDetection) {
+				try {
+					$this->faceDetections->delete($existingFaceDetection);
+				} catch (Exception $e) {
+					$this->logger->warning('Could not delete existing face detection', ['exception' => $e]);
+				}
+			}
+		} catch (Exception $e) {
+			$this->logger->error('Could not query existing face detections of file', ['exception' => $e]);
 		}
 	}
 }

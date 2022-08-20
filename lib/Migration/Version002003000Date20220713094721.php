@@ -38,8 +38,8 @@ class Version002003000Date20220713094721 extends SimpleMigrationStep {
 		/** @var ISchemaWrapper $schema */
 		$schema = $schemaClosure();
 
-		if (!$schema->hasTable('recognize_files_images')) {
-			$table = $schema->createTable('recognize_files_images');
+		if (!$schema->hasTable('recognize_queue_imagenet')) {
+			$table = $schema->createTable('recognize_queue_imagenet');
 			$table->addColumn('id', 'bigint', [
 				'autoincrement' => true,
 				'notnull' => true,
@@ -49,33 +49,24 @@ class Version002003000Date20220713094721 extends SimpleMigrationStep {
 				'notnull' => true,
 				'length' => 64,
 			]);
-			$table->addColumn('user_id', 'string', [
+			$table->addColumn('storage_id', 'bigint', [
 				'notnull' => false,
 				'length' => 64,
 			]);
-			$table->addColumn('processed_geo', 'boolean', [
+			$table->addColumn('root_id', 'bigint', [
+				'notnull' => false,
+				'length' => 64,
+			]);
+			$table->addColumn('update', 'boolean', [
 				'notnull' => false,
 			]);
-			$table->addColumn('processed_imagenet', 'boolean', [
-				'notnull' => false,
-			]);
-			$table->addColumn('processed_landmarks', 'boolean', [
-				'notnull' => false,
-			]);
-			$table->addColumn('processed_faces', 'boolean', [
-				'notnull' => false,
-			]);
-			$table->setPrimaryKey(['id'], 'recognize_images_id');
-			$table->addIndex(['file_id'], 'recognize_images_file');
-			$table->addIndex(['user_id'], 'recognize_images_user');
-			$table->addIndex(['user_id', 'processed_imagenet'], 'recognize_imagenet_user');
-			$table->addIndex(['user_id', 'processed_landmarks'], 'recognize_landmarks_user');
-			$table->addIndex(['user_id', 'processed_faces'], 'recognize_images_faces');
-			$table->addIndex(['user_id', 'processed_geo'], 'recognize_geo_user');
+			$table->setPrimaryKey(['id'], 'recognize_imagenet_id');
+			$table->addIndex(['file_id'], 'recognize_imagenet_file');
+			$table->addIndex(['storage_id', 'root_id'], 'recognize_imagenet_storage');
 		}
 
-		if (!$schema->hasTable('recognize_files_video')) {
-			$table = $schema->createTable('recognize_files_video');
+		if (!$schema->hasTable('recognize_queue_landmarks')) {
+			$table = $schema->createTable('recognize_queue_landmarks');
 			$table->addColumn('id', 'bigint', [
 				'autoincrement' => true,
 				'notnull' => true,
@@ -85,21 +76,24 @@ class Version002003000Date20220713094721 extends SimpleMigrationStep {
 				'notnull' => true,
 				'length' => 64,
 			]);
-			$table->addColumn('user_id', 'string', [
+			$table->addColumn('storage_id', 'bigint', [
 				'notnull' => false,
 				'length' => 64,
 			]);
-			$table->addColumn('processed_movinet', 'boolean', [
+			$table->addColumn('root_id', 'bigint', [
+				'notnull' => false,
+				'length' => 64,
+			]);
+			$table->addColumn('update', 'boolean', [
 				'notnull' => false,
 			]);
-			$table->setPrimaryKey(['id'], 'recognize_video_id');
-			$table->addIndex(['file_id'], 'recognize_video_file');
-			$table->addIndex(['user_id'], 'recognize_video_user');
-			$table->addIndex(['user_id', 'processed_movinet'], 'recognize_movinet_user');
+			$table->setPrimaryKey(['id'], 'recognize_landmarks_id');
+			$table->addIndex(['file_id'], 'recognize_landmarks_file');
+			$table->addIndex(['storage_id', 'root_id'], 'recognize_landmarks_storage');
 		}
 
-		if (!$schema->hasTable('recognize_files_audio')) {
-			$table = $schema->createTable('recognize_files_audio');
+		if (!$schema->hasTable('recognize_queue_faces')) {
+			$table = $schema->createTable('recognize_queue_faces');
 			$table->addColumn('id', 'bigint', [
 				'autoincrement' => true,
 				'notnull' => true,
@@ -109,18 +103,74 @@ class Version002003000Date20220713094721 extends SimpleMigrationStep {
 				'notnull' => true,
 				'length' => 64,
 			]);
-			$table->addColumn('user_id', 'string', [
+			$table->addColumn('storage_id', 'bigint', [
 				'notnull' => false,
 				'length' => 64,
 			]);
-			$table->addColumn('processed_musicnn', 'boolean', [
+			$table->addColumn('root_id', 'bigint', [
+				'notnull' => false,
+				'length' => 64,
+			]);
+			$table->addColumn('update', 'boolean', [
 				'notnull' => false,
 			]);
+			$table->setPrimaryKey(['id'], 'recognize_faces_id');
+			$table->addIndex(['file_id'], 'recognize_faces_file');
+			$table->addIndex(['storage_id', 'root_id'], 'recognize_faces_storage');
+		}
 
-			$table->setPrimaryKey(['id'], 'recognize_audio_id');
-			$table->addIndex(['file_id'], 'recognize_audio_file');
-			$table->addIndex(['user_id'], 'recognize_audio_user');
-			$table->addIndex(['user_id', 'processed_musicnn'], 'recognize_musicnn_user');
+		if (!$schema->hasTable('recognize_queue_movinet')) {
+			$table = $schema->createTable('recognize_queue_movinet');
+			$table->addColumn('id', 'bigint', [
+				'autoincrement' => true,
+				'notnull' => true,
+				'length' => 64,
+			]);
+			$table->addColumn('file_id', 'bigint', [
+				'notnull' => true,
+				'length' => 64,
+			]);
+			$table->addColumn('storage_id', 'bigint', [
+				'notnull' => false,
+				'length' => 64,
+			]);
+			$table->addColumn('root_id', 'bigint', [
+				'notnull' => false,
+				'length' => 64,
+			]);
+			$table->addColumn('update', 'boolean', [
+				'notnull' => false,
+			]);
+			$table->setPrimaryKey(['id'], 'recognize_movinet_id');
+			$table->addIndex(['file_id'], 'recognize_movinet_file');
+			$table->addIndex(['storage_id', 'root_id'], 'recognize_movinet_storage');
+		}
+
+		if (!$schema->hasTable('recognize_queue_musicnn')) {
+			$table = $schema->createTable('recognize_queue_musicnn');
+			$table->addColumn('id', 'bigint', [
+				'autoincrement' => true,
+				'notnull' => true,
+				'length' => 64,
+			]);
+			$table->addColumn('file_id', 'bigint', [
+				'notnull' => true,
+				'length' => 64,
+			]);
+			$table->addColumn('storage_id', 'bigint', [
+				'notnull' => false,
+				'length' => 64,
+			]);
+			$table->addColumn('root_id', 'bigint', [
+				'notnull' => false,
+				'length' => 64,
+			]);
+			$table->addColumn('update', 'boolean', [
+				'notnull' => false,
+			]);
+			$table->setPrimaryKey(['id'], 'recognize_musicnn_id');
+			$table->addIndex(['file_id'], 'recognize_musicnn_file');
+			$table->addIndex(['storage_id', 'root_id'], 'recognize_musicnn_storage');
 		}
 		return $schema;
 	}
