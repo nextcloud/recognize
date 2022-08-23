@@ -3,8 +3,8 @@
 namespace OCA\Recognize\Dav\Faces;
 
 use OCA\DAV\Connector\Sabre\File;
-use OCA\DAV\Connector\Sabre\FilesPlugin;
-use OCA\DAV\Connector\Sabre\TagsPlugin;
+use \OCA\DAV\Connector\Sabre\FilesPlugin;
+use \OCA\DAV\Connector\Sabre\TagsPlugin;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Db\FaceDetectionWithTitle;
