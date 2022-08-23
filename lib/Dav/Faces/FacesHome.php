@@ -63,6 +63,9 @@ class FacesHome implements ICollection {
 		} catch (DoesNotExistException $e) {
 			try {
 				$cluster = $this->faceClusterMapper->find((int) $name);
+				if ($cluster->getUserId() !== $this->user->getUID()) {
+					throw new NotFound();
+				}
 			} catch (DoesNotExistException $e) {
 				throw new NotFound();
 			}
