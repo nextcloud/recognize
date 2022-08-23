@@ -128,7 +128,7 @@ class FacePhoto implements IFile {
 		return $this->getFile()->getMTime();
 	}
 
-	public function getMetadata(): string {
+	public function getMetadata(): array {
 		$file = $this->getFile();
 		$sizeMetadata = $this->metadataManager->fetchMetadataFor('size', [$file->getId()])[$file->getId()];
 		return $sizeMetadata->getMetadata();
