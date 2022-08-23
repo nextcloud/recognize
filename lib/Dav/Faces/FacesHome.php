@@ -6,6 +6,9 @@ use OC\Metadata\IMetadataManager;
 use OCA\Recognize\Db\FaceCluster;
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetectionMapper;
+use OCP\AppFramework\Db\DoesNotExistException;
+use OCP\AppFramework\Db\MultipleObjectsReturnedException;
+use OCP\DB\Exception;
 use OCP\Files\IRootFolder;
 use OCP\IPreview;
 use OCP\ITagManager;
@@ -55,13 +58,17 @@ class FacesHome implements ICollection {
 	}
 
 	public function getChild($name) {
-		foreach ($this->getChildren() as $child) {
-			if ($child->getName() === $name) {
-				return $child;
+		try {
+			$cluster = $this->faceClusterMapper->findByUserAndTitle($this->user->getUID(), $name);
+		} catch (DoesNotExistException $e) {
+			try {
+				$cluster = $this->faceClusterMapper->find((int) $name);
+			} catch (DoesNotExistException $e) {
+				throw new NotFound();
 			}
 		}
 
-		throw new NotFound();
+		return new FaceRoot($this->faceClusterMapper, $cluster, $this->user, $this->faceDetectionMapper, $this->rootFolder, $this->metadataManager, $this->tagManager, $this->previewManager);
 	}
 
 	/**

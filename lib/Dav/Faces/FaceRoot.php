@@ -7,6 +7,7 @@ use OCA\Recognize\Db\FaceCluster;
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
+use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\Files\IRootFolder;
 use OCP\IPreview;
 use OCP\ITagManager;
@@ -85,12 +86,13 @@ class FaceRoot implements ICollection, IMoveTarget {
 	}
 
 	public function getChild($name): FacePhoto {
-		foreach ($this->getChildren() as $child) {
-			if ($child->getName() === $name) {
-				return $child;
-			}
+		[$fileId,] = explode('-', $name);
+		try {
+			$detection = $this->detectionMapper->findByFileIdAndClusterId((int)$fileId, $this->cluster->getId());
+		} catch (DoesNotExistException $e) {
+			throw new NotFound();
 		}
-		throw new NotFound("$name not found");
+		return new FacePhoto($this->detectionMapper, $this->cluster, $detection, $this->rootFolder->getUserFolder($this->user->getUID()), $this->tagManager, $this->metadataManager, $this->previewManager);
 	}
 
 	public function childExists($name): bool {

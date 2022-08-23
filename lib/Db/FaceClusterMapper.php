@@ -13,6 +13,8 @@ class FaceClusterMapper extends QBMapper {
 	}
 
 	/**
+	 * @throws \OCP\AppFramework\Db\DoesNotExistException
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws \OCP\DB\Exception
 	 */
 	public function find(int $id): FaceCluster {
@@ -32,6 +34,21 @@ class FaceClusterMapper extends QBMapper {
 			->from('recognize_face_clusters')
 			->where($qb->expr()->eq('user_id', $qb->createPositionalParameter($userId)));
 		return $this->findEntities($qb);
+	}
+
+
+	/**
+	 * @throws \OCP\AppFramework\Db\DoesNotExistException
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws \OCP\DB\Exception
+	 */
+	public function findByUserAndTitle(string $userId, string $title) : Entity {
+		$qb = $this->db->getQueryBuilder();
+		$qb->select(FaceCluster::$columns)
+			->from('recognize_face_clusters')
+			->where($qb->expr()->eq('user_id', $qb->createPositionalParameter($userId)))
+			->andWhere($qb->expr()->eq('title', $qb->createPositionalParameter($title)));
+		return $this->findEntity($qb);
 	}
 
 	/**
