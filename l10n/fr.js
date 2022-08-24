@@ -1,6 +1,7 @@
 OC.L10N.register(
     "recognize",
     {
+    "Recognize" : "Identifie",
     "Status" : "Statut",
     "Reset" : "Réinitialiser",
     "Failed to load settings" : "Echec du chargement des paramètres",
