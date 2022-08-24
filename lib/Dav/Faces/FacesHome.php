@@ -57,7 +57,15 @@ class FacesHome implements ICollection {
 		throw new Forbidden('Not allowed to create files in this folder');
 	}
 
-	public function getChild($name) {
+	public function getChild($name) : FaceRoot {
+		if (count($this->children) !== 0) {
+			foreach ($this->getChildren() as $child) {
+				if ($child->getName() === $name) {
+					return $child;
+				}
+			}
+			throw new NotFound();
+		}
 		try {
 			$cluster = $this->faceClusterMapper->findByUserAndTitle($this->user->getUID(), $name);
 		} catch (DoesNotExistException $e) {

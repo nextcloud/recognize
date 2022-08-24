@@ -86,6 +86,14 @@ class FaceRoot implements ICollection, IMoveTarget {
 	}
 
 	public function getChild($name): FacePhoto {
+		if (count($this->children) !== 0) {
+			foreach ($this->getChildren() as $child) {
+				if ($child->getName() === $name) {
+					return $child;
+				}
+			}
+			throw new NotFound("$name not found");
+		}
 		[$fileId,] = explode('-', $name);
 		try {
 			$detection = $this->detectionMapper->findByFileIdAndClusterId((int)$fileId, $this->cluster->getId());
