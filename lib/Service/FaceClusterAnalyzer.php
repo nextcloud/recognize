@@ -13,7 +13,7 @@ use Rubix\ML\Kernels\Distance\Euclidean;
 
 class FaceClusterAnalyzer {
 	public const MIN_CLUSTER_DENSITY = 3;
-	public const MAX_INNER_CLUSTER_RADIUS = 0.35;
+	public const MAX_INNER_CLUSTER_RADIUS = 0.4;
 
 	private FaceDetectionMapper $faceDetections;
 	private FaceClusterMapper $faceClusters;

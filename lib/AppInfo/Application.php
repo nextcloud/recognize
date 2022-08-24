@@ -8,6 +8,7 @@
 
 namespace OCA\Recognize\AppInfo;
 
+use OCA\DAV\Connector\Sabre\Principal;
 use OCA\Recognize\Hooks\FileListener;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
@@ -32,6 +33,8 @@ class Application extends App implements IBootstrap {
 
 	public function register(IRegistrationContext $context): void {
 		@include_once __DIR__ . '/../../vendor/autoload.php';
+		/** Register $principalBackend for the DAV collection */
+		$context->registerServiceAlias('principalBackend', Principal::class);
 	}
 
 	/**

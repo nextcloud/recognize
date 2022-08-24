@@ -75,5 +75,16 @@ The app does not send any sensitive data to cloud providers or similar services.
 
 	<types>
 		<filesystem/>
+		<dav/>
 	</types>
+
+
+	<sabre>
+		<collections>
+			<collection>OCA\Recognize\Dav\RootCollection</collection>
+		</collections>
+		<plugins>
+			<plugin>OCA\Recognize\Dav\Faces\PropFindPlugin</plugin>
+		</plugins>
+	</sabre>
 </info>
