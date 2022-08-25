@@ -6,6 +6,7 @@ OC.L10N.register(
     "Failed to load settings" : "Nepavyko įkelti nustatymų",
     "Failed to save settings" : "Nepavyko įrašyti nustatymų",
     "Farm" : "Ūkis",
+    "People" : "Žmonės",
     "Spider" : "Voras",
     "Duck" : "Antis",
     "Dog" : "Šuo",
