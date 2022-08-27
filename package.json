@@ -26,7 +26,7 @@
   "dependencies": {
     "@exifer/gps": "^1.0.0-beta.2",
     "@tensorflow/tfjs": "^3.15",
-    "@tensorflow/tfjs-backend-wasm": "^3.19.0",
+    "@tensorflow/tfjs-backend-wasm": "^3.20.0",
     "@tensorflow/tfjs-node": "^3.19",
     "@vladmandic/face-api": "^1.7.1",
     "download": "^8.0.0",
