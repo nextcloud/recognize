@@ -5,6 +5,8 @@ OC.L10N.register(
     "Reset" : "Nulstil",
     "Failed to load settings" : "Fejl ved indlæsning af indstillinger",
     "Failed to save settings" : "Kunne ikke gemme indstillinger",
+    "Farm" : "Gård",
+    "Dog" : "Hund",
     "Music" : "Musik",
     "Office" : "Kontor",
     "Train" : "Tog",
@@ -12,10 +14,17 @@ OC.L10N.register(
     "Clock" : "Ur",
     "Screen" : "Skærm",
     "Display" : "Vis",
+    "Bike" : "Cykel",
+    "Camping" : "Camping",
     "Camera" : "Kamera",
+    "Barbecue" : "Grill",
+    "Theater" : "Teater",
+    "Pizza" : "Pizza",
     "Info" : "Info",
     "Document" : "Dokument",
     "Bucket" : "Bucket",
-    "Gallery" : "Galleri"
+    "Festival" : "Festival",
+    "Gallery" : "Galleri",
+    "Park" : "Park"
 },
 "nplurals=2; plural=(n != 1);");
