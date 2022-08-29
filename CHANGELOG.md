@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 3.0.0-beta.1 - 2022-08-29
+
+### New
+ - Make tags translatable
+ - Expose faces via DAV endpoint
+
+### Changed
+
+- No more commands, classification always takes place in cron jobs
+- Refactor classifier jobs to scale well
+- faces UI moved to photos app
+- movinet: reduce time slice length and fps
+- Requires Nextcloud >= v24
+
+### Fixed
+ - node.js classifiers: Fix fallback to wasm mode
+ - Fix file listener
+ - Fix admin settings data submission
+
+
 ## 2.1.2 - 2022-06-11
 
 ### Fixed
