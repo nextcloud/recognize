@@ -12,8 +12,8 @@ use Rubix\ML\Graph\Trees\BallTree;
 use Rubix\ML\Kernels\Distance\Euclidean;
 
 class FaceClusterAnalyzer {
-	public const MIN_CLUSTER_DENSITY = 3;
-	public const MAX_INNER_CLUSTER_RADIUS = 0.4;
+	public const MIN_CLUSTER_DENSITY = 2;
+	public const MAX_INNER_CLUSTER_RADIUS = 0.45;
 
 	private FaceDetectionMapper $faceDetections;
 	private FaceClusterMapper $faceClusters;

@@ -24,7 +24,7 @@ use OCP\IConfig;
 class ClusteringFaceClassifier extends Classifier {
 	public const IMAGE_TIMEOUT = 120; // seconds
 	public const IMAGE_PUREJS_TIMEOUT = 360; // seconds
-	public const MIN_FACE_RECOGNITION_SCORE = 0.5;
+	public const MIN_FACE_RECOGNITION_SCORE = 0.8;
 	public const MODEL_NAME = 'faces';
 
 	private Logger $logger;
