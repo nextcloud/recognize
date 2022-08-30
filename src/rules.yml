@@ -46,6 +46,7 @@ wild cat:
     - cat
     - animal
     - wildlife
+    - nature
 
 cougar:
   label: puma
@@ -69,6 +70,7 @@ snow leopard:
     - cat
     - animal
     - wildlife
+    - nature
 
 jaguar:
   see: wild cat
@@ -90,6 +92,7 @@ cheetah:
     - cat
     - animal
     - wildlife
+    - nature
 
 tiger:
   see: wild cat
@@ -148,12 +151,13 @@ rapeseed:
   categories:
     - farm
     - landscape
+    - nature
 
 fashion:
   label: portrait
   threshold: 0.08
   categories:
-    - portrait
+    - people
 
 vestment:
   see: fashion
@@ -1896,6 +1900,7 @@ zebra:
   categories:
     - animal
     - wildlife
+    - nature
 
 hog:
   threshold: 0.2
@@ -1913,6 +1918,7 @@ warthog:
   categories:
     - animal
     - wildlife
+    - nature
 
 hippopotamus:
   label: hippo
@@ -1920,6 +1926,7 @@ hippopotamus:
   categories:
     - animal
     - wildlife
+    - nature
 
 ox:
   label: cow
@@ -1952,6 +1959,7 @@ bighorn:
   categories:
     - animal
     - wildlife
+    - nature
 
 ibex:
   label: animal
@@ -1959,24 +1967,28 @@ ibex:
   threshold: 0.3
   categories:
     - wildlife
+    - nature
 
 hartebeest:
   threshold: 0.1
   categories:
     - animal
     - wildlife
+    - nature
 
 impala:
   threshold: 0.1
   categories:
     - animal
     - wildlife
+    - nature
 
 gazelle:
   threshold: 0.1
   categories:
     - animal
     - wildlife
+    - nature
 
 llama:
   threshold: 0.1
@@ -2073,6 +2085,7 @@ baboon:
     - animal
     - monkey
     - wildlife
+    - nature
 
 macaque:
   see: monkey
@@ -2129,6 +2142,7 @@ elephant:
   categories:
     - animal
     - wildlife
+    - nature
 
 indian elephant:
   see: elephant
@@ -2142,6 +2156,7 @@ tusker:
   threshold: 0.1
   categories:
     - animal
+    - nature
 
 panda:
   label: panda
@@ -2357,6 +2372,7 @@ beer:
   context: party
   categories:
     - beverage
+    - food
 
 beer bottle:
   see: beer
@@ -2440,6 +2456,8 @@ cannon:
 can opener:
   label: cooking
   threshold: 0.3
+  categories:
+    - food
 
 carpenter's kit:
   see: tool
@@ -2530,6 +2548,7 @@ cocktail shaker:
   threshold: 0.4
   categories:
     - beverage
+    - food
 
 candle:
   label: candle
@@ -2540,18 +2559,21 @@ coffee:
   label: coffee
   categories:
     - beverage
+    - food
 
 espresso:
   label: coffee
   threshold: 0.2
   categories:
     - beverage
+    - food
 
 coffee mug:
   label: coffee
   threshold: 0.2
   categories:
     - beverage
+    - food
 
 coffeepot:
   label: coffee
@@ -2664,10 +2686,14 @@ scale:
 dining table:
   label: dining
   threshold: 0.1
+  categories:
+    - food
 
 maze:
   label: landscape
   threshold: 0.2
+  categories:
+    - nature
 
 dishrag:
   see: ignore
@@ -2712,6 +2738,7 @@ dutch oven:
   context: food
   categories:
     - kitchen
+    - food
 
 tray:
   label: kitchen
@@ -2883,6 +2910,8 @@ jeep:
 
 cooking:
   label: cooking
+  categories:
+    - food
   threshold: 0.1
 
 pan:
@@ -3016,6 +3045,7 @@ mixing bowl:
   threshold: 0.4
   categories:
     - cooking
+    - food
 
 mobile home:
   see: ignore
@@ -3359,6 +3389,8 @@ refrigerator:
 restaurant:
   label: dining
   threshold: 0.2
+  categories:
+    - food
 
 revolver:
   label: weapon
@@ -3379,6 +3411,7 @@ rotisserie:
   threshold: 0.1
   categories:
     - cooking
+    - food
 
 rubber eraser:
   see: ignore
@@ -3502,6 +3535,7 @@ soup bowl:
   threshold: 0.1
   categories:
     - dining
+    - food
 
 spatula:
   label: cooking
@@ -3542,6 +3576,7 @@ stove:
   context: food
   categories:
     - kitchen
+    - food
 
 strainer:
   label: cooking
@@ -3584,6 +3619,7 @@ teapot:
   threshold: 0.1
   categories:
     - beverage
+    - food
 
 theater curtain:
   label: theater
@@ -3593,6 +3629,7 @@ toaster:
   threshold: 0.1
   categories:
     - cooking
+    - food
 
 toilet seat:
   see: ignore
@@ -3680,12 +3717,14 @@ wine bottle:
   categories:
     - beverage
     - drinks
+    - food
 
 wok:
   threshold: 0.1
   categories:
     - cooking
     - kitchen
+    - food
 
 wooden spoon:
   label: spoon
@@ -3975,6 +4014,7 @@ red wine:
   categories:
     - beverage
     - drinks
+    - food
 
 beverage:
   label: beverage
@@ -3999,11 +4039,14 @@ alp:
   threshold: 0.1
   categories:
     - landscape
-    - mountain
+    - mountains
+    - nature
 
 cliff:
   label: landscape
   threshold: 0.1
+  categories:
+    - nature
 
 promontory:
   see: cliff
@@ -4011,6 +4054,8 @@ promontory:
 geyser:
   label: landscape
   threshold: 0.1
+  categories:
+    - nature
 
 sandbar:
   label: beach
@@ -4030,6 +4075,7 @@ yellow lady's slipper:
   threshold: 0.1
   categories:
     - plant
+    - nature
 
 corn:
   label: vegetables
@@ -4044,6 +4090,8 @@ acorn:
 buckeye:
   label: plant
   threshold: 0.1
+  catgories:
+    - nature
 
 mushroom:
   label: vegetables
@@ -4142,6 +4190,7 @@ sunglasses:
   threshold: 0.1
   categories:
     - portrait
+    - people
 
 sunglass:
   see: sunglasses
@@ -4225,6 +4274,7 @@ mask:
   threshold: 0.1
   categories:
     - portrait
+    - people
 
 portrait:
   label: portrait
@@ -4369,6 +4419,8 @@ volcano:
   label: mountain
   categories:
     - landscape
+    - nature
+    - mountains
   threshold: 0.5
 
 radio telescope:
@@ -4402,6 +4454,7 @@ totem pole:
   threshold: 0.1
   categories:
     - outdoor
+    - architecture
 
 puck:
   see: ignore
@@ -4631,6 +4684,8 @@ hay:
 hip:
   label: plant
   threshold: 0.1
+  categories:
+    - nature
 
 iron:
   see: ignore
@@ -4657,6 +4712,8 @@ parking meter:
 pedestal:
   label: monument
   threshold: 0.1
+  categories:
+    - architecture
 
 plunger:
   see: ignore
@@ -4831,5 +4888,5 @@ memorial:
   threshold: 0.1
 
 mountains:
-  label: mountain
+  label: mountains
   threshold: 0.1
