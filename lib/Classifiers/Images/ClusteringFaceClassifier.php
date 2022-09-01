@@ -56,6 +56,7 @@ class ClusteringFaceClassifier extends Classifier {
 			$timeout = self::IMAGE_TIMEOUT;
 		}
 
+		$usersToCluster = [];
 		$classifierProcess = $this->classifyFiles(self::MODEL_NAME, $queueFiles, $timeout);
 
 		foreach ($classifierProcess as $queueFile => $faces) {
@@ -72,11 +73,6 @@ class ClusteringFaceClassifier extends Classifier {
 				$faceDetection->setVector($face['vector']);
 				$faceDetection->setFileId($queueFile->getFileId());
 
-
-				$nodes = $this->rootFolder->getById($queueFile->getFileId());
-				if (count($nodes) === 0) {
-					continue;
-				}
 				$mounts = $this->userMountCache->getMountsForRootId($queueFile->getRootId());
 				$userIds = array_map(function (ICachedMountInfo $mount) {
 					return $mount->getUser()->getUID();
@@ -91,8 +87,15 @@ class ClusteringFaceClassifier extends Classifier {
 						$this->logger->error('Could not store face detection in database', ['exception' => $e]);
 						continue;
 					}
-					$this->jobList->add(ClusterFacesJob::class, ['userId' => $userId]);
+					$usersToCluster[] = $userId;
 				}
+			}
+		}
+
+		$usersToCluster = array_unique($usersToCluster);
+		foreach ($usersToCluster as $userId) {
+			if (!$this->jobList->has(ClusterFacesJob::class, ['userId' => $userId])) {
+				$this->jobList->add(ClusterFacesJob::class, ['userId' => $userId]);
 			}
 		}
 	}
