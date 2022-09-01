@@ -30,7 +30,6 @@ class ClusteringFaceClassifier extends Classifier {
 	private Logger $logger;
 	private IConfig $config;
 	private FaceDetectionMapper $faceDetections;
-	private IRootFolder $rootFolder;
 	private IUserMountCache $userMountCache;
 	private IJobList $jobList;
 
@@ -39,7 +38,6 @@ class ClusteringFaceClassifier extends Classifier {
 		$this->logger = $logger;
 		$this->config = $config;
 		$this->faceDetections = $faceDetections;
-		$this->rootFolder = $rootFolder;
 		$this->userMountCache = $userMountCache;
 		$this->jobList = $jobList;
 	}
