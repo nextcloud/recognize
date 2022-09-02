@@ -58,10 +58,15 @@ class QueueService {
 	 * @return void
 	 */
 	public function scheduleJob(string $model, QueueFile $file) : void {
-		$this->jobList->add(self::JOB_CLASSES[$model], [
+		if (!$this->jobList->has(self::JOB_CLASSES[$model], [
 			'storageId' => $file->getStorageId(),
 			'rootId' => $file->getRootId(),
-		]);
+		])) {
+			$this->jobList->add(self::JOB_CLASSES[$model], [
+				'storageId' => $file->getStorageId(),
+				'rootId' => $file->getRootId(),
+			]);
+		}
 	}
 
 	/**
