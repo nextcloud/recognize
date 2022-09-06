@@ -6,6 +6,7 @@ OC.L10N.register(
     "Failed to load settings" : "Fejl ved indlæsning af indstillinger",
     "Failed to save settings" : "Kunne ikke gemme indstillinger",
     "Farm" : "Gård",
+    "People" : "Personer",
     "Dog" : "Hund",
     "Music" : "Musik",
     "Office" : "Kontor",
