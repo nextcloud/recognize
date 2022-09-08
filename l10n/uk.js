@@ -11,6 +11,7 @@ OC.L10N.register(
     "Clock" : "Годинник",
     "Display" : "Показати",
     "Camping" : "Лагер",
+    "Food" : "Їжа",
     "Camera" : "Камера",
     "Pizza" : "Піцца",
     "Info" : "Info",

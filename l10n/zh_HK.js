@@ -95,7 +95,7 @@ OC.L10N.register(
     "Backpack" : "背包",
     "Shop" : "商店",
     "Office" : "Nextcloud Office",
-    "Outdoor" : "Outdoor",
+    "Outdoor" : "戶外",
     "Living" : "Living",
     "Tower" : "Tower",
     "Drinks" : "酒精飲料",
