@@ -13,7 +13,7 @@ use OCP\IConfig;
 use OCP\Settings\ISettings;
 
 class AdminSettings implements ISettings {
-	public const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'geo.enabled', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'audio.status', 'images.status', 'video.status'];
+	public const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'geo.enabled', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status'];
 
 	/**
 	 * @var \OCP\AppFramework\Services\IInitialState
@@ -36,7 +36,7 @@ class AdminSettings implements ISettings {
 	public function getForm(): TemplateResponse {
 		$settings = [];
 		foreach (self::SETTINGS as $setting) {
-			$settings[$setting] = $this->config->getAppValue('recognize', $setting);
+			$settings[$setting] = $this->config->getAppValue('recognize', $setting, 'null');
 		}
 		$this->initialState->provideInitialState('settings', $settings);
 		return new TemplateResponse('recognize', 'admin');

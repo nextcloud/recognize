@@ -19,7 +19,7 @@ class ClassifyMovinetJob extends ClassifierJob {
 	private MovinetClassifier $movinet;
 
 	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IConfig $config, MovinetClassifier $movinet, IUserMountCache $mountCache, IJobList $jobList) {
-		parent::__construct($time, $logger, $queue, $mountCache, $jobList);
+		parent::__construct($time, $logger, $queue, $mountCache, $jobList, $config);
 		$this->config = $config;
 		$this->movinet = $movinet;
 	}

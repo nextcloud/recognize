@@ -19,7 +19,7 @@ class ClassifyFacesJob extends ClassifierJob {
 	private ClusteringFaceClassifier $faces;
 
 	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IConfig $config, ClusteringFaceClassifier $faceClassifier, IUserMountCache $mountCache, IJobList $jobList) {
-		parent::__construct($time, $logger, $queue, $mountCache, $jobList);
+		parent::__construct($time, $logger, $queue, $mountCache, $jobList, $config);
 		$this->config = $config;
 		$this->faces = $faceClassifier;
 	}

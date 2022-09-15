@@ -19,7 +19,7 @@ class ClassifyImagenetJob extends ClassifierJob {
 	private ImagenetClassifier $imagenet;
 
 	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IConfig $config, ImagenetClassifier $imagenet, IUserMountCache $mountCache, IJobList $jobList) {
-		parent::__construct($time, $logger, $queue, $mountCache, $jobList);
+		parent::__construct($time, $logger, $queue, $mountCache, $jobList, $config);
 		$this->config = $config;
 		$this->imagenet = $imagenet;
 	}

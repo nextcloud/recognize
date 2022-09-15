@@ -106,4 +106,12 @@ class QueueMapper extends QBMapper {
 		$qb = $this->db->getQueryBuilder();
 		$qb->delete($this->getQueueTable($model))->executeStatement();
 	}
+
+	public function count(string $model) : int {
+		$qb = $this->db->getQueryBuilder();
+		$result = $qb->select($qb->func()->count('id'))
+			->from($this->getQueueTable($model))
+			->executeQuery();
+		return $result->fetchOne(\PDO::FETCH_COLUMN);
+	}
 }
