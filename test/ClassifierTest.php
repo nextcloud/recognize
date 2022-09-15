@@ -79,6 +79,8 @@ class ClassifierTest extends TestCase {
 		$scheduler->setLastRun(0);
 		$scheduler->execute($this->jobList);
 
+		sleep(2);
+
 		$storageId = $this->testFile->getMountPoint()->getNumericStorageId();
 		$rootId = $this->testFile->getMountPoint()->getStorageRootId();
 		self::assertTrue($this->jobList->has(StorageCrawlJob::class, [
