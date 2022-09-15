@@ -13,8 +13,9 @@ use OCA\Recognize\Service\QueueService;
 use OCP\DB\Exception;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
+use OCP\Files\Events\Node\BeforeNodeDeletedEvent;
 use OCP\Files\Events\Node\NodeCreatedEvent;
-use OCP\Files\Events\Node\NodeDeletedEvent;
+use OCP\Files\FileInfo;
 use OCP\Files\InvalidPathException;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
@@ -32,7 +33,7 @@ class FileListener implements IEventListener {
 	}
 
 	public function handle(Event $event): void {
-		if ($event instanceof NodeDeletedEvent) {
+		if ($event instanceof BeforeNodeDeletedEvent) {
 			$this->postDelete($event->getNode());
 		}
 		if ($event instanceof NodeCreatedEvent) {
@@ -41,6 +42,17 @@ class FileListener implements IEventListener {
 	}
 
 	public function postDelete(Node $node) {
+		if ($node->getType() === FileInfo::TYPE_FOLDER) {
+			try {
+				foreach ($node->getDirectoryListing() as $child) {
+					$this->postDelete($child);
+				}
+			} catch (NotFoundException $e) {
+				$this->logger->debug($e->getMessage(), ['exception' => $e]);
+			}
+			return;
+		}
+
 		// Try Deleting possibly existing face detections
 		try {
 			/**
@@ -48,11 +60,11 @@ class FileListener implements IEventListener {
 			 */
 			$faceDetections = $this->faceDetectionMapper->findByFileId($node->getId());
 			foreach ($faceDetections as $detection) {
-				$this->logger->debug('Delete face detection ' . $detection->getId());
+				$this->logger->warning('Delete face detection ' . $detection->getId());
 				$this->faceDetectionMapper->delete($detection);
 			}
 		} catch (NotFoundException $e) {
-			$this->logger->debug($e->getMessage(), ['exception' => $e]);
+			$this->logger->warning($e->getMessage(), ['exception' => $e]);
 		} catch (Exception|InvalidPathException $e) {
 			$this->logger->warning($e->getMessage(), ['exception' => $e]);
 		}
