@@ -11,79 +11,79 @@
 		<NcSettingsSection :title="t('recognize', 'Status')">
 			<template v-if="settings['faces.enabled'] || settings['imagenet.enabled'] || settings['musicnn.enabled'] || settings['movinet.enabled']">
 				<NcNoteCard show-alert type="success">
-					The app is installed and will automatically classify files in background processes.
+					{{ t('recognize', 'The app is installed and will automatically classify files in background processes.') }}
 				</NcNoteCard>
 				<template v-if="settings['faces.enabled'] || settings['imagenet.enabled']">
 					<NcNoteCard v-if="settings['faces.status'] === true" show-alert type="success">
-						Face recognition is working.
+						{{ t('recognize', 'Face recognition is working.') }}
 					</NcNoteCard>
 					<NcNoteCard v-else-if="settings['faces.status'] === false" show-alert type="error">
-						An error occurred during face recognition, please check the Nextcloud logs.
+						{{ t('recognize', 'An error occurred during face recognition, please check the Nextcloud logs.') }}
 					</NcNoteCard>
 					<NcNoteCard v-else>
-						Waiting for status reports on face recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.
+						{{ t('recognize', 'Waiting for status reports on face recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.') }}
 					</NcNoteCard>
 				</template>
 				<template v-if="settings['imagenet.enabled']">
 					<NcNoteCard v-if="settings['imagenet.status'] === true" show-alert type="success">
-						Object recognition is working.
+						{{ t('recognize', 'Object recognition is working.') }}
 					</NcNoteCard>
 					<NcNoteCard v-else-if="settings['imagenet.status'] === false" show-alert type="error">
-						An error occurred during object recognition, please check the Nextcloud logs.
+						{{ t('recognize', 'An error occurred during object recognition, please check the Nextcloud logs.') }}
 					</NcNoteCard>
 					<NcNoteCard v-else>
-						Waiting for status reports on object recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.
+						{{ t('recognize', 'Waiting for status reports on object recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.') }}
 					</NcNoteCard>
 				</template>
 				<template v-if="settings['musicnn.enabled']">
 					<NcNoteCard v-if="settings['musicnn.status'] === true" show-alert type="success">
-						Audio recognition is working.
+						{{ t('recognize', 'Audio recognition is working.') }}
 					</NcNoteCard>
 					<NcNoteCard v-else-if="settings['musicnn.status'] === false" show-alert type="error">
-						An error occurred during audio recognition, please check the Nextcloud logs.
+						{{ t('recognize', 'An error occurred during audio recognition, please check the Nextcloud logs.') }}
 					</NcNoteCard>
 					<NcNoteCard v-else>
-						Waiting for status reports on audio recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.
+						{{ t('recognize', 'Waiting for status reports on audio recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.') }}
 					</NcNoteCard>
 				</template>
 				<template v-if="settings['movinet.enabled']">
 					<NcNoteCard v-if="settings['movinet.status'] === true" show-alert type="success">
-						Video recognition is working.
+						{{ t('recognize', 'Video recognition is working.') }}
 					</NcNoteCard>
 					<NcNoteCard v-else-if="settings['movinet.status'] === false" show-alert type="error">
-						An error occurred during video recognition, please check the Nextcloud logs.
+						{{ t('recognize', 'An error occurred during video recognition, please check the Nextcloud logs.') }}
 					</NcNoteCard>
 					<NcNoteCard v-else>
-						Waiting for status reports on video recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.
+						{{ t('recognize', 'Waiting for status reports on video recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.') }}
 					</NcNoteCard>
 				</template>
 				<template v-if="countQueued">
-					<p>Queued files:</p>
+					<p>{{ t('recognize', 'Queued files:') }}</p>
 					<p class="indent">
-						Face recognition: {{ countQueued.faces }}<br>
-						Object recognition: {{ countQueued.imagenet }}<br>
-						Landmark recognition: {{ countQueued.landmarks }}<br>
-						Video recognition: {{ countQueued.movinet }}<br>
-						Music genre recognition: {{ countQueued.musicnn }}<br>
+						{{ t('recognize', 'Face recognition:') }} {{ countQueued.faces }}<br>
+						{{ t('recognize', 'Object recognition:') }} {{ countQueued.imagenet }}<br>
+						{{ t('recognize', 'Landmark recognition:') }} {{ countQueued.landmarks }}<br>
+						{{ t('recognize', 'Video recognition:') }} {{ countQueued.movinet }}<br>
+						{{ t('recognize', 'Music genre recognition:') }} {{ countQueued.musicnn }}<br>
 					</p>
 				</template>
 				<p v-else>
-					<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Counting queued files
+					<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Counting queued files') }}
 				</p>
 			</template>
 			<p v-else>
-				None of the tagging options below are currently selected. The app will currently do nothing.
+				{{ t('recognize', 'None of the tagging options below are currently selected. The app will currently do nothing.') }}
 			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Image tagging')">
 			<p>
 				<NcCheckboxRadioSwitch :checked.sync="settings['faces.enabled']" type="switch" @update:checked="onChange">
-					Enable face recognition (based on contact pictures in the Contacts app)
+					{{ t('recognize', 'Enable face recognition (groups pictures by people that appear in them in the photos app)') }}
 				</NcCheckboxRadioSwitch>
 			</p>
 			<p>
 				<NcCheckboxRadioSwitch :checked.sync="settings['imagenet.enabled']" type="switch" @update:checked="onChange">
-					Enable object recognition (e.g. food, vehicles, landscapes)
+					{{ t('recognize', 'Enable object recognition (e.g. food, vehicles, landscapes)') }}
 				</NcCheckboxRadioSwitch>
 			</p>
 			<p>
@@ -91,14 +91,14 @@
 					type="switch"
 					:disabled="!Boolean(settings['imagenet.enabled'])"
 					@update:checked="onChange">
-					Enable landmark recognition (e.g. Eiffel Tower, Golden Gate Bridge)
+					{{ t('recognize', 'Enable landmark recognition (e.g. Eiffel Tower, Golden Gate Bridge)') }}
 				</NcCheckboxRadioSwitch>
 			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Audio tagging')">
 			<p>
 				<NcCheckboxRadioSwitch :checked.sync="settings['musicnn.enabled']" type="switch" @update:checked="onChange">
-					Enable music genre recognition (e.g. pop, rock, folk, metal, new age)
+					{{ t('recognize', 'Enable music genre recognition (e.g. pop, rock, folk, metal, new age)') }}
 				</NcCheckboxRadioSwitch>
 			</p>
 		</NcSettingsSection>
@@ -108,36 +108,36 @@
 					type="switch"
 					:disabled="platform !== 'x86_64' || settings['tensorflow.purejs']"
 					@update:checked="onChange">
-					Enable human action recognition (e.g. arm wrestling, dribbling basketball, hula hooping)
+					{{ t('recognize', 'Enable human action recognition (e.g. arm wrestling, dribbling basketball, hula hooping)') }}
 				</NcCheckboxRadioSwitch>
 			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Reset')">
-			<p>Click the below button to remove all tags from all files that have been classified so far.</p>
+			<p>{{ t('recognize', 'Click the below button to remove all tags from all files that have been classified so far.') }}</p>
 			<button class="button" @click="onReset">
-				Reset tags for classified files
+				{{ t('recognize', 'Reset tags for classified files') }}
 			</button>
 			<p>&nbsp;</p>
-			<p>Click the below button to rescan all files in this instance and add them to the classifier queues.</p>
+			<p>{{ t('recognize', 'Click the below button to rescan all files in this instance and add them to the classifier queues.') }}</p>
 			<button class="button" @click="onRescan">
-				Rescan all files
+				{{ t('recognize', 'Rescan all files') }}
 			</button>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Terminal commands') ">
-			<p>To trigger a full classification run manually, run the following command on the terminal.</p>
+			<p>{{ t('recognize', 'To trigger a full classification run manually, run the following command on the terminal.') }}</p>
 			<pre><code>occ recognize:recrawl</code></pre>
 			<p>&nbsp;</p>
-			<p>To download all models preliminary to executing the classification jobs, run the following command on the terminal.</p>
+			<p>{{ t('recognize', 'To download all models preliminary to executing the classification jobs, run the following command on the terminal.') }}</p>
 			<pre><code>occ recognize:download-models</code></pre>
 			<p>&nbsp;</p>
-			<p>You can reset the tags of all files that have been previously classified by recognize with the following command:</p>
+			<p>{{ t('recognize', 'You can reset the tags of all files that have been previously classified by recognize with the following command:') }}</p>
 			<pre><code>occ recognize:reset-tags</code></pre>
 			<p>&nbsp;</p>
-			<p>You can delete all tags that no longer have any files associated with them with the following command:</p>
+			<p>{{ t('recognize', 'You can delete all tags that no longer have any files associated with them with the following command:') }}</p>
 			<pre><code>occ recognize:cleanup-tags</code></pre>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'CPU cores') ">
-			<p>By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used.</p>
+			<p>{{ t('recognize', 'By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used.') }}</p>
 			<p>
 				<label>
 					<input v-model="settings['tensorflow.cores']"
@@ -146,30 +146,36 @@
 						:step="1"
 						:max="32"
 						@change="onChange">
-					<span>Number of CPU Cores (0 for no limit)</span>
+					<span>{{ t('recognize', 'Number of CPU Cores (0 for no limit)') }}</span>
 				</label>
 			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Tensorflow plain mode')">
 			<p v-if="avx === null || platform === null || musl === null">
-				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Checking CPU
+				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking CPU') }}
 			</p>
 			<p v-else-if="avx && platform === 'x86_64' && !musl">
-				Your machine supports native TensorFlow operation, you do not need WASM mode.
+				{{ t('recognize', 'Your machine supports native TensorFlow operation, you do not need WASM mode.') }}
 			</p>
-			<p v-else>
-				Your machine does not support native TensorFlow operation, because {{ pureJSReasons }}. WASM mode is recommended.
-			</p>
+			<template v-else>
+				<p>
+					{{ t('recognize', 'WASM mode was activated automatically, because your machine does not support native TensorFlow operation:') }}
+				</p>
+				<ul>
+					<li v-for="reason in pureJSReasons">
+						{{ reason }}
+					</li>
+				</ul>
+			</template>
 			<p>
 				<NcCheckboxRadioSwitch :checked.sync="settings['tensorflow.purejs']" type="switch" @update:checked="onChange">
-					Enable WASM mode
+					{{ t('recognize', 'Enable WASM mode') }}
 				</NcCheckboxRadioSwitch>
 			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Node.js path')">
 			<p>
-				If the shipped Node.js binary doesn't work on your system for some reason you can set the path to a custom node.js binary.
-				Currently supported is Node v14.17 and newer v14 releases.
+				{{ t('recognize', 'If the shipped Node.js binary doesn\'t work on your system for some reason you can set the path to a custom node.js binary. Currently supported is Node v14.17 and newer v14 releases.') }}
 			</p>
 			<p>
 				<input v-model="settings['node_binary']" type="text" @change="onChange">
@@ -212,15 +218,15 @@ export default {
 		pureJSReasons() {
 			const reasons = []
 			if (!this.avx) {
-				reasons.push('it does not support AVX instructions')
+				reasons.push(this.t('recognize', 'Your server does not support AVX instructions'))
 			}
 			if (this.platform !== 'x86_64') {
-				reasons.push('it doesn\'t have not an x86 64bit CPU')
+				reasons.push(this.t('recognize', 'Your server doesn\'t have an x86 64bit CPU'))
 			}
 			if (this.musl) {
-				reasons.push('it uses musl libc')
+				reasons.push(this.t('recognize', 'Your server uses musl libc'))
 			}
-			return reasons.join(' and ')
+			return reasons
 		},
 	},
 
