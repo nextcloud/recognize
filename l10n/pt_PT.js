@@ -1,6 +1,8 @@
 OC.L10N.register(
     "recognize",
     {
+    "Recognize" : "Reconhecer",
+    "Smart media tagging for Nextcloud" : "Etiquetamento inteligente de mídia para o Nextcloud",
     "Status" : "Estado",
     "Reset" : "Reiniciar",
     "Failed to save settings" : "Erro ao gravar as definições",
