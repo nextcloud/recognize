@@ -28,7 +28,7 @@
     "@tensorflow/tfjs": "^3.20",
     "@tensorflow/tfjs-backend-wasm": "^3.20",
     "@tensorflow/tfjs-node": "^3.20",
-    "@vladmandic/face-api": "^1.7.1",
+    "@vladmandic/face-api": "^1.7.3",
     "download": "^8.0.0",
     "exifer": "^1.0.0-beta.2",
     "ffmpeg-static": "^4.4.0",
