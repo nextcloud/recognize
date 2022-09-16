@@ -15,8 +15,8 @@ use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\EventDispatcher\IEventDispatcher;
+use OCP\Files\Events\Node\BeforeNodeDeletedEvent;
 use OCP\Files\Events\Node\NodeCreatedEvent;
-use OCP\Files\Events\Node\NodeDeletedEvent;
 
 class Application extends App implements IBootstrap {
 	public const APP_ID = 'recognize';
@@ -27,7 +27,7 @@ class Application extends App implements IBootstrap {
 		 * @var IEventDispatcher $dispatcher
 		 */
 		$dispatcher = $this->getContainer()->get(IEventDispatcher::class);
-		$dispatcher->addServiceListener(NodeDeletedEvent::class, FileListener::class);
+		$dispatcher->addServiceListener(BeforeNodeDeletedEvent::class, FileListener::class);
 		$dispatcher->addServiceListener(NodeCreatedEvent::class, FileListener::class);
 	}
 

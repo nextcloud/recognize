@@ -84,6 +84,7 @@ class ClassifierTest extends TestCase {
 		self::assertTrue($this->jobList->has(StorageCrawlJob::class, [
 			'storage_id' => $storageId,
 			'root_id' => $rootId,
+			'override_root' => $this->userFolder->getId(),
 			'last_file_id' => 0
 		]));
 
@@ -91,6 +92,7 @@ class ClassifierTest extends TestCase {
 		$this->jobList->remove(StorageCrawlJob::class, [
 			'storage_id' => $storageId,
 			'root_id' => $rootId,
+			'override_root' => $this->userFolder->getId(),
 			'last_file_id' => 0
 		]);
 	}
@@ -112,6 +114,7 @@ class ClassifierTest extends TestCase {
 		$crawler->setArgument([
 			'storage_id' => $storageId,
 			'root_id' => $rootId,
+			'override_root' => $this->userFolder->getId(),
 			'last_file_id' => 0
 		]);
 		$crawler->setId(1);
@@ -174,6 +177,7 @@ class ClassifierTest extends TestCase {
 		$crawler->setArgument([
 			'storage_id' => $storageId,
 			'root_id' => $rootId,
+			'override_root' => $this->userFolder->getId(),
 			'last_file_id' => 0
 		]);
 		$crawler->setId(1);
@@ -258,6 +262,7 @@ class ClassifierTest extends TestCase {
 		$crawler->setArgument([
 			'storage_id' => $storageId,
 			'root_id' => $rootId,
+			'override_root' => $this->userFolder->getId(),
 			'last_file_id' => 0
 		]);
 		$crawler->setId(1);
@@ -341,6 +346,7 @@ class ClassifierTest extends TestCase {
 		$crawler->setArgument([
 			'storage_id' => $storageId,
 			'root_id' => $rootId,
+			'override_root' => $this->userFolder->getId(),
 			'last_file_id' => 0
 		]);
 		$crawler->setId(1);
@@ -401,6 +407,7 @@ class ClassifierTest extends TestCase {
 		$crawler->setArgument([
 			'storage_id' => $storageId,
 			'root_id' => $rootId,
+			'override_root' => $this->userFolder->getId(),
 			'last_file_id' => 0
 		]);
 		$crawler->setId(1);

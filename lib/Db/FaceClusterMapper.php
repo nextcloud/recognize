@@ -30,9 +30,13 @@ class FaceClusterMapper extends QBMapper {
 	 */
 	public function findByUserId(string $userId): array {
 		$qb = $this->db->getQueryBuilder();
-		$qb->select(FaceCluster::$columns)
-			->from('recognize_face_clusters')
-			->where($qb->expr()->eq('user_id', $qb->createPositionalParameter($userId)));
+		$columns = array_map(function ($c) : string {
+			return 'fc.'.$c;
+		}, FaceCluster::$columns);
+		$qb->selectDistinct($columns)
+			->from('recognize_face_clusters', 'fc')
+			->innerJoin('fc', 'recognize_face_detections', 'fd', 'fc.id = fd.cluster_id')
+			->where($qb->expr()->eq('fc.user_id', $qb->createPositionalParameter($userId)));
 		return $this->findEntities($qb);
 	}
 

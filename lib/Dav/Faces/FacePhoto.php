@@ -81,7 +81,7 @@ class FacePhoto implements IFile {
 					throw new NotFound("Photo is a folder");
 				}
 			} else {
-				throw new NotFound("Photo not found for user");
+				throw new NotFound("Photo ".$this->faceDetection->getFileId()." not found for user");
 			}
 		} else {
 			return $this->file;

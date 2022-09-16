@@ -47,11 +47,12 @@ class StorageCrawlJob extends QueuedJob {
 	protected function run($argument): void {
 		$storageId = $argument['storage_id'];
 		$rootId = $argument['root_id'];
+		$overrideRoot = $argument['override_root'];
 		$lastFileId = $argument['last_file_id'];
 		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
 		try {
 			$root = $qb->selectFileCache()
-				->andWhere($qb->expr()->eq('filecache.fileid', $qb->createNamedParameter($rootId, IQueryBuilder::PARAM_INT)))
+				->andWhere($qb->expr()->eq('filecache.fileid', $qb->createNamedParameter($overrideRoot, IQueryBuilder::PARAM_INT)))
 				->executeQuery()->fetch();
 		} catch (Exception $e) {
 			$this->logger->error('Could not fetch storage root', ['exception' => $e]);
@@ -66,7 +67,8 @@ class StorageCrawlJob extends QueuedJob {
 			$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
 			$files = $qb->selectFileCache()
 				->whereStorageId($storageId)
-				->andWhere($qb->expr()->like('path', $qb->createNamedParameter($root['path'] . '%')))
+				->andWhere($qb->expr()->like('path', $qb->createNamedParameter($root['path'] . '/%')))
+				->andWhere($qb->expr()->eq('storage', $qb->createNamedParameter($storageId)))
 				->andWhere($qb->expr()->in('mimetype', $qb->createNamedParameter(array_merge($imageTypes, $videoTypes, $audioTypes), IQueryBuilder::PARAM_INT_ARRAY)))
 				->andWhere($qb->expr()->gt('filecache.fileid', $qb->createNamedParameter($lastFileId)))
 				->orderBy('filecache.fileid', 'ASC')
@@ -110,6 +112,7 @@ class StorageCrawlJob extends QueuedJob {
 			$this->jobList->add(self::class, [
 				'storage_id' => $storageId,
 				'root_id' => $rootId,
+				'override_root' => $overrideRoot,
 				'last_file_id' => $queueFile->getFileId()
 			]);
 		}

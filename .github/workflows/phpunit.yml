@@ -24,6 +24,7 @@ jobs:
         php-versions: ['7.4', '8.0', '8.1']
         databases: ['sqlite', 'mysql', 'pgsql']
         server-versions: ['master']
+        s3: ['']
         container: ['']
         include:
           - server-versions: master
@@ -33,8 +34,12 @@ jobs:
             php-versions: 8.0
             databases: sqlite
             container: nextcloud:fpm-alpine
+          - server-versions: master
+            php-versions: 8.0
+            databases: mysql
+            s3: s3
 
-    name: php${{ matrix.php-versions }} ${{ matrix.databases }} ${{ matrix.server-versions }} ${{ matrix.container }}
+    name: php${{ matrix.php-versions }} ${{ matrix.databases }} ${{ matrix.server-versions }} ${{ matrix.container }} ${{ matrix.s3 }}
 
     container: ${{ matrix.container }}
 
@@ -55,6 +60,16 @@ jobs:
           POSTGRES_PASSWORD: rootpassword
           POSTGRES_DB: nextcloud
         options: --health-cmd pg_isready --health-interval 5s --health-timeout 2s --health-retries 5
+      s3:
+        # See https://stackoverflow.com/questions/64031598/creating-a-minios3-container-inside-a-github-actions-yml-file
+        image: bitnami/minio
+        ports:
+          - 9000:9000/tcp
+        volumes:
+          - minio_data:/data
+        env:
+          MINIO_ROOT_USER: minioadmin
+          MINIO_ROOT_PASSWORD: minioadmin
 
     steps:
       - name: Get Alpine Linux ready
@@ -78,7 +93,7 @@ jobs:
           apk add php8-xml
           apk add php8-xmlwriter
           apk add php8-ctype
-          
+
 
       - name: Checkout server
         uses: actions/checkout@v2
@@ -131,6 +146,28 @@ jobs:
           rm -rf models
           wget https://github.com/nextcloud/recognize/releases/download/v2.2.0/test-files.zip
           unzip test-files.zip -d test/res/
+
+      - name: Configure s3
+        if: ${{matrix.s3 != ''}}
+        working-directory: config/
+        run: |
+          cat << "EOF" > s3.config.php
+          <?php
+          $CONFIG = [
+            'objectstore' => array (
+              'class' => 'OC\\Files\\ObjectStore\\S3',
+              'arguments' => array (
+                'bucket' => 'nextcloud-dev',
+                'key' => 'minioadmin',
+                'secret' => 'minioadmin',
+                'hostname' => 'localhost',
+                'port' => '9000',
+                'use_ssl' => false,
+                'use_path_style' => true,
+              ),
+            ),
+          ];
+          EOF
 
       - name: Set up Nextcloud with mysql
         if: ${{matrix.databases == 'mysql' }}
