@@ -60,11 +60,11 @@ class FileListener implements IEventListener {
 			 */
 			$faceDetections = $this->faceDetectionMapper->findByFileId($node->getId());
 			foreach ($faceDetections as $detection) {
-				$this->logger->warning('Delete face detection ' . $detection->getId());
+				$this->logger->debug('Delete face detection ' . $detection->getId());
 				$this->faceDetectionMapper->delete($detection);
 			}
 		} catch (NotFoundException $e) {
-			$this->logger->warning($e->getMessage(), ['exception' => $e]);
+			$this->logger->debug($e->getMessage(), ['exception' => $e]);
 		} catch (Exception|InvalidPathException $e) {
 			$this->logger->warning($e->getMessage(), ['exception' => $e]);
 		}
