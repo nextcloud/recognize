@@ -27,7 +27,10 @@ class SchedulerJob extends QueuedJob {
 		'OCA\GroupFolders\Mount\MountProvider'
 	];
 
-	public const LOCAL_HOME_MOUNT_TYPE = 'OC\Files\Mount\LocalHomeMountProvider';
+	public const HOME_MOUNT_TYPES = [
+		'OC\Files\Mount\LocalHomeMountProvider',
+		'OC\Files\Mount\ObjectHomeMountProvider',
+	];
 
 	private LoggerInterface $logger;
 	private IDBConnection $db;
@@ -56,7 +59,7 @@ class SchedulerJob extends QueuedJob {
 			$storageId = (int)$row['storage_id'];
 			$rootId = (int)$row['root_id'];
 			$overrideRoot = $rootId;
-			if ($row['mount_provider_class'] === self::LOCAL_HOME_MOUNT_TYPE) {
+			if (in_array($row['mount_provider_class'], self::HOME_MOUNT_TYPES)) {
 				// Only crawl files, not cache or trashbin
 				$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
 				try {
