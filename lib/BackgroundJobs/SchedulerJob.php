@@ -64,7 +64,9 @@ class SchedulerJob extends QueuedJob {
 						->andWhere($qb->expr()->eq('filecache.storage', $qb->createNamedParameter($storageId, IQueryBuilder::PARAM_INT)))
 						->andWhere($qb->expr()->eq('filecache.path', $qb->createNamedParameter('files')))
 						->executeQuery()->fetch();
-					$overrideRoot = $root['fileid'];
+					if ($root !== false) {
+						$overrideRoot = (int)$root['fileid'];
+					}
 				} catch (Exception $e) {
 					$this->logger->error('Could not fetch home storage files root', ['exception' => $e]);
 					return;
