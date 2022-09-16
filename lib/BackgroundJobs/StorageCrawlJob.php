@@ -112,6 +112,7 @@ class StorageCrawlJob extends QueuedJob {
 			$this->jobList->add(self::class, [
 				'storage_id' => $storageId,
 				'root_id' => $rootId,
+				'override_root' => $overrideRoot,
 				'last_file_id' => $queueFile->getFileId()
 			]);
 		}
