@@ -15,7 +15,6 @@ OC.L10N.register(
     "Node.js path" : "Node.js útvonala",
     "Failed to load settings" : "A beállítások betöltése sikertelen",
     "Failed to save settings" : "A beállítások mentése sikertelen",
-    "Face recognition" : "Arcfelismerés",
     "Cat" : "Macska",
     "Animal" : "Állat",
     "Wildlife" : "Vadvilág",

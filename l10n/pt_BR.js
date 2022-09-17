@@ -15,7 +15,6 @@ OC.L10N.register(
     "Node.js path" : "Caminho do Node.js",
     "Failed to load settings" : "Erro ao carregar configurações",
     "Failed to save settings" : "Erro ao salvar configurações",
-    "Face recognition" : "Reconhecimento facial",
     "Cat" : "Gato",
     "Animal" : "Animal",
     "Wildlife" : "Natureza",

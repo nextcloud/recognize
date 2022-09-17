@@ -15,7 +15,6 @@ OC.L10N.register(
     "Node.js path" : "Node.js yolu",
     "Failed to load settings" : "Ayarlar yüklenemedi",
     "Failed to save settings" : "Ayarlar kaydedilemedi",
-    "Face recognition" : "Yüz tanıma",
     "Cat" : "Kedi",
     "Animal" : "Hayvan",
     "Wildlife" : "Vahşi yaşam",

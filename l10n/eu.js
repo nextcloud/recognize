@@ -15,7 +15,6 @@ OC.L10N.register(
     "Node.js path" : "Node.js bide-izena",
     "Failed to load settings" : "Huts egin du ezarpenak kargatzean",
     "Failed to save settings" : "Huts egin du ezarpenak gordetzean",
-    "Face recognition" : "Aurpegien ezagutzea",
     "Cat" : "Katua",
     "Animal" : "Animalia",
     "Wildlife" : "Fauna",

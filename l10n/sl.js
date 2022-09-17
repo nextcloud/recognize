@@ -7,7 +7,6 @@ OC.L10N.register(
     "Node.js path" : "Pot do Node.js",
     "Failed to load settings" : "Nalaganje nastavitev je spodletelo.",
     "Failed to save settings" : "Shranjevanje nastavitev je spodletelo",
-    "Face recognition" : "Prepoznavanje obraza",
     "Cat" : "Maček",
     "Animal" : "Žival",
     "Wildlife" : "Divje živali",

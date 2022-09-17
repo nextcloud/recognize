@@ -6,7 +6,6 @@ OC.L10N.register(
     "Reset" : "Réinitialiser",
     "Failed to load settings" : "Echec du chargement des paramètres",
     "Failed to save settings" : "Echec de la sauvegarde des paramètres",
-    "Face recognition" : "Reconnaissance des visages",
     "Cat" : "Chat",
     "Animal" : "Animal",
     "Wildlife" : "Faune sauvage",

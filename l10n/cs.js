@@ -15,7 +15,6 @@ OC.L10N.register(
     "Node.js path" : "Popis umístění Node.js",
     "Failed to load settings" : "Nepodařilo se načíst nastavení",
     "Failed to save settings" : "Nastavení se nepodařilo uložit",
-    "Face recognition" : "Rozpoznávání obličejů",
     "Cat" : "Kočka",
     "Animal" : "Zvíře",
     "Wildlife" : "Divoká příroda",
