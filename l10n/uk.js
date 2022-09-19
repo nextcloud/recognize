@@ -13,6 +13,7 @@ OC.L10N.register(
     "Display" : "Показати",
     "Camping" : "Лагер",
     "Camera" : "Камера",
+    "Theater" : "Театр",
     "Pizza" : "Піцца",
     "Info" : "Info",
     "Document" : "Документ",
