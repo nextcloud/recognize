@@ -87,9 +87,9 @@
 				</NcCheckboxRadioSwitch>
 			</p>
 			<p>
-				<NcCheckboxRadioSwitch :checked="settings['landmarks.enabled']"
+				<NcCheckboxRadioSwitch :checked.sync="settings['landmarks.enabled']"
 					type="switch"
-					:disabled="!Boolean(settings['imagenet.enabled'])"
+					:disabled="!settings['imagenet.enabled']"
 					@update:checked="onChange">
 					{{ t('recognize', 'Enable landmark recognition (e.g. Eiffel Tower, Golden Gate Bridge)') }}
 				</NcCheckboxRadioSwitch>
