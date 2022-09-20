@@ -87,9 +87,10 @@ class FaceDetectionMapper extends QBMapper {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select(array_map(fn ($c) => 'd.'.$c, FaceDetection::$columns))
 			->from('recognize_face_detections', 'd')
+			->setMaxResults(1)
 			->leftJoin('d', 'recognize_face_clusters', 'c', $qb->expr()->eq('d.cluster_id', 'c.id'))
-		->where($qb->expr()->eq('d.file_id', $qb->createPositionalParameter($fileId, IQueryBuilder::PARAM_INT)))
-		->andWhere($qb->expr()->eq('c.id', $qb->createPositionalParameter($clusterId, IQueryBuilder::PARAM_INT)));
+			->where($qb->expr()->eq('d.file_id', $qb->createPositionalParameter($fileId, IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()->eq('c.id', $qb->createPositionalParameter($clusterId, IQueryBuilder::PARAM_INT)));
 		return $this->findEntity($qb);
 	}
 
