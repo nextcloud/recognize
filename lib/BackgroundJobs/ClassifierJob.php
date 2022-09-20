@@ -37,9 +37,9 @@ abstract class ClassifierJob extends Job {
 		}
 
 		// Setup Filesystem for a users that can access this mount
-		$mounts = array_filter($this->userMountCache->getMountsForStorageId($storageId), function (ICachedMountInfo $mount) use ($rootId) {
+		$mounts = array_values(array_filter($this->userMountCache->getMountsForStorageId($storageId), function (ICachedMountInfo $mount) use ($rootId) {
 			return $mount->getRootId() === $rootId;
-		});
+		}));
 		if (count($mounts) > 0) {
 			\OC_Util::setupFS($mounts[0]->getUser()->getUID());
 		}
