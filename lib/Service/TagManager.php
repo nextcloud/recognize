@@ -8,7 +8,7 @@ use OCP\SystemTag\ISystemTagObjectMapper;
 use OCP\SystemTag\TagNotFoundException;
 
 class TagManager {
-	public const RECOGNIZED_TAG = 'Tagged by recognize v3.0.0-beta.1';
+	public const RECOGNIZED_TAG = 'Tagged by recognize v3.0.0-beta.2';
 
 	private ISystemTagManager $tagManager;
 	private ISystemTagObjectMapper $objectMapper;
