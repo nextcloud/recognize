@@ -9,6 +9,11 @@ namespace OCA\Recognize\BackgroundJobs;
 
 use OC\Files\Cache\CacheQueryBuilder;
 use OC\SystemConfig;
+use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
+use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
+use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
+use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
+use OCA\Recognize\Classifiers\Video\MovinetClassifier;
 use OCA\Recognize\Service\Logger;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\IJobList;
@@ -49,6 +54,14 @@ class SchedulerJob extends QueuedJob {
 	}
 
 	protected function run($argument): void {
+		$models = $argument['models'] ?? [
+			ClusteringFaceClassifier::MODEL_NAME,
+			ImagenetClassifier::MODEL_NAME,
+			LandmarksClassifier::MODEL_NAME,
+			MovinetClassifier::MODEL_NAME,
+			MusicnnClassifier::MODEL_NAME,
+		];
+
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('root_id', 'storage_id', 'mount_provider_class')
 			->from('mounts')
@@ -80,6 +93,7 @@ class SchedulerJob extends QueuedJob {
 				'root_id' => $rootId,
 				'override_root' => $overrideRoot,
 				'last_file_id' => 0,
+				'models' => $models,
 			]);
 		}
 

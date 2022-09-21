@@ -3,6 +3,11 @@
 namespace OCA\Recognize\Controller;
 
 use OCA\Recognize\BackgroundJobs\SchedulerJob;
+use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
+use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
+use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
+use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
+use OCA\Recognize\Classifiers\Video\MovinetClassifier;
 use OCA\Recognize\Service\QueueService;
 use OCA\Recognize\Service\TagManager;
 use OCP\AppFramework\Controller;
@@ -109,6 +114,28 @@ class AdminController extends Controller {
 	}
 
 	public function setSetting(string $setting, $value) {
+		if ($value === true && $this->config->getAppValue('recognize', $setting, 'false') === 'false') {
+			// Additional model enabled: Schedule new crawl run for the affected mime types
+			switch ($setting) {
+				case ClusteringFaceClassifier::MODEL_NAME . '.enabled':
+					$this->jobList->add(SchedulerJob::class, ['models' => [ClusteringFaceClassifier::MODEL_NAME]]);
+					break;
+				case ImagenetClassifier::MODEL_NAME . '.enabled':
+					$this->jobList->add(SchedulerJob::class, ['models' => [ImagenetClassifier::MODEL_NAME]]);
+					// no break
+				case LandmarksClassifier::MODEL_NAME . '.enabled':
+					$this->jobList->add(SchedulerJob::class, ['models' => [LandmarksClassifier::MODEL_NAME]]);
+					break;
+				case MovinetClassifier::MODEL_NAME . '.enabled':
+					$this->jobList->add(SchedulerJob::class, ['models' => [MovinetClassifier::MODEL_NAME]]);
+					break;
+				case MusicnnClassifier::MODEL_NAME . '.enabled':
+					$this->jobList->add(SchedulerJob::class, ['models' => [MusicnnClassifier::MODEL_NAME]]);
+					break;
+				default:
+					break;
+			}
+		}
 		$this->config->setAppValue('recognize', $setting, $value);
 	}
 
