@@ -30,6 +30,13 @@ class ClassifierTest extends TestCase {
 	public const TEST_USER1 = 'test-user1';
 
 	public const TEST_FILES = ['alpine.jpg' ,'eiffeltower.jpg', 'Rock_Rejam.mp3', 'jumpingjack.gif'];
+	const ALL_MODELS = [
+		ClusteringFaceClassifier::MODEL_NAME,
+		ImagenetClassifier::MODEL_NAME,
+		LandmarksClassifier::MODEL_NAME,
+		MovinetClassifier::MODEL_NAME,
+		MusicnnClassifier::MODEL_NAME,
+	];
 
 	private Classifier $classifier;
 	private OCP\Files\File $testFile;
@@ -85,7 +92,8 @@ class ClassifierTest extends TestCase {
 			'storage_id' => $storageId,
 			'root_id' => $rootId,
 			'override_root' => $this->userFolder->getId(),
-			'last_file_id' => 0
+			'last_file_id' => 0,
+			'models' => self::ALL_MODELS,
 		]));
 
 		// cleanup
@@ -93,7 +101,8 @@ class ClassifierTest extends TestCase {
 			'storage_id' => $storageId,
 			'root_id' => $rootId,
 			'override_root' => $this->userFolder->getId(),
-			'last_file_id' => 0
+			'last_file_id' => 0,
+			'models' => self::ALL_MODELS,
 		]);
 	}
 
@@ -115,7 +124,8 @@ class ClassifierTest extends TestCase {
 			'storage_id' => $storageId,
 			'root_id' => $rootId,
 			'override_root' => $this->userFolder->getId(),
-			'last_file_id' => 0
+			'last_file_id' => 0,
+			'models' => self::ALL_MODELS,
 		]);
 		$crawler->setId(1);
 		$crawler->setLastRun(0);
@@ -178,7 +188,8 @@ class ClassifierTest extends TestCase {
 			'storage_id' => $storageId,
 			'root_id' => $rootId,
 			'override_root' => $this->userFolder->getId(),
-			'last_file_id' => 0
+			'last_file_id' => 0,
+			'models' => self::ALL_MODELS,
 		]);
 		$crawler->setId(1);
 		$crawler->setLastRun(0);
@@ -263,7 +274,8 @@ class ClassifierTest extends TestCase {
 			'storage_id' => $storageId,
 			'root_id' => $rootId,
 			'override_root' => $this->userFolder->getId(),
-			'last_file_id' => 0
+			'last_file_id' => 0,
+			'models' => self::ALL_MODELS,
 		]);
 		$crawler->setId(1);
 		$crawler->setLastRun(0);
@@ -347,7 +359,8 @@ class ClassifierTest extends TestCase {
 			'storage_id' => $storageId,
 			'root_id' => $rootId,
 			'override_root' => $this->userFolder->getId(),
-			'last_file_id' => 0
+			'last_file_id' => 0,
+			'models' => self::ALL_MODELS,
 		]);
 		$crawler->setId(1);
 		$crawler->setLastRun(0);
@@ -408,7 +421,8 @@ class ClassifierTest extends TestCase {
 			'storage_id' => $storageId,
 			'root_id' => $rootId,
 			'override_root' => $this->userFolder->getId(),
-			'last_file_id' => 0
+			'last_file_id' => 0,
+			'models' => self::ALL_MODELS,
 		]);
 		$crawler->setId(1);
 		$crawler->setLastRun(0);
