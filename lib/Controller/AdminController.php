@@ -122,7 +122,7 @@ class AdminController extends Controller {
 					break;
 				case ImagenetClassifier::MODEL_NAME . '.enabled':
 					$this->jobList->add(SchedulerJob::class, ['models' => [ImagenetClassifier::MODEL_NAME]]);
-					// no break
+					break;
 				case LandmarksClassifier::MODEL_NAME . '.enabled':
 					$this->jobList->add(SchedulerJob::class, ['models' => [LandmarksClassifier::MODEL_NAME]]);
 					break;

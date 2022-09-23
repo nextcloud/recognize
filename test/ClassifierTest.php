@@ -30,7 +30,7 @@ class ClassifierTest extends TestCase {
 	public const TEST_USER1 = 'test-user1';
 
 	public const TEST_FILES = ['alpine.jpg' ,'eiffeltower.jpg', 'Rock_Rejam.mp3', 'jumpingjack.gif'];
-	const ALL_MODELS = [
+	public const ALL_MODELS = [
 		ClusteringFaceClassifier::MODEL_NAME,
 		ImagenetClassifier::MODEL_NAME,
 		LandmarksClassifier::MODEL_NAME,

@@ -87,6 +87,11 @@ class StorageCrawlJob extends QueuedJob {
 		if (in_array(MusicnnClassifier::MODEL_NAME, $models)) {
 			$mimeTypes = array_merge($audioTypes, $mimeTypes);
 		}
+		if (count($mimeTypes) === 0) {
+			// Remove current iteration
+			$this->jobList->remove(self::class, $argument);
+			return;
+		}
 
 		try {
 			$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
