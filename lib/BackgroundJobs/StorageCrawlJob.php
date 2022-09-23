@@ -122,10 +122,10 @@ class StorageCrawlJob extends QueuedJob {
 			$queueFile->setUpdate(false);
 			try {
 				if (in_array($file['mimetype'], $imageTypes)) {
-					if (in_array(ImagenetClassifier::class, $models)) {
+					if (in_array(ImagenetClassifier::MODEL_NAME, $models)) {
 						$this->queue->insertIntoQueue(ImagenetClassifier::MODEL_NAME, $queueFile);
 					}
-					if (!in_array(ImagenetClassifier::class, $models) && in_array(LandmarksClassifier::class, $models)) {
+					if (!in_array(ImagenetClassifier::MODEL_NAME, $models) && in_array(LandmarksClassifier::class, $models)) {
 						$tags = $this->tagManager->getTagsForFiles([$queueFile->getFileId()]);
 						/** @var \OCP\SystemTag\ISystemTag[] $fileTags */
 						$fileTags = $tags[$queueFile->getFileId()];
