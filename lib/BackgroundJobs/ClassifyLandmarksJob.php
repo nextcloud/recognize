@@ -19,7 +19,7 @@ class ClassifyLandmarksJob extends ClassifierJob {
 	private LandmarksClassifier $landmarks;
 
 	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IConfig $config, LandmarksClassifier $landmarks, IUserMountCache $mountCache, IJobList $jobList) {
-		parent::__construct($time, $logger, $queue, $mountCache, $jobList);
+		parent::__construct($time, $logger, $queue, $mountCache, $jobList, $config);
 		$this->config = $config;
 		$this->landmarks = $landmarks;
 	}

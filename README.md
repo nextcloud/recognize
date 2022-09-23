@@ -8,15 +8,13 @@
 
 This app goes through your media collection and adds fitting tags, automatically categorizing your photos and music.
 
-* 📷 👪 Recognizes faces from contact photos
+* 📷 👪 Recognizes faces and groups photos by face
 * 📷 🏔 Recognizes animals, landscapes, food, vehicles, buildings and other objects
 * 📷 🗼 Recognizes landmarks and monuments
 * 👂 🎵 Recognizes music genres
 * ⚡ Tagging works via Nextcloud's Collaborative Tags, allowing access by any of your apps
   * 👂 listen to your tagged music with the audioplayer app
   * 📷 view your tagged photos with the photos app
-
-Note: This project is quite young and thus still a bit rough around the edges.
 
 ### Examples
 
@@ -54,7 +52,7 @@ Recognize uses
 
 ### One click
 
-Go to "Apps" in your nextcloud, search for "recognize" and click install (currently only works on Nextcloud v22+. If you're below that, you'll need to install manually).
+Go to "Apps" in your nextcloud, search for "recognize" and click install.
 
 ### Configuration
 

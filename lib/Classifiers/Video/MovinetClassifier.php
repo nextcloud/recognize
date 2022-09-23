@@ -42,6 +42,7 @@ class MovinetClassifier extends Classifier {
 
 		foreach ($classifierProcess as $queueFile => $results) {
 			$this->tagManager->assignTags($queueFile->getFileId(), $results);
+			$this->config->setAppValue('recognize', self::MODEL_NAME.'.status', 'false');
 		}
 	}
 }

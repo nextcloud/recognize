@@ -8,126 +8,136 @@
 	<div id="recognize">
 		<figure v-if="loading" class="icon-loading loading" />
 		<figure v-if="!loading && success" class="icon-checkmark success" />
-		<SettingsSection :title="t('recognize', 'Status')">
-			<template v-if="settings['faces.enabled'] || settings['geo.enabled'] || settings['imagenet.enabled'] || settings['musicnn.enabled']">
-				<p>The app is installed and will automatically classify up to 100 files every 30 minutes.</p>
-				<template v-if="settings['faces.enabled'] || settings['geo.enabled'] || settings['imagenet.enabled']">
-					<p v-if="settings['images.status'] === true">
-						Image recognition is working.
-					</p>
-					<p v-else-if="settings['images.status'] === false">
-						An error occurred during image processing, please check the Nextcloud logs.
-					</p>
-					<p v-else>
-						<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Waiting for status reports on image processing. If this message persists beyond 30 minutes, please check the Nextcloud logs.
-					</p>
+		<NcSettingsSection :title="t('recognize', 'Status')">
+			<template v-if="settings['faces.enabled'] || settings['imagenet.enabled'] || settings['musicnn.enabled'] || settings['movinet.enabled']">
+				<NcNoteCard show-alert type="success">
+					{{ t('recognize', 'The app is installed and will automatically classify files in background processes.') }}
+				</NcNoteCard>
+				<template v-if="settings['faces.enabled'] || settings['imagenet.enabled']">
+					<NcNoteCard v-if="settings['faces.status'] === true" show-alert type="success">
+						{{ t('recognize', 'Face recognition is working.') }}
+					</NcNoteCard>
+					<NcNoteCard v-else-if="settings['faces.status'] === false" show-alert type="error">
+						{{ t('recognize', 'An error occurred during face recognition, please check the Nextcloud logs.') }}
+					</NcNoteCard>
+					<NcNoteCard v-else>
+						{{ t('recognize', 'Waiting for status reports on face recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.') }}
+					</NcNoteCard>
+				</template>
+				<template v-if="settings['imagenet.enabled']">
+					<NcNoteCard v-if="settings['imagenet.status'] === true" show-alert type="success">
+						{{ t('recognize', 'Object recognition is working.') }}
+					</NcNoteCard>
+					<NcNoteCard v-else-if="settings['imagenet.status'] === false" show-alert type="error">
+						{{ t('recognize', 'An error occurred during object recognition, please check the Nextcloud logs.') }}
+					</NcNoteCard>
+					<NcNoteCard v-else>
+						{{ t('recognize', 'Waiting for status reports on object recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.') }}
+					</NcNoteCard>
 				</template>
 				<template v-if="settings['musicnn.enabled']">
-					<p v-if="settings['audio.status'] === true">
-						Audio recognition is working.
-					</p>
-					<p v-else-if="settings['audio.status'] === false">
-						An error occurred during audio recognition, please check the Nextcloud logs.
-					</p>
-					<p v-else>
-						<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Waiting for status reports on audio recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.
-					</p>
+					<NcNoteCard v-if="settings['musicnn.status'] === true" show-alert type="success">
+						{{ t('recognize', 'Audio recognition is working.') }}
+					</NcNoteCard>
+					<NcNoteCard v-else-if="settings['musicnn.status'] === false" show-alert type="error">
+						{{ t('recognize', 'An error occurred during audio recognition, please check the Nextcloud logs.') }}
+					</NcNoteCard>
+					<NcNoteCard v-else>
+						{{ t('recognize', 'Waiting for status reports on audio recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.') }}
+					</NcNoteCard>
 				</template>
 				<template v-if="settings['movinet.enabled']">
-					<p v-if="settings['video.status'] === true">
-						Video recognition is working.
-					</p>
-					<p v-else-if="settings['video.status'] === false">
-						An error occurred during video recognition, please check the Nextcloud logs.
-					</p>
-					<p v-else>
-						<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Waiting for status reports on video recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.
+					<NcNoteCard v-if="settings['movinet.status'] === true" show-alert type="success">
+						{{ t('recognize', 'Video recognition is working.') }}
+					</NcNoteCard>
+					<NcNoteCard v-else-if="settings['movinet.status'] === false" show-alert type="error">
+						{{ t('recognize', 'An error occurred during video recognition, please check the Nextcloud logs.') }}
+					</NcNoteCard>
+					<NcNoteCard v-else>
+						{{ t('recognize', 'Waiting for status reports on video recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.') }}
+					</NcNoteCard>
+				</template>
+				<template v-if="countQueued">
+					<p>{{ t('recognize', 'Queued files:') }}</p>
+					<p class="indent">
+						{{ t('recognize', 'Face recognition:') }} {{ countQueued.faces }}<br>
+						{{ t('recognize', 'Object recognition:') }} {{ countQueued.imagenet }}<br>
+						{{ t('recognize', 'Landmark recognition:') }} {{ countQueued.landmarks }}<br>
+						{{ t('recognize', 'Video recognition:') }} {{ countQueued.movinet }}<br>
+						{{ t('recognize', 'Music genre recognition:') }} {{ countQueued.musicnn }}<br>
 					</p>
 				</template>
-				<p v-if="count >= 0">
-					Processed files: {{ count }}<br>
-					Unrecognized files: {{ countMissed }}
-				</p>
 				<p v-else>
-					<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Counting files
+					<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Counting queued files') }}
 				</p>
 			</template>
 			<p v-else>
-				None of the tagging options below are currently selected. The app will currently do nothing.
+				{{ t('recognize', 'None of the tagging options below are currently selected. The app will currently do nothing.') }}
 			</p>
-		</SettingsSection>
-		<SettingsSection :title="t('recognize', 'Image tagging')">
+		</NcSettingsSection>
+		<NcSettingsSection :title="t('recognize', 'Image tagging')">
 			<p>
-				<label>
-					<input v-model="settings['faces.enabled']" type="checkbox" @change="onChange">
-					<span>Enable face recognition (based on contact pictures in the Contacts app)</span>
-				</label>
-			</p>
-			<p>
-				<label>
-					<input v-model="settings['geo.enabled']" type="checkbox" @change="onChange">
-					<span>Enable location tagging based on GPS tags (country only tags, e.g. Spain, South Africa)</span>
-				</label>
+				<NcCheckboxRadioSwitch :checked.sync="settings['faces.enabled']" type="switch" @update:checked="onChange">
+					{{ t('recognize', 'Enable face recognition (groups pictures by people that appear in them in the photos app)') }}
+				</NcCheckboxRadioSwitch>
 			</p>
 			<p>
-				<label>
-					<input v-model="settings['imagenet.enabled']" type="checkbox" @change="onChange">
-					<span>Enable object recognition (e.g. food, vehicles, landscapes)</span>
-				</label>
+				<NcCheckboxRadioSwitch :checked.sync="settings['imagenet.enabled']" type="switch" @update:checked="onChange">
+					{{ t('recognize', 'Enable object recognition (e.g. food, vehicles, landscapes)') }}
+				</NcCheckboxRadioSwitch>
 			</p>
-			<p class="indent">
-				<label>
-					<input v-model="settings['landmarks.enabled']"
-						type="checkbox"
-						:disabled="!Boolean(settings['imagenet.enabled'])"
-						@change="onChange">
-					<span>Enable landmark recognition (e.g. Eiffel Tower, Golden Gate Bridge)</span>
-				</label>
-			</p>
-		</SettingsSection>
-		<SettingsSection :title="t('recognize', 'Audio tagging')">
 			<p>
-				<label>
-					<input v-model="settings['musicnn.enabled']" type="checkbox" @change="onChange">
-					<span>Enable music genre recognition (e.g. pop, rock, folk, metal, new age)</span>
-				</label>
+				<NcCheckboxRadioSwitch :checked.sync="settings['landmarks.enabled']"
+					type="switch"
+					:disabled="!settings['imagenet.enabled']"
+					@update:checked="onChange">
+					{{ t('recognize', 'Enable landmark recognition (e.g. Eiffel Tower, Golden Gate Bridge)') }}
+				</NcCheckboxRadioSwitch>
 			</p>
-		</SettingsSection>
-		<SettingsSection :title="t('recognize', 'Video tagging')">
+		</NcSettingsSection>
+		<NcSettingsSection :title="t('recognize', 'Audio tagging')">
 			<p>
-				<label>
-					<input v-model="settings['movinet.enabled']"
-						type="checkbox"
-						:disabled="platform !== 'x86_64' || settings['tensorflow.purejs']"
-						@change="onChange">
-					<span>Enable human action recognition (e.g. arm wrestling, dribbling basketball, hula hooping)</span>
-				</label>
+				<NcCheckboxRadioSwitch :checked.sync="settings['musicnn.enabled']" type="switch" @update:checked="onChange">
+					{{ t('recognize', 'Enable music genre recognition (e.g. pop, rock, folk, metal, new age)') }}
+				</NcCheckboxRadioSwitch>
 			</p>
-		</SettingsSection>
-		<SettingsSection :title="t('recognize', 'Reset')">
-			<p>Click the below button to remove all tags from all files that have been classified so far.</p>
+		</NcSettingsSection>
+		<NcSettingsSection :title="t('recognize', 'Video tagging')">
+			<p>
+				<NcCheckboxRadioSwitch :checked.sync="settings['movinet.enabled']"
+					type="switch"
+					:disabled="platform !== 'x86_64' || settings['tensorflow.purejs']"
+					@update:checked="onChange">
+					{{ t('recognize', 'Enable human action recognition (e.g. arm wrestling, dribbling basketball, hula hooping)') }}
+				</NcCheckboxRadioSwitch>
+			</p>
+		</NcSettingsSection>
+		<NcSettingsSection :title="t('recognize', 'Reset')">
+			<p>{{ t('recognize', 'Click the below button to remove all tags from all files that have been classified so far.') }}</p>
 			<button class="button" @click="onReset">
-				Reset tags for classified files
+				{{ t('recognize', 'Reset tags for classified files') }}
 			</button>
-			<p>Click the below button to rescan all files in this instance and add them to the classifier queues.</p>
-			<button class="button" @click="onRescan">
-				Rescan all files
-			</button>
-		</SettingsSection>
-		<SettingsSection :title="t('recognize', 'Manual operation') ">
-			<p>To trigger a full classification run manually, run the following commands on the terminal. (The first time, this will download the machine learning model initially, so it will take longer.)</p>
-			<pre><code>occ recognize:classify-images</code></pre>
-			<pre><code>occ recognize:classify-audio</code></pre>
-			<pre><code>occ recognize:classify-video</code></pre>
 			<p>&nbsp;</p>
-			<p>You can reset the tags of all files that have been previously classified by recognize with the following command:</p>
+			<p>{{ t('recognize', 'Click the below button to rescan all files in this instance and add them to the classifier queues.') }}</p>
+			<button class="button" @click="onRescan">
+				{{ t('recognize', 'Rescan all files') }}
+			</button>
+		</NcSettingsSection>
+		<NcSettingsSection :title="t('recognize', 'Terminal commands') ">
+			<p>{{ t('recognize', 'To trigger a full classification run manually, run the following command on the terminal.') }}</p>
+			<pre><code>occ recognize:recrawl</code></pre>
+			<p>&nbsp;</p>
+			<p>{{ t('recognize', 'To download all models preliminary to executing the classification jobs, run the following command on the terminal.') }}</p>
+			<pre><code>occ recognize:download-models</code></pre>
+			<p>&nbsp;</p>
+			<p>{{ t('recognize', 'You can reset the tags of all files that have been previously classified by recognize with the following command:') }}</p>
 			<pre><code>occ recognize:reset-tags</code></pre>
 			<p>&nbsp;</p>
-			<p>You can delete all tags that no longer have any files associated with them with the following command:</p>
+			<p>{{ t('recognize', 'You can delete all tags that no longer have any files associated with them with the following command:') }}</p>
 			<pre><code>occ recognize:cleanup-tags</code></pre>
-		</SettingsSection>
-		<SettingsSection :title="t('recognize', 'CPU cores') ">
-			<p>By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used.</p>
+		</NcSettingsSection>
+		<NcSettingsSection :title="t('recognize', 'CPU cores') ">
+			<p>{{ t('recognize', 'By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used.') }}</p>
 			<p>
 				<label>
 					<input v-model="settings['tensorflow.cores']"
@@ -136,59 +146,66 @@
 						:step="1"
 						:max="32"
 						@change="onChange">
-					<span>Number of CPU Cores (0 for no limit)</span>
+					<span>{{ t('recognize', 'Number of CPU Cores (0 for no limit)') }}</span>
 				</label>
 			</p>
-		</SettingsSection>
-		<SettingsSection :title="t('recognize', 'Tensorflow plain mode')">
+		</NcSettingsSection>
+		<NcSettingsSection :title="t('recognize', 'Tensorflow plain mode')">
 			<p v-if="avx === null || platform === null || musl === null">
-				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;Checking CPU
+				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking CPU') }}
 			</p>
 			<p v-else-if="avx && platform === 'x86_64' && !musl">
-				Your machine supports native TensorFlow operation, you do not need WASM mode.
+				{{ t('recognize', 'Your machine supports native TensorFlow operation, you do not need WASM mode.') }}
 			</p>
-			<p v-else>
-				Your machine does not support native TensorFlow operation, because {{ pureJSReasons }}. WASM mode is recommended.
-			</p>
+			<template v-else>
+				<p>
+					{{ t('recognize', 'WASM mode was activated automatically, because your machine does not support native TensorFlow operation:') }}
+				</p>
+				<ul>
+					<li v-for="reason in pureJSReasons">
+						{{ reason }}
+					</li>
+				</ul>
+			</template>
 			<p>
-				<label>
-					<input v-model="settings['tensorflow.purejs']" type="checkbox" @change="onChange">
-					<span>Enable WASM mode</span>
-				</label>
+				<NcCheckboxRadioSwitch :checked.sync="settings['tensorflow.purejs']" type="switch" @update:checked="onChange">
+					{{ t('recognize', 'Enable WASM mode') }}
+				</NcCheckboxRadioSwitch>
 			</p>
-		</SettingsSection>
-		<SettingsSection :title="t('recognize', 'Node.js path')">
+		</NcSettingsSection>
+		<NcSettingsSection :title="t('recognize', 'Node.js path')">
 			<p>
-				If the shipped Node.js binary doesn't work on your system for some reason you can set the path to a custom node.js binary.
-				Currently supported is Node v14.17 and newer v14 releases.
+				{{ t('recognize', 'If the shipped Node.js binary doesn\'t work on your system for some reason you can set the path to a custom node.js binary. Currently supported is Node v14.17 and newer v14 releases.') }}
 			</p>
 			<p>
 				<input v-model="settings['node_binary']" type="text" @change="onChange">
 			</p>
-		</SettingsSection>
+		</NcSettingsSection>
 	</div>
 </template>
 
 <script>
-import SettingsSection from '@nextcloud/vue/dist/Components/SettingsSection'
+import NcSettingsSection from '@nextcloud/vue/dist/Components/NcSettingsSection'
+import NcNoteCard from '@nextcloud/vue/dist/Components/NcNoteCard'
+import NcCheckboxRadioSwitch from '@nextcloud/vue/dist/Components/NcCheckboxRadioSwitch'
 import axios from '@nextcloud/axios'
 import { generateUrl } from '@nextcloud/router'
 import { loadState } from '@nextcloud/initial-state'
 
-const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'geo.enabled', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'audio.status', 'images.status', 'video.status']
+const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status']
 
-const BOOLEAN_SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'geo.enabled', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'audio.status', 'images.status', 'video.status']
+const BOOLEAN_SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status']
 
 export default {
 	name: 'ViewAdmin',
-	components: { SettingsSection },
+	components: { NcSettingsSection, NcNoteCard, NcCheckboxRadioSwitch },
 	data() {
 		return {
 			loading: false,
 			success: false,
 			error: '',
 			count: -1,
-			countMissed: -1,
+			countQueued: null,
 			settings: SETTINGS.reduce((obj, key) => ({ ...obj, [key]: '' }), {}),
 			timeout: null,
 			avx: null,
@@ -201,15 +218,15 @@ export default {
 		pureJSReasons() {
 			const reasons = []
 			if (!this.avx) {
-				reasons.push('it does not support AVX instructions')
+				reasons.push(this.t('recognize', 'Your server does not support AVX instructions'))
 			}
 			if (this.platform !== 'x86_64') {
-				reasons.push('it doesn\'t have not an x86 64bit CPU')
+				reasons.push(this.t('recognize', 'Your server doesn\'t have an x86 64bit CPU'))
 			}
 			if (this.musl) {
-				reasons.push('it uses musl libc')
+				reasons.push(this.t('recognize', 'Your server uses musl libc'))
 			}
-			return reasons.join(' and ')
+			return reasons
 		},
 	},
 
@@ -227,8 +244,11 @@ export default {
 
 		setInterval(async () => {
 			this.getCount()
-			this.loadValue('audio.status')
-			this.loadValue('images.status')
+			this.loadValue('imagenet.status')
+			this.loadValue('faces.status')
+			this.loadValue('landmarks.status')
+			this.loadValue('movinet.status')
+			this.loadValue('musicnn.status')
 		}, 5 * 60 * 1000)
 
 		try {
@@ -236,7 +256,7 @@ export default {
 			for (const setting of SETTINGS) {
 				this.settings[setting] = settings[setting]
 				if (BOOLEAN_SETTINGS.includes(setting)) {
-					this.settings[setting] = (this.settings[setting] === 'true')
+					this.settings[setting] = JSON.parse(this.settings[setting])
 				}
 				if (setting === 'tensorflow.cores' && this.settings[setting] === '') {
 					this.settings[setting] = 0
@@ -269,12 +289,8 @@ export default {
 			}, 3000)
 		},
 		async getCount() {
-			let resp = await axios.get(generateUrl('/apps/recognize/admin/count'))
-			const { count } = resp.data
-			resp = await axios.get(generateUrl('/apps/recognize/admin/countMissed'))
-			const { count: countMissed } = resp.data
-			this.count = count
-			this.countMissed = countMissed
+			const resp = await axios.get(generateUrl('/apps/recognize/admin/countQueued'))
+			this.countQueued = resp.data
 		},
 		async getAVX() {
 			const resp = await axios.get(generateUrl('/apps/recognize/admin/avx'))
@@ -315,17 +331,17 @@ export default {
 		async loadValue(setting) {
 			this.settings[setting] = await this.getValue(setting)
 			if (BOOLEAN_SETTINGS.includes(setting)) {
-				this.settings[setting] = (this.settings[setting] === 'true')
+				this.settings[setting] = JSON.parse(this.settings[setting])
 			}
 		},
 		async setValue(setting, value) {
 			try {
-				await new Promise((resolve, reject) =>
-					OCP.AppConfig.setValue('recognize', setting, value, {
-						success: resolve,
-						error: reject,
-					})
-				)
+				if (BOOLEAN_SETTINGS.includes(setting)) {
+					value = JSON.stringify(value)
+				}
+				await axios.put(generateUrl(`/apps/recognize/admin/settings/${setting}`), {
+					value,
+				})
 			} catch (e) {
 				this.error = this.t('recognize', 'Failed to save settings')
 				throw e
@@ -334,19 +350,13 @@ export default {
 
 		async getValue(setting) {
 			try {
-				const resDocument = await new Promise((resolve, reject) =>
-					OCP.AppConfig.getValue('recognize', setting, null, {
-						success: resolve,
-						error: reject,
-					})
-				)
-				if (resDocument.querySelector('status').textContent !== 'ok') {
+				const res = await axios.get(generateUrl(`/apps/recognize/admin/settings/${setting}`))
+				if (res.status !== 200) {
 					this.error = this.t('recognize', 'Failed to load settings')
-					console.error('Failed request', resDocument)
+					console.error('Failed request', res)
 					return
 				}
-				const dataEl = resDocument.querySelector('data')
-				return dataEl.firstElementChild.textContent
+				return res.data.value
 			} catch (e) {
 				this.error = this.t('recognize', 'Failed to load settings')
 				throw e
@@ -381,7 +391,7 @@ figure[class^='icon-'] {
 }
 
 #recognize label > * {
-	padding: 6px 0;
+	padding: 8px 0;
 }
 
 #recognize input[type=text], #recognize input[type=password] {

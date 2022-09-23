@@ -87,6 +87,7 @@ class ClusteringFaceClassifier extends Classifier {
 					}
 					$usersToCluster[] = $userId;
 				}
+				$this->config->setAppValue('recognize', self::MODEL_NAME.'.status', 'true');
 			}
 		}
 

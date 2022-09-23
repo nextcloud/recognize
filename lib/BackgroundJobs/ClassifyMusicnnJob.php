@@ -19,7 +19,7 @@ class ClassifyMusicnnJob extends ClassifierJob {
 	private MusicnnClassifier $musicnn;
 
 	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IConfig $config, MusicnnClassifier $musicnn, IUserMountCache $mountCache, IJobList $jobList) {
-		parent::__construct($time, $logger, $queue, $mountCache, $jobList);
+		parent::__construct($time, $logger, $queue, $mountCache, $jobList, $config);
 		$this->config = $config;
 		$this->musicnn = $musicnn;
 	}

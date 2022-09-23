@@ -24,10 +24,12 @@ return [
 		['name' => 'admin#reset', 'url' => '/admin/reset', 'verb' => 'GET'],
 		['name' => 'admin#recrawl', 'url' => '/admin/recrawl', 'verb' => 'GET'],
 		['name' => 'admin#count', 'url' => '/admin/count', 'verb' => 'GET'],
+		['name' => 'admin#countQueued', 'url' => '/admin/countQueued', 'verb' => 'GET'],
 		['name' => 'admin#count_missed', 'url' => '/admin/countMissed', 'verb' => 'GET'],
 		['name' => 'admin#avx', 'url' => '/admin/avx', 'verb' => 'GET'],
 		['name' => 'admin#platform', 'url' => '/admin/platform', 'verb' => 'GET'],
 		['name' => 'admin#musl', 'url' => '/admin/musl', 'verb' => 'GET'],
-		['name' => 'user#update_cluster', 'url' => '/user/cluster/{id}', 'verb' => 'POST'],
+		['name' => 'admin#get_setting', 'url' => '/admin/settings/{setting}', 'verb' => 'GET'],
+		['name' => 'admin#set_setting', 'url' => '/admin/settings/{setting}', 'verb' => 'PUT'],
 	],
 ];

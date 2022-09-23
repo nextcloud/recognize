@@ -50,6 +50,7 @@ class ImagenetClassifier extends Classifier {
 			$landmarkTags = array_filter($results, function ($tagName) {
 				return in_array($tagName, LandmarksClassifier::PRECONDITION_TAGS);
 			});
+			$this->config->setAppValue('recognize', self::MODEL_NAME.'.status', 'true');
 			if (count($landmarkTags) > 0) {
 				try {
 					$this->queue->insertIntoQueue(LandmarksClassifier::MODEL_NAME, $queueFile);

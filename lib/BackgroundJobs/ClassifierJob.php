@@ -9,6 +9,7 @@ use OCP\BackgroundJob\Job;
 use OCP\DB\Exception;
 use OCP\Files\Config\ICachedMountInfo;
 use OCP\Files\Config\IUserMountCache;
+use OCP\IConfig;
 use Psr\Log\LoggerInterface;
 
 abstract class ClassifierJob extends Job {
@@ -16,23 +17,35 @@ abstract class ClassifierJob extends Job {
 	private QueueService $queue;
 	private IUserMountCache $userMountCache;
 	private IJobList $jobList;
+	/**
+	 * @var \OCP\IConfig
+	 */
+	private IConfig $config;
 
-	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IUserMountCache $userMountCache, IJobList $jobList) {
+	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IUserMountCache $userMountCache, IJobList $jobList, IConfig $config) {
 		parent::__construct($time);
 		$this->logger = $logger;
 		$this->queue = $queue;
 		$this->userMountCache = $userMountCache;
 		$this->jobList = $jobList;
+		$this->config = $config;
 	}
 
 	protected function runClassifier(string $model, $argument) {
 		$storageId = $argument['storageId'];
 		$rootId = $argument['rootId'];
+		if ($this->config->getAppValue('recognize', $model.'.enabled', 'false') !== 'true') {
+			$this->logger->debug('Not classifying files of storage '.$storageId. ' using '.$model. ' because model is disabled');
+			// `static` to get extending subclass name
+			$this->jobList->remove(static::class, $argument);
+			return;
+		}
 		$this->logger->debug('Classifying files of storage '.$storageId. ' using '.$model);
 		try {
 			$files = $this->queue->getFromQueue($model, $storageId, $rootId, $this->getBatchSize());
 		} catch (Exception $e) {
-			$this->logger->error('Cannot retrieve items from imagenet queue', ['exception' => $e]);
+			$this->config->setAppValue('recognize', $model.'.status', 'false');
+			$this->logger->error('Cannot retrieve items from '.$model.' queue', ['exception' => $e]);
 			return;
 		}
 
@@ -44,7 +57,12 @@ abstract class ClassifierJob extends Job {
 			\OC_Util::setupFS($mounts[0]->getUser()->getUID());
 		}
 
-		$this->classify($files);
+		try {
+			$this->classify($files);
+		} catch(\Throwable $e) {
+			$this->config->setAppValue('recognize', $model.'.status', 'false');
+			throw $e;
+		}
 
 		try {
 			// If there is at least one file left in the queue, reschedule this job
@@ -54,7 +72,8 @@ abstract class ClassifierJob extends Job {
 				$this->jobList->remove(static::class, $argument);
 			}
 		} catch (Exception $e) {
-			$this->logger->error('Cannot retrieve items from imagenet queue', ['exception' => $e]);
+			$this->config->setAppValue('recognize', $model.'.status', 'false');
+			$this->logger->error('Cannot retrieve items from '.$model.' queue', ['exception' => $e]);
 			return;
 		}
 	}

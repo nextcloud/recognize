@@ -101,4 +101,8 @@ class QueueService {
 	public function clearQueue(string $model) {
 		$this->queueMapper->clearQueue($model);
 	}
+
+	public function count(string $model): int {
+		return $this->queueMapper->count($model);
+	}
 }
