@@ -1,9 +1,13 @@
 OC.L10N.register(
     "recognize",
     {
+    "Smart media tagging for Nextcloud" : "Інтелектуальне тегування медіа для Nextcloud",
     "Status" : "Статус",
     "Reset" : "Скидання",
     "Failed to save settings" : "Неможливо зберегти налаштування",
+    "Landscape" : "Пейзаж",
+    "Portrait" : "Портрет",
+    "People" : "Люди",
     "Music" : "Музика",
     "Office" : "Офіс",
     "Food" : "Їжа",

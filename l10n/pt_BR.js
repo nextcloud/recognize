@@ -166,6 +166,7 @@ OC.L10N.register(
     "Pizza" : "Pizza",
     "Wine" : "Vinho",
     "Alpine" : "Alpina",
+    "Mountains" : "Montanhas",
     "Sand" : "Areia",
     "Wool" : "Lã",
     "Glass" : "Vidro",
