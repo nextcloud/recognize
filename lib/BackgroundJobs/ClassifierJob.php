@@ -34,6 +34,12 @@ abstract class ClassifierJob extends Job {
 	protected function runClassifier(string $model, $argument) {
 		$storageId = $argument['storageId'];
 		$rootId = $argument['rootId'];
+		if ($this->config->getAppValue('recognize', $model.'.enabled', 'false') !== 'true') {
+			$this->logger->debug('Not classifying files of storage '.$storageId. ' using '.$model. ' because model is disabled');
+			// `static` to get extending subclass name
+			$this->jobList->remove(static::class, $argument);
+			return;
+		}
 		$this->logger->debug('Classifying files of storage '.$storageId. ' using '.$model);
 		try {
 			$files = $this->queue->getFromQueue($model, $storageId, $rootId, $this->getBatchSize());
