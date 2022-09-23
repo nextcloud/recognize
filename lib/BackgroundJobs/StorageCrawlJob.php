@@ -136,7 +136,7 @@ class StorageCrawlJob extends QueuedJob {
 							$this->queue->insertIntoQueue(LandmarksClassifier::MODEL_NAME, $queueFile);
 						}
 					}
-					if (in_array(ClusteringFaceClassifier::class, $models)) {
+					if (in_array(ClusteringFaceClassifier::MODEL_NAME, $models)) {
 						$this->queue->insertIntoQueue(ClusteringFaceClassifier::MODEL_NAME, $queueFile);
 					}
 				}
