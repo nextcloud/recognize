@@ -43,10 +43,10 @@ Recognize uses
 - php 7.4 and above
 - App "collaborative tags" enabled
 - For native speed:
-  - Processor: x86 64bit (with support for AVX instructions)
+  - Processor: x86 64-bit (with support for AVX instructions)
   - System with glibc (usually the norm on Linux; Alpine linux and FreeBSD are *not* such systems)
 - For sub-native speed (using JavaScript mode)
-  - Processor: x86 64bit, arm64, armv7l (no AVX needed)
+  - Processor: x86 64-bit, arm64, armv7l (no AVX needed)
   - System with glibc or musl (incl. Alpine linux)
 - ~4GB of free RAM (if you're cutting it close, make sure you have some swap available)
 
