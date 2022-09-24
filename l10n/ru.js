@@ -9,7 +9,6 @@ OC.L10N.register(
     "Audio tagging" : "Пометка аудиозаписей",
     "Video tagging" : "Пометка видеозаписей",
     "Reset" : "Сброс",
-    "Manual operation" : "Ручное управление",
     "CPU cores" : "Ядра процессора",
     "Tensorflow plain mode" : "Обычный режим Tensorflow",
     "Node.js path" : "Путь к Node.js",

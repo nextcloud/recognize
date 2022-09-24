@@ -9,7 +9,6 @@ OC.L10N.register(
     "Audio tagging" : "Hangcímkézés",
     "Video tagging" : "Videócímkézés",
     "Reset" : "Visszaállítás",
-    "Manual operation" : "Kézi művelet",
     "CPU cores" : "CPU-magok",
     "Tensorflow plain mode" : "Egyszerű Tensorflow mód",
     "Node.js path" : "Node.js útvonala",

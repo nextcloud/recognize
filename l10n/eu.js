@@ -9,7 +9,6 @@ OC.L10N.register(
     "Audio tagging" : "Audioaren etiketatzea",
     "Video tagging" : "Bideoaren etiketatzea",
     "Reset" : "Berrezarri",
-    "Manual operation" : "Eskuzko operazioa",
     "CPU cores" : "PUZ nukleoak",
     "Tensorflow plain mode" : "Tensorflow modu arrunta",
     "Node.js path" : "Node.js bide-izena",

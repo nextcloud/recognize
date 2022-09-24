@@ -9,7 +9,6 @@ OC.L10N.register(
     "Audio tagging" : "Označování zvuků štítky",
     "Video tagging" : "Označování videí štítky",
     "Reset" : "Vrátit na výchozí hodnoty",
-    "Manual operation" : "Ruční operace",
     "CPU cores" : "Jader procesoru",
     "Tensorflow plain mode" : "Holý režim Tensorflow",
     "Node.js path" : "Popis umístění Node.js",

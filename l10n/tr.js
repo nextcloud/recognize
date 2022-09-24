@@ -9,7 +9,6 @@ OC.L10N.register(
     "Audio tagging" : "Ses etiketleme",
     "Video tagging" : "Görüntü etiketleme",
     "Reset" : "Sıfırla",
-    "Manual operation" : "El ile işlem",
     "CPU cores" : "İşlemci çekirdeği sayısı",
     "Tensorflow plain mode" : "Düz Tensorflow kipi",
     "Node.js path" : "Node.js yolu",

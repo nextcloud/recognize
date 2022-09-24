@@ -9,7 +9,6 @@ OC.L10N.register(
     "Audio tagging" : "Entiquetamento de áudio",
     "Video tagging" : "Entiquetamento de vídeo",
     "Reset" : "Redefinir",
-    "Manual operation" : "Operação manual",
     "CPU cores" : "Núcleos de processamento",
     "Tensorflow plain mode" : "Modo plain do Tensorflow",
     "Node.js path" : "Caminho do Node.js",

@@ -8,7 +8,6 @@ OC.L10N.register(
     "Audio tagging" : "Означување на звуци",
     "Video tagging" : "Означување на видеа",
     "Reset" : "Ресетирање",
-    "Manual operation" : "Рачна операција",
     "CPU cores" : "CPU јадра",
     "Node.js path" : "Node.js патека",
     "Failed to load settings" : "Неуспешно вчитување на параметрите",

@@ -7,7 +7,6 @@ OC.L10N.register(
     "Audio tagging" : "Označevanje zvočnih virov",
     "Video tagging" : "Označevanje videoposnetkov",
     "Reset" : "Ponastavi",
-    "Manual operation" : "Ročno označevanje",
     "CPU cores" : "Jedra CPE",
     "Node.js path" : "Pot do Node.js",
     "Failed to load settings" : "Nalaganje nastavitev je spodletelo.",

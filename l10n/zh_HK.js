@@ -9,7 +9,6 @@ OC.L10N.register(
     "Audio tagging" : "語音標籤",
     "Video tagging" : "視像標籤",
     "Reset" : "重設",
-    "Manual operation" : "人手操作",
     "CPU cores" : "CPU核心",
     "Tensorflow plain mode" : "TensorFlow 普通模式",
     "Node.js path" : "Node.js 途徑",
