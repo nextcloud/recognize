@@ -221,7 +221,7 @@ export default {
 				reasons.push(this.t('recognize', 'Your server does not support AVX instructions'))
 			}
 			if (this.platform !== 'x86_64') {
-				reasons.push(this.t('recognize', 'Your server doesn\'t have an x86 64bit CPU'))
+				reasons.push(this.t('recognize', 'Your server does not have an x86 64-bit CPU'))
 			}
 			if (this.musl) {
 				reasons.push(this.t('recognize', 'Your server uses musl libc'))
