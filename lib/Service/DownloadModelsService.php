@@ -37,7 +37,7 @@ class DownloadModelsService {
 
 		$archiveUrl = $this->getArchiveUrl($this->getNeededArchiveRef());
 		$archivePath = __DIR__ . '/../../models.tar.gz';
-		$this->clientService->newClient()->get($archiveUrl, ['sink' => $archivePath, 'timeout' => 60]);
+		$this->clientService->newClient()->get($archiveUrl, ['sink' => $archivePath, 'timeout' => 480]);
 		$tarManager = new TAR($archivePath);
 		$tarFiles = $tarManager->getFiles();
 		$mainFolder = $tarFiles[0];
