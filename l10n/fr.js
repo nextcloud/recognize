@@ -3,6 +3,9 @@ OC.L10N.register(
     {
     "Recognize" : "Identifie",
     "Status" : "Statut",
+    "The app is installed and will automatically classify files in background processes." : "Cette application est installée et va automatiquement classer les fichiers en arrière-plan.",
+    "Face recognition is working." : "La reconnaissance faciale est en cours.",
+    "An error occurred during face recognition, please check the Nextcloud logs." : "Une erreur s'est produite pendant la reconnaissance faciale, merci de consulter les journaux de Nextcloud.",
     "Face recognition:" : "Reconnaissance faciale :",
     "Reset" : "Réinitialiser",
     "Checking CPU" : "Vérification du CPU",
