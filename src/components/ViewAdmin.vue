@@ -124,10 +124,10 @@
 			</button>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Terminal commands') ">
-			<p>{{ t('recognize', 'To trigger a full classification run manually, run the following command on the terminal.') }}</p>
+			<p>{{ t('recognize', 'To trigger a full classification run manually, run the following command on the server terminal.') }}</p>
 			<pre><code>occ recognize:recrawl</code></pre>
 			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'To download all models preliminary to executing the classification jobs, run the following command on the terminal.') }}</p>
+			<p>{{ t('recognize', 'To download all models preliminary to executing the classification jobs, run the following command on the server terminal.') }}</p>
 			<pre><code>occ recognize:download-models</code></pre>
 			<p>&nbsp;</p>
 			<p>{{ t('recognize', 'You can reset the tags of all files that have been previously classified by recognize with the following command:') }}</p>
