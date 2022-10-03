@@ -1,6 +1,7 @@
 OC.L10N.register(
     "recognize",
     {
+    "Smart media tagging for Nextcloud" : "Nextcloud 的智慧型媒體標記",
     "Status" : "狀態",
     "Reset" : "重設",
     "Failed to load settings" : "設定載入失敗",
@@ -12,6 +13,7 @@ OC.L10N.register(
     "Dog" : "狗",
     "Music" : "音樂",
     "Office" : "Office",
+    "Food" : "食物",
     "Train" : "火車",
     "Car" : "車子",
     "Computer" : "桌上電腦",
