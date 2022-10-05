@@ -392,6 +392,7 @@ figure[class^='icon-'] {
 
 #recognize label > * {
 	padding: 8px 0;
+	padding-left: 6px;
 }
 
 #recognize input[type=text], #recognize input[type=password] {
