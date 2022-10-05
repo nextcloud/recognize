@@ -189,6 +189,7 @@ class InstallDeps implements IRepairStep {
 		} catch (\Throwable $e) {
 			return false;
 		}
-		return str_contains($cpuinfo, 'avx');
+
+		return $cpuinfo !== false && strpos($cpuinfo, 'avx') !== false;
 	}
 }
