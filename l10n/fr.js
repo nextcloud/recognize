@@ -2,6 +2,7 @@ OC.L10N.register(
     "recognize",
     {
     "Recognize" : "Identifie",
+    "Smart media tagging for Nextcloud" : "Étiquetage intelligent des médias pour Nextcloud",
     "Status" : "Statut",
     "The app is installed and will automatically classify files in background processes." : "Cette application est installée et va automatiquement classer les fichiers en arrière-plan.",
     "Face recognition is working." : "La reconnaissance faciale est en cours.",
