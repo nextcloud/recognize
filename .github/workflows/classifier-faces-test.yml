@@ -1,8 +1,8 @@
 name: Classifier Faces test
 
 on:
-  schedule:
-    - cron: '0 0 * * *'
+  pull_request:
+  push:
 
 env:
   APP_NAME: recognize
