@@ -13,9 +13,9 @@ const FACE_DISTANCE_THRESHOLD = 0.45
 
 ;(async function() {
 	const labels = LABELS.slice(0,20)
-	const negativeLabel = 'peter'
+	const negativeLabel = 'portrait'
 
-	/*await Parallel.each(labels, async label => {
+	await Parallel.each(labels, async label => {
 		try {
 			let urls = await findPhotosGoogle('"' + label + '"', PHOTOS_PER_LABEL)
 			await Promise.all(
@@ -36,7 +36,7 @@ const FACE_DISTANCE_THRESHOLD = 0.45
 		console.log('Error downloading photos for label "'+negativeLabel+'"')
 		console.log(e)
 	}
-*/
+
 
 	const negativeFiles = await glob(['temp_images/'+negativeLabel+'/*'])
 	if (!negativeFiles.length) {
