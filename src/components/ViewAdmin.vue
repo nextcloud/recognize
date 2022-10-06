@@ -9,6 +9,12 @@
 		<figure v-if="loading" class="icon-loading loading" />
 		<figure v-if="!loading && success" class="icon-checkmark success" />
 		<NcSettingsSection :title="t('recognize', 'Status')">
+			<NcNoteCard v-if="modelsDownloaded" show-alert type="success">
+				{{ t('recognize', 'The machine learning models have been downloaded successfully.') }}
+			</NcNoteCard>
+			<NcNoteCard v-else-if="!modelsDownloaded" show-alert type="success">
+				{{ t('recognize', 'The machine learning models still need to be downloaded.') }}
+			</NcNoteCard>
 			<template v-if="settings['faces.enabled'] || settings['imagenet.enabled'] || settings['musicnn.enabled'] || settings['movinet.enabled']">
 				<NcNoteCard show-alert type="success">
 					{{ t('recognize', 'The app is installed and will automatically classify files in background processes.') }}
@@ -211,6 +217,7 @@ export default {
 			avx: null,
 			platform: null,
 			musl: null,
+			modelsDownloaded: null,
 		}
 	},
 
@@ -237,6 +244,7 @@ export default {
 		},
 	},
 	async created() {
+		this.modelsDownloaded = loadState('recognize', 'modelsDownloaded')
 		this.getCount()
 		this.getAVX()
 		this.getPlatform()

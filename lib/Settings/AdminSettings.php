@@ -39,6 +39,11 @@ class AdminSettings implements ISettings {
 			$settings[$setting] = $this->config->getAppValue('recognize', $setting, 'null');
 		}
 		$this->initialState->provideInitialState('settings', $settings);
+
+		$modelsPath = __DIR__ . '/../../models';
+		$modelsDownloaded = file_exists($modelsPath);
+		$this->initialState->provideInitialState('modelsDownloaded', $modelsDownloaded);
+
 		return new TemplateResponse('recognize', 'admin');
 	}
 
