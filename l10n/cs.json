@@ -38,8 +38,6 @@
     "Click the below button to rescan all files in this instance and add them to the classifier queues." : "Kliknutí na níže uvedené tlačítko znovu naskenuje veškeré soubory na této instanci a přidá je do front klasifikace.",
     "Rescan all files" : "Znovu naskenovat veškeré soubory",
     "Terminal commands" : "Příkazy v terminálu",
-    "To trigger a full classification run manually, run the following command on the terminal." : "Pokud chcete ručně spustit kompletní určování, spusťte v terminálu serveru následující příkaz.",
-    "To download all models preliminary to executing the classification jobs, run the following command on the terminal." : "Pokud chcete před vykonáním úloh určování stáhnout všechny modely, spusťte v terminálu serveru následující příkaz.",
     "You can reset the tags of all files that have been previously classified by recognize with the following command:" : "Štítky je možné ze všech dříve určených souborů odebrat následujícím příkazem:",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "Štítky, které už nejsou přiřazené žádným souborům je možné smazat následujícím příkazem:",
     "CPU cores" : "Jader procesoru",

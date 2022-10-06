@@ -25,7 +25,6 @@ OC.L10N.register(
     "Reset" : "Ripristina",
     "Rescan all files" : "Ri-analizza tutti i file",
     "Terminal commands" : "Comandi da terminale",
-    "To trigger a full classification run manually, run the following command on the terminal." : "Per avviare manualmente una scansione totale, esegui i seguenti comandi sul terminale",
     "CPU cores" : "Core della CPU",
     "Number of CPU Cores (0 for no limit)" : "Numero dei core della CPU (0 per illimitato)",
     "Checking CPU" : "Analisi CPU in corso",

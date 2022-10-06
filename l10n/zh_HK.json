@@ -38,8 +38,6 @@
     "Click the below button to rescan all files in this instance and add them to the classifier queues." : "單擊下面的按鈕重新掃描此實例中的所有檔案並將它們添加到分類器隊列中。",
     "Rescan all files" : "重新掃描所有檔案",
     "Terminal commands" : "終端命令",
-    "To trigger a full classification run manually, run the following command on the terminal." : "要手動觸發完整分類運行，請在終端上運行以下命令。",
-    "To download all models preliminary to executing the classification jobs, run the following command on the terminal." : "要下載執行分類作業之前的所有模型，請在終端上運行以下命令。",
     "You can reset the tags of all files that have been previously classified by recognize with the following command:" : "您可以使用以下命令重置之前已通過識別分類的所有文件的標籤：",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "您可以使用以下命令刪除不再與任何檔案關聯的所有標籤：",
     "CPU cores" : "CPU核心",

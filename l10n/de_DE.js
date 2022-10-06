@@ -40,8 +40,6 @@ OC.L10N.register(
     "Click the below button to rescan all files in this instance and add them to the classifier queues." : "Auf die Schaltfläche unten klicken, um alle Dateien in dieser Instanz erneut zu scannen und sie den Klassifizierungswarteschlangen hinzuzufügen.",
     "Rescan all files" : "Alle Dateien erneut scannen",
     "Terminal commands" : "Terminalbefehle",
-    "To trigger a full classification run manually, run the following command on the terminal." : "Um einen vollständigen Klassifizierungslauf manuell auszulösen, führen Sie den folgenden Befehl im Terminal aus.",
-    "To download all models preliminary to executing the classification jobs, run the following command on the terminal." : "Um alle Modelle vor der Ausführung der Klassifizierungs-Aufgaben herunterzuladen, führen Sie den folgenden Befehl im Terminal aus.",
     "You can reset the tags of all files that have been previously classified by recognize with the following command:" : "Mit dem folgenden Befehl können Sie die Tags aller Dateien zurücksetzen, die zuvor von detect klassifiziert wurden:",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "Mit dem folgenden Befehl können Sie alle Tags löschen, denen keine Dateien mehr zugeordnet sind:",
     "CPU cores" : "CPU-Kerne",

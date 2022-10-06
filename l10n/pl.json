@@ -38,8 +38,6 @@
     "Click the below button to rescan all files in this instance and add them to the classifier queues." : "Kliknij poniższy przycisk, aby ponownie przeskanować wszystkie pliki w tej instancji i dodać je do kolejek klasyfikatorów.",
     "Rescan all files" : "Ponownie przeskanuj wszystkie pliki",
     "Terminal commands" : "Polecenia terminala",
-    "To trigger a full classification run manually, run the following command on the terminal." : "Aby ręcznie uruchomić pełną klasyfikację, uruchom w terminalu następujące polecenie.",
-    "To download all models preliminary to executing the classification jobs, run the following command on the terminal." : "Aby pobrać wszystkie modele przed wykonaniem zadań klasyfikacji, uruchom na terminalu następujące polecenie.",
     "You can reset the tags of all files that have been previously classified by recognize with the following command:" : "Możesz zresetować etykiety wszystkich plików, które zostały wcześniej sklasyfikowane przez rozpoznawanie za pomocą następującego polecenia:",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "Możesz usunąć wszystkie etykiety, z którymi nie są już powiązane żadne pliki, za pomocą następującego polecenia:",
     "CPU cores" : "Rdzenie procesora",

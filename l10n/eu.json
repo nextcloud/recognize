@@ -38,8 +38,6 @@
     "Click the below button to rescan all files in this instance and add them to the classifier queues." : "Egin klik beheko botoian instantzia honetako fitxategi guztiak berriro eskaneatzeko eta sailkatzaile-ilaretan gehitzeko.",
     "Rescan all files" : "Eskaneatu fitxategi guztiak berriro",
     "Terminal commands" : "Terminaleko komandoak",
-    "To trigger a full classification run manually, run the following command on the terminal." : "Sailkapen osoa eskuz abiarazteko, exekutatu komando hau terminalean.",
-    "To download all models preliminary to executing the classification jobs, run the following command on the terminal." : "Sailkapen-lanak exekutatzeko aurretiko eredu guztiak deskargatzeko, exekutatu komando hau terminalean.",
     "You can reset the tags of all files that have been previously classified by recognize with the following command:" : "Aurretik ezagutzearen bidez sailkatutako fitxategi guztien etiketak berrezarri ditzakezu komando honekin:",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "Jada haiekin lotutako fitxategirik ez duten etiketa guztiak ezaba ditzakezu komando honekin:",
     "CPU cores" : "PUZ nukleoak",
