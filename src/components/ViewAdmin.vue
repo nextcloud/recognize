@@ -19,69 +19,40 @@
 				<NcNoteCard show-alert type="success">
 					{{ t('recognize', 'The app is installed and will automatically classify files in background processes.') }}
 				</NcNoteCard>
-				<template v-if="settings['faces.enabled'] || settings['imagenet.enabled']">
-					<NcNoteCard v-if="settings['faces.status'] === true" show-alert type="success">
-						{{ t('recognize', 'Face recognition is working.') }}
-					</NcNoteCard>
-					<NcNoteCard v-else-if="settings['faces.status'] === false" show-alert type="error">
-						{{ t('recognize', 'An error occurred during face recognition, please check the Nextcloud logs.') }}
-					</NcNoteCard>
-					<NcNoteCard v-else>
-						{{ t('recognize', 'Waiting for status reports on face recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.') }}
-					</NcNoteCard>
-				</template>
-				<template v-if="settings['imagenet.enabled']">
-					<NcNoteCard v-if="settings['imagenet.status'] === true" show-alert type="success">
-						{{ t('recognize', 'Object recognition is working.') }}
-					</NcNoteCard>
-					<NcNoteCard v-else-if="settings['imagenet.status'] === false" show-alert type="error">
-						{{ t('recognize', 'An error occurred during object recognition, please check the Nextcloud logs.') }}
-					</NcNoteCard>
-					<NcNoteCard v-else>
-						{{ t('recognize', 'Waiting for status reports on object recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.') }}
-					</NcNoteCard>
-				</template>
-				<template v-if="settings['musicnn.enabled']">
-					<NcNoteCard v-if="settings['musicnn.status'] === true" show-alert type="success">
-						{{ t('recognize', 'Audio recognition is working.') }}
-					</NcNoteCard>
-					<NcNoteCard v-else-if="settings['musicnn.status'] === false" show-alert type="error">
-						{{ t('recognize', 'An error occurred during audio recognition, please check the Nextcloud logs.') }}
-					</NcNoteCard>
-					<NcNoteCard v-else>
-						{{ t('recognize', 'Waiting for status reports on audio recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.') }}
-					</NcNoteCard>
-				</template>
-				<template v-if="settings['movinet.enabled']">
-					<NcNoteCard v-if="settings['movinet.status'] === true" show-alert type="success">
-						{{ t('recognize', 'Video recognition is working.') }}
-					</NcNoteCard>
-					<NcNoteCard v-else-if="settings['movinet.status'] === false" show-alert type="error">
-						{{ t('recognize', 'An error occurred during video recognition, please check the Nextcloud logs.') }}
-					</NcNoteCard>
-					<NcNoteCard v-else>
-						{{ t('recognize', 'Waiting for status reports on video recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.') }}
-					</NcNoteCard>
-				</template>
-				<template v-if="countQueued">
-					<p>{{ t('recognize', 'Queued files:') }}</p>
-					<p class="indent">
-						{{ t('recognize', 'Face recognition:') }} {{ countQueued.faces }}<br>
-						{{ t('recognize', 'Object recognition:') }} {{ countQueued.imagenet }}<br>
-						{{ t('recognize', 'Landmark recognition:') }} {{ countQueued.landmarks }}<br>
-						{{ t('recognize', 'Video recognition:') }} {{ countQueued.movinet }}<br>
-						{{ t('recognize', 'Music genre recognition:') }} {{ countQueued.musicnn }}<br>
-					</p>
-				</template>
-				<p v-else>
-					<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Counting queued files') }}
-				</p>
 			</template>
 			<p v-else>
 				{{ t('recognize', 'None of the tagging options below are currently selected. The app will currently do nothing.') }}
 			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Image tagging')">
+			<template v-if="settings['faces.enabled']">
+				<NcNoteCard v-if="settings['faces.status'] === true" show-alert type="success">
+					{{ t('recognize', 'Face recognition is working. ') }}
+				</NcNoteCard>
+				<NcNoteCard v-else-if="settings['faces.status'] === false" show-alert type="error">
+					{{ t('recognize', 'An error occurred during face recognition, please check the Nextcloud logs.') }}
+				</NcNoteCard>
+				<NcNoteCard v-else>
+					{{ t('recognize', 'Waiting for status reports on face recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.') }}
+				</NcNoteCard>
+				<NcNoteCard v-if="countQueued">
+					{{ t('recognize', 'Face recognition:') }} {{ countQueued.faces }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['faces.lastFile']) }}
+				</NcNoteCard>
+			</template>
+			<template v-if="settings['imagenet.enabled']">
+				<NcNoteCard v-if="settings['imagenet.status'] === true" show-alert type="success">
+					{{ t('recognize', 'Object recognition is working.') }}
+				</NcNoteCard>
+				<NcNoteCard v-else-if="settings['imagenet.status'] === false" show-alert type="error">
+					{{ t('recognize', 'An error occurred during object recognition, please check the Nextcloud logs.') }}
+				</NcNoteCard>
+				<NcNoteCard v-else>
+					{{ t('recognize', 'Waiting for status reports on object recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.') }}
+				</NcNoteCard>
+				<NcNoteCard v-if="countQueued">
+					{{ t('recognize', 'Object recognition:') }} {{ countQueued.imagenet }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['imagenet.lastFile']) }}
+				</NcNoteCard>
+			</template>
 			<p>
 				<NcCheckboxRadioSwitch :checked.sync="settings['faces.enabled']" type="switch" @update:checked="onChange">
 					{{ t('recognize', 'Enable face recognition (groups pictures by people that appear in them in the photos app)') }}
@@ -102,6 +73,20 @@
 			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Audio tagging')">
+			<template v-if="settings['musicnn.enabled']">
+				<NcNoteCard v-if="settings['musicnn.status'] === true" show-alert type="success">
+					{{ t('recognize', 'Audio recognition is working.') }}
+				</NcNoteCard>
+				<NcNoteCard v-else-if="settings['musicnn.status'] === false" show-alert type="error">
+					{{ t('recognize', 'An error occurred during audio recognition, please check the Nextcloud logs.') }}
+				</NcNoteCard>
+				<NcNoteCard v-else>
+					{{ t('recognize', 'Waiting for status reports on audio recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.') }}
+				</NcNoteCard>
+				<NcNoteCard v-if="countQueued">
+					{{ t('recognize', 'Music genre recognition:') }} {{ countQueued.musicnn }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['musicnn.lastFile']) }}
+				</NcNoteCard>
+			</template>
 			<p>
 				<NcCheckboxRadioSwitch :checked.sync="settings['musicnn.enabled']" type="switch" @update:checked="onChange">
 					{{ t('recognize', 'Enable music genre recognition (e.g. pop, rock, folk, metal, new age)') }}
@@ -109,6 +94,20 @@
 			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Video tagging')">
+			<template v-if="settings['movinet.enabled']">
+				<NcNoteCard v-if="settings['movinet.status'] === true" show-alert type="success">
+					{{ t('recognize', 'Video recognition is working.') }}
+				</NcNoteCard>
+				<NcNoteCard v-else-if="settings['movinet.status'] === false" show-alert type="error">
+					{{ t('recognize', 'An error occurred during video recognition, please check the Nextcloud logs.') }}
+				</NcNoteCard>
+				<NcNoteCard v-else>
+					{{ t('recognize', 'Waiting for status reports on video recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.') }}
+				</NcNoteCard>
+				<NcNoteCard v-if="countQueued">
+					{{ t('recognize', 'Video recognition:') }} {{ countQueued.movinet }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['movinet.lastFile']) }}
+				</NcNoteCard>
+			</template>
 			<p>
 				<NcCheckboxRadioSwitch :checked.sync="settings['movinet.enabled']"
 					type="switch"
@@ -197,14 +196,18 @@ import NcCheckboxRadioSwitch from '@nextcloud/vue/dist/Components/NcCheckboxRadi
 import axios from '@nextcloud/axios'
 import { generateUrl } from '@nextcloud/router'
 import { loadState } from '@nextcloud/initial-state'
+import humanizeDuration from 'humanize-duration'
 
-const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status']
+const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile']
 
-const BOOLEAN_SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status']
+const BOOLEAN_SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile']
+
+const MAX_RELATIVE_DATE = 1000 * 60 * 60 * 24 * 7 // one week
 
 export default {
 	name: 'ViewAdmin',
 	components: { NcSettingsSection, NcNoteCard, NcCheckboxRadioSwitch },
+
 	data() {
 		return {
 			loading: false,
@@ -368,6 +371,25 @@ export default {
 			} catch (e) {
 				this.error = this.t('recognize', 'Failed to load settings')
 				throw e
+			}
+		},
+
+		showDate(timestamp) {
+			if (timestamp === null) {
+				return this.t('recognize', 'never')
+			}
+			const date = new Date(Number(timestamp) * 1000)
+			const age = Date.now() - date
+			if (age < MAX_RELATIVE_DATE) {
+				const duration = humanizeDuration(age, {
+					language: OC.getLanguage().split('-')[0],
+					units: ['d', 'h', 'm', 's'],
+					largest: 1,
+					round: true,
+				})
+				return this.t('recognize', '{time} ago', { time: duration })
+			} else {
+				return date.toLocaleDateString()
 			}
 		},
 	},
