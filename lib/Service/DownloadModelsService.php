@@ -42,9 +42,9 @@ class DownloadModelsService {
 		$tarFiles = $tarManager->getFiles();
 		$mainFolder = $tarFiles[0];
 		$modelFolder = $mainFolder . 'models';
-		$modelFiles = array_filter($tarFiles, function ($path) use ($modelFolder) {
+		$modelFiles = array_values(array_filter($tarFiles, function ($path) use ($modelFolder) {
 			return strpos($path, $modelFolder . '/') === 0 || strpos($path, $modelFolder) === 0;
-		});
+		}));
 		$tarManager->extractList($modelFiles, $targetPath, $modelFolder . '/');
 	}
 
