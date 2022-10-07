@@ -6,6 +6,8 @@ OC.L10N.register(
     "Failed to load settings" : "Nepodarilo sa načítať nastavenia",
     "Failed to save settings" : "Nepodarilo sa uložiť nastavenia",
     "Farm" : "Farma",
+    "Landscape" : "Na šírku",
+    "Portrait" : "Na výšku",
     "People" : "Ľudia",
     "Dog" : "Pes",
     "Music" : "Hudba",
