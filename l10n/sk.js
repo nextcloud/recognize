@@ -1,6 +1,7 @@
 OC.L10N.register(
     "recognize",
     {
+    "Smart media tagging for Nextcloud" : "Inteligentné označovanie médií pre Nextcloud",
     "Status" : "Stav",
     "Reset" : "Resetovať",
     "Failed to load settings" : "Nepodarilo sa načítať nastavenia",
