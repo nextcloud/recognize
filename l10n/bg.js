@@ -40,6 +40,8 @@ OC.L10N.register(
     "Click the below button to rescan all files in this instance and add them to the classifier queues." : "Щракване върху долният бутон, за повторно сканиране на всички файлове в този случай и за тяхното добавяне към опашките на класификатора.",
     "Rescan all files" : "Повторно сканиране на всички файлове",
     "Terminal commands" : "Терминални команди",
+    "To trigger a full classification run manually, run the following command on the server terminal." : "За задействането на ръчно изпълнение на пълна класификация, пуснете следната команда на сървърния терминал.",
+    "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "За изтегляне на всички модели преди изпълнението на задачите за класификация, пуснете следната команда на сървърния терминал.",
     "You can reset the tags of all files that have been previously classified by recognize with the following command:" : "Можете да възстановите етикетите на всички файлове, които преди това са били класифицирани чрез разпознаване със следната команда:",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "Можете да изтриете всички етикети, които вече нямат свързани с тях файлове със следната команда:",
     "CPU cores" : "Ядра на процесора",
