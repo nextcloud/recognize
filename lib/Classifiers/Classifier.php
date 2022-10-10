@@ -23,6 +23,7 @@ class Classifier {
 	private IConfig $config;
 	private IRootFolder $rootFolder;
 	private QueueService $queue;
+	private $tempFiles = [];
 
 	public function __construct(Logger $logger, IConfig $config, IRootFolder $rootFolder, QueueService $queue) {
 		$this->logger = $logger;
@@ -46,7 +47,7 @@ class Classifier {
 				continue;
 			}
 			try {
-				$paths[] = $files[0]->getStorage()->getLocalFile($files[0]->getInternalPath());
+				$paths[] = $this->getConvertedFilePath($files[0]);
 				$processedFiles[] = $queueFile;
 			} catch (NotFoundException $e) {
 				$this->logger->warning('Could not find file', ['exception' => $e]);
@@ -139,6 +140,51 @@ class Classifier {
 		} catch (RuntimeException $e) {
 			$this->logger->warning($proc->getErrorOutput());
 			throw new \RuntimeException('Classifier process could not be started');
+		} finally {
+			foreach ($this->tempFiles as &$path) {
+				@unlink($path);
+			}
 		}
+	}
+
+	/**
+	 * Get path of file to process.
+	 * If the file is an image and not JPEG, it will be converted using ImageMagick.
+	 * Images will also be downscaled to a max dimension of 4096px.
+	 *
+	 * @param File $file
+	 * @return string Path to file to process
+	 */
+	private function getConvertedFilePath(\OC\Files\Node\File $file): string {
+		$path = $file->getStorage()->getLocalFile($file->getInternalPath());
+
+		// check if this is an image to convert / downscale
+		$mime = $file->getMimeType();
+		if (substr($mime, 0, 5) !== 'image') {
+			return $path;
+		}
+
+		// Check if ImageMagick is installed
+		if (!extension_loaded('imagick')) {
+			return $path;
+		}
+
+		// Create a temporary file *with the correct extension*
+		$tmpfname = tempnam(sys_get_temp_dir(), 'recognize_');
+		rename($tmpfname, $tmpfname .= '.jpg');
+		$this->tempFiles[] = $tmpfname;
+
+		try {
+			// Downscale into a temporary JPEG file
+			$imagick = new \Imagick($path);
+			$imagick->scaleImage(4096, 4096, true);
+			$imagick->setImageFormat('jpeg');
+			$imagick->writeImage($tmpfname);
+		} catch (\ImagickException $e) {
+			// If conversion fails, just use the original file
+			return $path;
+		}
+
+		return $tmpfname;
 	}
 }
