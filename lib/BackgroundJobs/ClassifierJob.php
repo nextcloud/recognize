@@ -6,13 +6,14 @@ use OCA\Recognize\Service\QueueService;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\IJobList;
 use OCP\BackgroundJob\Job;
+use OCP\BackgroundJob\TimedJob;
 use OCP\DB\Exception;
 use OCP\Files\Config\ICachedMountInfo;
 use OCP\Files\Config\IUserMountCache;
 use OCP\IConfig;
 use Psr\Log\LoggerInterface;
 
-abstract class ClassifierJob extends Job {
+abstract class ClassifierJob extends TimedJob {
 	private LoggerInterface $logger;
 	private QueueService $queue;
 	private IUserMountCache $userMountCache;
@@ -29,6 +30,8 @@ abstract class ClassifierJob extends Job {
 		$this->userMountCache = $userMountCache;
 		$this->jobList = $jobList;
 		$this->config = $config;
+		$this->setInterval(60 * 15);
+		$this->setTimeSensitivity(self::TIME_INSENSITIVE);
 	}
 
 	protected function runClassifier(string $model, $argument) {
