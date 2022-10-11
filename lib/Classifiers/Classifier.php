@@ -7,12 +7,14 @@
 
 namespace OCA\Recognize\Classifiers;
 
+use OC\Files\Node\Node;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
 use OCP\DB\Exception;
 use OCP\Files\IRootFolder;
 use OCP\Files\NotFoundException;
 use OCP\IConfig;
+use OCP\ITempManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Exception\RuntimeException;
@@ -23,13 +25,14 @@ class Classifier {
 	private IConfig $config;
 	private IRootFolder $rootFolder;
 	private QueueService $queue;
-	private $tempFiles = [];
+	private ITempManager $tempManager;
 
-	public function __construct(Logger $logger, IConfig $config, IRootFolder $rootFolder, QueueService $queue) {
+	public function __construct(Logger $logger, IConfig $config, IRootFolder $rootFolder, QueueService $queue, ITempManager $tempManager) {
 		$this->logger = $logger;
 		$this->config = $config;
 		$this->rootFolder = $rootFolder;
 		$this->queue = $queue;
+		$this->tempManager = $tempManager;
 	}
 
 	/**
@@ -140,10 +143,6 @@ class Classifier {
 		} catch (RuntimeException $e) {
 			$this->logger->warning($proc->getErrorOutput());
 			throw new \RuntimeException('Classifier process could not be started');
-		} finally {
-			foreach ($this->tempFiles as &$path) {
-				@unlink($path);
-			}
 		}
 	}
 
@@ -152,10 +151,10 @@ class Classifier {
 	 * If the file is an image and not JPEG, it will be converted using ImageMagick.
 	 * Images will also be downscaled to a max dimension of 4096px.
 	 *
-	 * @param File $file
+	 * @param Node $file
 	 * @return string Path to file to process
 	 */
-	private function getConvertedFilePath(\OC\Files\Node\File $file): string {
+	private function getConvertedFilePath(Node $file): string {
 		$path = $file->getStorage()->getLocalFile($file->getInternalPath());
 
 		// check if this is an image to convert / downscale
@@ -170,9 +169,7 @@ class Classifier {
 		}
 
 		// Create a temporary file *with the correct extension*
-		$tmpfname = tempnam(sys_get_temp_dir(), 'recognize_');
-		rename($tmpfname, $tmpfname .= '.jpg');
-		$this->tempFiles[] = $tmpfname;
+		$tmpfname = $this->tempManager->getTemporaryFile('.jpg');
 
 		try {
 			// Downscale into a temporary JPEG file
