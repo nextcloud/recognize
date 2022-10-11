@@ -8,6 +8,7 @@
 namespace OCA\Recognize\Classifiers;
 
 use OC\Files\Node\Node;
+use OCA\Recognize\Constants;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
 use OCP\DB\Exception;
@@ -159,7 +160,7 @@ class Classifier {
 
 		// check if this is an image to convert / downscale
 		$mime = $file->getMimeType();
-		if (substr($mime, 0, 5) !== 'image') {
+		if (!in_array($mime, Constants::IMAGE_FORMATS)) {
 			return $path;
 		}
 
@@ -169,19 +170,19 @@ class Classifier {
 		}
 
 		// Create a temporary file *with the correct extension*
-		$tmpfname = $this->tempManager->getTemporaryFile('.jpg');
+		$tmpname = $this->tempManager->getTemporaryFile('.jpg');
 
 		try {
 			// Downscale into a temporary JPEG file
 			$imagick = new \Imagick($path);
 			$imagick->scaleImage(4096, 4096, true);
 			$imagick->setImageFormat('jpeg');
-			$imagick->writeImage($tmpfname);
+			$imagick->writeImage($tmpname);
 		} catch (\ImagickException $e) {
 			// If conversion fails, just use the original file
 			return $path;
 		}
 
-		return $tmpfname;
+		return $tmpname;
 	}
 }
