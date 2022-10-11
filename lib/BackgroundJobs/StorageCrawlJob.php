@@ -94,10 +94,11 @@ class StorageCrawlJob extends QueuedJob {
 		}
 
 		try {
+			$path = substr($root['path'], -1) === '/' ? $root['path'] :  $root['path'] . '/';
 			$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
 			$files = $qb->selectFileCache()
 				->whereStorageId($storageId)
-				->andWhere($qb->expr()->like('path', $qb->createNamedParameter($root['path'] . '/%')))
+				->andWhere($qb->expr()->like('path', $qb->createNamedParameter($path . '%')))
 				->andWhere($qb->expr()->eq('storage', $qb->createNamedParameter($storageId)))
 				->andWhere($qb->expr()->in('mimetype', $qb->createNamedParameter($mimeTypes, IQueryBuilder::PARAM_INT_ARRAY)))
 				->andWhere($qb->expr()->gt('filecache.fileid', $qb->createNamedParameter($lastFileId)))
