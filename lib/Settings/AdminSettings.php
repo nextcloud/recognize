@@ -13,7 +13,7 @@ use OCP\IConfig;
 use OCP\Settings\ISettings;
 
 class AdminSettings implements ISettings {
-	public const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'geo.enabled', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status'];
+	public const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'geo.enabled', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status',  'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile'];
 
 	/**
 	 * @var \OCP\AppFramework\Services\IInitialState
@@ -39,6 +39,11 @@ class AdminSettings implements ISettings {
 			$settings[$setting] = $this->config->getAppValue('recognize', $setting, 'null');
 		}
 		$this->initialState->provideInitialState('settings', $settings);
+
+		$modelsPath = __DIR__ . '/../../models';
+		$modelsDownloaded = file_exists($modelsPath);
+		$this->initialState->provideInitialState('modelsDownloaded', $modelsDownloaded);
+
 		return new TemplateResponse('recognize', 'admin');
 	}
 
