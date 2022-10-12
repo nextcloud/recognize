@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2022-10-12
+
+### New
+ - Allow scheduling specific classifier/crawl jobs per model
+ - AdminSettings: Display last classification time
+ - AdminSettings: Add status of downloaded models
+ - ClassifierJob: set timeSensitivity
+
+### Fixed
+ - Fix StorageCrawlJob
+ - Remove non-existent UserSettings from info.xml
+ - FaceClusterAnalyzer: Do not delete existing clusters
+ - Constants::IMAGE_FORMATS: Don't support tiff
+ - DownloadModelsService: Fix array filter
+ - InstallDeps: Fix isAVXSupported
+ - l10n: Source string improvement
+ - Fix label padding in admin settings
+ - DownloadModelsService: Increase timeout
+ - Correct spelling
+ - ClassifierJob: Stop classify job if model is disabled
+ - Fix Landmarks switch
+ - Make admin settings translatable
+ - Polish admin settings
+
 ## 3.0.0-beta.3 - 2022-09-20
 
 ### Fixed
