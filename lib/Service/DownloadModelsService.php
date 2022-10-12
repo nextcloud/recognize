@@ -46,6 +46,7 @@ class DownloadModelsService {
 			return strpos($path, $modelFolder . '/') === 0 || strpos($path, $modelFolder) === 0;
 		}));
 		$tarManager->extractList($modelFiles, $targetPath, $modelFolder . '/');
+		unlink($archivePath);
 	}
 
 	public function getArchiveUrl(string $ref): string {
