@@ -24,6 +24,7 @@ jobs:
         php-versions: ['7.4', '8.0', '8.1']
         databases: ['sqlite', 'mysql', 'pgsql']
         server-versions: ['stable25', 'master']
+        imagick: ['']
         s3: ['']
         container: ['']
         include:
@@ -37,6 +38,10 @@ jobs:
             container: nextcloud:fpm-alpine
           - server-versions: stable25
             php-versions: 8.0
+            databases: sqlite
+            imagick: 'imagick'
+          - server-versions: stable25
+            php-versions: 8.0
             databases: mysql
             s3: s3
           - server-versions: master
@@ -44,7 +49,7 @@ jobs:
             databases: mysql
             s3: s3
 
-    name: php${{ matrix.php-versions }} ${{ matrix.databases }} ${{ matrix.server-versions }} ${{ matrix.container }} ${{ matrix.s3 }}
+    name: php${{ matrix.php-versions }} ${{ matrix.databases }} ${{ matrix.server-versions }} ${{ matrix.container }} ${{ matrix.s3 }} ${{ matrix.imagick }}
 
     container: ${{ matrix.container }}
 
@@ -124,7 +129,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-versions }}
           tools: phpunit
-          extensions: mbstring, iconv, fileinfo, intl, mysql, pdo_mysql, gd, zip
+          extensions: mbstring, iconv, fileinfo, intl, mysql, pdo_mysql, gd, zip, ${{ matrix.imagick }}
           coverage: none
 
       - name: Install app
