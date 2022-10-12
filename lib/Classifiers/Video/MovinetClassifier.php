@@ -14,6 +14,7 @@ use OCA\Recognize\Service\QueueService;
 use OCA\Recognize\Service\TagManager;
 use OCP\Files\IRootFolder;
 use OCP\IConfig;
+use OCP\ITempManager;
 
 class MovinetClassifier extends Classifier {
 	public const VIDEO_TIMEOUT = 480; // seconds
@@ -22,8 +23,8 @@ class MovinetClassifier extends Classifier {
 	private TagManager $tagManager;
 	private IConfig $config;
 
-	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager, QueueService $queue, IRootFolder $rootFolder) {
-		parent::__construct($logger, $config, $rootFolder, $queue);
+	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager, QueueService $queue, IRootFolder $rootFolder, ITempManager $tempManager) {
+		parent::__construct($logger, $config, $rootFolder, $queue, $tempManager);
 		$this->config = $config;
 		$this->tagManager = $tagManager;
 	}
