@@ -94,7 +94,7 @@ class StorageCrawlJob extends QueuedJob {
 		}
 
 		try {
-			$path = substr($root['path'], -1) === '/' ? $root['path'] :  $root['path'] . '/';
+			$path = $root['path'] !== '' ? $root['path'] :  $root['path'] . '/';
 			$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
 			$files = $qb->selectFileCache()
 				->whereStorageId($storageId)
