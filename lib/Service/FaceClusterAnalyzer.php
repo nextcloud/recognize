@@ -80,12 +80,6 @@ class FaceClusterAnalyzer {
 				} else {
 					// This should be an edge case and not happen often:
 					// This new cluster contains detections from different existing clusters
-					// We delete the existing clusters
-					foreach ($alreadyClustered as $item) {
-						foreach ($item[1] as $cluster) {
-							$this->faceClusters->delete($cluster);
-						}
-					}
 					// we need a completely new cluster
 					$cluster = new FaceCluster();
 					$cluster->setTitle('');
