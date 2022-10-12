@@ -173,9 +173,13 @@ class Classifier {
 		$tmpname = $this->tempManager->getTemporaryFile('.jpg');
 
 		try {
-			// Downscale into a temporary JPEG file
+			// Convert to a temporary JPEG file optionally downscaling
 			$imagick = new \Imagick($path);
-			$imagick->scaleImage(4096, 4096, true);
+			$dimensions = $imagick->getImageGeometry();
+			if ($dimensions['width'] > 4096 || $dimensions['height'] > 4096) {
+				// downscale
+				$imagick->scaleImage(4096, 4096, true);
+			}
 			$imagick->setImageFormat('jpeg');
 			$imagick->writeImage($tmpname);
 		} catch (\ImagickException $e) {
