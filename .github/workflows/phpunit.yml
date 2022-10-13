@@ -23,16 +23,15 @@ jobs:
       matrix:
         php-versions: ['7.4', '8.0', '8.1']
         databases: ['sqlite', 'mysql', 'pgsql']
-        server-versions: ['stable25', 'master']
+        server-versions: ['stable25']
         imagick: ['']
         s3: ['']
         container: ['']
         include:
-          - server-versions: stable25
+          - server-versions: master
             php-versions: 8.0
             databases: sqlite
-            container: nextcloud:fpm-alpine
-          - server-versions: master
+          - server-versions: stable25
             php-versions: 8.0
             databases: sqlite
             container: nextcloud:fpm-alpine
@@ -41,10 +40,6 @@ jobs:
             databases: sqlite
             imagick: 'imagick'
           - server-versions: stable25
-            php-versions: 8.0
-            databases: mysql
-            s3: s3
-          - server-versions: master
             php-versions: 8.0
             databases: mysql
             s3: s3
