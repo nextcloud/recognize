@@ -80,7 +80,7 @@ class AdminController extends Controller {
 		} catch (\Throwable $e) {
 			return new JSONResponse(['avx' => null]);
 		}
-		return new JSONResponse(['avx' => str_contains($cpuinfo, 'avx')]);
+		return new JSONResponse(['avx' => strpos($cpuinfo, 'avx') !== false]);
 	}
 
 	public function platform(): JSONResponse {
