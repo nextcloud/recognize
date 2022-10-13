@@ -5,6 +5,7 @@ OC.L10N.register(
     "Reset" : "Restablecer",
     "Failed to load settings" : "Fallo al cargar configuraciones",
     "Failed to save settings" : "Fallo al guardar configuraciones",
+    "{time} ago" : "hace {time}",
     "Farm" : "Granja",
     "People" : "Personas",
     "Dog" : "Perro",

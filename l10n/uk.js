@@ -5,6 +5,7 @@ OC.L10N.register(
     "Status" : "Статус",
     "Reset" : "Скидання",
     "Failed to save settings" : "Неможливо зберегти налаштування",
+    "never" : "ніколи",
     "Farm" : "Ферма",
     "Landscape" : "Пейзаж",
     "Portrait" : "Портрет",

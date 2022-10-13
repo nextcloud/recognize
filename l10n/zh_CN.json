@@ -4,6 +4,8 @@
     "Reset" : "重置",
     "Failed to load settings" : "无法加载设置",
     "Failed to save settings" : "无法保存设置",
+    "never" : "从不",
+    "{time} ago" : "{time} 之前",
     "Farm" : "农场",
     "People" : "人物",
     "Dog" : "狗",

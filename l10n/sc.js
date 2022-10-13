@@ -5,6 +5,8 @@ OC.L10N.register(
     "Reset" : "Torra a impostare",
     "Failed to load settings" : "No at fatuu a carrigare is impostatziones",
     "Failed to save settings" : "No at fatu a sarvare is informatziones",
+    "never" : "mai",
+    "{time} ago" : "{time} a immoe",
     "People" : "Gente",
     "Music" : "Mùsica",
     "Office" : "Ofìtziu",

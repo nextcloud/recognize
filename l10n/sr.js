@@ -5,6 +5,8 @@ OC.L10N.register(
     "Reset" : "Ресетуј",
     "Failed to load settings" : "Грешка у дохватању поставки",
     "Failed to save settings" : "Грешка приликом чувања поставки",
+    "never" : "никад",
+    "{time} ago" : "Пре {time}",
     "People" : "Људи",
     "Music" : "Музика",
     "Train" : "Воз",

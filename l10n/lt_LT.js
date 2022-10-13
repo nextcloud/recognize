@@ -7,6 +7,7 @@ OC.L10N.register(
     "Terminal commands" : "Terminalo komandos",
     "Failed to load settings" : "Nepavyko įkelti nustatymų",
     "Failed to save settings" : "Nepavyko įrašyti nustatymų",
+    "{time} ago" : "Prieš {time}",
     "Building" : "Pastatas",
     "Farm" : "Ūkis",
     "People" : "Žmonės",

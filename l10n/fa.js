@@ -5,6 +5,7 @@ OC.L10N.register(
     "Reset" : "بازنشاندن",
     "Failed to load settings" : "تنظیمات بارگیری نشد",
     "Failed to save settings" : "تنظیمات ذخیره نشدند",
+    "{time} ago" : "{time} قبل",
     "People" : "مردم",
     "Music" : "موسیقی",
     "Office" : "دفتر",

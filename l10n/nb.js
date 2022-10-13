@@ -5,6 +5,7 @@ OC.L10N.register(
     "Reset" : "Tilbakestill",
     "Failed to load settings" : "Klarte ikke å laste inn innstillinger",
     "Failed to save settings" : "Klarte ikke å lagre innstillinger",
+    "never" : "aldri",
     "Music" : "Musikk",
     "Office" : "Office",
     "Train" : "Tog",

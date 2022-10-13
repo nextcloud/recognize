@@ -5,6 +5,7 @@ OC.L10N.register(
     "Reset" : "איפוס",
     "Failed to load settings" : "טעינת ההגדרות נכשלה",
     "Failed to save settings" : "שמירת ההגדרות נכשלה",
+    "{time} ago" : "לפני {time}",
     "Music" : "מוזיקה",
     "Office" : "משרד",
     "Train" : "רכבת",

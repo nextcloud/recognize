@@ -7,6 +7,8 @@ OC.L10N.register(
     "Tensorflow plain mode" : "Tensorflow plain mode",
     "Failed to load settings" : "Kon instellingen niet laden",
     "Failed to save settings" : "Kon instellingen niet opslaan",
+    "never" : "nooit",
+    "{time} ago" : "{time} geleden",
     "Water" : "Water",
     "Plant" : "Plant",
     "Farm" : "Boerderij",

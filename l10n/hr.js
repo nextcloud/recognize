@@ -5,6 +5,7 @@ OC.L10N.register(
     "Reset" : "Resetiraj",
     "Failed to load settings" : "Učitavanje postavki nije uspjelo",
     "Failed to save settings" : "Spremanje postavki nije uspjelo",
+    "{time} ago" : "Prije {time}",
     "People" : "Ljudi",
     "Music" : "Glazba",
     "Office" : "Ured",

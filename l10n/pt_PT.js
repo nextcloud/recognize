@@ -6,6 +6,7 @@ OC.L10N.register(
     "Status" : "Estado",
     "Reset" : "Reiniciar",
     "Failed to save settings" : "Erro ao gravar as definições",
+    "never" : "nunca",
     "Music" : "Música",
     "Office" : "Escritório",
     "Train" : "Comboio",

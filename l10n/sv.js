@@ -5,6 +5,8 @@ OC.L10N.register(
     "Reset" : "Återställ",
     "Failed to load settings" : "Kunde inte läsa in inställningar",
     "Failed to save settings" : "Kunde inte spara inställningarna",
+    "never" : "aldrig",
+    "{time} ago" : "{time} sedan",
     "Farm" : "Gård",
     "People" : "Personer",
     "Dog" : "Hund",
