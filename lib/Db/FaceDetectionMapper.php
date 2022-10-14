@@ -94,6 +94,21 @@ class FaceDetectionMapper extends QBMapper {
 		return $this->findEntity($qb);
 	}
 
+	public function findByClusterIdWithUniqueFiles(int $clusterId) {
+		$qb = $this->db->getQueryBuilder();
+		$qb->select($qb->func()->max('id'))
+			->from('recognize_face_detections')
+			->where($qb->expr()->eq('cluster_id', $qb->createPositionalParameter($clusterId)))
+			->groupBy('file_id');
+		$ids = $qb->executeQuery()->fetchAll(\PDO::FETCH_COLUMN);
+
+		$qb = $this->db->getQueryBuilder();
+		$qb->select(FaceDetection::$columns)
+			->from('recognize_face_detections')
+			->where($qb->expr()->in('id', $ids));
+		return $this->findEntities($qb);
+	}
+
 	protected function mapRowToEntity(array $row): Entity {
 		try {
 			return parent::mapRowToEntity($row);

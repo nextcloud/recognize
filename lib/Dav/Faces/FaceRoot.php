@@ -80,7 +80,7 @@ class FaceRoot implements ICollection, IMoveTarget {
 		if (count($this->children) === 0) {
 			$this->children = array_map(function (FaceDetection $detection) {
 				return new FacePhoto($this->detectionMapper, $this->cluster, $detection, $this->rootFolder->getUserFolder($this->user->getUID()), $this->tagManager, $this->metadataManager, $this->previewManager);
-			}, $this->detectionMapper->findByClusterId($this->cluster->getId()));
+			}, $this->detectionMapper->findByClusterIdWithUniqueFiles($this->cluster->getId()));
 		}
 		return $this->children;
 	}
