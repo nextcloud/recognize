@@ -13,6 +13,8 @@ OC.L10N.register(
     "Node.js path" : "Camí de Node.js",
     "Failed to load settings" : "Ha fallat carregar la configuració",
     "Failed to save settings" : "Ha fallat desar la configuració",
+    "never" : "mai",
+    "{time} ago" : "fa {time}",
     "Cat" : "Gat",
     "Animal" : "Animal",
     "Wildlife" : "Fauna salvatge",

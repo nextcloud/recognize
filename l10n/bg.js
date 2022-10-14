@@ -55,6 +55,8 @@ OC.L10N.register(
     "Your server uses musl libc" : "Сървърът ви използва musl libc",
     "Failed to load settings" : "Неуспешно зареждане на настройки",
     "Failed to save settings" : "Неуспешно запазване на настройките",
+    "never" : "никога",
+    "{time} ago" : "преди {time}",
     "Cat" : "Котка",
     "Animal" : "Животно",
     "Wildlife" : "Дива природа",

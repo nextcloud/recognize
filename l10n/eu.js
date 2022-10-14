@@ -55,6 +55,7 @@ OC.L10N.register(
     "Your server uses musl libc" : "Zure zerbitzariak musl libc erabiltzen du",
     "Failed to load settings" : "Huts egin du ezarpenak kargatzean",
     "Failed to save settings" : "Huts egin du ezarpenak gordetzean",
+    "never" : "inoiz ez",
     "{time} ago" : "Duela {time}",
     "Cat" : "Katua",
     "Animal" : "Animalia",

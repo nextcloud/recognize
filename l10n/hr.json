@@ -3,6 +3,7 @@
     "Reset" : "Resetiraj",
     "Failed to load settings" : "Učitavanje postavki nije uspjelo",
     "Failed to save settings" : "Spremanje postavki nije uspjelo",
+    "never" : "nikad",
     "{time} ago" : "Prije {time}",
     "People" : "Ljudi",
     "Music" : "Glazba",

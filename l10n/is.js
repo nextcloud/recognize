@@ -5,6 +5,7 @@ OC.L10N.register(
     "Reset" : "Endurstilla",
     "Failed to load settings" : "Mistókst að hlaða inn stillingum",
     "Failed to save settings" : "Mistókst að vista stillingar",
+    "never" : "aldrei",
     "{time} ago" : "fyrir {time} síðan",
     "Farm" : "Býli",
     "People" : "Fólk",

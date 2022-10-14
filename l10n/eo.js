@@ -5,6 +5,8 @@ OC.L10N.register(
     "Reset" : "Restarigi",
     "Failed to load settings" : "Ŝargo de agordoj malsukcesis",
     "Failed to save settings" : "Konservo de agordoj malsukcesis",
+    "never" : "neniam",
+    "{time} ago" : "antaŭ {time}",
     "Music" : "Muziko",
     "Train" : "Trajno",
     "Car" : "Aŭto",

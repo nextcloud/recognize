@@ -32,6 +32,7 @@ OC.L10N.register(
     "Your server uses musl libc" : "Il server utilizza la libc musl",
     "Failed to load settings" : "Caricamento impostazioni non riuscito",
     "Failed to save settings" : "Salvataggio impostazioni non riuscito",
+    "never" : "mai",
     "{time} ago" : "{time} fa",
     "Cat" : "Gatto",
     "Animal" : "Animale",

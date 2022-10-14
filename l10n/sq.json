@@ -1,0 +1,16 @@
+{ "translations": {
+    "Status" : "Statusi",
+    "Reset" : "Rivendos",
+    "never" : "asnjëherë",
+    "Music" : "Muzik",
+    "Office" : "Zyrë",
+    "Car" : "Makine",
+    "Clock" : "Ora",
+    "Display" : "Ekran",
+    "Camera" : "Kamera",
+    "Info" : "Info",
+    "Document" : "Dokument",
+    "Bucket" : "Bucket",
+    "Gallery" : "Galeria"
+},"pluralForm" :"nplurals=2; plural=(n != 1);"
+}

@@ -24,6 +24,7 @@
     "Your server does not have an x86 64-bit CPU" : "Palvelimessa ei ole 64-bittistä x86-suoritinta",
     "Failed to load settings" : "Asetusten lataaminen epäonnistui",
     "Failed to save settings" : "Asetusten tallentaminen epäonnistui",
+    "never" : "ei koskaan",
     "{time} ago" : "{time} sitten",
     "Cat" : "Kissa",
     "Animal" : "Eläin",

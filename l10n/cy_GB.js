@@ -2,6 +2,7 @@ OC.L10N.register(
     "recognize",
     {
     "Status" : "Statws",
+    "never" : "byth",
     "Farm" : "Fferm",
     "Dog" : "Ci",
     "Office" : "Swyddfa",

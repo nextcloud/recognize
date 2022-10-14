@@ -3,6 +3,7 @@ OC.L10N.register(
     {
     "Status" : "الحاله",
     "Reset" : "إعادة الضبط",
+    "never" : "بتاتاً",
     "Music" : "الموسيقى",
     "Office" : "مكتب",
     "Computer" : "كمبيوتر",

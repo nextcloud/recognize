@@ -5,6 +5,7 @@ OC.L10N.register(
     "Reset" : "초기화",
     "Failed to load settings" : "환경설정 로딩 실패",
     "Failed to save settings" : "환경설정 저장 실패",
+    "never" : "하지 않음",
     "{time} ago" : "{time} 전에",
     "Music" : "음악",
     "Office" : "사무실",

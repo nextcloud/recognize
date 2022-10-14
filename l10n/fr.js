@@ -11,6 +11,7 @@ OC.L10N.register(
     "Checking CPU" : "Vérification du CPU",
     "Failed to load settings" : "Echec du chargement des paramètres",
     "Failed to save settings" : "Echec de la sauvegarde des paramètres",
+    "never" : "jamais",
     "{time} ago" : "il y a {time}",
     "Cat" : "Chat",
     "Animal" : "Animal",

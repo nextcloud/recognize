@@ -4,6 +4,7 @@ OC.L10N.register(
     "Smart media tagging for Nextcloud" : "Інтелектуальне тегування медіа для Nextcloud",
     "Status" : "Статус",
     "Reset" : "Скидання",
+    "Failed to load settings" : "Не вдалося завантажити налаштування",
     "Failed to save settings" : "Неможливо зберегти налаштування",
     "never" : "ніколи",
     "Farm" : "Ферма",

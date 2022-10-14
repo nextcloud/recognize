@@ -5,6 +5,7 @@ OC.L10N.register(
     "Reset" : "リセット",
     "Failed to load settings" : "設定の読込に失敗しました",
     "Failed to save settings" : "設定の保存に失敗しました",
+    "never" : "なし",
     "{time} ago" : "{time} 前",
     "Dog" : "犬",
     "Music" : "音楽",
