@@ -330,6 +330,9 @@ export default {
 		async submit() {
 			this.loading = true
 			for (const setting in this.settings) {
+				if (setting.includes('status') || setting.includes('lastFile')) {
+					continue
+				}
 				await this.setValue(setting, this.settings[setting])
 			}
 			this.loading = false
