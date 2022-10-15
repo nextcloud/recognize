@@ -25,7 +25,7 @@
   "license": "MIT",
   "dependencies": {
     "@exifer/gps": "^1.0.0-beta.2",
-    "@tensorflow/tfjs": "^3.20",
+    "@tensorflow/tfjs": "^4.0",
     "@tensorflow/tfjs-backend-wasm": "^3.20",
     "@tensorflow/tfjs-node": "^3.20",
     "@vladmandic/face-api": "^1.7.3",
