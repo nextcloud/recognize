@@ -11,6 +11,8 @@ OC.L10N.register(
     "An error occurred during face recognition, please check the Nextcloud logs." : "Errorea gertatu da aurpegiak ezagutzean, mesedez egiaztatu Nextcloud erregistroak.",
     "Waiting for status reports on face recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs." : "Aurpegi-hautemateari buruzko egoera-txostenen zain. Mezu honek 30 minutu baino gehiago irauten badu, begiratu Nextcloud erregistroak.",
     "Face recognition:" : "Aurpegien ezagutzea:",
+    "Queued files" : "Fitxategiak ilaran",
+    "Last classification: " : "Azken sailkapena:",
     "Object recognition is working." : "Elementuen ezagutzea funtzionatzen ari da.",
     "An error occurred during object recognition, please check the Nextcloud logs." : "Errorea gertatu da elementuak ezagutzean, mesedez egiaztatu Nextcloud erregistroak.",
     "Waiting for status reports on object recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs." : "Objektuak ezagutzeko egoera-txostenen zain. Mezu honek 30 minutu baino gehiago irauten badu, begiratu Nextcloud erregistroak.",
