@@ -193,6 +193,6 @@ class FaceClusterAnalyzer {
 			return count($detections) > 1;
 		});
 
-		return$filesWithDuplicateFaces;
+		return $filesWithDuplicateFaces;
 	}
 }
