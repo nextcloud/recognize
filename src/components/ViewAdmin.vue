@@ -118,7 +118,7 @@
 			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Reset')">
-			<p>{{ t('recognize', 'Click the below button to remove all tags from all files that have been classified so far.') }}</p>
+			<p>{{ t('recognize', 'Click the button below to remove all tags from all files that have been classified so far.') }}</p>
 			<button class="button" @click="onReset">
 				{{ t('recognize', 'Reset tags for classified files') }}
 			</button>
