@@ -22,7 +22,7 @@ use OCP\AppFramework\Db\Entity;
  * @method setY(int $y)
  * @method setHeight(int $height)
  * @method setWidth(int $width)
- * @method setClusterId(int $clusterId)
+ * @method setClusterId(int|null $clusterId)
  * @method int getClusterId()
  */
 class FaceDetection extends Entity {

@@ -100,10 +100,99 @@ class FaceClusterAnalyzer {
 			foreach ($notYetClustered as $item) {
 				$detection = $item[0];
 				$this->faceDetections->assocWithCluster($detection, $cluster);
-				if ($cluster->getTitle()) {
-					$this->tagManager->assignTags($detection->getFileId(), [$cluster->getTitle()]);
+			}
+		}
+
+		$this->pruneClusters($userId);
+	}
+
+	/**
+	 * @throws \OCP\DB\Exception
+	 */
+	public function pruneClusters(string $userId): void {
+		/**
+		 * @var $clusters FaceCluster[]
+		 */
+		$clusters = $this->faceClusters->findByUserId($userId);
+
+		if (count($clusters) === 0) {
+			$this->logger->debug('No face clusters found');
+			return;
+		}
+
+		foreach ($clusters as $cluster) {
+			/**
+			 * @var $detections FaceDetection[]
+			 */
+			$detections = $this->faceDetections->findByClusterId($cluster->getId());
+
+			$filesWithDuplicateFaces = $this->findFilesWithDuplicateFaces($detections);
+			if (count($filesWithDuplicateFaces) === 0) {
+				continue;
+			}
+
+			$centroid = $this->calculateCentroidOfDetections($detections);
+
+			foreach ($filesWithDuplicateFaces as $fileDetections) {
+				$detectionsByDistance = [];
+				foreach ($fileDetections as $detection) {
+					$distance = new Euclidean();
+					$detectionsByDistance[$detection->getId()] = $distance->compute($centroid, $detection->getVector());
+				}
+				asort($detectionsByDistance);
+				$bestMatchingDetectionId = array_keys($detectionsByDistance)[0];
+
+				foreach ($fileDetections as $detection) {
+					if ($detection->getId() === $bestMatchingDetectionId) {
+						continue;
+					}
+					$detection->setClusterId(null);
+					$this->faceDetections->update($detection);
 				}
 			}
 		}
+	}
+
+	/**
+	 * @param FaceDetection[] $detections
+	 * @return array<float>
+	 */
+	private function calculateCentroidOfDetections(array $detections): array {
+		// init 128 dimensional vector
+		$sum = [];
+		for ($i = 0; $i < 128; $i++) {
+			$sum[] = 0;
+		}
+
+		foreach ($detections as $detection) {
+			$sum = array_map(function ($el, $i) use ($sum) {
+				return $el + $sum[$i];
+			}, $detection->getVector(), array_keys($sum));
+		}
+		$centroid = array_map(function ($el) use ($detections) {
+			return $el / count($detections);
+		}, $sum);
+		return $centroid;
+	}
+
+	/**
+	 * @param array $detections
+	 * @return array<int,FaceDetection[]>
+	 */
+	private function findFilesWithDuplicateFaces(array $detections): array {
+		$files = [];
+		foreach ($detections as $detection) {
+			if (!isset($files[$detection->getFileId()])) {
+				$files[$detection->getFileId()] = [];
+			}
+			$files[$detection->getFileId()][] = $detection;
+		}
+
+		/** @var array<int,FaceDetection[]> $filesWithDuplicateFaces */
+		$filesWithDuplicateFaces = array_filter($files, function ($detections) {
+			return count($detections) > 1;
+		});
+
+		return $filesWithDuplicateFaces;
 	}
 }
