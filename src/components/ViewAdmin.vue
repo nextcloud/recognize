@@ -118,12 +118,12 @@
 			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Reset')">
-			<p>{{ t('recognize', 'Click the below button to remove all tags from all files that have been classified so far.') }}</p>
+			<p>{{ t('recognize', 'Click the button below to remove all tags from all files that have been classified so far.') }}</p>
 			<button class="button" @click="onReset">
 				{{ t('recognize', 'Reset tags for classified files') }}
 			</button>
 			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'Click the below button to rescan all files in this instance and add them to the classifier queues.') }}</p>
+			<p>{{ t('recognize', 'Click the button below to rescan all files in this instance and add them to the classifier queues.') }}</p>
 			<button class="button" @click="onRescan">
 				{{ t('recognize', 'Rescan all files') }}
 			</button>
@@ -135,7 +135,7 @@
 			<p>{{ t('recognize', 'To download all models preliminary to executing the classification jobs, run the following command on the server terminal.') }}</p>
 			<pre><code>occ recognize:download-models</code></pre>
 			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'You can reset the tags of all files that have been previously classified by recognize with the following command:') }}</p>
+			<p>{{ t('recognize', 'You can reset the tags of all files that have been previously classified by Recognize with the following command:') }}</p>
 			<pre><code>occ recognize:reset-tags</code></pre>
 			<p>&nbsp;</p>
 			<p>{{ t('recognize', 'You can delete all tags that no longer have any files associated with them with the following command:') }}</p>
