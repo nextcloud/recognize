@@ -110,7 +110,7 @@ const FACE_DISTANCE_THRESHOLD = 0.45
 
 	console.log({ averageTPR, averageTNR })
 
-	if (averageTPR < 0.8 || averageTNR < 0.8) {
+	if (averageTPR < 0.75 || averageTNR < 0.75) {
 		process.exit(1)
 	}
 })()
