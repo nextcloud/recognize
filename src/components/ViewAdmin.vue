@@ -123,7 +123,7 @@
 				{{ t('recognize', 'Reset tags for classified files') }}
 			</button>
 			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'Click the below button to rescan all files in this instance and add them to the classifier queues.') }}</p>
+			<p>{{ t('recognize', 'Click the button below to rescan all files in this instance and add them to the classifier queues.') }}</p>
 			<button class="button" @click="onRescan">
 				{{ t('recognize', 'Rescan all files') }}
 			</button>
