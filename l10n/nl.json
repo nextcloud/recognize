@@ -1,6 +1,9 @@
 { "translations": {
     "Status" : "Status",
     "Reset" : "Herstellen",
+    "Click the below button to remove all tags from all files that have been classified so far." : "Klik op de onderstaande knop om alle tags te verwijderen van alle bestanden die tot nu toe zijn geclassificeerd.",
+    "Click the below button to rescan all files in this instance and add them to the classifier queues." : "Klik op de onderstaande knop om alle bestanden in deze instantie opnieuw te scannen en toe te voegen aan de classificatiewachtrijen.",
+    "You can reset the tags of all files that have been previously classified by recognize with the following command:" : "U kunt de tags van alle bestanden die eerder door herkenning zijn geclassificeerd opnieuw instellen met het volgende commando:",
     "CPU cores" : "CPU cores",
     "Tensorflow plain mode" : "Tensorflow plain mode",
     "Failed to load settings" : "Kon instellingen niet laden",
