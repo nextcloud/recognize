@@ -109,7 +109,7 @@ class FaceClusterAnalyzer {
 	/**
 	 * @throws \OCP\DB\Exception
 	 */
-	public function pruneClusters(string $userId) {
+	public function pruneClusters(string $userId): void {
 		/**
 		 * @var $clusters FaceCluster[]
 		 */
