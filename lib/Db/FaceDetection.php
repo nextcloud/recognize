@@ -12,18 +12,20 @@ use OCP\AppFramework\Db\Entity;
  * @method setFileId(int $fileId)
  * @method setUserId(string $userId)
  * @method string getUserId()
- * @method int getX()
- * @method int getY()
- * @method int getHeight()
- * @method int getWidth()
+ * @method float getX()
+ * @method float getY()
+ * @method float getHeight()
+ * @method float getWidth()
  * @method array getVector()
  * @method setVector(array $vector)
- * @method setX(int $x)
- * @method setY(int $y)
+ * @method setX(float $x)
+ * @method setY(float $y)
  * @method setHeight(int $height)
  * @method setWidth(int $width)
  * @method setClusterId(int|null $clusterId)
  * @method int getClusterId()
+ * @method float getThreshold()
+ *  @method setThreshold(float $threshold)
  */
 class FaceDetection extends Entity {
 	protected $fileId;
@@ -34,9 +36,10 @@ class FaceDetection extends Entity {
 	protected $width;
 	protected $vector;
 	protected $clusterId;
+	protected $threshold;
 
-	public static $columns = ['id', 'user_id', 'file_id', 'x', 'y', 'height', 'width', 'vector', 'cluster_id'];
-	public static $fields = ['id', 'userId', 'fileId', 'x', 'y', 'height', 'width', 'vector', 'clusterId'];
+	public static $columns = ['id', 'user_id', 'file_id', 'x', 'y', 'height', 'width', 'vector', 'cluster_id', 'threshold'];
+	public static $fields = ['id', 'userId', 'fileId', 'x', 'y', 'height', 'width', 'vector', 'clusterId', 'threshold'];
 
 	public function __construct() {
 		// add types in constructor
@@ -49,6 +52,7 @@ class FaceDetection extends Entity {
 		$this->addType('width', 'float');
 		$this->addType('vector', 'json');
 		$this->addType('clusterId', 'int');
+		$this->addType('threshold', 'float');
 	}
 
 	public function toArray(): array {
