@@ -12,6 +12,7 @@ OC.L10N.register(
     "Node.js path" : "Node.js патека",
     "Failed to load settings" : "Неуспешно вчитување на параметрите",
     "Failed to save settings" : "Неуспешно зачувување на параметрите",
+    "never" : "никогаш",
     "Cat" : "Мачка",
     "Animal" : "Животно",
     "Wildlife" : "Див свет",
