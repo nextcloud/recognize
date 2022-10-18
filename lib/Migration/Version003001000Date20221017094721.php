@@ -36,5 +36,6 @@ class Version003001000Date20221017094721 extends SimpleMigrationStep {
 			]);
 			return $schema;
 		}
+		return null;
 	}
 }
