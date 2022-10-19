@@ -58,8 +58,6 @@ Go to "Apps" in your nextcloud, search for "recognize" and click install.
 
 Any configuration is done in Settings/Recognize of your Nextcloud instance.
 
-You can also ignore directories (and their children) by adding a `.noimage`, `.nomusic` or `.nomedia` file in them.
-
 ### Manual install
 
 #### Dependencies

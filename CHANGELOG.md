@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] - 2022-10-19
+
+### New
+ - Decrease face distance threshold Marcel Klehr 3 minutes ago
+ - Stabilize face clustering across manual cluster edits
+ - FaceClusterAnalyzer: Knock out less matching faces from a cluster if they are on the same file
+
+### Fixed
+ - Admin settings: Don't repush status info
+ - Fix AdminController#avx
+ - DownloadModelsService: Unlink archive after extraction
+ - Fix StorageCrawlJob path issue
+
 ## [3.0.1] - 2022-10-12
 
 Drop support for Nextcloud 24
