@@ -66,6 +66,7 @@ class FaceClusterAnalyzer {
 			$alreadyClustered = array_values(array_filter($detectionsWithClusters, function ($item) : bool {
 				return count($item[1]) >= 1;
 			}));
+
 			$notYetClustered = array_filter($detectionsWithClusters, function ($item) : bool {
 				return count($item[1]) === 0;
 			});
@@ -75,19 +76,22 @@ class FaceClusterAnalyzer {
 					return $item[1][0]->getId();
 				}, $alreadyClustered));
 				if (count($uniqueOldClusterIds) === 1) {
-					// There's only one old cluster for all already clustered detections in this new cluster, so we'll use that
+					// There's only one old cluster for all already clustered detections
+					// in this new cluster, so we'll use that
 					$cluster = $alreadyClustered[0][1][0];
+					$clusterCentroid = self::calculateCentroidOfDetections(array_map(fn ($item) => $item[0], $alreadyClustered));
 				} else {
-					// This should be an edge case and not happen often:
 					// This new cluster contains detections from different existing clusters
-					// we need a completely new cluster
+					// we need a completely new cluster for the not yet assigned detections
 					$cluster = new FaceCluster();
 					$cluster->setTitle('');
 					$cluster->setUserId($userId);
 					$cluster = $this->faceClusters->insert($cluster);
+					$clusterCentroid = self::calculateCentroidOfDetections(array_map(fn ($item) => $item[0], $notYetClustered));
 				}
 			} else {
-				// we need a completely new cluster
+				// we need a completely new cluster since none of the detections
+				// in this new cluster have been assigned
 				$cluster = new FaceCluster();
 				$cluster->setTitle('');
 				$cluster->setUserId($userId);
@@ -96,9 +100,22 @@ class FaceClusterAnalyzer {
 				 * @var FaceCluster $cluster
 				 */
 				$cluster = $this->faceClusters->insert($cluster);
+
+				$clusterCentroid = self::calculateCentroidOfDetections($clusterDetections);
 			}
 			foreach ($notYetClustered as $item) {
+				/** @var FaceDetection $detection */
 				$detection = $item[0];
+				$distance = new Euclidean();
+				if ($detection->getThreshold() > 0.0) {
+					// If a threshold is set for this detection and its vector is farther away from the centroid
+					// than the threshold, skip assigning this detection to the cluster
+					$distanceValue = $distance->compute($clusterCentroid, $detection->getVector());
+					if ($distanceValue >= $detection->getThreshold()) {
+						continue;
+					}
+				}
+
 				$this->faceDetections->assocWithCluster($detection, $cluster);
 			}
 		}
@@ -131,7 +148,7 @@ class FaceClusterAnalyzer {
 				continue;
 			}
 
-			$centroid = $this->calculateCentroidOfDetections($detections);
+			$centroid = self::calculateCentroidOfDetections($detections);
 
 			foreach ($filesWithDuplicateFaces as $fileDetections) {
 				$detectionsByDistance = [];
@@ -157,7 +174,7 @@ class FaceClusterAnalyzer {
 	 * @param FaceDetection[] $detections
 	 * @return array<float>
 	 */
-	private function calculateCentroidOfDetections(array $detections): array {
+	public static function calculateCentroidOfDetections(array $detections): array {
 		// init 128 dimensional vector
 		$sum = [];
 		for ($i = 0; $i < 128; $i++) {

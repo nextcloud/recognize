@@ -6,11 +6,13 @@ use OC\Metadata\IMetadataManager;
 use OCA\Recognize\Db\FaceCluster;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
+use OCA\Recognize\Service\FaceClusterAnalyzer;
 use OCP\Files\File;
 use OCP\Files\Folder;
 use OCP\IPreview;
 use OCP\ITagManager;
 use OCP\ITags;
+use Rubix\ML\Kernels\Distance\Euclidean;
 use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAV\Exception\NotFound;
 use Sabre\DAV\IFile;
@@ -48,7 +50,13 @@ class FacePhoto implements IFile {
 	 * @throws \OCP\DB\Exception
 	 */
 	public function delete() {
+		$detections = $this->detectionMapper->findByClusterId($this->faceDetection->getClusterId());
+		$centroid = FaceClusterAnalyzer::calculateCentroidOfDetections($detections);
+		$distance = new Euclidean();
+		$distanceValue = $distance->compute($centroid, $this->faceDetection->getVector());
 		$this->faceDetection->setClusterId(null);
+		// Set threshold to avoid recreating the same mistake
+		$this->faceDetection->setThreshold($distanceValue);
 		$this->detectionMapper->update($this->faceDetection);
 	}
 
