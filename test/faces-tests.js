@@ -9,7 +9,7 @@ const LABELS = require('./res/famous_people.json')
 
 const PHOTOS_PER_LABEL = 10
 const PHOTOS_OLDER_THAN = 1627464319 // 2021-07-28; for determinism
-const FACE_DISTANCE_THRESHOLD = 0.45
+const FACE_DISTANCE_THRESHOLD = 0.42
 
 ;(async function() {
 	const labels = LABELS.slice(0,20)
