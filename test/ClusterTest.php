@@ -259,8 +259,10 @@ class ClusterTest extends TestCase {
 	}
 
 	/**
-	 * We merge two originally disparate clusters and check if the newly added detections
-	 * will be assigned to their own cluster
+	 * Initially we create three clusters A,B,C and in between two of them (A,B )we add new detections
+	 * such that the algorithm now would want to put all A and B into the same cluster.
+	 * This shouldn't happen, to keep the clustering stable. If people want to merge the clusters manually that's possible of course.
+	 *
 	 * @return void
 	 * @throws \JsonException
 	 * @throws \OCP\DB\Exception
