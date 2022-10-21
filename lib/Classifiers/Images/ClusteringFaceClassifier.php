@@ -55,11 +55,17 @@ class ClusteringFaceClassifier extends Classifier {
 			$timeout = self::IMAGE_TIMEOUT;
 		}
 
+		// Only process files that haven't been processed before
+		$queueFiles = array_values(
+			array_filter($queueFiles, fn($queueFile) =>
+				count($this->faceDetections->findByFileId($queueFile->getFileId())) === 0
+			)
+		);
+
 		$usersToCluster = [];
 		$classifierProcess = $this->classifyFiles(self::MODEL_NAME, $queueFiles, $timeout);
 
 		foreach ($classifierProcess as $queueFile => $faces) {
-			$this->removeExistingFaces($queueFile);
 			foreach ($faces as $face) {
 				if ($face['score'] < self::MIN_FACE_RECOGNITION_SCORE) {
 					continue;
@@ -98,21 +104,6 @@ class ClusteringFaceClassifier extends Classifier {
 			if (!$this->jobList->has(ClusterFacesJob::class, ['userId' => $userId])) {
 				$this->jobList->add(ClusterFacesJob::class, ['userId' => $userId]);
 			}
-		}
-	}
-
-	private function removeExistingFaces(QueueFile $queueFile) : void {
-		try {
-			$existingFaceDetections = $this->faceDetections->findByFileId($queueFile->getFileId());
-			foreach ($existingFaceDetections as $existingFaceDetection) {
-				try {
-					$this->faceDetections->delete($existingFaceDetection);
-				} catch (Exception $e) {
-					$this->logger->warning('Could not delete existing face detection', ['exception' => $e]);
-				}
-			}
-		} catch (Exception $e) {
-			$this->logger->error('Could not query existing face detections of file', ['exception' => $e]);
 		}
 	}
 }

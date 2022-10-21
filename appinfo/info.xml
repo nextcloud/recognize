@@ -65,6 +65,7 @@ The app does not send any sensitive data to cloud providers or similar services.
 	</repair-steps>
 
 	<commands>
+		<command>OCA\Recognize\Command\ResetFaces</command>
 		<command>OCA\Recognize\Command\ResetTags</command>
 		<command>OCA\Recognize\Command\CleanupTags</command>
 		<command>OCA\Recognize\Command\Recrawl</command>

@@ -14,29 +14,23 @@ use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\BackgroundJob\IJobList;
 use OCP\IConfig;
+use OCP\IDBConnection;
 use OCP\IRequest;
 
 class AdminController extends Controller {
 	private TagManager $tagManager;
-	/**
-	 * @var \OCP\BackgroundJob\IJobList
-	 */
 	private IJobList $jobList;
-	/**
-	 * @var \OCP\IConfig
-	 */
 	private IConfig $config;
-	/**
-	 * @var \OCA\Recognize\Service\QueueService
-	 */
 	private QueueService $queue;
+	private IDBConnection $db;
 
-	public function __construct($appName, IRequest $request, TagManager $tagManager, IJobList $jobList, IConfig $config, QueueService $queue) {
+	public function __construct($appName, IRequest $request, TagManager $tagManager, IJobList $jobList, IConfig $config, QueueService $queue, IDBConnection $db) {
 		parent::__construct($appName, $request);
 		$this->tagManager = $tagManager;
 		$this->jobList = $jobList;
 		$this->config = $config;
 		$this->queue = $queue;
+		$this->db = $db;
 	}
 
 	public function reset(): JSONResponse {
@@ -46,6 +40,16 @@ class AdminController extends Controller {
 
 	public function recrawl(): JSONResponse {
 		$this->jobList->add(SchedulerJob::class);
+		return new JSONResponse([]);
+	}
+
+	public function resetFaces(): JSONResponse {
+		$qb = $this->db->getQueryBuilder();
+		$qb->delete('recognize_face_detections')
+			->executeStatement();
+		$qb = $this->db->getQueryBuilder();
+		$qb->delete('recognize_face_clusters')
+			->executeStatement();
 		return new JSONResponse([]);
 	}
 
