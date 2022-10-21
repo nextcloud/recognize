@@ -154,6 +154,7 @@ class Classifier {
 	 *
 	 * @param Node $file
 	 * @return string Path to file to process
+	 * @throws \OCP\Files\NotFoundException
 	 */
 	private function getConvertedFilePath(Node $file): string {
 		$path = $file->getStorage()->getLocalFile($file->getInternalPath());
