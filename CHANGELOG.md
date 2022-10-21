@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Decrease face distance threshold Marcel Klehr 3 minutes ago
  - Stabilize face clustering across manual cluster edits
  - FaceClusterAnalyzer: Knock out less matching faces from a cluster if they are on the same file
+ - Add support for HEIC/HEIF/TIFF Convert all images to JPEG and downscale before passing to node
 
 ### Fixed
  - Admin settings: Don't repush status info
