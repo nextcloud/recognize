@@ -156,9 +156,12 @@
 			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Tensorflow plain mode')">
-			<p v-if="avx === null || platform === null || musl === null">
+			<p v-if="avx === undefined || platform === undefined || musl === undefined">
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking CPU') }}
 			</p>
+			<NcNoteCard v-else-if="avx === null || platform === null || musl === null">
+				{{ t('recognize', 'Could not check whether your machine supports native TensorFlow operation.') }}
+			</NcNoteCard>
 			<p v-else-if="avx && platform === 'x86_64' && !musl">
 				{{ t('recognize', 'Your machine supports native TensorFlow operation, you do not need WASM mode.') }}
 			</p>
@@ -217,9 +220,9 @@ export default {
 			countQueued: null,
 			settings: SETTINGS.reduce((obj, key) => ({ ...obj, [key]: '' }), {}),
 			timeout: null,
-			avx: null,
-			platform: null,
-			musl: null,
+			avx: undefined,
+			platform: undefined,
+			musl: undefined,
 			modelsDownloaded: null,
 		}
 	},
