@@ -7,6 +7,8 @@ OC.L10N.register(
     "Failed to save settings" : "設定の保存に失敗しました",
     "never" : "なし",
     "{time} ago" : "{time} 前",
+    "Landscape" : "ランドスケープ",
+    "Portrait" : "ポートレート",
     "Dog" : "犬",
     "Music" : "音楽",
     "Office" : "オフィス",

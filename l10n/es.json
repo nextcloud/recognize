@@ -39,6 +39,7 @@
     "Terminal commands" : "Comandos de terminal",
     "To trigger a full classification run manually, run the following command on the server terminal." : "Para iniciar una corrida de clasificación manualmente, ejecute el siguiente comando en el terminal del servidor.",
     "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "Para descargar todos los modelos previo a la ejecución de los trabajos de clasificación, ejecute el siguiente comando en el terminal del servidor.",
+    "CPU cores" : "Núcleos de CPU",
     "Failed to load settings" : "Fallo al cargar configuraciones",
     "Failed to save settings" : "Fallo al guardar configuraciones",
     "never" : "nunca",
