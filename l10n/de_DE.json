@@ -48,6 +48,7 @@
     "Number of CPU Cores (0 for no limit)" : "Anzahl der CPU-Kerne (0 für unbegrenzt)",
     "Tensorflow plain mode" : "Tensorflow-Plain-Modus",
     "Checking CPU" : "CPU wird überprüft",
+    "Could not check whether your machine supports native TensorFlow operation." : "Es konnte nicht überprüft werden, ob Ihr Computer den nativen TensorFlow-Betrieb unterstützt.",
     "Your machine supports native TensorFlow operation, you do not need WASM mode." : "Ihr Computer unterstützt den nativen TensorFlow-Betrieb, Sie benötigen den WASM-Modus nicht.",
     "WASM mode was activated automatically, because your machine does not support native TensorFlow operation:" : "Der WASM-Modus wurde automatisch aktiviert, da Ihr Computer den nativen TensorFlow-Betrieb nicht unterstützt:",
     "Enable WASM mode" : "WASM-Modus aktivieren",

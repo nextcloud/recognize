@@ -48,6 +48,7 @@
     "Number of CPU Cores (0 for no limit)" : "Počet jader procesoru (0 znamená bez omezení)",
     "Tensorflow plain mode" : "Holý režim Tensorflow",
     "Checking CPU" : "Kontrola procesoru",
+    "Could not check whether your machine supports native TensorFlow operation." : "Nepodařilo se zjistit zda vámi využívaný server podporuje nativní fungování TensorFlow.",
     "Your machine supports native TensorFlow operation, you do not need WASM mode." : "Vámi využívaný stroj podporuje nativní fungování TensorFlow, není třeba využívat režim WASM.",
     "WASM mode was activated automatically, because your machine does not support native TensorFlow operation:" : "Protože vámi využívaný stroj nepodporuje nativní fungování TensorFlow, byl automaticky náhradně aktivován režim WASM:",
     "Enable WASM mode" : "Zapnout režim WASM",
