@@ -26,17 +26,15 @@ class AdminController extends Controller {
 	private IJobList $jobList;
 	private IConfig $config;
 	private QueueService $queue;
-	private IDBConnection $db;
 	private FaceClusterMapper $clusterMapper;
 	private FaceDetectionMapper $detectionMapper;
 
-	public function __construct($appName, IRequest $request, TagManager $tagManager, IJobList $jobList, IConfig $config, QueueService $queue, IDBConnection $db, FaceClusterMapper $clusterMapper, FaceDetectionMapper $detectionMapper) {
+	public function __construct($appName, IRequest $request, TagManager $tagManager, IJobList $jobList, IConfig $config, QueueService $queue, FaceClusterMapper $clusterMapper, FaceDetectionMapper $detectionMapper) {
 		parent::__construct($appName, $request);
 		$this->tagManager = $tagManager;
 		$this->jobList = $jobList;
 		$this->config = $config;
 		$this->queue = $queue;
-		$this->db = $db;
 		$this->clusterMapper = $clusterMapper;
 		$this->detectionMapper = $detectionMapper;
 	}
