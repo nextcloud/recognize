@@ -55,15 +55,26 @@ class ClusteringFaceClassifier extends Classifier {
 			$timeout = self::IMAGE_TIMEOUT;
 		}
 
-		// Only process files that haven't been processed before
-		$queueFiles = array_values(
-			array_filter($queueFiles, fn($queueFile) =>
-				count($this->faceDetections->findByFileId($queueFile->getFileId())) === 0
-			)
-		);
+		$filteredQueueFiles = [];
+		foreach ($queueFiles as $queueFile) {
+			try {
+				$filesCount = count($this->faceDetections->findByFileId($queueFile->getFileId()));
+			} catch (Exception $e) {
+				$filesCount = 1;
+			}
+			if ($filesCount !== 0) {
+				try {
+					$this->queue->removeFromQueue(self::MODEL_NAME, $queueFile);
+				} catch (Exception $e) {
+					$this->logger->error('Could not remove file from queue', ['exception' => $e]);
+				}
+				continue;
+			}
+			$filteredQueueFiles[] = $queueFile;
+		}
 
 		$usersToCluster = [];
-		$classifierProcess = $this->classifyFiles(self::MODEL_NAME, $queueFiles, $timeout);
+		$classifierProcess = $this->classifyFiles(self::MODEL_NAME, $filteredQueueFiles, $timeout);
 
 		foreach ($classifierProcess as $queueFile => $faces) {
 			foreach ($faces as $face) {
