@@ -23,7 +23,7 @@ class ImagenetClassifier extends Classifier {
 
 	private TagManager $tagManager;
 	private IConfig $config;
-	private QueueService $queue;
+	protected QueueService $queue;
 	private Logger $logger;
 
 	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager, QueueService $queue, IRootFolder $rootFolder, ITempManager $tempManager) {
