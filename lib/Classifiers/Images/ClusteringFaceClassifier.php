@@ -58,11 +58,11 @@ class ClusteringFaceClassifier extends Classifier {
 		$filteredQueueFiles = [];
 		foreach ($queueFiles as $queueFile) {
 			try {
-				$filesCount = count($this->faceDetections->findByFileId($queueFile->getFileId()));
+				$facesByFileCount = count($this->faceDetections->findByFileId($queueFile->getFileId()));
 			} catch (Exception $e) {
-				$filesCount = 1;
+				$facesByFileCount = 1;
 			}
-			if ($filesCount !== 0) {
+			if ($facesByFileCount !== 0) {
 				try {
 					$this->queue->removeFromQueue(self::MODEL_NAME, $queueFile);
 				} catch (Exception $e) {
