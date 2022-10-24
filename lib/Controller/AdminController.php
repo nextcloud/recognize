@@ -8,11 +8,15 @@ use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
 use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
 use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
 use OCA\Recognize\Classifiers\Video\MovinetClassifier;
+use OCA\Recognize\Db\FaceClusterMapper;
+use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Service\QueueService;
 use OCA\Recognize\Service\TagManager;
 use OCP\AppFramework\Controller;
+use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\BackgroundJob\IJobList;
+use OCP\DB\Exception;
 use OCP\IConfig;
 use OCP\IDBConnection;
 use OCP\IRequest;
@@ -23,14 +27,18 @@ class AdminController extends Controller {
 	private IConfig $config;
 	private QueueService $queue;
 	private IDBConnection $db;
+	private FaceClusterMapper $clusterMapper;
+	private FaceDetectionMapper $detectionMapper;
 
-	public function __construct($appName, IRequest $request, TagManager $tagManager, IJobList $jobList, IConfig $config, QueueService $queue, IDBConnection $db) {
+	public function __construct($appName, IRequest $request, TagManager $tagManager, IJobList $jobList, IConfig $config, QueueService $queue, IDBConnection $db, FaceClusterMapper $clusterMapper, FaceDetectionMapper $detectionMapper) {
 		parent::__construct($appName, $request);
 		$this->tagManager = $tagManager;
 		$this->jobList = $jobList;
 		$this->config = $config;
 		$this->queue = $queue;
 		$this->db = $db;
+		$this->clusterMapper = $clusterMapper;
+		$this->detectionMapper = $detectionMapper;
 	}
 
 	public function reset(): JSONResponse {
@@ -44,12 +52,12 @@ class AdminController extends Controller {
 	}
 
 	public function resetFaces(): JSONResponse {
-		$qb = $this->db->getQueryBuilder();
-		$qb->delete('recognize_face_detections')
-			->executeStatement();
-		$qb = $this->db->getQueryBuilder();
-		$qb->delete('recognize_face_clusters')
-			->executeStatement();
+		try {
+			$this->clusterMapper->deleteAll();
+			$this->detectionMapper->deleteAll();
+		} catch (Exception $e) {
+			return new JSONResponse([], Http::STATUS_INTERNAL_SERVER_ERROR);
+		}
 		return new JSONResponse([]);
 	}
 

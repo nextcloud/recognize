@@ -75,4 +75,13 @@ class FaceClusterMapper extends QBMapper {
 		$qb->executeStatement();
 		return parent::delete($entity);
 	}
+
+	/**
+	 * @throws \OCP\DB\Exception
+	 */
+	public function deleteAll() {
+		$qb = $this->db->getQueryBuilder();
+		$qb->delete('recognize_face_clusters')
+			->executeStatement();
+	}
 }
