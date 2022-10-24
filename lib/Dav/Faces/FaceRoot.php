@@ -8,6 +8,8 @@ use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCP\AppFramework\Db\DoesNotExistException;
+use OCP\AppFramework\Db\MultipleObjectsReturnedException;
+use OCP\DB\Exception;
 use OCP\Files\IRootFolder;
 use OCP\IPreview;
 use OCP\ITagManager;
@@ -54,6 +56,12 @@ class FaceRoot implements ICollection, IMoveTarget {
 	 * @inheritDoc
 	 */
 	public function setName($name) {
+		try {
+			$this->clusterMapper->findByUserAndTitle($this->user->getUID(), $name);
+			throw new Forbidden('Not allowed to create duplicate names');
+		} catch (DoesNotExistException $e) {
+			// pass
+		}
 		$this->cluster->setTitle(basename($name));
 		$this->clusterMapper->update($this->cluster);
 	}
