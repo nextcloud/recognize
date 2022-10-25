@@ -34,6 +34,10 @@ The app does not send any sensitive data to cloud providers or similar services.
 	<version>3.1.0</version>
 	<licence>agpl</licence>
 	<author mail="mklehr@gmx.net">Marcel Klehr</author>
+	<types>
+		<filesystem/>
+		<dav/>
+	</types>
 	<category>organization</category>
 	<category>search</category>
 	<category>multimedia</category>
@@ -49,11 +53,6 @@ The app does not send any sensitive data to cloud providers or similar services.
 	<background-jobs>
 		<job>OCA\Recognize\BackgroundJobs\SchedulerJob</job>
 	</background-jobs>
-
-	<settings>
-		<admin>OCA\Recognize\Settings\AdminSettings</admin>
-		<admin-section>OCA\Recognize\Settings\AdminSection</admin-section>
-	</settings>
 
 	<repair-steps>
 		<post-migration>
@@ -71,11 +70,10 @@ The app does not send any sensitive data to cloud providers or similar services.
 		<command>OCA\Recognize\Command\DownloadModels</command>
 	</commands>
 
-	<types>
-		<filesystem/>
-		<dav/>
-	</types>
-
+	<settings>
+		<admin>OCA\Recognize\Settings\AdminSettings</admin>
+		<admin-section>OCA\Recognize\Settings\AdminSection</admin-section>
+	</settings>
 
 	<sabre>
 		<collections>
