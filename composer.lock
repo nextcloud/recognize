@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "247c1f1748c7d9f4c8ffd7c0b35c04f2",
+    "content-hash": "1f6afdfacba30a03f46da263d5a472ea",
     "packages": [
         {
             "name": "amphp/amp",
@@ -607,16 +607,16 @@
         },
         {
             "name": "rubix/ml",
-            "version": "2.2.0",
+            "version": "2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/RubixML/ML.git",
-                "reference": "b813162f76009550899acb554d28693abda3b2c7"
+                "reference": "4cda6bc1b103a70e019c5dbed2093f683d9dd02a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/RubixML/ML/zipball/b813162f76009550899acb554d28693abda3b2c7",
-                "reference": "b813162f76009550899acb554d28693abda3b2c7",
+                "url": "https://api.github.com/repos/RubixML/ML/zipball/4cda6bc1b103a70e019c5dbed2093f683d9dd02a",
+                "reference": "4cda6bc1b103a70e019c5dbed2093f683d9dd02a",
                 "shasum": ""
             },
             "require": {
@@ -763,7 +763,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-10-01T17:56:03+00:00"
+            "time": "2022-10-15T20:13:35+00:00"
         },
         {
             "name": "rubix/tensor",
@@ -2856,6 +2856,41 @@
                 }
             ],
             "time": "2022-09-25T03:44:45+00:00"
+        },
+        {
+            "name": "psalm/phar",
+            "version": "4.29.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/psalm/phar.git",
+                "reference": "367e803642395ef89d1edf8d472db28383bc0181"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/psalm/phar/zipball/367e803642395ef89d1edf8d472db28383bc0181",
+                "reference": "367e803642395ef89d1edf8d472db28383bc0181",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1 || ^8.0"
+            },
+            "conflict": {
+                "vimeo/psalm": "*"
+            },
+            "bin": [
+                "psalm.phar"
+            ],
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Composer-based Psalm Phar",
+            "support": {
+                "issues": "https://github.com/psalm/phar/issues",
+                "source": "https://github.com/psalm/phar/tree/4.29.0"
+            },
+            "time": "2022-10-11T17:14:24+00:00"
         },
         {
             "name": "psr/cache",
@@ -5029,5 +5064,5 @@
     "platform-overrides": {
         "php": "7.4"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.0.0"
 }
