@@ -61,7 +61,7 @@ class ClusterTest extends TestCase {
 			$vector = self::getNullVector();
 			$vector[0] = $cluster2Value + 0.001 * $i;
 			$detection->setVector($vector);
-			$detection->setFileId($numOfDetections+$i);
+			$detection->setFileId($numOfDetections + $i);
 			$this->faceDetectionMapper->insert($detection);
 		}
 	}
@@ -147,7 +147,7 @@ class ClusterTest extends TestCase {
 		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER, $detections);
 
 		// Merge the two clusters
-		foreach($detections as $detection) {
+		foreach ($detections as $detection) {
 			$detection->setClusterId($clusters[0]->getId());
 			$this->faceDetectionMapper->update($detection);
 		}
@@ -184,7 +184,7 @@ class ClusterTest extends TestCase {
 		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER, $detections);
 
 		// Merge the two clusters
-		foreach($detections as $detection) {
+		foreach ($detections as $detection) {
 			$detection->setClusterId($clusters[0]->getId());
 			$this->faceDetectionMapper->update($detection);
 		}
@@ -228,7 +228,7 @@ class ClusterTest extends TestCase {
 		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER, $detections);
 
 		// Merge the two clusters
-		foreach($detections as $detection) {
+		foreach ($detections as $detection) {
 			$detection->setClusterId($clusters[0]->getId());
 			$this->faceDetectionMapper->update($detection);
 		}
@@ -252,7 +252,7 @@ class ClusterTest extends TestCase {
 		self::assertCount(2, $clusters);
 
 		$detections = $this->faceDetectionMapper->findByClusterId($clusters[0]->getId());
-		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER  * 2, $detections);
+		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER * 2, $detections);
 
 		$detections = $this->faceDetectionMapper->findByClusterId($clusters[1]->getId());
 		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER, $detections);
@@ -324,7 +324,6 @@ class ClusterTest extends TestCase {
 
 		$detections = $this->faceDetectionMapper->findByClusterId($clusters[3]->getId());
 		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER, $detections);
-
 	}
 
 	private static function getNullVector() {
