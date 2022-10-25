@@ -108,7 +108,7 @@ class FaceClusterAnalyzer {
 				$detection = $item[0];
 				$distance = new Euclidean();
 				// If threshold is larger than 0 and $clusterCentroid is not the null vector
-				if ($detection->getThreshold() > 0.0 && count(array_filter($clusterCentroid, fn($el) => $el !== 0.0)) > 0) {
+				if ($detection->getThreshold() > 0.0 && count(array_filter($clusterCentroid, fn ($el) => $el !== 0.0)) > 0) {
 					// If a threshold is set for this detection and its vector is farther away from the centroid
 					// than the threshold, skip assigning this detection to the cluster
 					$distanceValue = $distance->compute($clusterCentroid, $detection->getVector());
