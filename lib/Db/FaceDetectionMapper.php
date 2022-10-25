@@ -28,6 +28,15 @@ class FaceDetectionMapper extends QBMapper {
 		return $this->findEntity($qb);
 	}
 
+	/**
+	 * @throws \OCP\DB\Exception
+	 */
+	public function deleteAll() {
+		$qb = $this->db->getQueryBuilder();
+		$qb->delete('recognize_face_detections')
+			->executeStatement();
+	}
+
 	public function findByClusterId(int $clusterId) : array {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select(FaceDetection::$columns)

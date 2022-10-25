@@ -123,6 +123,11 @@
 				{{ t('recognize', 'Reset tags for classified files') }}
 			</button>
 			<p>&nbsp;</p>
+			<p>{{ t('recognize', 'Click the button below to remove all face detections from all files that have been classified so far.') }}</p>
+			<button class="button" @click="onResetFaces">
+				{{ t('recognize', 'Reset faces for classified files') }}
+			</button>
+			<p>&nbsp;</p>
 			<p>{{ t('recognize', 'Click the button below to rescan all files in this instance and add them to the classifier queues.') }}</p>
 			<button class="button" @click="onRescan">
 				{{ t('recognize', 'Rescan all files') }}
@@ -285,6 +290,15 @@ export default {
 			this.loading = true
 			await axios.get(generateUrl('/apps/recognize/admin/reset'))
 			await this.getCount()
+			this.loading = false
+			this.success = true
+			setTimeout(() => {
+				this.success = false
+			}, 3000)
+		},
+		async onResetFaces() {
+			this.loading = true
+			await axios.get(generateUrl('/apps/recognize/admin/resetFaces'))
 			this.loading = false
 			this.success = true
 			setTimeout(() => {

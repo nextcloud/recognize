@@ -11,7 +11,6 @@ use OCA\Recognize\BackgroundJobs\ClusterFacesJob;
 use OCA\Recognize\Classifiers\Classifier;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
-use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
 use OCP\BackgroundJob\IJobList;
@@ -55,11 +54,28 @@ class ClusteringFaceClassifier extends Classifier {
 			$timeout = self::IMAGE_TIMEOUT;
 		}
 
+		$filteredQueueFiles = [];
+		foreach ($queueFiles as $queueFile) {
+			try {
+				$facesByFileCount = count($this->faceDetections->findByFileId($queueFile->getFileId()));
+			} catch (Exception $e) {
+				$facesByFileCount = 1;
+			}
+			if ($facesByFileCount !== 0) {
+				try {
+					$this->queue->removeFromQueue(self::MODEL_NAME, $queueFile);
+				} catch (Exception $e) {
+					$this->logger->error('Could not remove file from queue', ['exception' => $e]);
+				}
+				continue;
+			}
+			$filteredQueueFiles[] = $queueFile;
+		}
+
 		$usersToCluster = [];
-		$classifierProcess = $this->classifyFiles(self::MODEL_NAME, $queueFiles, $timeout);
+		$classifierProcess = $this->classifyFiles(self::MODEL_NAME, $filteredQueueFiles, $timeout);
 
 		foreach ($classifierProcess as $queueFile => $faces) {
-			$this->removeExistingFaces($queueFile);
 			foreach ($faces as $face) {
 				if ($face['score'] < self::MIN_FACE_RECOGNITION_SCORE) {
 					continue;
@@ -98,21 +114,6 @@ class ClusteringFaceClassifier extends Classifier {
 			if (!$this->jobList->has(ClusterFacesJob::class, ['userId' => $userId])) {
 				$this->jobList->add(ClusterFacesJob::class, ['userId' => $userId]);
 			}
-		}
-	}
-
-	private function removeExistingFaces(QueueFile $queueFile) : void {
-		try {
-			$existingFaceDetections = $this->faceDetections->findByFileId($queueFile->getFileId());
-			foreach ($existingFaceDetections as $existingFaceDetection) {
-				try {
-					$this->faceDetections->delete($existingFaceDetection);
-				} catch (Exception $e) {
-					$this->logger->warning('Could not delete existing face detection', ['exception' => $e]);
-				}
-			}
-		} catch (Exception $e) {
-			$this->logger->error('Could not query existing face detections of file', ['exception' => $e]);
 		}
 	}
 }

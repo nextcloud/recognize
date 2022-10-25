@@ -25,7 +25,7 @@ class Classifier {
 	private LoggerInterface $logger;
 	private IConfig $config;
 	private IRootFolder $rootFolder;
-	private QueueService $queue;
+	protected QueueService $queue;
 	private ITempManager $tempManager;
 
 	public function __construct(Logger $logger, IConfig $config, IRootFolder $rootFolder, QueueService $queue, ITempManager $tempManager) {
