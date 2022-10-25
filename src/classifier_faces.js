@@ -1,5 +1,4 @@
 const path = require('path')
-const _ = require('lodash')
 const fs = require('fs/promises')
 
 let tf, faceapi, Jimp
@@ -12,7 +11,7 @@ if (process.env.RECOGNIZE_PUREJS === 'true') {
 	PUREJS = true
 } else {
 	try {
-		if (false && process.env.RECOGNIZE_GPU === 'true') {
+		if (process.env.RECOGNIZE_GPU === 'true') {
 			tf = require('@tensorflow/tfjs-node-gpu')
 			faceapi = require('@vladmandic/face-api/dist/face-api.node-gpu.js')
 		} else {
@@ -37,7 +36,7 @@ if (process.argv.length < 3) throw new Error('Incorrect arguments: node classifi
  */
 async function main() {
 	const getStdin = (await import('get-stdin')).default
-	let paths, facesDefinitionJSON
+	let paths
 	if (process.argv[2] === '-') {
 		paths = (await getStdin()).split('\n')
 	} else {

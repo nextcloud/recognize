@@ -1,8 +1,6 @@
 let tf
-let PUREJS = false
 if (process.env.RECOGNIZE_PUREJS === 'true') {
 	tf = require('@tensorflow/tfjs')
-	PUREJS = true
 } else {
 	try {
 		if (process.env.RECOGNIZE_GPU === 'true') {
@@ -14,7 +12,6 @@ if (process.env.RECOGNIZE_PUREJS === 'true') {
 		console.error(e)
 		console.error('Trying js-only mode')
 		tf = require('@tensorflow/tfjs')
-		PUREJS = true
 	}
 }
 
@@ -23,8 +20,6 @@ const ffmpeg = require('ffmpeg-static')
 const execa = require('execa')
 const WavDecoder = require('wav-decoder')
 const MEL_MATRIX = require('./mel_matrix')
-const fs = require('fs/promises')
-const NUM_OF_CHANNELS = 3
 
 class MusicnnModel {
 

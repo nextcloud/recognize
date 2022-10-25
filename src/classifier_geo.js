@@ -1,7 +1,5 @@
-const path = require('path')
 const geoReverse = require('geo-reverse')
 const fsSync = require('fs')
-const _ = require('lodash')
 const exifer = require('exifer')
 const gps = require('@exifer/gps')
 
