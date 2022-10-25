@@ -50,6 +50,7 @@ OC.L10N.register(
     "Number of CPU Cores (0 for no limit)" : "Kullanılacak işlemci çekirdeği sayısı (0 sınır yok)",
     "Tensorflow plain mode" : "Düz TensorFlow kipi",
     "Checking CPU" : "İşlemci denetleniyor",
+    "Could not check whether your machine supports native TensorFlow operation." : "Aygıtınızın yerel TensorFlow işlemini destekleyip desteklemediği denetlenemedi.",
     "Your machine supports native TensorFlow operation, you do not need WASM mode." : "Bilgisayarınız yerel TensorFlow işlemini destekliyor. WASM kipine gerek duymayacaksınız.",
     "WASM mode was activated automatically, because your machine does not support native TensorFlow operation:" : "Bilgisayarınız yerel TensorFlow işlemini desteklemediğinden otomatik olarak WASM kipi etkinleştirildi:",
     "Enable WASM mode" : "WASM kipi kullanılsın",
