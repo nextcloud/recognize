@@ -6,6 +6,8 @@ module.exports = {
 		requireConfigFile: false,
 	},
 	rules: {
-		"node/no-unpublished-import": "off"
+		"n/no-unpublished-import": "off",
+		"n/no-process-exit": "off",
+		"no-console": "off"
 	}
 }

@@ -1,10 +1,8 @@
 const path = require('path')
-const download = require('download')
-const tar = require('tar')
 const fsSync = require('fs')
 const YAML = require('yaml')
 const _ = require('lodash')
-const rules = YAML.parse(fsSync.readFileSync(__dirname + '/rules.yml').toString('utf8'))
+const rules = YAML.parse(fsSync.readFileSync(path.join(__dirname, 'rules.yml')).toString('utf8'))
 const { IMAGENET_CLASSES } = require('./efficientnet/classes')
 
 let tf, getPort, StaticServer
@@ -17,7 +15,7 @@ if (process.env.RECOGNIZE_PUREJS === 'true') {
 	PUREJS = true
 } else {
 	try {
-		if (false && process.env.RECOGNIZE_GPU === 'true') {
+		if (process.env.RECOGNIZE_GPU === 'true') {
 			tf = require('@tensorflow/tfjs-node-gpu')
 		} else {
 			tf = require('@tensorflow/tfjs-node')
@@ -127,9 +125,9 @@ async function main(modelName, imgSize, minInput) {
 						labels.push(...result.rule.categories)
 					}
 				})
-			const cat_probabilities = {}
-			const cat_thresholds = {}
-			const cat_count = {}
+			const catProbabilities = {}
+			const catThresholds = {}
+			const catCount = {}
 			results.forEach(result => {
 				if (result.rule) {
 					let categories = []
@@ -140,27 +138,27 @@ async function main(modelName, imgSize, minInput) {
 						categories = categories.concat(result.rule.categories)
 					}
 					_.uniq(categories).forEach(category => {
-						if (!(category in cat_probabilities)) {
-							cat_probabilities[category] = 0
+						if (!(category in catProbabilities)) {
+							catProbabilities[category] = 0
 						}
-						if (!(category in cat_thresholds)) {
-							cat_thresholds[category] = 0
+						if (!(category in catThresholds)) {
+							catThresholds[category] = 0
 						}
-						if (!(category in cat_count)) {
-							cat_count[category] = 0
+						if (!(category in catCount)) {
+							catCount[category] = 0
 						}
-						cat_probabilities[category] += result.probability ** 2
-						cat_thresholds[category] = Math.max(cat_thresholds[category], result.rule.threshold)
-						cat_count[category]++
+						catProbabilities[category] += result.probability ** 2
+						catThresholds[category] = Math.max(catThresholds[category], result.rule.threshold)
+						catCount[category]++
 					})
 				}
 			})
-			Object.entries(cat_probabilities)
+			Object.entries(catProbabilities)
 				.filter(([category, probability]) => {
-					if (cat_count[category] <= 1) {
+					if (catCount[category] <= 1) {
 						return false
 					}
-					return probability ** (1 / 2) >= cat_thresholds[category]
+					return probability ** (1 / 2) >= catThresholds[category]
 				})
 				.forEach(([category]) => {
 					labels.push(category)

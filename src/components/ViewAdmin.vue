@@ -170,7 +170,7 @@
 					{{ t('recognize', 'WASM mode was activated automatically, because your machine does not support native TensorFlow operation:') }}
 				</p>
 				<ul>
-					<li v-for="reason in pureJSReasons">
+					<li v-for="reason in pureJSReasons" :key="reason">
 						{{ reason }}
 					</li>
 				</ul>

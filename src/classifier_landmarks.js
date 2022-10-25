@@ -20,7 +20,7 @@ if (process.env.RECOGNIZE_PUREJS === 'true') {
 	PUREJS = true
 } else {
 	try {
-		if (false && process.env.RECOGNIZE_GPU === 'true') {
+		if (process.env.RECOGNIZE_GPU === 'true') {
 			tf = require('@tensorflow/tfjs-node-gpu')
 		} else {
 			tf = require('@tensorflow/tfjs-node')
@@ -36,24 +36,8 @@ if (process.env.RECOGNIZE_PUREJS === 'true') {
 	}
 }
 
-const EfficientNet = require('./efficientnet/EfficientnetModel')
+const EfficientNet = require('./efficientnet/EfficientnetModel.js')
 const THRESHOLD = 0.9
-
-/**
- * @param className
- */
-function findRule(className) {
-	const rule = rules[className]
-	if (!rule) {
-		return
-	}
-
-	if (rule.see) {
-		return findRule(rule.see)
-	}
-
-	return rule
-}
 
 if (process.argv.length < 3) throw new Error('Incorrect arguments: node classify.js ...<IMAGE_FILES> | node classify.js -')
 

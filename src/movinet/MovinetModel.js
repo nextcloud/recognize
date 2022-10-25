@@ -1,4 +1,4 @@
-let tf
+let tf, Jimp
 let PUREJS = false
 if (process.env.RECOGNIZE_PUREJS === 'true') {
 	tf = require('@tensorflow/tfjs')
@@ -20,11 +20,9 @@ if (process.env.RECOGNIZE_PUREJS === 'true') {
 	}
 }
 
-const { KINETIC_600_CLASSES } = require('./classes')
+const { KINETIC_600_CLASSES } = require('./classes.js')
 const ffmpeg = require('ffmpeg-static')
 const execa = require('execa')
-const WavDecoder = require('wav-decoder')
-const fs = require('fs/promises')
 const NUM_OF_CHANNELS = 3
 const FRAME_SIZE = 176
 
@@ -75,7 +73,7 @@ class MovinetModel {
 		console.error('finished transcoding')
 
 		const frameTensors = []
-		let i=0
+		let i = 0
 		for (const frame of frames) {
 			let image
 			if (PUREJS) {
@@ -85,7 +83,7 @@ class MovinetModel {
 				image = await tf.node.decodeImage(frame, 3)
 			}
 			frameTensors.push(image)
-			console.error('decoded '+(++i)+'/'+frames.length+' images')
+			console.error('decoded ' + (++i) + '/' + frames.length + ' images')
 		}
 
 		const values = tf.tidy(() => {
