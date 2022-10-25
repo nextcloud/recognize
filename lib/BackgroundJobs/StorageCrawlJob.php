@@ -71,6 +71,11 @@ class StorageCrawlJob extends QueuedJob {
 			return;
 		}
 
+		if ($root === false) {
+			$this->logger->error('Could not find storage root');
+			return;
+		}
+
 		$imageTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::IMAGE_FORMATS);
 		$videoTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::VIDEO_FORMATS);
 		$audioTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::AUDIO_FORMATS);
