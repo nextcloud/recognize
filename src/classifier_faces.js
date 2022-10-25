@@ -36,7 +36,7 @@ if (process.argv.length < 3) throw new Error('Incorrect arguments: node classifi
  */
 async function main() {
 	const getStdin = (await import('get-stdin')).default
-	let paths, facesDefinitionJSON
+	let paths
 	if (process.argv[2] === '-') {
 		paths = (await getStdin()).split('\n')
 	} else {
