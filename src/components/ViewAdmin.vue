@@ -193,9 +193,7 @@
 </template>
 
 <script>
-import NcSettingsSection from '@nextcloud/vue/dist/Components/NcSettingsSection'
-import NcNoteCard from '@nextcloud/vue/dist/Components/NcNoteCard'
-import NcCheckboxRadioSwitch from '@nextcloud/vue/dist/Components/NcCheckboxRadioSwitch'
+import { NcNoteCard, NcSettingsSection, NcCheckboxRadioSwitch } from '@nextcloud/vue'
 import axios from '@nextcloud/axios'
 import { generateUrl } from '@nextcloud/router'
 import { loadState } from '@nextcloud/initial-state'
