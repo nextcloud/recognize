@@ -11,7 +11,6 @@ use OCA\Recognize\BackgroundJobs\ClusterFacesJob;
 use OCA\Recognize\Classifiers\Classifier;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
-use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
 use OCP\BackgroundJob\IJobList;

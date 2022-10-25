@@ -4,8 +4,6 @@ namespace OCA\Recognize\Command;
 
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetectionMapper;
-use OCA\Recognize\Service\TagManager;
-use OCP\IDBConnection;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

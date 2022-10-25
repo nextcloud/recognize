@@ -18,7 +18,6 @@ use OCP\AppFramework\Http\JSONResponse;
 use OCP\BackgroundJob\IJobList;
 use OCP\DB\Exception;
 use OCP\IConfig;
-use OCP\IDBConnection;
 use OCP\IRequest;
 
 class AdminController extends Controller {
