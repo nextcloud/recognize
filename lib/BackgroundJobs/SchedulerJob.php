@@ -54,6 +54,7 @@ class SchedulerJob extends QueuedJob {
 	}
 
 	protected function run($argument): void {
+		/** @var list<string> $models */
 		$models = $argument['models'] ?? [
 			ClusteringFaceClassifier::MODEL_NAME,
 			ImagenetClassifier::MODEL_NAME,
@@ -68,6 +69,12 @@ class SchedulerJob extends QueuedJob {
 			->where($qb->expr()->in('mount_provider_class', $qb->createPositionalParameter(self::ALLOWED_MOUNT_TYPES, IQueryBuilder::PARAM_STR_ARRAY)));
 		$result = $qb->executeQuery();
 
+		if ($result === false) {
+			$this->logger->error('Could not fetch mounts');
+			return;
+		}
+
+		/** @var array $row */
 		while ($row = $result->fetch()) {
 			$storageId = (int)$row['storage_id'];
 			$rootId = (int)$row['root_id'];
@@ -76,6 +83,7 @@ class SchedulerJob extends QueuedJob {
 				// Only crawl files, not cache or trashbin
 				$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
 				try {
+					/** @var array|false $root */
 					$root = $qb->selectFileCache()
 						->andWhere($qb->expr()->eq('filecache.storage', $qb->createNamedParameter($storageId, IQueryBuilder::PARAM_INT)))
 						->andWhere($qb->expr()->eq('filecache.path', $qb->createNamedParameter('files')))

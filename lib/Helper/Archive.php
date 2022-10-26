@@ -117,10 +117,11 @@ abstract class Archive {
 	abstract public function getStream($path, $mode);
 	/**
 	 * add a folder and all its content
+	 *
 	 * @param string $path
 	 * @param string $source
 	 */
-	public function addRecursive($path, $source) {
+	public function addRecursive($path, $source): void {
 		$dh = opendir($source);
 		if (is_resource($dh)) {
 			$this->addFolder($path);

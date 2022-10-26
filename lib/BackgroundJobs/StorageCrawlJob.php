@@ -53,6 +53,9 @@ class StorageCrawlJob extends QueuedJob {
 		$rootId = $argument['root_id'];
 		$overrideRoot = $argument['override_root'];
 		$lastFileId = $argument['last_file_id'];
+		/**
+		 * @var list<string> $models
+		 */
 		$models = $argument['models'] ?? [
 			ClusteringFaceClassifier::MODEL_NAME,
 			ImagenetClassifier::MODEL_NAME,
@@ -119,6 +122,7 @@ class StorageCrawlJob extends QueuedJob {
 		$this->jobList->remove(self::class, $argument);
 
 		$i = 0;
+		/** @var array $file */
 		while ($file = $files->fetch()) {
 			$i++;
 			$queueFile = new QueueFile();

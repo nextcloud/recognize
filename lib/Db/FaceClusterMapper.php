@@ -27,12 +27,11 @@ class FaceClusterMapper extends QBMapper {
 
 	/**
 	 * @throws \OCP\DB\Exception
+	 * @return list<\OCA\Recognize\Db\FaceCluster>
 	 */
 	public function findByUserId(string $userId): array {
 		$qb = $this->db->getQueryBuilder();
-		$columns = array_map(function ($c) : string {
-			return 'fc.'.$c;
-		}, FaceCluster::$columns);
+		$columns = array_map(fn ($c) => 'fc.'.$c, FaceCluster::$columns);
 		$qb->selectDistinct($columns)
 			->from('recognize_face_clusters', 'fc')
 			->innerJoin('fc', 'recognize_face_detections', 'fd', 'fc.id = fd.cluster_id')
@@ -56,7 +55,9 @@ class FaceClusterMapper extends QBMapper {
 	}
 
 	/**
+	 * @param int $detectionId
 	 * @throws \OCP\DB\Exception
+	 * @return list<\OCA\Recognize\Db\FaceCluster>
 	 */
 	public function findByDetectionId(int $detectionId): array {
 		$qb = $this->db->getQueryBuilder();

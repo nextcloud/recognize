@@ -41,9 +41,10 @@ class FileListener implements IEventListener {
 		}
 	}
 
-	public function postDelete(Node $node) {
+	public function postDelete(Node $node): void {
 		if ($node->getType() === FileInfo::TYPE_FOLDER) {
 			try {
+				/** @var \OCP\Files\Folder $node */
 				foreach ($node->getDirectoryListing() as $child) {
 					$this->postDelete($child);
 				}
@@ -79,10 +80,10 @@ class FileListener implements IEventListener {
 		}
 	}
 
-	public function postInsert(Node $node) {
+	public function postInsert(Node $node): void {
 		$queueFile = new QueueFile();
-		$queueFile->setStorageId($node->getMountPoint()->getNumericStorageId());
-		$queueFile->setRootId($node->getMountPoint()->getStorageRootId());
+		$queueFile->setStorageId($node->getMountPoint()->getStorageId());
+		$queueFile->setRootId((string) $node->getMountPoint()->getStorageRootId());
 
 		try {
 			$queueFile->setFileId($node->getId());

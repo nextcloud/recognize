@@ -28,7 +28,7 @@ class AdminController extends Controller {
 	private FaceClusterMapper $clusterMapper;
 	private FaceDetectionMapper $detectionMapper;
 
-	public function __construct($appName, IRequest $request, TagManager $tagManager, IJobList $jobList, IConfig $config, QueueService $queue, FaceClusterMapper $clusterMapper, FaceDetectionMapper $detectionMapper) {
+	public function __construct(string $appName, IRequest $request, TagManager $tagManager, IJobList $jobList, IConfig $config, QueueService $queue, FaceClusterMapper $clusterMapper, FaceDetectionMapper $detectionMapper) {
 		parent::__construct($appName, $request);
 		$this->tagManager = $tagManager;
 		$this->jobList = $jobList;
@@ -119,10 +119,10 @@ class AdminController extends Controller {
 		}
 
 		$ldd = trim(implode("\n", $output));
-		return new JSONResponse(['musl' => str_contains($ldd, 'musl')]);
+		return new JSONResponse(['musl' => strpos($ldd, 'musl') !== false]);
 	}
 
-	public function setSetting(string $setting, $value) {
+	public function setSetting(string $setting, $value): void {
 		if ($value === true && $this->config->getAppValue('recognize', $setting, 'false') === 'false') {
 			// Additional model enabled: Schedule new crawl run for the affected mime types
 			switch ($setting) {
@@ -148,7 +148,7 @@ class AdminController extends Controller {
 		$this->config->setAppValue('recognize', $setting, $value);
 	}
 
-	public function getSetting(string $setting) {
+	public function getSetting(string $setting):JSONResponse {
 		return new JSONResponse(['value' => $this->config->getAppValue('recognize', $setting)]);
 	}
 }

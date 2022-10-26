@@ -16,7 +16,7 @@ use OCP\AppFramework\Db\Entity;
  * @method float getY()
  * @method float getHeight()
  * @method float getWidth()
- * @method array getVector()
+ * @method list<float> getVector()
  * @method setVector(array $vector)
  * @method setX(float $x)
  * @method setY(float $y)
@@ -37,8 +37,13 @@ class FaceDetection extends Entity {
 	protected $vector;
 	protected $clusterId;
 	protected $threshold;
-
+	/**
+	 * @var string[]
+	 */
 	public static $columns = ['id', 'user_id', 'file_id', 'x', 'y', 'height', 'width', 'vector', 'cluster_id', 'threshold'];
+	/**
+	 * @var string[]
+	 */
 	public static $fields = ['id', 'userId', 'fileId', 'x', 'y', 'height', 'width', 'vector', 'clusterId', 'threshold'];
 
 	public function __construct() {

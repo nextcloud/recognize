@@ -22,16 +22,12 @@ class ImagenetClassifier extends Classifier {
 	public const MODEL_NAME = 'imagenet';
 
 	private TagManager $tagManager;
-	private IConfig $config;
 	protected QueueService $queue;
-	private Logger $logger;
 
 	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager, QueueService $queue, IRootFolder $rootFolder, ITempManager $tempManager) {
 		parent::__construct($logger, $config, $rootFolder, $queue, $tempManager);
-		$this->config = $config;
 		$this->tagManager = $tagManager;
 		$this->queue = $queue;
-		$this->logger = $logger;
 	}
 
 	/**
@@ -46,6 +42,8 @@ class ImagenetClassifier extends Classifier {
 		}
 		$classifierProcess = $this->classifyFiles(self::MODEL_NAME, $queueFiles, $timeout);
 
+		/** @var \OCA\Recognize\Db\QueueFile $queueFile */
+		/** @var list<string> $results */
 		foreach ($classifierProcess as $queueFile => $results) {
 			$this->tagManager->assignTags($queueFile->getFileId(), $results);
 			$landmarkTags = array_filter($results, function ($tagName) {

@@ -7,12 +7,12 @@
 
 namespace OCA\Recognize\Classifiers;
 
-use OC\Files\Node\Node;
 use OCA\Recognize\Constants;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
 use OCP\DB\Exception;
 use OCP\Files\IRootFolder;
+use OCP\Files\Node;
 use OCP\Files\NotFoundException;
 use OCP\IConfig;
 use OCP\ITempManager;
@@ -22,8 +22,8 @@ use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Process\Process;
 
 class Classifier {
-	private LoggerInterface $logger;
-	private IConfig $config;
+	protected LoggerInterface $logger;
+	protected IConfig $config;
 	private IRootFolder $rootFolder;
 	protected QueueService $queue;
 	private ITempManager $tempManager;
@@ -152,7 +152,7 @@ class Classifier {
 	 * If the file is an image and not JPEG, it will be converted using ImageMagick.
 	 * Images will also be downscaled to a max dimension of 4096px.
 	 *
-	 * @param Node $file
+	 * @param \OCP\Files\Node $file
 	 * @return string Path to file to process
 	 * @throws \OCP\Files\NotFoundException
 	 */

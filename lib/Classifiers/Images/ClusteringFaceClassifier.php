@@ -27,16 +27,12 @@ class ClusteringFaceClassifier extends Classifier {
 	public const MIN_FACE_RECOGNITION_SCORE = 0.8;
 	public const MODEL_NAME = 'faces';
 
-	private Logger $logger;
-	private IConfig $config;
 	private FaceDetectionMapper $faceDetections;
 	private IUserMountCache $userMountCache;
 	private IJobList $jobList;
 
 	public function __construct(Logger $logger, IConfig $config, FaceDetectionMapper $faceDetections, QueueService $queue, IRootFolder $rootFolder, IUserMountCache $userMountCache, IJobList $jobList, ITempManager $tempManager) {
 		parent::__construct($logger, $config, $rootFolder, $queue, $tempManager);
-		$this->logger = $logger;
-		$this->config = $config;
 		$this->faceDetections = $faceDetections;
 		$this->userMountCache = $userMountCache;
 		$this->jobList = $jobList;
@@ -75,6 +71,8 @@ class ClusteringFaceClassifier extends Classifier {
 		$usersToCluster = [];
 		$classifierProcess = $this->classifyFiles(self::MODEL_NAME, $filteredQueueFiles, $timeout);
 
+		/** @var \OCA\Recognize\Db\QueueFile $queueFile */
+		/** @var list<array> $faces */
 		foreach ($classifierProcess as $queueFile => $faces) {
 			foreach ($faces as $face) {
 				if ($face['score'] < self::MIN_FACE_RECOGNITION_SCORE) {
@@ -86,9 +84,9 @@ class ClusteringFaceClassifier extends Classifier {
 				$faceDetection->setWidth($face['width']);
 				$faceDetection->setHeight($face['height']);
 				$faceDetection->setVector($face['vector']);
-				$faceDetection->setFileId($queueFile->getFileId());
+				$faceDetection->setFileId(intval($queueFile->getFileId()));
 
-				$mounts = $this->userMountCache->getMountsForRootId($queueFile->getRootId());
+				$mounts = $this->userMountCache->getMountsForRootId(intval($queueFile->getRootId()));
 				$userIds = array_map(function (ICachedMountInfo $mount) {
 					return $mount->getUser()->getUID();
 				}, $mounts);

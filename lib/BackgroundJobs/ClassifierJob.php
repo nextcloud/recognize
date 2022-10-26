@@ -34,7 +34,10 @@ abstract class ClassifierJob extends TimedJob {
 		$this->setTimeSensitivity(self::TIME_INSENSITIVE);
 	}
 
-	protected function runClassifier(string $model, $argument) {
+	protected function runClassifier(string $model, array $argument): void {
+		/**
+		 * @var int $storageId
+		 */
 		$storageId = $argument['storageId'];
 		$rootId = $argument['rootId'];
 		if ($this->config->getAppValue('recognize', $model.'.enabled', 'false') !== 'true') {

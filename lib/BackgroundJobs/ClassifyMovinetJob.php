@@ -27,13 +27,12 @@ class ClassifyMovinetJob extends ClassifierJob {
 	/**
 	 * @inheritDoc
 	 */
-	protected function run($argument) {
+	protected function run($argument):void {
 		$this->runClassifier(self::MODEL_NAME, $argument);
 	}
 
 	/**
-	 * @param string|null $userId
-	 * @param array $files
+	 * @param list<\OCA\Recognize\Db\QueueFile> $files
 	 * @return void
 	 * @throws \OCA\Recognize\Exception\Exception
 	 */

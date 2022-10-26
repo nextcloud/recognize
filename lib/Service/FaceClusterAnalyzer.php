@@ -31,10 +31,7 @@ class FaceClusterAnalyzer {
 	 * @throws \OCP\DB\Exception
 	 * @throws \JsonException
 	 */
-	public function calculateClusters(string $userId) {
-		/**
-		 * @var $detections FaceDetection[]
-		 */
+	public function calculateClusters(string $userId): void {
 		$detections = $this->faceDetections->findByUserId($userId);
 
 		if (count($detections) === 0) {
@@ -57,37 +54,37 @@ class FaceClusterAnalyzer {
 			$clusterDetections = array_map(function ($key) use ($detections) : FaceDetection {
 				return $detections[$key];
 			}, $keys);
-			$detectionsWithClusters = array_map(function ($detection) : array {
-				return [$detection, $this->faceClusters->findByDetectionId($detection->getId())];
+			$detectionClusters = array_map(function ($detection) : array {
+				return $this->faceClusters->findByDetectionId($detection->getId());
 			}, $clusterDetections);
 
 			// Since recognize works incrementally, we need to check if some of these face
 			// detections have been added to an existing cluster already
-			$alreadyClustered = array_values(array_filter($detectionsWithClusters, function ($item) : bool {
-				return count($item[1]) >= 1;
-			}));
+			$alreadyClustered = array_values(array_filter($clusterDetections, function ($item, int $i) use ($detectionClusters) : bool {
+				return count($detectionClusters[$i]) >= 1;
+			}, ARRAY_FILTER_USE_BOTH));
 
-			$notYetClustered = array_filter($detectionsWithClusters, function ($item) : bool {
-				return count($item[1]) === 0;
-			});
+			$notYetClustered = array_values(array_filter($clusterDetections, function ($item, int $i) use ($detectionClusters) : bool {
+				return count($detectionClusters[$i]) === 0;
+			}, ARRAY_FILTER_USE_BOTH));
 
 			if (count($alreadyClustered) > 0) {
 				$uniqueOldClusterIds = array_unique(array_map(function ($item) {
-					return $item[1][0]->getId();
+					return $item->getClusterId();
 				}, $alreadyClustered));
 				if (count($uniqueOldClusterIds) === 1) {
 					// There's only one old cluster for all already clustered detections
 					// in this new cluster, so we'll use that
-					$cluster = $alreadyClustered[0][1][0];
-					$clusterCentroid = self::calculateCentroidOfDetections(array_map(fn ($item) => $item[0], $alreadyClustered));
+					$cluster = $detectionClusters[0][0];
+					$clusterCentroid = self::calculateCentroidOfDetections($alreadyClustered);
 				} else {
 					// This new cluster contains detections from different existing clusters
 					// we need a completely new cluster for the not yet assigned detections
 					$cluster = new FaceCluster();
 					$cluster->setTitle('');
 					$cluster->setUserId($userId);
-					$cluster = $this->faceClusters->insert($cluster);
-					$clusterCentroid = self::calculateCentroidOfDetections(array_map(fn ($item) => $item[0], $notYetClustered));
+					$this->faceClusters->insert($cluster);
+					$clusterCentroid = self::calculateCentroidOfDetections($notYetClustered);
 				}
 			} else {
 				// we need a completely new cluster since none of the detections
@@ -95,17 +92,11 @@ class FaceClusterAnalyzer {
 				$cluster = new FaceCluster();
 				$cluster->setTitle('');
 				$cluster->setUserId($userId);
-
-				/**
-				 * @var FaceCluster $cluster
-				 */
-				$cluster = $this->faceClusters->insert($cluster);
+				$this->faceClusters->insert($cluster);
 
 				$clusterCentroid = self::calculateCentroidOfDetections($clusterDetections);
 			}
-			foreach ($notYetClustered as $item) {
-				/** @var FaceDetection $detection */
-				$detection = $item[0];
+			foreach ($notYetClustered as $detection) {
 				$distance = new Euclidean();
 				// If threshold is larger than 0 and $clusterCentroid is not the null vector
 				if ($detection->getThreshold() > 0.0 && count(array_filter($clusterCentroid, fn ($el) => $el !== 0.0)) > 0) {
@@ -128,9 +119,6 @@ class FaceClusterAnalyzer {
 	 * @throws \OCP\DB\Exception
 	 */
 	public function pruneClusters(string $userId): void {
-		/**
-		 * @var $clusters FaceCluster[]
-		 */
 		$clusters = $this->faceClusters->findByUserId($userId);
 
 		if (count($clusters) === 0) {
@@ -139,9 +127,6 @@ class FaceClusterAnalyzer {
 		}
 
 		foreach ($clusters as $cluster) {
-			/**
-			 * @var $detections FaceDetection[]
-			 */
 			$detections = $this->faceDetections->findByClusterId($cluster->getId());
 
 			$filesWithDuplicateFaces = $this->findFilesWithDuplicateFaces($detections);
@@ -173,10 +158,11 @@ class FaceClusterAnalyzer {
 
 	/**
 	 * @param FaceDetection[] $detections
-	 * @return array<float>
+	 * @return list<float>
 	 */
 	public static function calculateCentroidOfDetections(array $detections): array {
 		// init 128 dimensional vector
+		/** @var list<float> $sum */
 		$sum = [];
 		for ($i = 0; $i < 128; $i++) {
 			$sum[] = 0;
@@ -187,10 +173,11 @@ class FaceClusterAnalyzer {
 		}
 
 		foreach ($detections as $detection) {
-			$sum = array_map(function ($el, $i) use ($sum) {
-				return $el + $sum[$i];
-			}, $detection->getVector(), array_keys($sum));
+			$sum = array_map(function ($el, $el2) {
+				return $el + $el2;
+			}, $detection->getVector(), $sum);
 		}
+
 		$centroid = array_map(function ($el) use ($detections) {
 			return $el / count($detections);
 		}, $sum);
@@ -199,7 +186,7 @@ class FaceClusterAnalyzer {
 	}
 
 	/**
-	 * @param array $detections
+	 * @param array<FaceDetection> $detections
 	 * @return array<int,FaceDetection[]>
 	 */
 	private function findFilesWithDuplicateFaces(array $detections): array {
