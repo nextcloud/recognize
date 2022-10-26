@@ -97,7 +97,7 @@ class ClusteringFaceClassifier extends Classifier {
 				foreach ($userIds as $userId) {
 					$faceDetection->setUserId($userId);
 					try {
-						$this->faceDetections->insert($faceDetection);
+						$this->faceDetections->insertOrUpdate($faceDetection);
 					} catch (Exception $e) {
 						$this->logger->error('Could not store face detection in database', ['exception' => $e]);
 						continue;
