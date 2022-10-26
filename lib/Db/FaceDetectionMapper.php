@@ -31,7 +31,7 @@ class FaceDetectionMapper extends QBMapper {
 	/**
 	 * @throws \OCP\DB\Exception
 	 */
-	public function deleteAll() {
+	public function deleteAll(): void {
 		$qb = $this->db->getQueryBuilder();
 		$qb->delete('recognize_face_detections')
 			->executeStatement();

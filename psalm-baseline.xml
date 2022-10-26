@@ -226,8 +226,9 @@
     <MissingDependency occurrences="1">
       <code>IRootFolder</code>
     </MissingDependency>
-    <PropertyNotSetInConstructor occurrences="3">
+    <PropertyNotSetInConstructor occurrences="4">
       <code>$tagManager</code>
+      <code>MusicnnClassifier</code>
       <code>MusicnnClassifier</code>
       <code>MusicnnClassifier</code>
     </PropertyNotSetInConstructor>
@@ -283,21 +284,18 @@
     <MissingDependency occurrences="1">
       <code>IRootFolder</code>
     </MissingDependency>
-    <MixedArgument occurrences="6">
+    <MixedArgument occurrences="5">
       <code>$face['height']</code>
       <code>$face['vector']</code>
       <code>$face['width']</code>
       <code>$face['x']</code>
       <code>$face['y']</code>
-      <code>$queueFile</code>
     </MixedArgument>
-    <MixedAssignment occurrences="1">
-      <code>$queueFile</code>
-    </MixedAssignment>
-    <PropertyNotSetInConstructor occurrences="5">
+    <PropertyNotSetInConstructor occurrences="6">
       <code>$faceDetections</code>
       <code>$jobList</code>
       <code>$userMountCache</code>
+      <code>ClusteringFaceClassifier</code>
       <code>ClusteringFaceClassifier</code>
       <code>ClusteringFaceClassifier</code>
     </PropertyNotSetInConstructor>
@@ -342,8 +340,9 @@
     <MixedMethodCall occurrences="1">
       <code>getFileId</code>
     </MixedMethodCall>
-    <PropertyNotSetInConstructor occurrences="3">
+    <PropertyNotSetInConstructor occurrences="4">
       <code>$tagManager</code>
+      <code>LandmarksClassifier</code>
       <code>LandmarksClassifier</code>
       <code>LandmarksClassifier</code>
     </PropertyNotSetInConstructor>
@@ -364,8 +363,9 @@
     <MixedMethodCall occurrences="1">
       <code>getFileId</code>
     </MixedMethodCall>
-    <PropertyNotSetInConstructor occurrences="3">
+    <PropertyNotSetInConstructor occurrences="4">
       <code>$tagManager</code>
+      <code>MovinetClassifier</code>
       <code>MovinetClassifier</code>
       <code>MovinetClassifier</code>
     </PropertyNotSetInConstructor>

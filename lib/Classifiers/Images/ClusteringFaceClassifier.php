@@ -71,8 +71,9 @@ class ClusteringFaceClassifier extends Classifier {
 		$usersToCluster = [];
 		$classifierProcess = $this->classifyFiles(self::MODEL_NAME, $filteredQueueFiles, $timeout);
 
-		/** @var \OCA\Recognize\Db\QueueFile $queueFile */
-		/** @var list<array> $faces */
+		/** @var \OCA\Recognize\Db\QueueFile $queueFile
+		 * @var list<array> $faces
+		 */
 		foreach ($classifierProcess as $queueFile => $faces) {
 			foreach ($faces as $face) {
 				if ($face['score'] < self::MIN_FACE_RECOGNITION_SCORE) {
