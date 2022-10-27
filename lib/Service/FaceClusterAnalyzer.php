@@ -75,7 +75,9 @@ class FaceClusterAnalyzer {
 				if (count($uniqueOldClusterIds) === 1) {
 					// There's only one old cluster for all already clustered detections
 					// in this new cluster, so we'll use that
-					$cluster = $detectionClusters[0][0];
+					$cluster = array_values(array_filter($detectionClusters, function ($clusters) : bool {
+						return count($clusters) >= 1;
+					}))[0][0];
 					$clusterCentroid = self::calculateCentroidOfDetections($alreadyClustered);
 				} else {
 					// This new cluster contains detections from different existing clusters
