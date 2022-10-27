@@ -38,6 +38,8 @@ OC.L10N.register(
     "Reset" : "Vrátit na výchozí hodnoty",
     "Click the button below to remove all tags from all files that have been classified so far." : "Pokud chcete odebrat veškeré štítky z doposud klasifikovaných souborů, klikněte na níže uvedené tlačítko.",
     "Reset tags for classified files" : "Odebrat štítky z rozpoznaných souborů",
+    "Click the button below to remove all face detections from all files that have been classified so far." : "Pokud chcete odebrat veškerá rozpoznání tváří z doposud klasifikovaných souborů, klikněte na níže uvedené tlačítko.",
+    "Reset faces for classified files" : "Odebrat označení tváří z rozpoznaných souborů",
     "Click the button below to rescan all files in this instance and add them to the classifier queues." : "Pokud chcete znovu naskenovat veškeré soubory na této instanci, klikněte na níže uvedené tlačítko a přidejte je tak do fronty klasifikace.",
     "Rescan all files" : "Znovu naskenovat veškeré soubory",
     "Terminal commands" : "Příkazy v terminálu",

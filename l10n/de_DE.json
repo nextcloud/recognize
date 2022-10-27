@@ -36,6 +36,8 @@
     "Reset" : "Zurücksetzen",
     "Click the button below to remove all tags from all files that have been classified so far." : "Klicken Sie auf die Schaltfläche unten, um alle Tags von allen bisher klassifizierten Dateien zu entfernen.",
     "Reset tags for classified files" : "Tags für klassifizierte Dateien zurücksetzen",
+    "Click the button below to remove all face detections from all files that have been classified so far." : "Klicken Sie auf die Schaltfläche unten, um alle Gesichtserkennungen aus allen bisher klassifizierten Dateien zu entfernen.",
+    "Reset faces for classified files" : "Gescihter für klassifizierte Dateien zurücksetzen",
     "Click the button below to rescan all files in this instance and add them to the classifier queues." : "Auf die Schaltfläche unten klicken, um alle Dateien in dieser Instanz erneut zu scannen und sie den Klassifizierungswarteschlangen hinzuzufügen.",
     "Rescan all files" : "Alle Dateien erneut scannen",
     "Terminal commands" : "Terminalbefehle",
