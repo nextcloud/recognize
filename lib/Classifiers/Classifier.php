@@ -159,6 +159,10 @@ class Classifier {
 	private function getConvertedFilePath(Node $file): string {
 		$path = $file->getStorage()->getLocalFile($file->getInternalPath());
 
+		if ($path === false || !is_string($path)) {
+			throw new NotFoundException();
+		}
+
 		// check if this is an image to convert / downscale
 		$mime = $file->getMimeType();
 		if (!in_array($mime, Constants::IMAGE_FORMATS)) {
