@@ -4,10 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.1] - 2022-10-28
+
+### Fixed
+ - Stabilize face clustering across manual cluster edits
+ - ViewAdmin: Add button to reset faces
+ - Remove UserController.php
+ - Only reset faces when explicitly asked
+ - Fix eslint errors
+ - Fix info.xml lint errors
+ - DAV endpoint: Prevent duplicate names
+ - ClassifierJob: Run with higher frequency
+ - ViewAdmin: Show message when checking machine failed
+ - StorageCrawlJob: Exit early if storage root doesn't exist
+ - Zero safety
+
 ## [3.1.0] - 2022-10-19
 
 ### New
- - Decrease face distance threshold Marcel Klehr 3 minutes ago
+ - Decrease face distance threshold
  - Stabilize face clustering across manual cluster edits
  - FaceClusterAnalyzer: Knock out less matching faces from a cluster if they are on the same file
  - Add support for HEIC/HEIF/TIFF Convert all images to JPEG and downscale before passing to node
