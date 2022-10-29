@@ -62,4 +62,8 @@ class FaceDetection extends Entity {
 		}
 		return $array;
 	}
+
+	public function markFieldUpdated($attribute) {
+		parent::markFieldUpdated($attribute);
+	}
 }

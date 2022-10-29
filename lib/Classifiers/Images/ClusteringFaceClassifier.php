@@ -97,12 +97,23 @@ class ClusteringFaceClassifier extends Classifier {
 				foreach ($userIds as $userId) {
 					$faceDetection->setUserId($userId);
 					try {
-						$this->faceDetections->insertOrUpdate($faceDetection);
+						$this->faceDetections->insert($faceDetection);
 					} catch (Exception $e) {
 						$this->logger->error('Could not store face detection in database', ['exception' => $e]);
 						continue;
 					}
 					$usersToCluster[] = $userId;
+
+					if ( count($userIds) >1 ) {
+						// prepare autoincrement-safe re-use of $faceDetection-entity
+						$faceDetection->resetUpdatedFields();
+						$faceDetection->markFieldUpdated('x');
+						$faceDetection->markFieldUpdated('y');
+						$faceDetection->markFieldUpdated('width');
+						$faceDetection->markFieldUpdated('height');
+						$faceDetection->markFieldUpdated('vector');
+						$faceDetection->markFieldUpdated('fileId');
+					}
 				}
 				$this->config->setAppValue('recognize', self::MODEL_NAME.'.status', 'true');
 				$this->config->setAppValue('recognize', self::MODEL_NAME.'.lastFile', time());
