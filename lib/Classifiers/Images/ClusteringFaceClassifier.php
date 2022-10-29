@@ -104,7 +104,7 @@ class ClusteringFaceClassifier extends Classifier {
 					}
 					$usersToCluster[] = $userId;
 
-					if ( count($userIds) >1 ) {
+					if (count($userIds) > 1) {
 						// prepare autoincrement-safe re-use of $faceDetection-entity
 						$faceDetection->resetUpdatedFields();
 						$faceDetection->markFieldUpdated('x');
