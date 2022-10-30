@@ -23,8 +23,10 @@ class QueueFile extends Entity {
 	protected $storageId;
 	protected $rootId;
 	protected $update;
-
+	
+	/** @var string[]  */
 	public static array $columns = ['id', 'file_id', 'storage_id', 'root_id', 'update'];
+	/** @var string[]  */
 	public static array $fields = ['id', 'fileId', 'storageId', 'rootId', 'update'];
 
 	public function __construct() {

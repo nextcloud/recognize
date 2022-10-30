@@ -19,10 +19,10 @@ class TagManager {
 	}
 
 	/**
-	 * @param $name
+	 * @param string $name
 	 * @return \OCP\SystemTag\ISystemTag
 	 */
-	public function getTag($name) : ISystemTag {
+	public function getTag(string $name) : ISystemTag {
 		try {
 			$tag = $this->tagManager->getTag($name, true, true);
 		} catch (TagNotFoundException $e) {
@@ -44,12 +44,12 @@ class TagManager {
 	}
 
 	/**
-	 * @param int $fileId
+	 * @param string $fileId
 	 * @param string $name
 	 * @param string $oldName
 	 * @return void
 	 */
-	public function assignFace(int $fileId, string $name, string $oldName = '') {
+	public function assignFace(string $fileId, string $name, string $oldName = '') {
 		if ($oldName) {
 			$this->getTag($oldName);
 			$this->objectMapper->unassignTags($fileId, 'files', [$this->getTag($oldName)->getId()]);
@@ -58,16 +58,18 @@ class TagManager {
 	}
 
 	/**
-	 * @param int $fileId
-	 * @param array $tags
+	 * @param string $fileId
+	 * @param array<string> $tags
 	 * @return void
 	 */
-	public function assignTags(int $fileId, array $tags): void {
+	public function assignTags(string $fileId, array $tags): void {
 		$tags = array_map(function ($tag) : string {
 			return $this->getTag($tag)->getId();
 		}, $tags);
 		$tags[] = $this->getProcessedTag()->getId();
-		$oldTags = $this->objectMapper->getTagIdsForObjects([$fileId], 'files')[$fileId];
+		/** @var array<string, string[]> $tagsByFile */
+		$tagsByFile = $this->objectMapper->getTagIdsForObjects([$fileId], 'files');
+		$oldTags = $tagsByFile[$fileId];
 		$this->objectMapper->assignTags($fileId, 'files', array_unique(array_merge($tags, $oldTags)));
 	}
 
@@ -76,13 +78,15 @@ class TagManager {
 	 * @return array
 	 */
 	public function getTagsForFiles(array $fileIds): array {
+		/** @var array<string, string[]> $tagsByFile */
+		$tagsByFile = $this->objectMapper->getTagIdsForObjects($fileIds, 'files');
 		return array_map(function ($tags) : array {
 			return $this->tagManager->getTagsByIds($tags);
-		}, $this->objectMapper->getTagIdsForObjects($fileIds, 'files'));
+		}, $tagsByFile);
 	}
 
 	/**
-	 * @return array
+	 * @return array<string>
 	 */
 	public function findClassifiedFiles(): array {
 		return $this->objectMapper->getObjectIdsForTags($this->getProcessedTag()->getId(), 'files');
@@ -97,7 +101,9 @@ class TagManager {
 		$missed = [];
 		$processedId = $this->getProcessedTag()->getId();
 		foreach ($classifiedChunks as $classifiedChunk) {
-			$missedChunk = array_keys(array_filter($this->objectMapper->getTagIdsForObjects($classifiedChunk, 'files'), function ($tags) use ($processedId) : bool {
+			/** @var array<string,string[]> $tagIdsByFile */
+			$tagIdsByFile = $this->objectMapper->getTagIdsForObjects($classifiedChunk, 'files');
+			$missedChunk = array_keys(array_filter($tagIdsByFile, function ($tags) use ($processedId) : bool {
 				return count($tags) === 1 && $tags[0] !== $processedId;
 			}));
 			$missed = array_merge($missed, $missedChunk);
@@ -111,6 +117,7 @@ class TagManager {
 	public function resetClassifications(): void {
 		$fileIds = $this->findClassifiedFiles();
 		foreach ($fileIds as $id) {
+			/** @var array<string,string[]> $tagIds */
 			$tagIds = $this->objectMapper->getTagIdsForObjects($id, 'files');
 			$this->objectMapper->unassignTags($id, 'files', $tagIds[$id]);
 		}

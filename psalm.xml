@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<psalm
+    errorLevel="1"
+    resolveFromConfigFile="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+    errorBaseline="psalm-baseline.xml"
+>
+    <projectFiles>
+        <directory name="lib" />
+        <ignoreFiles>
+            <directory name="vendor" />
+        </ignoreFiles>
+    </projectFiles>
+    <extraFiles>
+        <directory name="vendor" />
+    </extraFiles>
+    <issueHandlers>
+        <UndefinedClass>
+            <errorLevel type="suppress">
+                <referencedClass name="Doctrine\DBAL\Platforms\MySQLPlatform" />
+                <referencedClass name="Doctrine\DBAL\Platforms\PostgreSQL94Platform" />
+                <referencedClass name="Doctrine\DBAL\Platforms\SqlitePlatform" />
+                <referencedClass name="Doctrine\DBAL\Types\Type" />
+                <referencedClass name="Doctrine\DBAL\Types\Types" />
+                <referencedClass name="OC" />
+                <referencedClass name="Sabre" />
+                <referencedClass name="OC_Util" />
+                <referencedClass name="OC\Security\CSP\ContentSecurityPolicyNonceManager" />
+                <referencedClass name="Psr\Http\Client\ClientExceptionInterface" />
+            </errorLevel>
+        </UndefinedClass>
+        <UndefinedDocblockClass>
+            <errorLevel type="suppress">
+                <referencedClass name="Doctrine\DBAL\Driver\Statement" />
+                <referencedClass name="Doctrine\DBAL\Platforms\AbstractPlatform" />
+                <referencedClass name="Doctrine\DBAL\Schema\Schema" />
+                <referencedClass name="Doctrine\DBAL\Schema\SchemaException" />
+                <referencedClass name="Doctrine\DBAL\Schema\Table" />
+                <referencedClass name="OC\Security\CSP\ContentSecurityPolicyNonceManager" />
+            </errorLevel>
+        </UndefinedDocblockClass>
+    </issueHandlers>
+</psalm>

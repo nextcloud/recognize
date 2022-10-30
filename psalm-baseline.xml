@@ -1,0 +1,667 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="4.x-dev@">
+  <file src="lib/AppInfo/Application.php">
+    <DeprecatedClass occurrences="1">
+      <code>$this-&gt;getContainer()</code>
+    </DeprecatedClass>
+    <InvalidArgument occurrences="2">
+      <code>addServiceListener</code>
+      <code>addServiceListener</code>
+    </InvalidArgument>
+    <MixedArgument occurrences="1">
+      <code>Principal::class</code>
+    </MixedArgument>
+    <UndefinedClass occurrences="1">
+      <code>Principal</code>
+    </UndefinedClass>
+  </file>
+  <file src="lib/BackgroundJobs/ClassifierJob.php">
+    <MixedArgument occurrences="1">
+      <code>$rootId</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="1">
+      <code>$rootId</code>
+    </MixedAssignment>
+  </file>
+  <file src="lib/BackgroundJobs/ClassifyFacesJob.php">
+    <MissingParamType occurrences="1">
+      <code>$argument</code>
+    </MissingParamType>
+    <MixedArgument occurrences="1">
+      <code>$argument</code>
+    </MixedArgument>
+    <MoreSpecificImplementedParamType occurrences="1">
+      <code>$files</code>
+    </MoreSpecificImplementedParamType>
+  </file>
+  <file src="lib/BackgroundJobs/ClassifyImagenetJob.php">
+    <MissingParamType occurrences="1">
+      <code>$argument</code>
+    </MissingParamType>
+    <MixedArgument occurrences="1">
+      <code>$argument</code>
+    </MixedArgument>
+    <MoreSpecificImplementedParamType occurrences="1">
+      <code>$files</code>
+    </MoreSpecificImplementedParamType>
+  </file>
+  <file src="lib/BackgroundJobs/ClassifyLandmarksJob.php">
+    <MissingParamType occurrences="1">
+      <code>$argument</code>
+    </MissingParamType>
+    <MixedArgument occurrences="1">
+      <code>$argument</code>
+    </MixedArgument>
+    <MoreSpecificImplementedParamType occurrences="1">
+      <code>$files</code>
+    </MoreSpecificImplementedParamType>
+  </file>
+  <file src="lib/BackgroundJobs/ClassifyMovinetJob.php">
+    <MissingParamType occurrences="1">
+      <code>$argument</code>
+    </MissingParamType>
+    <MixedArgument occurrences="1">
+      <code>$argument</code>
+    </MixedArgument>
+    <MoreSpecificImplementedParamType occurrences="1">
+      <code>$files</code>
+    </MoreSpecificImplementedParamType>
+  </file>
+  <file src="lib/BackgroundJobs/ClassifyMusicnnJob.php">
+    <MissingParamType occurrences="1">
+      <code>$argument</code>
+    </MissingParamType>
+    <MixedArgument occurrences="1">
+      <code>$argument</code>
+    </MixedArgument>
+    <MoreSpecificImplementedParamType occurrences="1">
+      <code>$files</code>
+    </MoreSpecificImplementedParamType>
+  </file>
+  <file src="lib/BackgroundJobs/ClusterFacesJob.php">
+    <MissingParamType occurrences="1">
+      <code>$argument</code>
+    </MissingParamType>
+    <MixedArrayAccess occurrences="1">
+      <code>$argument['userId']</code>
+    </MixedArrayAccess>
+  </file>
+  <file src="lib/BackgroundJobs/SchedulerJob.php">
+    <MissingParamType occurrences="1">
+      <code>$argument</code>
+    </MissingParamType>
+    <MixedArgument occurrences="1">
+      <code>IQueryBuilder::PARAM_STR_ARRAY</code>
+    </MixedArgument>
+    <MixedArrayAccess occurrences="4">
+      <code>$argument['models']</code>
+      <code>$row['mount_provider_class']</code>
+      <code>$row['root_id']</code>
+      <code>$row['storage_id']</code>
+    </MixedArrayAccess>
+    <MixedAssignment occurrences="1">
+      <code>$row</code>
+    </MixedAssignment>
+    <MixedMethodCall occurrences="6">
+      <code>andWhere</code>
+      <code>andWhere</code>
+      <code>eq</code>
+      <code>eq</code>
+      <code>executeQuery</code>
+      <code>fetch</code>
+    </MixedMethodCall>
+    <PropertyNotSetInConstructor occurrences="5">
+      <code>$db</code>
+      <code>$jobList</code>
+      <code>$logger</code>
+      <code>$systemConfig</code>
+      <code>SchedulerJob</code>
+    </PropertyNotSetInConstructor>
+    <TypeDoesNotContainType occurrences="1">
+      <code>$result === false</code>
+    </TypeDoesNotContainType>
+    <UndefinedClass occurrences="8">
+      <code>$qb</code>
+      <code>$qb</code>
+      <code>$qb</code>
+      <code>$qb</code>
+      <code>$qb</code>
+      <code>CacheQueryBuilder</code>
+      <code>SystemConfig</code>
+      <code>SystemConfig</code>
+    </UndefinedClass>
+  </file>
+  <file src="lib/BackgroundJobs/StorageCrawlJob.php">
+    <MissingParamType occurrences="1">
+      <code>$argument</code>
+    </MissingParamType>
+    <MixedArgument occurrences="3">
+      <code>$file['fileid']</code>
+      <code>$rootId</code>
+      <code>$storageId</code>
+    </MixedArgument>
+    <MixedArrayAccess occurrences="11">
+      <code>$argument['last_file_id']</code>
+      <code>$argument['models']</code>
+      <code>$argument['override_root']</code>
+      <code>$argument['root_id']</code>
+      <code>$argument['storage_id']</code>
+      <code>$file['fileid']</code>
+      <code>$file['mimetype']</code>
+      <code>$file['mimetype']</code>
+      <code>$file['mimetype']</code>
+      <code>$root['path']</code>
+      <code>$root['path']</code>
+    </MixedArrayAccess>
+    <MixedAssignment occurrences="9">
+      <code>$file</code>
+      <code>$files</code>
+      <code>$lastFileId</code>
+      <code>$overrideRoot</code>
+      <code>$qb</code>
+      <code>$qb</code>
+      <code>$root</code>
+      <code>$rootId</code>
+      <code>$storageId</code>
+    </MixedAssignment>
+    <MixedMethodCall occurrences="30">
+      <code>andWhere</code>
+      <code>andWhere</code>
+      <code>andWhere</code>
+      <code>andWhere</code>
+      <code>andWhere</code>
+      <code>createNamedParameter</code>
+      <code>createNamedParameter</code>
+      <code>createNamedParameter</code>
+      <code>createNamedParameter</code>
+      <code>createNamedParameter</code>
+      <code>eq</code>
+      <code>eq</code>
+      <code>executeQuery</code>
+      <code>executeQuery</code>
+      <code>expr</code>
+      <code>expr</code>
+      <code>expr</code>
+      <code>expr</code>
+      <code>expr</code>
+      <code>fetch</code>
+      <code>fetch</code>
+      <code>getFileId</code>
+      <code>gt</code>
+      <code>in</code>
+      <code>like</code>
+      <code>orderBy</code>
+      <code>selectFileCache</code>
+      <code>selectFileCache</code>
+      <code>setMaxResults</code>
+      <code>whereStorageId</code>
+    </MixedMethodCall>
+    <MixedOperand occurrences="1">
+      <code>$root['path']</code>
+    </MixedOperand>
+    <PossiblyUndefinedVariable occurrences="1">
+      <code>$queueFile</code>
+    </PossiblyUndefinedVariable>
+    <PropertyNotSetInConstructor occurrences="8">
+      <code>$db</code>
+      <code>$jobList</code>
+      <code>$logger</code>
+      <code>$mimeTypes</code>
+      <code>$queue</code>
+      <code>$systemConfig</code>
+      <code>$tagManager</code>
+      <code>StorageCrawlJob</code>
+    </PropertyNotSetInConstructor>
+    <UndefinedClass occurrences="4">
+      <code>CacheQueryBuilder</code>
+      <code>CacheQueryBuilder</code>
+      <code>SystemConfig</code>
+      <code>SystemConfig</code>
+    </UndefinedClass>
+  </file>
+  <file src="lib/Classifiers/Audio/MusicnnClassifier.php">
+    <InvalidScalarArgument occurrences="1">
+      <code>time()</code>
+    </InvalidScalarArgument>
+    <MissingDependency occurrences="1">
+      <code>IRootFolder</code>
+    </MissingDependency>
+    <PropertyNotSetInConstructor occurrences="4">
+      <code>$tagManager</code>
+      <code>MusicnnClassifier</code>
+      <code>MusicnnClassifier</code>
+      <code>MusicnnClassifier</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="lib/Classifiers/Classifier.php">
+    <InvalidReturnStatement occurrences="3">
+      <code>$path</code>
+      <code>$path</code>
+      <code>$path</code>
+    </InvalidReturnStatement>
+    <InvalidScalarArgument occurrences="1">
+      <code>$queueFile-&gt;getFileId()</code>
+    </InvalidScalarArgument>
+    <MissingDependency occurrences="3">
+      <code>$this-&gt;rootFolder</code>
+      <code>IRootFolder</code>
+      <code>IRootFolder</code>
+    </MissingDependency>
+    <MixedArrayAccess occurrences="2">
+      <code>$dimensions['height']</code>
+      <code>$dimensions['width']</code>
+    </MixedArrayAccess>
+    <MixedAssignment occurrences="3">
+      <code>$dimensions</code>
+      <code>$results</code>
+      <code>$tmpname</code>
+    </MixedAssignment>
+    <MixedInferredReturnType occurrences="1">
+      <code>string</code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement occurrences="1">
+      <code>$tmpname</code>
+    </MixedReturnStatement>
+    <PossiblyNullOperand occurrences="1">
+      <code>$proc-&gt;getPid()</code>
+    </PossiblyNullOperand>
+    <PropertyNotSetInConstructor occurrences="5">
+      <code>$config</code>
+      <code>$logger</code>
+      <code>$queue</code>
+      <code>$rootFolder</code>
+      <code>$tempManager</code>
+    </PropertyNotSetInConstructor>
+    <UnusedFunctionCall occurrences="1">
+      <code>json_decode</code>
+    </UnusedFunctionCall>
+  </file>
+  <file src="lib/Classifiers/Images/ClusteringFaceClassifier.php">
+    <InvalidScalarArgument occurrences="2">
+      <code>$queueFile-&gt;getFileId()</code>
+      <code>time()</code>
+    </InvalidScalarArgument>
+    <MissingDependency occurrences="1">
+      <code>IRootFolder</code>
+    </MissingDependency>
+    <MixedArgument occurrences="5">
+      <code>$face['height']</code>
+      <code>$face['vector']</code>
+      <code>$face['width']</code>
+      <code>$face['x']</code>
+      <code>$face['y']</code>
+    </MixedArgument>
+    <PropertyNotSetInConstructor occurrences="6">
+      <code>$faceDetections</code>
+      <code>$jobList</code>
+      <code>$userMountCache</code>
+      <code>ClusteringFaceClassifier</code>
+      <code>ClusteringFaceClassifier</code>
+      <code>ClusteringFaceClassifier</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="lib/Classifiers/Images/ImagenetClassifier.php">
+    <InvalidScalarArgument occurrences="1">
+      <code>time()</code>
+    </InvalidScalarArgument>
+    <MissingDependency occurrences="1">
+      <code>IRootFolder</code>
+    </MissingDependency>
+    <MixedArgument occurrences="2">
+      <code>$queueFile</code>
+      <code>$queueFile-&gt;getFileId()</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="1">
+      <code>$queueFile</code>
+    </MixedAssignment>
+    <MixedMethodCall occurrences="1">
+      <code>getFileId</code>
+    </MixedMethodCall>
+    <PropertyNotSetInConstructor occurrences="4">
+      <code>$queue</code>
+      <code>$tagManager</code>
+      <code>ImagenetClassifier</code>
+      <code>ImagenetClassifier</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="lib/Classifiers/Images/LandmarksClassifier.php">
+    <InvalidScalarArgument occurrences="1">
+      <code>time()</code>
+    </InvalidScalarArgument>
+    <MissingDependency occurrences="1">
+      <code>IRootFolder</code>
+    </MissingDependency>
+    <MixedArgument occurrences="1">
+      <code>$queueFile-&gt;getFileId()</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="1">
+      <code>$queueFile</code>
+    </MixedAssignment>
+    <MixedMethodCall occurrences="1">
+      <code>getFileId</code>
+    </MixedMethodCall>
+    <PropertyNotSetInConstructor occurrences="4">
+      <code>$tagManager</code>
+      <code>LandmarksClassifier</code>
+      <code>LandmarksClassifier</code>
+      <code>LandmarksClassifier</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="lib/Classifiers/Video/MovinetClassifier.php">
+    <InvalidScalarArgument occurrences="1">
+      <code>time()</code>
+    </InvalidScalarArgument>
+    <MissingDependency occurrences="1">
+      <code>IRootFolder</code>
+    </MissingDependency>
+    <MixedArgument occurrences="1">
+      <code>$queueFile-&gt;getFileId()</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="1">
+      <code>$queueFile</code>
+    </MixedAssignment>
+    <MixedMethodCall occurrences="1">
+      <code>getFileId</code>
+    </MixedMethodCall>
+    <PropertyNotSetInConstructor occurrences="4">
+      <code>$tagManager</code>
+      <code>MovinetClassifier</code>
+      <code>MovinetClassifier</code>
+      <code>MovinetClassifier</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="lib/Controller/AdminController.php">
+    <MissingParamType occurrences="1">
+      <code>$value</code>
+    </MissingParamType>
+    <MixedArgument occurrences="1">
+      <code>$value</code>
+    </MixedArgument>
+    <MixedArgumentTypeCoercion occurrences="2">
+      <code>$output</code>
+      <code>$output</code>
+    </MixedArgumentTypeCoercion>
+    <MixedArrayAccess occurrences="1">
+      <code>$lscpu['lscpu']</code>
+    </MixedArrayAccess>
+    <MixedAssignment occurrences="1">
+      <code>$lscpu</code>
+    </MixedAssignment>
+  </file>
+  <file src="lib/Dav/Faces/FacePhoto.php">
+    <UndefinedClass occurrences="1">
+      <code>IFile</code>
+    </UndefinedClass>
+  </file>
+  <file src="lib/Dav/Faces/FaceRoot.php">
+    <UndefinedClass occurrences="1">
+      <code>ICollection</code>
+    </UndefinedClass>
+  </file>
+  <file src="lib/Dav/Faces/FacesHome.php">
+    <UndefinedClass occurrences="1">
+      <code>ICollection</code>
+    </UndefinedClass>
+  </file>
+  <file src="lib/Dav/Faces/PropFindPlugin.php">
+    <UndefinedClass occurrences="1">
+      <code>ServerPlugin</code>
+    </UndefinedClass>
+  </file>
+  <file src="lib/Dav/RecognizeHome.php">
+    <UndefinedClass occurrences="1">
+      <code>ICollection</code>
+    </UndefinedClass>
+  </file>
+  <file src="lib/Dav/RootCollection.php">
+    <UndefinedClass occurrences="1">
+      <code>AbstractPrincipalCollection</code>
+    </UndefinedClass>
+  </file>
+  <file src="lib/Db/FaceCluster.php">
+    <MissingPropertyType occurrences="2">
+      <code>$title</code>
+      <code>$userId</code>
+    </MissingPropertyType>
+    <MixedAssignment occurrences="1">
+      <code>$array[$field]</code>
+    </MixedAssignment>
+  </file>
+  <file src="lib/Db/FaceClusterMapper.php">
+    <LessSpecificReturnStatement occurrences="3">
+      <code>$this-&gt;findEntities($qb)</code>
+      <code>$this-&gt;findEntities($qb)</code>
+      <code>$this-&gt;findEntity($qb)</code>
+    </LessSpecificReturnStatement>
+    <MoreSpecificReturnType occurrences="3">
+      <code>FaceCluster</code>
+      <code>list&lt;\OCA\Recognize\Db\FaceCluster&gt;</code>
+      <code>list&lt;\OCA\Recognize\Db\FaceCluster&gt;</code>
+    </MoreSpecificReturnType>
+  </file>
+  <file src="lib/Db/FaceDetection.php">
+    <MissingPropertyType occurrences="9">
+      <code>$clusterId</code>
+      <code>$fileId</code>
+      <code>$height</code>
+      <code>$threshold</code>
+      <code>$userId</code>
+      <code>$vector</code>
+      <code>$width</code>
+      <code>$x</code>
+      <code>$y</code>
+    </MissingPropertyType>
+    <MixedAssignment occurrences="1">
+      <code>$array[$field]</code>
+    </MixedAssignment>
+  </file>
+  <file src="lib/Db/FaceDetectionMapper.php">
+    <LessSpecificReturnStatement occurrences="6">
+      <code>$this-&gt;findEntities($qb)</code>
+      <code>$this-&gt;findEntities($qb)</code>
+      <code>$this-&gt;findEntities($qb)</code>
+      <code>$this-&gt;findEntities($qb)</code>
+      <code>$this-&gt;findEntity($qb)</code>
+      <code>$this-&gt;findEntity($qb)</code>
+    </LessSpecificReturnStatement>
+    <MoreSpecificReturnType occurrences="6">
+      <code>FaceDetection</code>
+      <code>FaceDetection</code>
+      <code>list&lt;\OCA\Recognize\Db\FaceDetection&gt;</code>
+      <code>list&lt;\OCA\Recognize\Db\FaceDetection&gt;</code>
+      <code>list&lt;\OCA\Recognize\Db\FaceDetection&gt;</code>
+      <code>list&lt;\OCA\Recognize\Db\FaceDetectionWithTitle&gt;</code>
+    </MoreSpecificReturnType>
+  </file>
+  <file src="lib/Db/FaceDetectionWithTitle.php">
+    <MissingPropertyType occurrences="1">
+      <code>$title</code>
+    </MissingPropertyType>
+  </file>
+  <file src="lib/Db/QueueFile.php">
+    <MissingPropertyType occurrences="5">
+      <code>$fileId</code>
+      <code>$id</code>
+      <code>$rootId</code>
+      <code>$storageId</code>
+      <code>$update</code>
+    </MissingPropertyType>
+    <MixedAssignment occurrences="1">
+      <code>$array[$field]</code>
+    </MixedAssignment>
+  </file>
+  <file src="lib/Db/QueueMapper.php">
+    <FalsableReturnStatement occurrences="1">
+      <code>$result-&gt;fetchOne()</code>
+    </FalsableReturnStatement>
+    <LessSpecificReturnStatement occurrences="1">
+      <code>$this-&gt;findEntities($qb)</code>
+    </LessSpecificReturnStatement>
+    <MixedInferredReturnType occurrences="1">
+      <code>int</code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement occurrences="1">
+      <code>$result-&gt;fetchOne()</code>
+    </MixedReturnStatement>
+    <MoreSpecificReturnType occurrences="1">
+      <code>list&lt;\OCA\Recognize\Db\QueueFile&gt;</code>
+    </MoreSpecificReturnType>
+  </file>
+  <file src="lib/Helper/Archive.php">
+    <MissingParamType occurrences="1">
+      <code>$source</code>
+    </MissingParamType>
+  </file>
+  <file src="lib/Helper/TAR.php">
+    <MissingParamType occurrences="2">
+      <code>$path</code>
+      <code>$tmpFile</code>
+    </MissingParamType>
+    <MissingPropertyType occurrences="3">
+      <code>$cachedHeaders</code>
+      <code>$fileList</code>
+      <code>$path</code>
+    </MissingPropertyType>
+    <MissingReturnType occurrences="1">
+      <code>getHeader</code>
+    </MissingReturnType>
+    <MixedArgument occurrences="4">
+      <code>$path</code>
+      <code>$this-&gt;path</code>
+      <code>$tmpFile</code>
+      <code>$tmpFile</code>
+    </MixedArgument>
+    <MixedArrayAccess occurrences="7">
+      <code>$header['filename']</code>
+      <code>$header['filename']</code>
+      <code>$header['filename']</code>
+      <code>$header['filename']</code>
+      <code>$header['filename']</code>
+      <code>$stat['mtime']</code>
+      <code>$stat['size']</code>
+    </MixedArrayAccess>
+    <MixedAssignment occurrences="8">
+      <code>$files[]</code>
+      <code>$header</code>
+      <code>$header</code>
+      <code>$result</code>
+      <code>$stat</code>
+      <code>$stat</code>
+      <code>$this-&gt;tar</code>
+      <code>$this-&gt;tar</code>
+    </MixedAssignment>
+    <MixedInferredReturnType occurrences="11">
+      <code>?\PEAR_Error</code>
+      <code>bool</code>
+      <code>bool</code>
+      <code>bool</code>
+      <code>bool</code>
+      <code>bool</code>
+      <code>bool|resource</code>
+      <code>int</code>
+      <code>int</code>
+      <code>list&lt;string&gt;</code>
+      <code>string</code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement occurrences="7">
+      <code>$result</code>
+      <code>$stat['mtime']</code>
+      <code>$stat['size']</code>
+      <code>$this-&gt;fileList</code>
+      <code>$this-&gt;tar-&gt;extract($dest)</code>
+      <code>$this-&gt;tar-&gt;extractInString($path)</code>
+      <code>$this-&gt;tar-&gt;extractList($list, $path, $removePath, $symlinks)</code>
+    </MixedReturnStatement>
+    <MixedReturnTypeCoercion occurrences="1">
+      <code>$files</code>
+    </MixedReturnTypeCoercion>
+    <PossiblyFalseArgument occurrences="2">
+      <code>strrpos($file, '.')</code>
+      <code>strrpos($path, '.')</code>
+    </PossiblyFalseArgument>
+    <PossiblyNullPropertyAssignmentValue occurrences="2">
+      <code>null</code>
+      <code>null</code>
+    </PossiblyNullPropertyAssignmentValue>
+    <RedundantConditionGivenDocblockType occurrences="2">
+      <code>$this-&gt;tar</code>
+      <code>$this-&gt;tar</code>
+    </RedundantConditionGivenDocblockType>
+    <UndefinedClass occurrences="4">
+      <code>?\PEAR_Error</code>
+      <code>\Archive_Tar</code>
+      <code>\Archive_Tar</code>
+      <code>\Archive_Tar</code>
+    </UndefinedClass>
+    <UndefinedDocblockClass occurrences="9">
+      <code>$this-&gt;tar</code>
+      <code>$this-&gt;tar</code>
+      <code>$this-&gt;tar</code>
+      <code>$this-&gt;tar</code>
+      <code>$this-&gt;tar</code>
+      <code>$this-&gt;tar</code>
+      <code>$this-&gt;tar</code>
+      <code>\Archive_Tar</code>
+      <code>private $tar = null;</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="lib/Migration/InstallDeps.php">
+    <MixedArgument occurrences="2">
+      <code>$item-&gt;getPathname()</code>
+      <code>$item-&gt;getPathname()</code>
+    </MixedArgument>
+    <MixedArgumentTypeCoercion occurrences="2">
+      <code>$output</code>
+      <code>$output</code>
+    </MixedArgumentTypeCoercion>
+    <MixedAssignment occurrences="2">
+      <code>$item</code>
+      <code>$item</code>
+    </MixedAssignment>
+    <MixedMethodCall occurrences="2">
+      <code>getPathname</code>
+      <code>getPathname</code>
+    </MixedMethodCall>
+    <PossiblyUndefinedVariable occurrences="2">
+      <code>$output</code>
+      <code>$returnCode</code>
+    </PossiblyUndefinedVariable>
+  </file>
+  <file src="lib/Service/DownloadModelsService.php">
+    <MixedArgument occurrences="2">
+      <code>$file-&gt;getRealPath()</code>
+      <code>$file-&gt;getRealPath()</code>
+    </MixedArgument>
+    <MixedArrayAccess occurrences="1">
+      <code>$packageJson['version']</code>
+    </MixedArrayAccess>
+    <MixedAssignment occurrences="2">
+      <code>$file</code>
+      <code>$packageJson</code>
+    </MixedAssignment>
+    <MixedInferredReturnType occurrences="1">
+      <code>string</code>
+    </MixedInferredReturnType>
+    <MixedMethodCall occurrences="3">
+      <code>getRealPath</code>
+      <code>getRealPath</code>
+      <code>isDir</code>
+    </MixedMethodCall>
+    <MixedReturnStatement occurrences="1">
+      <code>$packageJson['version']</code>
+    </MixedReturnStatement>
+  </file>
+  <file src="lib/Service/FaceClusterAnalyzer.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$results</code>
+    </ArgumentTypeCoercion>
+    <InternalMethod occurrences="2">
+      <code>compute</code>
+      <code>compute</code>
+    </InternalMethod>
+    <UnusedClosureParam occurrences="2">
+      <code>$item</code>
+      <code>$item</code>
+    </UnusedClosureParam>
+  </file>
+</files>
