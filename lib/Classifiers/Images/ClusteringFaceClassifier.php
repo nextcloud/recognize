@@ -93,7 +93,7 @@ class ClusteringFaceClassifier extends Classifier {
 					$faceDetection->setWidth($face['width']);
 					$faceDetection->setHeight($face['height']);
 					$faceDetection->setVector($face['vector']);
-					$faceDetection->setFileId($queueFile->getFileId());
+					$faceDetection->setFileId(intval($queueFile->getFileId()));
 					$faceDetection->setUserId($userId);
 					try {
 						$this->faceDetections->insert($faceDetection);
