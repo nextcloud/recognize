@@ -79,13 +79,6 @@ class ClusteringFaceClassifier extends Classifier {
 				if ($face['score'] < self::MIN_FACE_RECOGNITION_SCORE) {
 					continue;
 				}
-				$faceDetection = new FaceDetection();
-				$faceDetection->setX($face['x']);
-				$faceDetection->setY($face['y']);
-				$faceDetection->setWidth($face['width']);
-				$faceDetection->setHeight($face['height']);
-				$faceDetection->setVector($face['vector']);
-				$faceDetection->setFileId(intval($queueFile->getFileId()));
 
 				$mounts = $this->userMountCache->getMountsForRootId(intval($queueFile->getRootId()));
 				$userIds = array_map(function (ICachedMountInfo $mount) {
@@ -94,6 +87,13 @@ class ClusteringFaceClassifier extends Classifier {
 
 				// Insert face detection for all users with access
 				foreach ($userIds as $userId) {
+					$faceDetection = new FaceDetection();
+					$faceDetection->setX($face['x']);
+					$faceDetection->setY($face['y']);
+					$faceDetection->setWidth($face['width']);
+					$faceDetection->setHeight($face['height']);
+					$faceDetection->setVector($face['vector']);
+					$faceDetection->setFileId(intval($queueFile->getFileId()));
 					$faceDetection->setUserId($userId);
 					try {
 						$this->faceDetections->insert($faceDetection);
