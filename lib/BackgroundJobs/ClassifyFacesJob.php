@@ -27,10 +27,14 @@ class ClassifyFacesJob extends ClassifierJob {
 	/**
 	 * @inheritDoc
 	 */
-	protected function run($argument) {
+	protected function run($argument): void {
 		$this->runClassifier(self::MODEL_NAME, $argument);
 	}
 
+	/**
+	 * @param list<\OCA\Recognize\Db\QueueFile> $files
+	 * @return void
+	 */
 	protected function classify(array $files) : void {
 		$this->faces->classify($files);
 	}

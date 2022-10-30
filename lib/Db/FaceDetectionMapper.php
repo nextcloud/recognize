@@ -31,12 +31,17 @@ class FaceDetectionMapper extends QBMapper {
 	/**
 	 * @throws \OCP\DB\Exception
 	 */
-	public function deleteAll() {
+	public function deleteAll(): void {
 		$qb = $this->db->getQueryBuilder();
 		$qb->delete('recognize_face_detections')
 			->executeStatement();
 	}
 
+	/**
+	 * @param int $clusterId
+	 * @return list<\OCA\Recognize\Db\FaceDetection>
+	 * @throws \OCP\DB\Exception
+	 */
 	public function findByClusterId(int $clusterId) : array {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select(FaceDetection::$columns)
@@ -47,6 +52,7 @@ class FaceDetectionMapper extends QBMapper {
 
 	/**
 	 * @throws \OCP\DB\Exception
+	 * @return list<\OCA\Recognize\Db\FaceDetection>
 	 */
 	public function findByUserId(string $userId): array {
 		$qb = $this->db->getQueryBuilder();
@@ -58,6 +64,7 @@ class FaceDetectionMapper extends QBMapper {
 
 	/**
 	 * @throws \OCP\DB\Exception
+	 * @return list<\OCA\Recognize\Db\FaceDetection>
 	 */
 	public function findByFileId(int $fileId): array {
 		$qb = $this->db->getQueryBuilder();
@@ -78,7 +85,12 @@ class FaceDetectionMapper extends QBMapper {
 		$this->update($faceDetection);
 	}
 
-	public function findByFileIdWithTitle(int $fileId) {
+	/**
+	 * @param int $fileId
+	 * @return list<\OCA\Recognize\Db\FaceDetectionWithTitle>
+	 * @throws \OCP\DB\Exception
+	 */
+	public function findByFileIdWithTitle(int $fileId) : array {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select(array_merge(array_map(fn ($col) => 'd.'.$col, FaceDetection::$columns), ['c.title']))
 			->from('recognize_face_detections', 'd')
@@ -109,7 +121,7 @@ class FaceDetectionMapper extends QBMapper {
 		} catch (\Exception $e) {
 			$entity = FaceDetectionWithTitle::fromRow($row);
 			if ($entity->getTitle() === '') {
-				$entity->setTitle($entity->getClusterId());
+				$entity->setTitle((string) $entity->getClusterId());
 			}
 			return $entity;
 		}

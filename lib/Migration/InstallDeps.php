@@ -131,7 +131,7 @@ class InstallDeps implements IRepairStep {
 		return trim(implode("\n", $output));
 	}
 
-	protected function runTfjsInstall($nodeBinary) : void {
+	protected function runTfjsInstall(string $nodeBinary) : void {
 		$oriCwd = getcwd();
 		chdir($this->tfjsPath);
 		$cmd = 'PATH='.escapeshellcmd($this->preGypBinaryDir).':'.escapeshellcmd($this->binaryDir).':$PATH ' . escapeshellcmd($nodeBinary) . ' ' . escapeshellarg($this->tfjsInstallScript) . ' cpu ' . escapeshellarg('download');
@@ -168,7 +168,7 @@ class InstallDeps implements IRepairStep {
 	/**
 	 * try to fix binaries permissions issues
 	 */
-	protected function setBinariesPermissions() {
+	protected function setBinariesPermissions(): void {
 		$iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->preGypBinaryDir));
 		foreach ($iterator as $item) {
 			if (chmod(realpath($item->getPathname()), 0755) === false) {

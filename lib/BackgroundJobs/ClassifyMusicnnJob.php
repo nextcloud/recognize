@@ -26,11 +26,17 @@ class ClassifyMusicnnJob extends ClassifierJob {
 
 	/**
 	 * @inheritDoc
+	 *
+	 * @return void
 	 */
 	protected function run($argument) {
 		$this->runClassifier(self::MODEL_NAME, $argument);
 	}
 
+	/**
+	 * @param list<\OCA\Recognize\Db\QueueFile> $files
+	 * @return void
+	 */
 	protected function classify(array $files) : void {
 		$this->musicnn->classify($files);
 	}

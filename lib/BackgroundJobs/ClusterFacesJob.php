@@ -11,6 +11,8 @@ use Psr\Log\LoggerInterface;
 
 class ClusterFacesJob extends QueuedJob {
 	private FaceClusterAnalyzer $clusterAnalyzer;
+	private IJobList $jobList;
+	private LoggerInterface $logger;
 
 	public function __construct(ITimeFactory $time, LoggerInterface $logger, IJobList $jobList, FaceClusterAnalyzer $clusterAnalyzer) {
 		parent::__construct($time);
@@ -21,8 +23,11 @@ class ClusterFacesJob extends QueuedJob {
 
 	/**
 	 * @inheritDoc
+	 *
+	 * @return void
 	 */
 	protected function run($argument) {
+		/** @var string $userId */
 		$userId = $argument['userId'];
 		try {
 			$this->clusterAnalyzer->calculateClusters($userId);

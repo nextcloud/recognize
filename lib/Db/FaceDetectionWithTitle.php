@@ -5,6 +5,7 @@ namespace OCA\Recognize\Db;
 /**
  * @method string getTitle()
  * @method setTitle(string $title)
+ * @method static self fromRow(array $array)
  */
 class FaceDetectionWithTitle extends FaceDetection {
 	protected $title;

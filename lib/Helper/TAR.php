@@ -223,7 +223,7 @@ class TAR extends Archive {
 	/**
 	 * get all files in the archive
 	 *
-	 * @return array
+	 * @return list<string>
 	 */
 	public function getFiles() {
 		if ($this->fileList) {
@@ -377,7 +377,7 @@ class TAR extends Archive {
 	/**
 	 * write back temporary files
 	 */
-	public function writeBack($tmpFile, $path) {
+	public function writeBack($tmpFile, $path): void {
 		$this->addFile($path, $tmpFile);
 		unlink($tmpFile);
 	}
@@ -385,7 +385,7 @@ class TAR extends Archive {
 	/**
 	 * reopen the archive to ensure everything is written
 	 */
-	private function reopen() {
+	private function reopen(): void {
 		if ($this->tar) {
 			$this->tar->_close();
 			$this->tar = null;

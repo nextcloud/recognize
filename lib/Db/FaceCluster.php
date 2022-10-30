@@ -17,8 +17,15 @@ class FaceCluster extends Entity {
 	protected $title;
 	protected $userId;
 
-	public static $columns = ['id', 'title', 'user_id'];
-	public static $fields = ['id', 'title', 'userId'];
+	/**
+	 * @var string[]
+	 */
+	public static array $columns = ['id', 'title', 'user_id'];
+
+	/**
+	 * @var string[]
+	 */
+	public static array $fields = ['id', 'title', 'userId'];
 
 	public function __construct() {
 		// add types in constructor

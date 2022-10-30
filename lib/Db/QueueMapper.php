@@ -33,7 +33,7 @@ class QueueMapper extends QBMapper {
 		throw new \Exception('Invalid invokation: This class handles multiple tables');
 	}
 
-	private function getQueueTable(string $model) {
+	private function getQueueTable(string $model): string {
 		return 'recognize_queue_'.$model;
 	}
 
@@ -41,7 +41,7 @@ class QueueMapper extends QBMapper {
 	 * @param string $model
 	 * @param int $storageId
 	 * @param int $n
-	 * @return \OCA\Recognize\Db\QueueFile[]
+	 * @return list<\OCA\Recognize\Db\QueueFile>
 	 * @throws \OCP\DB\Exception
 	 */
 	public function getFromQueue(string $model, int $storageId, int $rootId, int $n) : array {
@@ -102,16 +102,21 @@ class QueueMapper extends QBMapper {
 		return $file;
 	}
 
-	public function clearQueue(string $model) {
+	public function clearQueue(string $model): void {
 		$qb = $this->db->getQueryBuilder();
 		$qb->delete($this->getQueueTable($model))->executeStatement();
 	}
 
+	/**
+	 * @param string $model
+	 *
+	 * @throws \OCP\DB\Exception
+	 */
 	public function count(string $model) : int {
 		$qb = $this->db->getQueryBuilder();
 		$result = $qb->select($qb->func()->count('id'))
 			->from($this->getQueueTable($model))
 			->executeQuery();
-		return $result->fetchOne(\PDO::FETCH_COLUMN);
+		return $result->fetchOne();
 	}
 }

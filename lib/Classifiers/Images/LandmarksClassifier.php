@@ -21,14 +21,10 @@ class LandmarksClassifier extends Classifier {
 	public const MODEL_NAME = 'landmarks';
 	public const PRECONDITION_TAGS = ['Architecture', 'Tower', 'Monument', 'Bridge', 'Historic'];
 
-	private Logger $logger;
 	private TagManager $tagManager;
-	private IConfig $config;
 
 	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager, QueueService $queue, IRootFolder $rootFolder, ITempManager $tempManager) {
 		parent::__construct($logger, $config, $rootFolder, $queue, $tempManager);
-		$this->logger = $logger;
-		$this->config = $config;
 		$this->tagManager = $tagManager;
 	}
 
@@ -44,6 +40,8 @@ class LandmarksClassifier extends Classifier {
 		}
 		$classifierProcess = $this->classifyFiles(self::MODEL_NAME, $queueFiles, $timeout);
 
+		/** @var \OCA\Recognize\Db\QueueFile $queueFile */
+		/** @var list<string> $results */
 		foreach ($classifierProcess as $queueFile => $results) {
 			$this->tagManager->assignTags($queueFile->getFileId(), $results);
 			$this->config->setAppValue('recognize', self::MODEL_NAME.'.status', 'true');
