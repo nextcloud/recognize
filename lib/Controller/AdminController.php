@@ -109,7 +109,7 @@ class AdminController extends Controller {
 
 	public function musl(): JSONResponse {
 		try {
-			exec('ldd /bin/ls' . ' 2>&1', $output, $returnCode);
+			exec('ldd /bin/sh' . ' 2>&1', $output, $returnCode);
 		} catch (\Throwable $e) {
 			return new JSONResponse(['musl' => null]);
 		}
