@@ -6,7 +6,7 @@ const ref = process.env.GITHUB_REF ? process.env.GITHUB_REF : `refs/tags/v${VERS
 
 exports.downloadAll = async () => {
 	await download(
-		`https://github.com/marcelklehr/recognize/archive/${ref}.tar.gz`,
+		`https://github.com/nextcloud/recognize/archive/${ref}.tar.gz`,
 		path.resolve(__dirname, '..'),
 		{ filename: 'recognize.tar.gz' }
 	)
