@@ -10,9 +10,11 @@ use RecursiveIteratorIterator;
 
 class DownloadModelsService {
 	private IClientService $clientService;
+	private bool $isCLI;
 
-	public function __construct(IClientService $clientService) {
+	public function __construct(IClientService $clientService, bool $isCLI) {
 		$this->clientService = $clientService;
+		$this->isCLI = $isCLI;
 	}
 
 	/**
@@ -38,7 +40,8 @@ class DownloadModelsService {
 
 		$archiveUrl = $this->getArchiveUrl($this->getNeededArchiveRef());
 		$archivePath = __DIR__ . '/../../models.tar.gz';
-		$this->clientService->newClient()->get($archiveUrl, ['sink' => $archivePath, 'timeout' => 480]);
+		$timeout = $this->isCLI ? 0 : 480;
+		$this->clientService->newClient()->get($archiveUrl, ['sink' => $archivePath, 'timeout' => $timeout]);
 		$tarManager = new TAR($archivePath);
 		$tarFiles = $tarManager->getFiles();
 		$mainFolder = $tarFiles[0];
