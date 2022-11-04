@@ -17,6 +17,7 @@ class PropFindPlugin extends ServerPlugin {
 	public const FACE_DETECTIONS_PROPERTYNAME = '{http://nextcloud.org/ns}face-detections';
 	public const FILE_NAME_PROPERTYNAME = '{http://nextcloud.org/ns}file-name';
 	public const REALPATH_PROPERTYNAME = '{http://nextcloud.org/ns}realpath';
+	public const NBITEMS_PROPERTYNAME = '{http://nextcloud.org/ns}nbItems';
 
 	private Server $server;
 	private FaceDetectionMapper $faceDetectionMapper;
@@ -48,6 +49,10 @@ class PropFindPlugin extends ServerPlugin {
 			$propFind->handle(FilesPlugin::FILE_METADATA_SIZE, fn () => json_encode($node->getMetadata()));
 			$propFind->handle(FilesPlugin::HAS_PREVIEW_PROPERTYNAME, fn () => json_encode($node->hasPreview()));
 			$propFind->handle(TagsPlugin::FAVORITE_PROPERTYNAME, fn () => $node->isFavorite() ? 1 : 0);
+		}
+
+		if ($node instanceof FaceRoot) {
+			$propFind->handle(self::NBITEMS_PROPERTYNAME, fn () => count($node->getChildren()));
 		}
 
 		if ($node instanceof File) {
