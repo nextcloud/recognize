@@ -48,6 +48,21 @@ class StorageCrawlJob extends QueuedJob {
 		$this->tagManager = $tagManager;
 	}
 
+	private function getDir(int $fileid, bool $recursive = false): array {
+		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
+		$dir = $qb->selectFileCache()
+			->andWhere($qb->expr()->eq('mimetype', $qb->createNamedParameter(2)))
+			->andWhere($qb->expr()->eq('parent', $qb->createNamedParameter($fileid)))
+			->executeQuery()->fetchAll();
+
+		if ($recursive) {
+			foreach ($dir as $item) {
+				$dir = array_merge($dir, $this->getDir($item['fileid'], $recursive));
+			}
+		}
+		return $dir;
+	}
+
 	protected function run($argument): void {
 		$storageId = $argument['storage_id'];
 		$rootId = $argument['root_id'];
@@ -78,6 +93,30 @@ class StorageCrawlJob extends QueuedJob {
 			$this->logger->error('Could not find storage root');
 			return;
 		}
+		
+		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
+		try {
+			$ignoreFiles = $qb->selectFileCache()
+				->andWhere($qb->expr()->eq('mimetype', $qb->createNamedParameter(15)))
+				->andWhere($qb->expr()->eq('name', $qb->createNamedParameter('.nomedia')))
+				->orWhere($qb->expr()->eq('name', $qb->createNamedParameter('.noimage')))
+				->executeQuery()->fetchAll();
+
+			$ignoreDir = [];
+			foreach ($ignoreFiles as $ignoreFile) {
+				$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
+				$parent = $qb->selectFileCache()
+					->andWhere($qb->expr()->eq('mimetype', $qb->createNamedParameter(2)))
+					->andWhere($qb->expr()->eq('filecache.fileid', $qb->createNamedParameter($ignoreFile['parent'])))
+					->executeQuery()->fetch();
+				$ignoreDir[] = $parent;
+				$ignoreDir = array_merge($ignoreDir, $this->getDir($parent['fileid'], true));
+			}
+		} catch (Exception $e) {
+			$this->logger->error('Could not fetch files', ['exception' => $e]);
+			return;
+		}
+
 
 		$imageTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::IMAGE_FORMATS);
 		$videoTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::VIDEO_FORMATS);
@@ -109,8 +148,13 @@ class StorageCrawlJob extends QueuedJob {
 				->andWhere($qb->expr()->like('path', $qb->createNamedParameter($path . '%')))
 				->andWhere($qb->expr()->eq('storage', $qb->createNamedParameter($storageId)))
 				->andWhere($qb->expr()->in('mimetype', $qb->createNamedParameter($mimeTypes, IQueryBuilder::PARAM_INT_ARRAY)))
-				->andWhere($qb->expr()->gt('filecache.fileid', $qb->createNamedParameter($lastFileId)))
-				->orderBy('filecache.fileid', 'ASC')
+				->andWhere($qb->expr()->gt('filecache.fileid', $qb->createNamedParameter($lastFileId)));
+
+			foreach ($ignoreDir as $dir) {
+				$files = $files->andWhere($qb->expr()->neq('parent', $qb->createNamedParameter($dir['fileid'])));
+			}
+
+			$files = $files->orderBy('filecache.fileid', 'ASC')
 				->setMaxResults(100)
 				->executeQuery();
 		} catch (Exception $e) {
