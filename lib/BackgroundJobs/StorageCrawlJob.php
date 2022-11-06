@@ -113,7 +113,10 @@ class StorageCrawlJob extends QueuedJob {
 		
 
 		try {
-			$ignoreFileids = $this->getIgnoreFileids();
+			$ignoreFileids = $this->getIgnoreFileids(Constants::IGNORE_MARKERS_ALL);
+			$ignoreImageFileids = $this->getIgnoreFileids(Constants::IGNORE_MARKERS_IMAGE);
+			$ignoreVideoFileids = $this->getIgnoreFileids(Constants::IGNORE_MARKERS_VIDEO);
+			$ignoreAudioFileids = $this->getIgnoreFileids(Constants::IGNORE_MARKERS_AUDIO);
 		} catch (Exception $e) {
 			$this->logger->error('Could not fetch ignore files', ['exception' => $e]);
 			return;
@@ -152,7 +155,7 @@ class StorageCrawlJob extends QueuedJob {
 				->andWhere($qb->expr()->like('path', $qb->createNamedParameter($path . '%')))
 				->andWhere($qb->expr()->eq('storage', $qb->createNamedParameter($storageId)))
 				->andWhere($qb->expr()->in('mimetype', $qb->createNamedParameter($mimeTypes, IQueryBuilder::PARAM_INT_ARRAY)))
-				->andWhere($qb->expr()->gt('filecache.fileid', $qb->createNamedParameter($lastFileId)))
+				->andWhere($qb->expr()->gt('filecache.fileid', $qb->createNamedParameter($lastFileId)));
 			if (count($ignoreFileidsExpr) > 0) {
 				$qb->andWhere($qb->expr()->andX(...$ignoreFileidsExpr));
 			}
@@ -177,7 +180,7 @@ class StorageCrawlJob extends QueuedJob {
 			$queueFile->setFileId($file['fileid']);
 			$queueFile->setUpdate(false);
 			try {
-				if (in_array($file['mimetype'], $imageTypes)) {
+				if (in_array($file['mimetype'], $imageTypes) and !in_array($file['parent'], $ignoreImageFileids)) {
 					if (in_array(ImagenetClassifier::MODEL_NAME, $models)) {
 						$this->queue->insertIntoQueue(ImagenetClassifier::MODEL_NAME, $queueFile);
 					}
@@ -196,10 +199,10 @@ class StorageCrawlJob extends QueuedJob {
 						$this->queue->insertIntoQueue(ClusteringFaceClassifier::MODEL_NAME, $queueFile);
 					}
 				}
-				if (in_array($file['mimetype'], $videoTypes)) {
+				if (in_array($file['mimetype'], $videoTypes) and !in_array($file['parent'], $ignoreVideoFileids)) {
 					$this->queue->insertIntoQueue(MovinetClassifier::MODEL_NAME, $queueFile);
 				}
-				if (in_array($file['mimetype'], $audioTypes)) {
+				if (in_array($file['mimetype'], $audioTypes) and !in_array($file['parent'], $ignoreAudioFileids)) {
 					$this->queue->insertIntoQueue(MusicnnClassifier::MODEL_NAME, $queueFile);
 				}
 			} catch (Exception $e) {

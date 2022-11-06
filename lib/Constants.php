@@ -8,6 +8,9 @@ class Constants {
 	public const VIDEO_FORMATS = ['image/gif', 'video/mp4', 'video/MP2T', 'video/x-msvideo', 'video/x-ms-wmv', 'video/quicktime', 'video/ogg', 'video/mpeg', 'video/webm', 'video/x-matroska'];
 	public const DIRECTORY_FORMATS = ['httpd/unix-directory'];
 	public const OCTET_STREAM_FORMATS = ['application/octet-stream'];
-	public const IGNORE_MARKERS = ['.noimage', '.nomedia'];
+	public const IGNORE_MARKERS_ALL = ['.nomedia'];
+	public const IGNORE_MARKERS_IMAGE = ['.noimage'];
+	public const IGNORE_MARKERS_VIDEO = ['.novideo'];
+	public const IGNORE_MARKERS_AUDIO = ['.noaudio'];
 	public const MAX_FILE_SIZE = 10000000;
 }
