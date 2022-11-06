@@ -147,14 +147,16 @@ class StorageCrawlJob extends QueuedJob {
 			$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
 			$ignoreFileidsChunks = array_chunk($ignoreFileids, 999, true);
 			$ignoreFileidsExpr = array_map(fn ($chunk) => $qb->expr()->notIn('parent', $qb->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)), $ignoreFileidsChunks);
-			$files = $qb->selectFileCache()
+			$qb->selectFileCache()
 				->whereStorageId($storageId)
 				->andWhere($qb->expr()->like('path', $qb->createNamedParameter($path . '%')))
 				->andWhere($qb->expr()->eq('storage', $qb->createNamedParameter($storageId)))
 				->andWhere($qb->expr()->in('mimetype', $qb->createNamedParameter($mimeTypes, IQueryBuilder::PARAM_INT_ARRAY)))
 				->andWhere($qb->expr()->gt('filecache.fileid', $qb->createNamedParameter($lastFileId)))
-				->andWhere($qb->expr()->andX(...$ignoreFileidsExpr))
-				->orderBy('filecache.fileid', 'ASC')
+			if (count($ignoreFileidsExpr) > 0) {
+				$qb->andWhere($qb->expr()->andX(...$ignoreFileidsExpr));
+			}
+			$files = $qb->orderBy('filecache.fileid', 'ASC')
 				->setMaxResults(100)
 				->executeQuery();
 		} catch (Exception $e) {
