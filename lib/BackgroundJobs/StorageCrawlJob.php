@@ -63,13 +63,11 @@ class StorageCrawlJob extends QueuedJob {
 		return $dir;
 	}
 
-	private function getIgnoreFileids(): array {
+	private function getIgnoreFileids(array $ignore_maekers): array {
 		$directoryTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::DIRECTORY_FORMATS);
-		$octetStreamTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::OCTET_STREAM_FORMATS);
 		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
 		$ignoreFiles = $qb->selectFileCache()
-			->andWhere($qb->expr()->in('mimetype', $qb->createNamedParameter($octetStreamTypes, IQueryBuilder::PARAM_INT_ARRAY)))
-			->andWhere($qb->expr()->in('name', $qb->createNamedParameter(Constants::IGNORE_MARKERS, IQueryBuilder::PARAM_STR_ARRAY)))
+			->andWhere($qb->expr()->in('name', $qb->createNamedParameter($ignore_maekers, IQueryBuilder::PARAM_STR_ARRAY)))
 			->executeQuery()->fetchAll();
 		$ignoreFileids = array_map(fn ($dir) => $dir['parent'], $ignoreFiles);
 		foreach ($ignoreFiles as $ignoreFile) {
