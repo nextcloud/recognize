@@ -153,7 +153,7 @@ class StorageCrawlJob extends QueuedJob {
 				->andWhere($qb->expr()->eq('storage', $qb->createNamedParameter($storageId)))
 				->andWhere($qb->expr()->in('mimetype', $qb->createNamedParameter($mimeTypes, IQueryBuilder::PARAM_INT_ARRAY)))
 				->andWhere($qb->expr()->gt('filecache.fileid', $qb->createNamedParameter($lastFileId)))
-				->andWhere($qb->expr()->orX(...$ignoreFileidsExpr))
+				->andWhere($qb->expr()->andX(...$ignoreFileidsExpr))
 				->orderBy('filecache.fileid', 'ASC')
 				->setMaxResults(100)
 				->executeQuery();
