@@ -10,6 +10,6 @@ class Constants {
 	public const IGNORE_MARKERS_ALL = ['.nomedia'];
 	public const IGNORE_MARKERS_IMAGE = ['.noimage'];
 	public const IGNORE_MARKERS_VIDEO = ['.novideo'];
-	public const IGNORE_MARKERS_AUDIO = ['.noaudio'];
+	public const IGNORE_MARKERS_AUDIO = ['.nomusic'];
 	public const MAX_FILE_SIZE = 10000000;
 }
