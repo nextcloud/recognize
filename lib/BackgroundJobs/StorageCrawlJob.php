@@ -63,6 +63,23 @@ class StorageCrawlJob extends QueuedJob {
 		return $dir;
 	}
 
+	private function getIgnoreFileids(): array {
+		$directoryTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::DIRECTORY_FORMATS);
+		$octetStreamTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::OCTET_STREAM_FORMATS);
+		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
+		$ignoreFiles = $qb->selectFileCache()
+			->andWhere($qb->expr()->in('mimetype', $qb->createNamedParameter($octetStreamTypes, IQueryBuilder::PARAM_INT_ARRAY)))
+			->andWhere($qb->expr()->in('name', $qb->createNamedParameter(['.nomedia', '.noimage'], IQueryBuilder::PARAM_STR_ARRAY)))
+			->executeQuery()->fetchAll();
+		$ignoreFileids = array_map(fn ($dir) => $dir['parent'], $ignoreFiles);
+		foreach ($ignoreFiles as $ignoreFile) {
+			$ignoreDir = $this->getDir($ignoreFile['parent'],  $directoryTypes, true);
+			$fileids = array_map(fn ($dir) => $dir['fileid'], $ignoreDir);
+			$ignoreFileids = array_merge($ignoreFileids, $fileids);
+		}
+		return $ignoreFileids;
+	}
+
 	protected function run($argument): void {
 		$storageId = $argument['storage_id'];
 		$rootId = $argument['root_id'];
@@ -95,23 +112,10 @@ class StorageCrawlJob extends QueuedJob {
 		}
 		
 
-		$directoryTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::DIRECTORY_FORMATS);
-		$octetStreamTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::OCTET_STREAM_FORMATS);
-
-		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
 		try {
-			$ignoreFiles = $qb->selectFileCache()
-				->andWhere($qb->expr()->in('mimetype', $qb->createNamedParameter($octetStreamTypes, IQueryBuilder::PARAM_INT_ARRAY)))
-				->andWhere($qb->expr()->in('name', $qb->createNamedParameter(['.nomedia', '.noimage'], IQueryBuilder::PARAM_STR_ARRAY)))
-				->executeQuery()->fetchAll();
-			$ignoreFileids = array_map(fn ($dir) => $dir['parent'], $ignoreFiles);
-			foreach ($ignoreFiles as $ignoreFile) {
-				$ignoreDir = $this->getDir($ignoreFile['parent'],  $directoryTypes, true);
-				$fileids = array_map(fn ($dir) => $dir['fileid'], $ignoreDir);
-				$ignoreFileids = array_merge($ignoreFileids, $fileids);
-			}
+			$ignoreFileids = $this->getIgnoreFileids();
 		} catch (Exception $e) {
-			$this->logger->error('Could not fetch files', ['exception' => $e]);
+			$this->logger->error('Could not fetch ignore files', ['exception' => $e]);
 			return;
 		}
 
