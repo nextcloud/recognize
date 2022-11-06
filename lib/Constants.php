@@ -7,7 +7,6 @@ class Constants {
 	public const AUDIO_FORMATS = ['audio/mpeg', 'audio/mp4', 'audio/ogg', 'audio/vnd.wav', 'audio/flac'];
 	public const VIDEO_FORMATS = ['image/gif', 'video/mp4', 'video/MP2T', 'video/x-msvideo', 'video/x-ms-wmv', 'video/quicktime', 'video/ogg', 'video/mpeg', 'video/webm', 'video/x-matroska'];
 	public const DIRECTORY_FORMATS = ['httpd/unix-directory'];
-	public const OCTET_STREAM_FORMATS = ['application/octet-stream'];
 	public const IGNORE_MARKERS_ALL = ['.nomedia'];
 	public const IGNORE_MARKERS_IMAGE = ['.noimage'];
 	public const IGNORE_MARKERS_VIDEO = ['.novideo'];
