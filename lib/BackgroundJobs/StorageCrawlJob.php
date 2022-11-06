@@ -69,7 +69,7 @@ class StorageCrawlJob extends QueuedJob {
 		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
 		$ignoreFiles = $qb->selectFileCache()
 			->andWhere($qb->expr()->in('mimetype', $qb->createNamedParameter($octetStreamTypes, IQueryBuilder::PARAM_INT_ARRAY)))
-			->andWhere($qb->expr()->in('name', $qb->createNamedParameter(['.nomedia', '.noimage'], IQueryBuilder::PARAM_STR_ARRAY)))
+			->andWhere($qb->expr()->in('name', $qb->createNamedParameter(Constants::IGNORE_MARKERS, IQueryBuilder::PARAM_STR_ARRAY)))
 			->executeQuery()->fetchAll();
 		$ignoreFileids = array_map(fn ($dir) => $dir['parent'], $ignoreFiles);
 		foreach ($ignoreFiles as $ignoreFile) {
