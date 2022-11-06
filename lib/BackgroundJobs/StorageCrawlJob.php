@@ -145,17 +145,18 @@ class StorageCrawlJob extends QueuedJob {
 		try {
 			$path = $root['path'] === '' ? '' :  $root['path'] . '/';
 			$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
+			$ignoreFileidsChunks = array_chunk($ignoreFileids, 999, true);
+			$ignoreFileidsExpr = array_map(fn ($chunk) => $qb->expr()->notIn('parent', $qb->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)), $ignoreFileidsChunks);
 			$files = $qb->selectFileCache()
 				->whereStorageId($storageId)
 				->andWhere($qb->expr()->like('path', $qb->createNamedParameter($path . '%')))
 				->andWhere($qb->expr()->eq('storage', $qb->createNamedParameter($storageId)))
 				->andWhere($qb->expr()->in('mimetype', $qb->createNamedParameter($mimeTypes, IQueryBuilder::PARAM_INT_ARRAY)))
 				->andWhere($qb->expr()->gt('filecache.fileid', $qb->createNamedParameter($lastFileId)))
-				->andWhere($qb->expr()->notIn('parent', $qb->createNamedParameter($ignoreFileids, IQueryBuilder::PARAM_INT_ARRAY)))
+				->andWhere($qb->expr()->orX(...$ignoreFileidsExpr))
 				->orderBy('filecache.fileid', 'ASC')
 				->setMaxResults(100)
 				->executeQuery();
-
 		} catch (Exception $e) {
 			$this->logger->error('Could not fetch files', ['exception' => $e]);
 			return;
