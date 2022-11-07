@@ -48,6 +48,11 @@ class Classifier {
 		foreach ($queueFiles as $queueFile) {
 			$files = $this->rootFolder->getById($queueFile->getFileId());
 			if (count($files) === 0) {
+				try {
+					$this->queue->removeFromQueue($model, $queueFile);
+				} catch (Exception $e) {
+					$this->logger->warning($e->getMessage(), ['exception' => $e]);
+				}
 				continue;
 			}
 			try {
@@ -59,6 +64,7 @@ class Classifier {
 			}
 		}
 
+		var_dump($paths);
 		if (count($paths) === 0) {
 			$this->logger->debug('No files left to classify');
 			return;
