@@ -108,10 +108,9 @@ class StorageCrawlJob extends QueuedJob {
 			$this->logger->error('Could not find storage root');
 			return;
 		}
-		
 
 		try {
-			$ignoreFileids = $this->getIgnoreFileids(Constants::IGNORE_MARKERS_ALL);
+			$ignoreAllFileids = $this->getIgnoreFileids(Constants::IGNORE_MARKERS_ALL);
 			$ignoreImageFileids = $this->getIgnoreFileids(Constants::IGNORE_MARKERS_IMAGE);
 			$ignoreVideoFileids = $this->getIgnoreFileids(Constants::IGNORE_MARKERS_VIDEO);
 			$ignoreAudioFileids = $this->getIgnoreFileids(Constants::IGNORE_MARKERS_AUDIO);
@@ -120,24 +119,25 @@ class StorageCrawlJob extends QueuedJob {
 			return;
 		}
 
-
 		$imageTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::IMAGE_FORMATS);
 		$videoTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::VIDEO_FORMATS);
 		$audioTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::AUDIO_FORMATS);
 
-		$mimeTypes = [];
-		if (in_array(ClusteringFaceClassifier::MODEL_NAME, $models) ||
-			in_array(ImagenetClassifier::MODEL_NAME, $models) ||
-				in_array(LandmarksClassifier::MODEL_NAME, $models)) {
-			$mimeTypes = array_merge($imageTypes, $mimeTypes);
+		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
+		$ignoreFileidsExpr = [];
+		if (count(array_intersect([ClusteringFaceClassifier::MODEL_NAME, ImagenetClassifier::MODEL_NAME, LandmarksClassifier::MODEL_NAME], $models)) > 0) {
+			$expr = array_map(fn ($chunk) => $qb->expr()->notIn('parent', $qb->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)), array_chunk($ignoreImageFileids, 999, true));
+			$ignoreFileidsExpr[] = $qb->expr()->andX($qb->expr()->in('mimetype', $qb->createNamedParameter($imageTypes, IQueryBuilder::PARAM_INT_ARRAY)), ...$expr);
 		}
 		if (in_array(MovinetClassifier::MODEL_NAME, $models)) {
-			$mimeTypes = array_merge($videoTypes, $mimeTypes);
+			$expr =  array_map(fn ($chunk) => $qb->expr()->notIn('parent', $qb->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)), array_chunk($ignoreVideoFileids, 999, true));
+			$ignoreFileidsExpr[] = $qb->expr()->andX($qb->expr()->in('mimetype', $qb->createNamedParameter($videoTypes, IQueryBuilder::PARAM_INT_ARRAY)), ...$expr);
 		}
 		if (in_array(MusicnnClassifier::MODEL_NAME, $models)) {
-			$mimeTypes = array_merge($audioTypes, $mimeTypes);
+			$expr =  array_map(fn ($chunk) => $qb->expr()->notIn('parent', $qb->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)), array_chunk($ignoreAudioFileids, 999, true));
+			$ignoreFileidsExpr[] = $qb->expr()->andX($qb->expr()->in('mimetype', $qb->createNamedParameter($audioTypes, IQueryBuilder::PARAM_INT_ARRAY)), ...$expr);
 		}
-		if (count($mimeTypes) === 0) {
+		if (count($ignoreFileidsExpr) === 0) {
 			// Remove current iteration
 			$this->jobList->remove(self::class, $argument);
 			return;
@@ -145,17 +145,16 @@ class StorageCrawlJob extends QueuedJob {
 
 		try {
 			$path = $root['path'] === '' ? '' :  $root['path'] . '/';
-			$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
-			$ignoreFileidsChunks = array_chunk($ignoreFileids, 999, true);
-			$ignoreFileidsExpr = array_map(fn ($chunk) => $qb->expr()->notIn('parent', $qb->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)), $ignoreFileidsChunks);
+			$ignoreAllFileidsExpr = array_map(fn ($chunk) => $qb->expr()->notIn('parent', $qb->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)), array_chunk($ignoreAllFileids, 999, true));
+
 			$qb->selectFileCache()
 				->whereStorageId($storageId)
 				->andWhere($qb->expr()->like('path', $qb->createNamedParameter($path . '%')))
 				->andWhere($qb->expr()->eq('storage', $qb->createNamedParameter($storageId)))
-				->andWhere($qb->expr()->in('mimetype', $qb->createNamedParameter($mimeTypes, IQueryBuilder::PARAM_INT_ARRAY)))
-				->andWhere($qb->expr()->gt('filecache.fileid', $qb->createNamedParameter($lastFileId)));
-			if (count($ignoreFileidsExpr) > 0) {
-				$qb->andWhere($qb->expr()->andX(...$ignoreFileidsExpr));
+				->andWhere($qb->expr()->gt('filecache.fileid', $qb->createNamedParameter($lastFileId)))
+				->andWhere($qb->expr()->orX(...$ignoreFileidsExpr));
+			if (count($ignoreAllFileidsExpr) > 0) {
+				$qb->andWhere($qb->expr()->andX(...$ignoreAllFileidsExpr));
 			}
 			$files = $qb->orderBy('filecache.fileid', 'ASC')
 				->setMaxResults(100)
@@ -178,7 +177,7 @@ class StorageCrawlJob extends QueuedJob {
 			$queueFile->setFileId($file['fileid']);
 			$queueFile->setUpdate(false);
 			try {
-				if (in_array($file['mimetype'], $imageTypes) and !in_array($file['parent'], $ignoreImageFileids)) {
+				if (in_array($file['mimetype'], $imageTypes)) {
 					if (in_array(ImagenetClassifier::MODEL_NAME, $models)) {
 						$this->queue->insertIntoQueue(ImagenetClassifier::MODEL_NAME, $queueFile);
 					}
@@ -197,10 +196,10 @@ class StorageCrawlJob extends QueuedJob {
 						$this->queue->insertIntoQueue(ClusteringFaceClassifier::MODEL_NAME, $queueFile);
 					}
 				}
-				if (in_array($file['mimetype'], $videoTypes) and !in_array($file['parent'], $ignoreVideoFileids)) {
+				if (in_array($file['mimetype'], $videoTypes)) {
 					$this->queue->insertIntoQueue(MovinetClassifier::MODEL_NAME, $queueFile);
 				}
-				if (in_array($file['mimetype'], $audioTypes) and !in_array($file['parent'], $ignoreAudioFileids)) {
+				if (in_array($file['mimetype'], $audioTypes)) {
 					$this->queue->insertIntoQueue(MusicnnClassifier::MODEL_NAME, $queueFile);
 				}
 			} catch (Exception $e) {
