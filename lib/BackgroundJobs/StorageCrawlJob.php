@@ -71,7 +71,7 @@ class StorageCrawlJob extends QueuedJob {
 			->executeQuery()->fetchAll();
 		$ignoreFileids = array_map(fn ($dir) => $dir['parent'], $ignoreFiles);
 		foreach ($ignoreFiles as $ignoreFile) {
-			$ignoreDir = $this->getDir($ignoreFile['parent'],  $directoryTypes, true);
+			$ignoreDir = $this->getDir($ignoreFile['parent'], $directoryTypes, true);
 			$fileids = array_map(fn ($dir) => $dir['fileid'], $ignoreDir);
 			$ignoreFileids = array_merge($ignoreFileids, $fileids);
 		}
@@ -130,11 +130,11 @@ class StorageCrawlJob extends QueuedJob {
 			$ignoreFileidsExpr[] = $qb->expr()->andX($qb->expr()->in('mimetype', $qb->createNamedParameter($imageTypes, IQueryBuilder::PARAM_INT_ARRAY)), ...$expr);
 		}
 		if (in_array(MovinetClassifier::MODEL_NAME, $models)) {
-			$expr =  array_map(fn ($chunk) => $qb->expr()->notIn('parent', $qb->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)), array_chunk($ignoreVideoFileids, 999, true));
+			$expr = array_map(fn ($chunk) => $qb->expr()->notIn('parent', $qb->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)), array_chunk($ignoreVideoFileids, 999, true));
 			$ignoreFileidsExpr[] = $qb->expr()->andX($qb->expr()->in('mimetype', $qb->createNamedParameter($videoTypes, IQueryBuilder::PARAM_INT_ARRAY)), ...$expr);
 		}
 		if (in_array(MusicnnClassifier::MODEL_NAME, $models)) {
-			$expr =  array_map(fn ($chunk) => $qb->expr()->notIn('parent', $qb->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)), array_chunk($ignoreAudioFileids, 999, true));
+			$expr = array_map(fn ($chunk) => $qb->expr()->notIn('parent', $qb->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)), array_chunk($ignoreAudioFileids, 999, true));
 			$ignoreFileidsExpr[] = $qb->expr()->andX($qb->expr()->in('mimetype', $qb->createNamedParameter($audioTypes, IQueryBuilder::PARAM_INT_ARRAY)), ...$expr);
 		}
 		if (count($ignoreFileidsExpr) === 0) {
