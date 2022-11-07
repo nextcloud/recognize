@@ -49,6 +49,7 @@ class StorageCrawlJob extends QueuedJob {
 	}
 
 	private function getDir(int $fileid, array $directoryTypes, bool $recursive = false): array {
+		/** @var \OCP\DB\QueryBuilder\IQueryBuilder $qb */
 		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
 		$dir = $qb->selectFileCache()
 			->andWhere($qb->expr()->in('mimetype', $qb->createNamedParameter($directoryTypes, IQueryBuilder::PARAM_INT_ARRAY)))
@@ -65,6 +66,7 @@ class StorageCrawlJob extends QueuedJob {
 
 	private function getIgnoreFileids(array $ignore_maekers): array {
 		$directoryTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::DIRECTORY_FORMATS);
+		/** @var \OCP\DB\QueryBuilder\IQueryBuilder $qb */
 		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
 		$ignoreFiles = $qb->selectFileCache()
 			->andWhere($qb->expr()->in('name', $qb->createNamedParameter($ignore_maekers, IQueryBuilder::PARAM_STR_ARRAY)))
@@ -94,6 +96,7 @@ class StorageCrawlJob extends QueuedJob {
 			MusicnnClassifier::MODEL_NAME,
 		];
 
+		/** @var \OCP\DB\QueryBuilder\IQueryBuilder $qb */
 		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
 		try {
 			$root = $qb->selectFileCache()

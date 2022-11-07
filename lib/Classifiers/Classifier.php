@@ -64,7 +64,6 @@ class Classifier {
 			}
 		}
 
-		var_dump($paths);
 		if (count($paths) === 0) {
 			$this->logger->debug('No files left to classify');
 			return;
