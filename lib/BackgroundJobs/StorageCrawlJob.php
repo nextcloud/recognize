@@ -48,6 +48,36 @@ class StorageCrawlJob extends QueuedJob {
 		$this->tagManager = $tagManager;
 	}
 
+	private function getDir(int $fileid, array $directoryTypes, bool $recursive = false): array {
+		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
+		$dir = $qb->selectFileCache()
+			->andWhere($qb->expr()->in('mimetype', $qb->createNamedParameter($directoryTypes, IQueryBuilder::PARAM_INT_ARRAY)))
+			->andWhere($qb->expr()->eq('parent', $qb->createNamedParameter($fileid)))
+			->executeQuery()->fetchAll();
+
+		if ($recursive) {
+			foreach ($dir as $item) {
+				$dir = array_merge($dir, $this->getDir($item['fileid'], $directoryTypes, $recursive));
+			}
+		}
+		return $dir;
+	}
+
+	private function getIgnoreFileids(array $ignore_maekers): array {
+		$directoryTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::DIRECTORY_FORMATS);
+		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
+		$ignoreFiles = $qb->selectFileCache()
+			->andWhere($qb->expr()->in('name', $qb->createNamedParameter($ignore_maekers, IQueryBuilder::PARAM_STR_ARRAY)))
+			->executeQuery()->fetchAll();
+		$ignoreFileids = array_map(fn ($dir) => $dir['parent'], $ignoreFiles);
+		foreach ($ignoreFiles as $ignoreFile) {
+			$ignoreDir = $this->getDir($ignoreFile['parent'],  $directoryTypes, true);
+			$fileids = array_map(fn ($dir) => $dir['fileid'], $ignoreDir);
+			$ignoreFileids = array_merge($ignoreFileids, $fileids);
+		}
+		return $ignoreFileids;
+	}
+
 	protected function run($argument): void {
 		$storageId = $argument['storage_id'];
 		$rootId = $argument['root_id'];
@@ -79,23 +109,35 @@ class StorageCrawlJob extends QueuedJob {
 			return;
 		}
 
+		try {
+			$ignoreAllFileids = $this->getIgnoreFileids(Constants::IGNORE_MARKERS_ALL);
+			$ignoreImageFileids = $this->getIgnoreFileids(Constants::IGNORE_MARKERS_IMAGE);
+			$ignoreVideoFileids = $this->getIgnoreFileids(Constants::IGNORE_MARKERS_VIDEO);
+			$ignoreAudioFileids = $this->getIgnoreFileids(Constants::IGNORE_MARKERS_AUDIO);
+		} catch (Exception $e) {
+			$this->logger->error('Could not fetch ignore files', ['exception' => $e]);
+			return;
+		}
+
 		$imageTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::IMAGE_FORMATS);
 		$videoTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::VIDEO_FORMATS);
 		$audioTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::AUDIO_FORMATS);
 
-		$mimeTypes = [];
-		if (in_array(ClusteringFaceClassifier::MODEL_NAME, $models) ||
-			in_array(ImagenetClassifier::MODEL_NAME, $models) ||
-				in_array(LandmarksClassifier::MODEL_NAME, $models)) {
-			$mimeTypes = array_merge($imageTypes, $mimeTypes);
+		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
+		$ignoreFileidsExpr = [];
+		if (count(array_intersect([ClusteringFaceClassifier::MODEL_NAME, ImagenetClassifier::MODEL_NAME, LandmarksClassifier::MODEL_NAME], $models)) > 0) {
+			$expr = array_map(fn ($chunk) => $qb->expr()->notIn('parent', $qb->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)), array_chunk($ignoreImageFileids, 999, true));
+			$ignoreFileidsExpr[] = $qb->expr()->andX($qb->expr()->in('mimetype', $qb->createNamedParameter($imageTypes, IQueryBuilder::PARAM_INT_ARRAY)), ...$expr);
 		}
 		if (in_array(MovinetClassifier::MODEL_NAME, $models)) {
-			$mimeTypes = array_merge($videoTypes, $mimeTypes);
+			$expr =  array_map(fn ($chunk) => $qb->expr()->notIn('parent', $qb->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)), array_chunk($ignoreVideoFileids, 999, true));
+			$ignoreFileidsExpr[] = $qb->expr()->andX($qb->expr()->in('mimetype', $qb->createNamedParameter($videoTypes, IQueryBuilder::PARAM_INT_ARRAY)), ...$expr);
 		}
 		if (in_array(MusicnnClassifier::MODEL_NAME, $models)) {
-			$mimeTypes = array_merge($audioTypes, $mimeTypes);
+			$expr =  array_map(fn ($chunk) => $qb->expr()->notIn('parent', $qb->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)), array_chunk($ignoreAudioFileids, 999, true));
+			$ignoreFileidsExpr[] = $qb->expr()->andX($qb->expr()->in('mimetype', $qb->createNamedParameter($audioTypes, IQueryBuilder::PARAM_INT_ARRAY)), ...$expr);
 		}
-		if (count($mimeTypes) === 0) {
+		if (count($ignoreFileidsExpr) === 0) {
 			// Remove current iteration
 			$this->jobList->remove(self::class, $argument);
 			return;
@@ -103,14 +145,18 @@ class StorageCrawlJob extends QueuedJob {
 
 		try {
 			$path = $root['path'] === '' ? '' :  $root['path'] . '/';
-			$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
-			$files = $qb->selectFileCache()
+			$ignoreAllFileidsExpr = array_map(fn ($chunk) => $qb->expr()->notIn('parent', $qb->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)), array_chunk($ignoreAllFileids, 999, true));
+
+			$qb->selectFileCache()
 				->whereStorageId($storageId)
 				->andWhere($qb->expr()->like('path', $qb->createNamedParameter($path . '%')))
 				->andWhere($qb->expr()->eq('storage', $qb->createNamedParameter($storageId)))
-				->andWhere($qb->expr()->in('mimetype', $qb->createNamedParameter($mimeTypes, IQueryBuilder::PARAM_INT_ARRAY)))
 				->andWhere($qb->expr()->gt('filecache.fileid', $qb->createNamedParameter($lastFileId)))
-				->orderBy('filecache.fileid', 'ASC')
+				->andWhere($qb->expr()->orX(...$ignoreFileidsExpr));
+			if (count($ignoreAllFileidsExpr) > 0) {
+				$qb->andWhere($qb->expr()->andX(...$ignoreAllFileidsExpr));
+			}
+			$files = $qb->orderBy('filecache.fileid', 'ASC')
 				->setMaxResults(100)
 				->executeQuery();
 		} catch (Exception $e) {
