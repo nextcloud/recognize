@@ -19,7 +19,9 @@ use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Service\QueueService;
 use OCP\BackgroundJob\IJobList;
+use OCP\Files\Folder;
 use OCP\Files\IRootFolder;
+use OCP\IConfig;
 use OCP\SystemTag\ISystemTagObjectMapper;
 use Test\TestCase;
 
@@ -29,7 +31,7 @@ use Test\TestCase;
 class ClassifierTest extends TestCase {
 	public const TEST_USER1 = 'test-user1';
 
-	public const TEST_FILES = ['alpine.jpg' ,'eiffeltower.jpg', 'Rock_Rejam.mp3', 'jumpingjack.gif'];
+	public const TEST_FILES = ['alpine.jpg' ,'eiffeltower.jpg', 'Rock_Rejam.mp3', 'jumpingjack.gif', 'test'];
 	public const ALL_MODELS = [
 		ClusteringFaceClassifier::MODEL_NAME,
 		ImagenetClassifier::MODEL_NAME,
@@ -41,11 +43,11 @@ class ClassifierTest extends TestCase {
 	private Classifier $classifier;
 	private OCP\Files\File $testFile;
 	private IRootFolder $rootFolder;
-	private \OCP\Files\Folder $userFolder;
+	private Folder $userFolder;
 	private QueueService $queue;
 	private FaceDetectionMapper $faceDetectionMapper;
 	private IJobList $jobList;
-	private \OCP\IConfig $config;
+	private IConfig $config;
 
 	public static function setUpBeforeClass(): void {
 		parent::setUpBeforeClass();
@@ -106,8 +108,21 @@ class ClassifierTest extends TestCase {
 		]);
 	}
 
-	public function testImagenetPipeline() : void {
+	/**
+	 * @dataProvider ignoreImageFilesProvider
+	 * @return void
+	 * @throws \OCP\DB\Exception
+	 * @throws \OCP\Files\InvalidPathException
+	 * @throws \OCP\Files\NotFoundException
+	 * @throws \OCP\Files\NotPermittedException
+	 * @throws \Psr\Container\ContainerExceptionInterface
+	 * @throws \Psr\Container\NotFoundExceptionInterface
+	 */
+	public function testImagenetPipeline(string $ignoreFileName) : void {
 		$this->testFile = $this->userFolder->newFile('/alpine.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
+		$this->userFolder->newFolder('/test/ignore/');
+		$this->ignoredFile = $this->userFolder->newFile('/test/ignore/alpine.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
+		$this->userFolder->newFile('/test/' . $ignoreFileName, '');
 		$this->config->setAppValue('recognize', 'imagenet.enabled', 'true');
 		/** @var StorageCrawlJob $scheduler */
 		$crawler = \OC::$server->get(StorageCrawlJob::class);
@@ -141,7 +156,7 @@ class ClassifierTest extends TestCase {
 
 		self::assertCount(1,
 			$this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100),
-			'imagenet queue should contain image');
+			'imagenet queue should contain exactly one image');
 
 		list($classifier) = $this->jobList->getJobs(ClassifyImagenetJob::class, 1, 0);
 		$classifier->execute($this->jobList);
@@ -338,12 +353,25 @@ class ClassifierTest extends TestCase {
 		}
 	}
 
-	public function testMovinetPipeline() : void {
+	/**
+	 * @dataProvider ignoreVideoFilesProvider
+	 * @return void
+	 * @throws \OCP\DB\Exception
+	 * @throws \OCP\Files\InvalidPathException
+	 * @throws \OCP\Files\NotFoundException
+	 * @throws \OCP\Files\NotPermittedException
+	 * @throws \Psr\Container\ContainerExceptionInterface
+	 * @throws \Psr\Container\NotFoundExceptionInterface
+	 */
+	public function testMovinetPipeline(string $ignoreFileName) : void {
 		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
 			// Cannot run musicnn with purejs/WASM mode
 			self::markTestSkipped();
 		}
 		$this->testFile = $this->userFolder->newFile('/jumpingjack.gif', file_get_contents(__DIR__.'/res/jumpingjack.gif'));
+		$this->userFolder->newFolder('/test/ignore/');
+		$this->ignoredFile = $this->userFolder->newFile('/test/ignore/jumpingjack.gif', file_get_contents(__DIR__.'/res/jumpingjack.gif'));
+		$this->userFolder->newFile('/test/' . $ignoreFileName, '');
 		$this->config->setAppValue('recognize', 'movinet.enabled', 'true');
 		/** @var StorageCrawlJob $scheduler */
 		$crawler = \OC::$server->get(StorageCrawlJob::class);
@@ -378,7 +406,7 @@ class ClassifierTest extends TestCase {
 
 		self::assertCount(1,
 			$this->queue->getFromQueue(MovinetClassifier::MODEL_NAME, $storageId, $rootId, 100),
-			'movinet queue should contain gif');
+			'movinet queue should contain exactly one entry');
 
 		list($classifier) = $this->jobList->getJobs(ClassifyMovinetJob::class, 1, 0);
 		$classifier->execute($this->jobList);
@@ -398,12 +426,25 @@ class ClassifierTest extends TestCase {
 		);
 	}
 
-	public function testMusicnnPipeline() : void {
+	/**
+	 * @dataProvider ignoreAudioFilesProvider
+	 * @return void
+	 * @throws \OCP\DB\Exception
+	 * @throws \OCP\Files\InvalidPathException
+	 * @throws \OCP\Files\NotFoundException
+	 * @throws \OCP\Files\NotPermittedException
+	 * @throws \Psr\Container\ContainerExceptionInterface
+	 * @throws \Psr\Container\NotFoundExceptionInterface
+	 */
+	public function testMusicnnPipeline(string $ignoreFileName) : void {
 		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
 			// Cannot run musicnn with purejs/WASM mode
 			self::markTestSkipped();
 		}
 		$this->testFile = $this->userFolder->newFile('/Rock_Rejam.mp3', file_get_contents(__DIR__.'/res/Rock_Rejam.mp3'));
+		$this->userFolder->newFolder('/test/ignore/');
+		$this->ignoredFile = $this->userFolder->newFile('/test/ignore/Rock_Rejam.mp3', file_get_contents(__DIR__.'/res/Rock_Rejam.mp3'));
+		$this->userFolder->newFile('/test/' . $ignoreFileName, '');
 		$this->config->setAppValue('recognize', 'musicnn.enabled', 'true');
 		/** @var StorageCrawlJob $scheduler */
 		$crawler = \OC::$server->get(StorageCrawlJob::class);
@@ -440,7 +481,7 @@ class ClassifierTest extends TestCase {
 
 		self::assertCount(1,
 			$this->queue->getFromQueue(MusicnnClassifier::MODEL_NAME, $storageId, $rootId, 100),
-			'movinet queue should contain gif');
+			'movinet queue should contain exactly one entry');
 
 		list($classifier) = $this->jobList->getJobs(ClassifyMusicnnJob::class, 1, 0);
 		$classifier->execute($this->jobList);
@@ -491,6 +532,36 @@ class ClassifierTest extends TestCase {
 			['eiffeltower.jpg', LandmarksClassifier::MODEL_NAME, 'Eiffel Tower'],
 			['Rock_Rejam.mp3', MusicnnClassifier::MODEL_NAME, 'electronic'],
 			['jumpingjack.gif', MovinetClassifier::MODEL_NAME, 'jumping jacks']
+		];
+	}
+
+	/**
+	 * @return array
+	 */
+	public function ignoreAudioFilesProvider() {
+		return [
+			['.nomusic'],
+			['.nomedia']
+		];
+	}
+
+	/**
+	 * @return array
+	 */
+	public function ignoreVideoFilesProvider() {
+		return [
+			['.novideo'],
+			['.nomedia']
+		];
+	}
+
+	/**
+	 * @return array
+	 */
+	public function ignoreImageFilesProvider() {
+		return [
+			['.noimage'],
+			['.nomedia']
 		];
 	}
 
