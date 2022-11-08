@@ -36,6 +36,8 @@ Recognize uses
  * a [Musicnn](https://arxiv.org/abs/1909.06654) neural network architecture to classify audio files into music genres. Also see [the original musicnn repository](https://github.com/jordipons/musicnn).
  * a pre-trained [MoViNet](https://tfhub.dev/google/collections/movinet) model for video classification
 
+[Learn more about what's going on behind the scenes in this wiki article.](https://github.com/nextcloud/recognize/wiki/Behind-the-scenes)
+
 ## Install
 
 ### Requirements
