@@ -13,7 +13,33 @@ use OCP\IConfig;
 use OCP\Settings\ISettings;
 
 class AdminSettings implements ISettings {
-	public const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'geo.enabled', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status',  'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile'];
+	public const SETTINGS = [
+		'tensorflow.cores',
+		'tensorflow.gpu',
+		'tensorflow.purejs',
+		'geo.enabled',
+		'imagenet.enabled',
+		'landmarks.enabled',
+		'faces.enabled',
+		'musicnn.enabled',
+		'movinet.enabled',
+		'node_binary',
+		'faces.status',
+		'imagenet.status',
+		'landmarks.status',
+		'movinet.status',
+		'musicnn.status',
+		'faces.lastFile',
+		'imagenet.lastFile',
+		'landmarks.lastFile',
+		'movinet.lastFile',
+		'musicnn.lastFile',
+		'faces.batchSize',
+		'imagenet.batchSize',
+		'landmarks.batchSize',
+		'movinet.batchSize',
+		'musicnn.batchSize',
+	];
 
 	/**
 	 * @var \OCP\AppFramework\Services\IInitialState

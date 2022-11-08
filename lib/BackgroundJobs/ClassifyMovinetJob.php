@@ -12,8 +12,6 @@ use Psr\Log\LoggerInterface;
 
 class ClassifyMovinetJob extends ClassifierJob {
 	public const MODEL_NAME = 'movinet';
-	public const BATCH_SIZE = 30; // 30 files
-	public const BATCH_SIZE_PUREJS = 10; // 10 files
 
 	private IConfig $config;
 	private MovinetClassifier $movinet;
@@ -43,7 +41,7 @@ class ClassifyMovinetJob extends ClassifierJob {
 	/**
 	 * @return int
 	 */
-	protected function getBatchSize() :int {
-		return $this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'false' ? self::BATCH_SIZE : self::BATCH_SIZE_PUREJS;
+	protected function getBatchSize(): int {
+		return intval($this->config->getAppValue('recognize', 'movinet.batchSize', '100'));
 	}
 }

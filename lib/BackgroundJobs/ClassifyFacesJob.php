@@ -12,8 +12,6 @@ use Psr\Log\LoggerInterface;
 
 class ClassifyFacesJob extends ClassifierJob {
 	public const MODEL_NAME = 'faces';
-	public const BATCH_SIZE = 100; // 100 images
-	public const BATCH_SIZE_PUREJS = 25; // 25 images
 
 	private IConfig $config;
 	private ClusteringFaceClassifier $faces;
@@ -43,6 +41,6 @@ class ClassifyFacesJob extends ClassifierJob {
 	 * @return int
 	 */
 	protected function getBatchSize() :int {
-		return $this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'false' ? self::BATCH_SIZE : self::BATCH_SIZE_PUREJS;
+		return intval($this->config->getAppValue('recognize', 'faces.batchSize', '100'));
 	}
 }

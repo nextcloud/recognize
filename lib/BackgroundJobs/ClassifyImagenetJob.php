@@ -12,8 +12,6 @@ use Psr\Log\LoggerInterface;
 
 class ClassifyImagenetJob extends ClassifierJob {
 	public const MODEL_NAME = 'imagenet';
-	public const BATCH_SIZE = 100; // 100 images
-	public const BATCH_SIZE_PUREJS = 25; // 25 images
 
 	private IConfig $config;
 	private ImagenetClassifier $imagenet;
@@ -42,7 +40,7 @@ class ClassifyImagenetJob extends ClassifierJob {
 	/**
 	 * @return int
 	 */
-	protected function getBatchSize() :int {
-		return $this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'false' ? self::BATCH_SIZE : self::BATCH_SIZE_PUREJS;
+	protected function getBatchSize(): int {
+		return intval($this->config->getAppValue('recognize', 'imagenet.batchSize', '100'));
 	}
 }
