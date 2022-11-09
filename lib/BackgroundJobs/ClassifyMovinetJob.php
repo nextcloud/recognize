@@ -42,6 +42,6 @@ class ClassifyMovinetJob extends ClassifierJob {
 	 * @return int
 	 */
 	protected function getBatchSize(): int {
-		return intval($this->config->getAppValue('recognize', 'movinet.batchSize', '100'));
+		return intval($this->config->getAppValue('recognize', 'movinet.batchSize', '' . parent::getBatchSize()));
 	}
 }

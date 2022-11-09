@@ -41,6 +41,6 @@ class ClassifyFacesJob extends ClassifierJob {
 	 * @return int
 	 */
 	protected function getBatchSize() :int {
-		return intval($this->config->getAppValue('recognize', 'faces.batchSize', '100'));
+		return intval($this->config->getAppValue('recognize', 'faces.batchSize', '' . parent::getBatchSize()));
 	}
 }

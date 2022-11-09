@@ -62,6 +62,10 @@ class AdminSettings implements ISettings {
 	public function getForm(): TemplateResponse {
 		$settings = [];
 		foreach (self::SETTINGS as $setting) {
+			if (strpos($setting, 'batchSize') !== false) {
+				$settings[$setting] = $this->config->getAppValue('recognize', $setting, $this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'false' ? '' . 100 : '' . 20);
+				continue;
+			}
 			$settings[$setting] = $this->config->getAppValue('recognize', $setting, 'null');
 		}
 		$this->initialState->provideInitialState('settings', $settings);

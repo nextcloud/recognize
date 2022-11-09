@@ -87,7 +87,9 @@ abstract class ClassifierJob extends TimedJob {
 	/**
 	 * @return int
 	 */
-	abstract protected function getBatchSize() : int;
+	protected function getBatchSize(): int {
+		return $this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'false' ? 100 : 20;
+	}
 
 	/**
 	 * @param array $files
