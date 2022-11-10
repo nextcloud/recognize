@@ -63,9 +63,9 @@ class SettingsService {
 	 */
 	public function getSetting(string $key): string {
 		if (strpos($key, 'batchSize') !== false) {
-			return $this->config->getAppValue('recognize', $key, $this->getSetting('tensorflow.purejs') === 'false' ? self::DEFAULTS[$key] : self::PUREJS_DEFAULTS[$key]);
+			return $this->config->getAppValue('recognize', $key, $this->getSetting('tensorflow.purejs') === 'false' ? var_export(self::DEFAULTS[$key], true) : var_export(self::PUREJS_DEFAULTS[$key], true));
 		}
-		return $this->config->getAppValue('recognize', $key, '' . self::DEFAULTS[$key]);
+		return $this->config->getAppValue('recognize', $key, var_export(self::DEFAULTS[$key], true));
 	}
 
 	/**
@@ -78,7 +78,7 @@ class SettingsService {
 		if (!isset(self::DEFAULTS[$key])) {
 			throw new Exception('Unknown settings key '.$key);
 		}
-		if ($value === true && $this->config->getAppValue('recognize', $key, 'false') === 'false') {
+		if ($value === 'true' && $this->config->getAppValue('recognize', $key, 'false') === 'false') {
 			// Additional model enabled: Schedule new crawl run for the affected mime types
 			switch ($key) {
 				case ClusteringFaceClassifier::MODEL_NAME . '.enabled':
@@ -108,7 +108,7 @@ class SettingsService {
 	 */
 	public function getAll(): array {
 		$settings = [];
-		foreach (self::DEFAULTS as $key => $value) {
+		foreach (array_keys(self::DEFAULTS) as $key) {
 			$settings[$key] = $this->getSetting($key);
 		}
 		return $settings;
