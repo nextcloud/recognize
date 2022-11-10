@@ -13,8 +13,8 @@ use OCA\Recognize\Service\QueueService;
 use OCA\Recognize\Service\TagManager;
 use OCP\Files\IRootFolder;
 use OCP\IConfig;
+use OCP\IPreview;
 use OCP\ITempManager;
-use OCP\Preview\IProviderV2;
 
 class LandmarksClassifier extends Classifier {
 	public const IMAGE_TIMEOUT = 480; // seconds
@@ -24,7 +24,7 @@ class LandmarksClassifier extends Classifier {
 
 	private TagManager $tagManager;
 
-	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager, QueueService $queue, IRootFolder $rootFolder, ITempManager $tempManager, IProviderV2 $previewProvider) {
+	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager, QueueService $queue, IRootFolder $rootFolder, ITempManager $tempManager, IPreview $previewProvider) {
 		parent::__construct($logger, $config, $rootFolder, $queue, $tempManager, $previewProvider);
 		$this->tagManager = $tagManager;
 	}

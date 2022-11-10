@@ -15,9 +15,10 @@ use OCP\Files\File;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
+use OCP\Files\NotPermittedException;
 use OCP\IConfig;
+use OCP\IPreview;
 use OCP\ITempManager;
-use OCP\Preview\IProviderV2;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Exception\RuntimeException;
@@ -30,9 +31,9 @@ class Classifier {
 	private IRootFolder $rootFolder;
 	protected QueueService $queue;
 	private ITempManager $tempManager;
-	private IProviderV2 $previewProvider;
+	private IPreview $previewProvider;
 
-	public function __construct(Logger $logger, IConfig $config, IRootFolder $rootFolder, QueueService $queue, ITempManager $tempManager, IProviderV2 $previewProvider) {
+	public function __construct(Logger $logger, IConfig $config, IRootFolder $rootFolder, QueueService $queue, ITempManager $tempManager, IPreview  $previewProvider) {
 		$this->logger = $logger;
 		$this->config = $config;
 		$this->rootFolder = $rootFolder;
@@ -192,13 +193,25 @@ class Classifier {
 			return $path;
 		}
 
-		$image = $this->previewProvider->getThumbnail($file, self::TEMP_FILE_DIMENSION, self::TEMP_FILE_DIMENSION);
+		$image = $this->previewProvider->getPreview($file, self::TEMP_FILE_DIMENSION, self::TEMP_FILE_DIMENSION);
 
-		if ($image === null) {
+		$tmpfile = fopen($tmpname, 'w');
+
+		try {
+			$preview = $image->read();
+		} catch (NotPermittedException $e) {
+			$this->logger->warning('Could not read preview file', ['exception' => $e]);
 			return $path;
 		}
 
-		$image->save($tmpname);
+		if (stream_copy_to_stream($preview, $tmpfile) === false) {
+			$this->logger->warning('Could not copy preview file to temp folder');
+			fclose($preview);
+			fclose($tmpfile);
+			return $path;
+		}
+		fclose($preview);
+		fclose($tmpfile);
 		return $tmpname;
 	}
 }

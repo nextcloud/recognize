@@ -19,8 +19,8 @@ use OCP\Files\Config\ICachedMountInfo;
 use OCP\Files\Config\IUserMountCache;
 use OCP\Files\IRootFolder;
 use OCP\IConfig;
+use OCP\IPreview;
 use OCP\ITempManager;
-use OCP\Preview\IProviderV2;
 
 class ClusteringFaceClassifier extends Classifier {
 	public const IMAGE_TIMEOUT = 120; // seconds
@@ -32,7 +32,7 @@ class ClusteringFaceClassifier extends Classifier {
 	private IUserMountCache $userMountCache;
 	private IJobList $jobList;
 
-	public function __construct(Logger $logger, IConfig $config, FaceDetectionMapper $faceDetections, QueueService $queue, IRootFolder $rootFolder, IUserMountCache $userMountCache, IJobList $jobList, ITempManager $tempManager, IProviderV2 $previewProvider) {
+	public function __construct(Logger $logger, IConfig $config, FaceDetectionMapper $faceDetections, QueueService $queue, IRootFolder $rootFolder, IUserMountCache $userMountCache, IJobList $jobList, ITempManager $tempManager, IPreview $previewProvider) {
 		parent::__construct($logger, $config, $rootFolder, $queue, $tempManager, $previewProvider);
 		$this->faceDetections = $faceDetections;
 		$this->userMountCache = $userMountCache;
