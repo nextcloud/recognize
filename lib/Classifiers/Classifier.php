@@ -11,29 +11,34 @@ use OCA\Recognize\Constants;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
 use OCP\DB\Exception;
+use OCP\Files\File;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
 use OCP\IConfig;
 use OCP\ITempManager;
+use OCP\Preview\IProviderV2;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Process\Process;
 
 class Classifier {
+	public const TEMP_FILE_DIMENSION = 1024;
 	protected LoggerInterface $logger;
 	protected IConfig $config;
 	private IRootFolder $rootFolder;
 	protected QueueService $queue;
 	private ITempManager $tempManager;
+	private IProviderV2 $previewProvider;
 
-	public function __construct(Logger $logger, IConfig $config, IRootFolder $rootFolder, QueueService $queue, ITempManager $tempManager) {
+	public function __construct(Logger $logger, IConfig $config, IRootFolder $rootFolder, QueueService $queue, ITempManager $tempManager, IProviderV2 $previewProvider) {
 		$this->logger = $logger;
 		$this->config = $config;
 		$this->rootFolder = $rootFolder;
 		$this->queue = $queue;
 		$this->tempManager = $tempManager;
+		$this->previewProvider = $previewProvider;
 	}
 
 	/**
@@ -174,29 +179,15 @@ class Classifier {
 			return $path;
 		}
 
-		// Check if ImageMagick is installed
-		if (!extension_loaded('imagick')) {
-			return $path;
-		}
-
 		// Create a temporary file *with the correct extension*
 		$tmpname = $this->tempManager->getTemporaryFile('.jpg');
 
-		try {
-			// Convert to a temporary JPEG file optionally downscaling
-			$imagick = new \Imagick($path);
-			$dimensions = $imagick->getImageGeometry();
-			if ($dimensions['width'] > 4096 || $dimensions['height'] > 4096) {
-				// downscale
-				$imagick->scaleImage(4096, 4096, true);
-			}
-			$imagick->setImageFormat('jpeg');
-			$imagick->writeImage($tmpname);
-		} catch (\ImagickException $e) {
-			// If conversion fails, just use the original file
+		if (!$this->previewProvider->isAvailable($file) && !($file instanceof File)) {
 			return $path;
 		}
 
+		$image = $this->previewProvider->getThumbnail($file, self::TEMP_FILE_DIMENSION, self::TEMP_FILE_DIMENSION);
+		$image->save($tmpname);
 		return $tmpname;
 	}
 }
