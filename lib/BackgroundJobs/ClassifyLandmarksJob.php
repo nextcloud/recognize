@@ -4,21 +4,21 @@ namespace OCA\Recognize\BackgroundJobs;
 
 use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
 use OCA\Recognize\Service\QueueService;
+use OCA\Recognize\Service\SettingsService;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\IJobList;
 use OCP\Files\Config\IUserMountCache;
-use OCP\IConfig;
 use Psr\Log\LoggerInterface;
 
 class ClassifyLandmarksJob extends ClassifierJob {
 	public const MODEL_NAME = 'landmarks';
 
-	private IConfig $config;
+	private SettingsService $settingsService;
 	private LandmarksClassifier $landmarks;
 
-	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IConfig $config, LandmarksClassifier $landmarks, IUserMountCache $mountCache, IJobList $jobList) {
-		parent::__construct($time, $logger, $queue, $mountCache, $jobList, $config);
-		$this->config = $config;
+	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, SettingsService $settingsService, LandmarksClassifier $landmarks, IUserMountCache $mountCache, IJobList $jobList) {
+		parent::__construct($time, $logger, $queue, $mountCache, $jobList, $settingsService);
+		$this->settingsService = $settingsService;
 		$this->landmarks = $landmarks;
 	}
 
@@ -41,6 +41,6 @@ class ClassifyLandmarksJob extends ClassifierJob {
 	 * @return int
 	 */
 	protected function getBatchSize() :int {
-		return intval($this->config->getAppValue('recognize', 'landmarks.batchSize', '' . parent::getBatchSize()));
+		return intval($this->settingsService->getSetting('landmarks.batchSize'));
 	}
 }

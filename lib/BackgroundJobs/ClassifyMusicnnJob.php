@@ -4,21 +4,21 @@ namespace OCA\Recognize\BackgroundJobs;
 
 use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
 use OCA\Recognize\Service\QueueService;
+use OCA\Recognize\Service\SettingsService;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\IJobList;
 use OCP\Files\Config\IUserMountCache;
-use OCP\IConfig;
 use Psr\Log\LoggerInterface;
 
 class ClassifyMusicnnJob extends ClassifierJob {
 	public const MODEL_NAME = 'musicnn';
 
-	private IConfig $config;
+	private SettingsService $settingsService;
 	private MusicnnClassifier $musicnn;
 
-	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IConfig $config, MusicnnClassifier $musicnn, IUserMountCache $mountCache, IJobList $jobList) {
-		parent::__construct($time, $logger, $queue, $mountCache, $jobList, $config);
-		$this->config = $config;
+	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, SettingsService $settingsService, MusicnnClassifier $musicnn, IUserMountCache $mountCache, IJobList $jobList) {
+		parent::__construct($time, $logger, $queue, $mountCache, $jobList, $settingsService);
+		$this->settingsService = $settingsService;
 		$this->musicnn = $musicnn;
 	}
 
@@ -43,6 +43,6 @@ class ClassifyMusicnnJob extends ClassifierJob {
 	 * @return int
 	 */
 	protected function getBatchSize() :int {
-		return intval($this->config->getAppValue('recognize', 'musicnn.batchSize', '' . parent::getBatchSize()));
+		return intval($this->settingsService->getSetting('musicnn.batchSize'));
 	}
 }
