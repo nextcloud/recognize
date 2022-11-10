@@ -7,6 +7,7 @@ use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
 use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
 use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
 use OCA\Recognize\Classifiers\Video\MovinetClassifier;
+use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\QBMapper;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
@@ -79,6 +80,27 @@ class QueueMapper extends QBMapper {
 			$qb->delete($this->getQueueTable($model))
 				->where($qb->expr()->eq('file_id', $qb->createPositionalParameter($fileId)))
 				->executeStatement();
+		}
+	}
+
+	/**
+	 * @param string $model
+	 * @param \OCA\Recognize\Db\QueueFile $file
+	 * @return \OCA\Recognize\Db\QueueFile|null
+	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
+	 * @throws \OCP\DB\Exception
+	 */
+	public function existsQueueItem(string $model, QueueFile $file) : ?QueueFile {
+		$qb = $this->db->getQueryBuilder();
+		$qb->select(QueueFile::$columns)
+			->from($this->getQueueTable($model))
+			->where($qb->expr()->eq('file_id', $qb->createPositionalParameter($file->getFileId(), IQueryBuilder::PARAM_INT)))
+			->setMaxResults(1);
+
+		try {
+			return $this->findEntity($qb);
+		} catch (DoesNotExistException $e) {
+			return null;
 		}
 	}
 
