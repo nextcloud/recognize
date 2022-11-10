@@ -193,6 +193,11 @@ class Classifier {
 		}
 
 		$image = $this->previewProvider->getThumbnail($file, self::TEMP_FILE_DIMENSION, self::TEMP_FILE_DIMENSION);
+
+		if ($image === null) {
+			return $path;
+		}
+
 		$image->save($tmpname);
 		return $tmpname;
 	}
