@@ -63,9 +63,9 @@ class SettingsService {
 	 */
 	public function getSetting(string $key): string {
 		if (strpos($key, 'batchSize') !== false) {
-			return $this->config->getAppValue('recognize', $key, $this->getSetting('tensorflow.purejs') === 'false' ? var_export(self::DEFAULTS[$key], true) : var_export(self::PUREJS_DEFAULTS[$key], true));
+			return $this->config->getAppValue('recognize', $key, $this->getSetting('tensorflow.purejs') === 'false' ? json_encode(self::DEFAULTS[$key]) : json_encode(self::PUREJS_DEFAULTS[$key]));
 		}
-		return $this->config->getAppValue('recognize', $key, var_export(self::DEFAULTS[$key], true));
+		return $this->config->getAppValue('recognize', $key, json_encode(self::DEFAULTS[$key]));
 	}
 
 	/**
