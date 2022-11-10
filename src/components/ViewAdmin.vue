@@ -295,7 +295,7 @@ export default {
 			for (const setting of SETTINGS) {
 				this.settings[setting] = settings[setting]
 				if (BOOLEAN_SETTINGS.includes(setting)) {
-					this.settings[setting] = Boolean(JSON.parse(this.settings[setting]))
+					this.settings[setting] = JSON.parse(this.settings[setting])
 				}
 				if (setting.includes('batchSize') && (this.settings[setting] === '' || settings[setting] === 'null')) {
 					this.settings[setting] = 100
@@ -385,7 +385,7 @@ export default {
 		async loadValue(setting) {
 			this.settings[setting] = await this.getValue(setting)
 			if (BOOLEAN_SETTINGS.includes(setting)) {
-				this.settings[setting] = Boolean(JSON.parse(this.settings[setting]))
+				this.settings[setting] = JSON.parse(this.settings[setting])
 			}
 		},
 		async setValue(setting, value) {
