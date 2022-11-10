@@ -33,7 +33,7 @@
 					{{ t('recognize', 'An error occurred during face recognition, please check the Nextcloud logs.') }}
 				</NcNoteCard>
 				<NcNoteCard v-else>
-					{{ t('recognize', 'Waiting for status reports on face recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.') }}
+					{{ t('recognize', 'Waiting for status reports on face recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs.') }}
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued">
 					{{ t('recognize', 'Face recognition:') }} {{ countQueued.faces }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['faces.lastFile']) }}
@@ -47,7 +47,7 @@
 					{{ t('recognize', 'An error occurred during object recognition, please check the Nextcloud logs.') }}
 				</NcNoteCard>
 				<NcNoteCard v-else>
-					{{ t('recognize', 'Waiting for status reports on object recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.') }}
+					{{ t('recognize', 'Waiting for status reports on object recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs.') }}
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued">
 					{{ t('recognize', 'Object recognition:') }} {{ countQueued.imagenet }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['imagenet.lastFile']) }}
@@ -57,12 +57,22 @@
 				<NcCheckboxRadioSwitch :checked.sync="settings['faces.enabled']" type="switch" @update:checked="onChange">
 					{{ t('recognize', 'Enable face recognition (groups pictures by people that appear in them in the photos app)') }}
 				</NcCheckboxRadioSwitch>
+				<NcTextField :disabled="!settings['faces.enabled']"
+					:value.sync="settings['faces.batchSize']"
+					:label-visible="true"
+					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~500 or more, in WASM mode ~50 is recommended)')" />
 			</p>
+			<p>&nbsp;</p>
 			<p>
 				<NcCheckboxRadioSwitch :checked.sync="settings['imagenet.enabled']" type="switch" @update:checked="onChange">
 					{{ t('recognize', 'Enable object recognition (e.g. food, vehicles, landscapes)') }}
 				</NcCheckboxRadioSwitch>
+				<NcTextField :disabled="!settings['imagenet.enabled']"
+					:value.sync="settings['imagenet.batchSize']"
+					:label-visible="true"
+					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')" />
 			</p>
+			<p>&nbsp;</p>
 			<p>
 				<NcCheckboxRadioSwitch :checked.sync="settings['landmarks.enabled']"
 					type="switch"
@@ -70,6 +80,10 @@
 					@update:checked="onChange">
 					{{ t('recognize', 'Enable landmark recognition (e.g. Eiffel Tower, Golden Gate Bridge)') }}
 				</NcCheckboxRadioSwitch>
+				<NcTextField :disabled="!settings['imagenet.enabled'] || !settings['landmarks.enabled']"
+					:value.sync="settings['landmarks.batchSize']"
+					:label-visible="true"
+					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')" />
 			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Audio tagging')">
@@ -81,7 +95,7 @@
 					{{ t('recognize', 'An error occurred during audio recognition, please check the Nextcloud logs.') }}
 				</NcNoteCard>
 				<NcNoteCard v-else>
-					{{ t('recognize', 'Waiting for status reports on audio recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.') }}
+					{{ t('recognize', 'Waiting for status reports on audio recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs.') }}
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued">
 					{{ t('recognize', 'Music genre recognition:') }} {{ countQueued.musicnn }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['musicnn.lastFile']) }}
@@ -91,6 +105,10 @@
 				<NcCheckboxRadioSwitch :checked.sync="settings['musicnn.enabled']" type="switch" @update:checked="onChange">
 					{{ t('recognize', 'Enable music genre recognition (e.g. pop, rock, folk, metal, new age)') }}
 				</NcCheckboxRadioSwitch>
+				<NcTextField :disabled="!settings['musicnn.enabled']"
+					:value.sync="settings['musicnn.batchSize']"
+					:label-visible="true"
+					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')" />
 			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Video tagging')">
@@ -102,7 +120,7 @@
 					{{ t('recognize', 'An error occurred during video recognition, please check the Nextcloud logs.') }}
 				</NcNoteCard>
 				<NcNoteCard v-else>
-					{{ t('recognize', 'Waiting for status reports on video recognition. If this message persists beyond 30 minutes, please check the Nextcloud logs.') }}
+					{{ t('recognize', 'Waiting for status reports on video recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs.') }}
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued">
 					{{ t('recognize', 'Video recognition:') }} {{ countQueued.movinet }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['movinet.lastFile']) }}
@@ -115,6 +133,10 @@
 					@update:checked="onChange">
 					{{ t('recognize', 'Enable human action recognition (e.g. arm wrestling, dribbling basketball, hula hooping)') }}
 				</NcCheckboxRadioSwitch>
+				<NcTextField :disabled="!settings['movinet.enabled']"
+					:value.sync="settings['movinet.batchSize']"
+					:label-visible="true"
+					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~20 or more, in WASM mode ~5 is recommended)')" />
 			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Reset')">
@@ -198,13 +220,13 @@
 </template>
 
 <script>
-import { NcNoteCard, NcSettingsSection, NcCheckboxRadioSwitch } from '@nextcloud/vue'
+import { NcNoteCard, NcSettingsSection, NcCheckboxRadioSwitch, NcTextField } from '@nextcloud/vue'
 import axios from '@nextcloud/axios'
 import { generateUrl } from '@nextcloud/router'
 import { loadState } from '@nextcloud/initial-state'
 import humanizeDuration from 'humanize-duration'
 
-const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile']
+const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'faces.batchSize', 'imagenet.batchSize', 'landmarks.batchSize', 'movinet.batchSize', 'musicnn.batchSize']
 
 const BOOLEAN_SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile']
 
@@ -212,7 +234,7 @@ const MAX_RELATIVE_DATE = 1000 * 60 * 60 * 24 * 7 // one week
 
 export default {
 	name: 'ViewAdmin',
-	components: { NcSettingsSection, NcNoteCard, NcCheckboxRadioSwitch },
+	components: { NcSettingsSection, NcNoteCard, NcCheckboxRadioSwitch, NcTextField },
 
 	data() {
 		return {
@@ -273,7 +295,10 @@ export default {
 			for (const setting of SETTINGS) {
 				this.settings[setting] = settings[setting]
 				if (BOOLEAN_SETTINGS.includes(setting)) {
-					this.settings[setting] = Boolean(JSON.parse(this.settings[setting]))
+					this.settings[setting] = JSON.parse(this.settings[setting])
+				}
+				if (setting.includes('batchSize') && (this.settings[setting] === '' || settings[setting] === 'null')) {
+					this.settings[setting] = 100
 				}
 				if (setting === 'tensorflow.cores' && this.settings[setting] === '') {
 					this.settings[setting] = 0
@@ -360,7 +385,7 @@ export default {
 		async loadValue(setting) {
 			this.settings[setting] = await this.getValue(setting)
 			if (BOOLEAN_SETTINGS.includes(setting)) {
-				this.settings[setting] = Boolean(JSON.parse(this.settings[setting]))
+				this.settings[setting] = JSON.parse(this.settings[setting])
 			}
 		},
 		async setValue(setting, value) {

@@ -3,36 +3,31 @@
 namespace OCA\Recognize\Controller;
 
 use OCA\Recognize\BackgroundJobs\SchedulerJob;
-use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
-use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
-use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
-use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
-use OCA\Recognize\Classifiers\Video\MovinetClassifier;
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Service\QueueService;
+use OCA\Recognize\Service\SettingsService;
 use OCA\Recognize\Service\TagManager;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\BackgroundJob\IJobList;
 use OCP\DB\Exception;
-use OCP\IConfig;
 use OCP\IRequest;
 
 class AdminController extends Controller {
 	private TagManager $tagManager;
 	private IJobList $jobList;
-	private IConfig $config;
+	private SettingsService $settingsService;
 	private QueueService $queue;
 	private FaceClusterMapper $clusterMapper;
 	private FaceDetectionMapper $detectionMapper;
 
-	public function __construct(string $appName, IRequest $request, TagManager $tagManager, IJobList $jobList, IConfig $config, QueueService $queue, FaceClusterMapper $clusterMapper, FaceDetectionMapper $detectionMapper) {
+	public function __construct(string $appName, IRequest $request, TagManager $tagManager, IJobList $jobList, SettingsService $settingsService, QueueService $queue, FaceClusterMapper $clusterMapper, FaceDetectionMapper $detectionMapper) {
 		parent::__construct($appName, $request);
 		$this->tagManager = $tagManager;
 		$this->jobList = $jobList;
-		$this->config = $config;
+		$this->settingsService = $settingsService;
 		$this->queue = $queue;
 		$this->clusterMapper = $clusterMapper;
 		$this->detectionMapper = $detectionMapper;
@@ -122,33 +117,16 @@ class AdminController extends Controller {
 		return new JSONResponse(['musl' => strpos($ldd, 'musl') !== false]);
 	}
 
-	public function setSetting(string $setting, $value): void {
-		if ($value === true && $this->config->getAppValue('recognize', $setting, 'false') === 'false') {
-			// Additional model enabled: Schedule new crawl run for the affected mime types
-			switch ($setting) {
-				case ClusteringFaceClassifier::MODEL_NAME . '.enabled':
-					$this->jobList->add(SchedulerJob::class, ['models' => [ClusteringFaceClassifier::MODEL_NAME]]);
-					break;
-				case ImagenetClassifier::MODEL_NAME . '.enabled':
-					$this->jobList->add(SchedulerJob::class, ['models' => [ImagenetClassifier::MODEL_NAME]]);
-					break;
-				case LandmarksClassifier::MODEL_NAME . '.enabled':
-					$this->jobList->add(SchedulerJob::class, ['models' => [LandmarksClassifier::MODEL_NAME]]);
-					break;
-				case MovinetClassifier::MODEL_NAME . '.enabled':
-					$this->jobList->add(SchedulerJob::class, ['models' => [MovinetClassifier::MODEL_NAME]]);
-					break;
-				case MusicnnClassifier::MODEL_NAME . '.enabled':
-					$this->jobList->add(SchedulerJob::class, ['models' => [MusicnnClassifier::MODEL_NAME]]);
-					break;
-				default:
-					break;
-			}
+	public function setSetting(string $setting, $value): JSONResponse {
+		try {
+			$this->settingsService->setSetting($setting, $value);
+			return new JSONResponse([], Http::STATUS_OK);
+		} catch (\OCA\Recognize\Exception\Exception $e) {
+			return new JSONResponse([], Http::STATUS_BAD_REQUEST);
 		}
-		$this->config->setAppValue('recognize', $setting, $value);
 	}
 
 	public function getSetting(string $setting):JSONResponse {
-		return new JSONResponse(['value' => $this->config->getAppValue('recognize', $setting)]);
+		return new JSONResponse(['value' => $this->settingsService->getSetting($setting)]);
 	}
 }

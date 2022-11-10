@@ -7,37 +7,25 @@
 
 namespace OCA\Recognize\Settings;
 
+use OCA\Recognize\Service\SettingsService;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Services\IInitialState;
-use OCP\IConfig;
 use OCP\Settings\ISettings;
 
 class AdminSettings implements ISettings {
-	public const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'geo.enabled', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status',  'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile'];
-
-	/**
-	 * @var \OCP\AppFramework\Services\IInitialState
-	 */
 	private IInitialState $initialState;
-	/**
-	 * @var \OCP\IConfig
-	 */
-	private IConfig $config;
+	private SettingsService $settingsService;
 
-	public function __construct(IInitialState $initialState, IConfig $config) {
+	public function __construct(IInitialState $initialState, SettingsService $settingsService) {
 		$this->initialState = $initialState;
-		$this->config = $config;
+		$this->settingsService = $settingsService;
 	}
-
 
 	/**
 	 * @return TemplateResponse
 	 */
 	public function getForm(): TemplateResponse {
-		$settings = [];
-		foreach (self::SETTINGS as $setting) {
-			$settings[$setting] = $this->config->getAppValue('recognize', $setting, 'null');
-		}
+		$settings = $this->settingsService->getAll();
 		$this->initialState->provideInitialState('settings', $settings);
 
 		$modelsPath = __DIR__ . '/../../models';
