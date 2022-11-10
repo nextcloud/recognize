@@ -15,7 +15,10 @@
 			<NcNoteCard v-else-if="!modelsDownloaded" show-alert type="success">
 				{{ t('recognize', 'The machine learning models still need to be downloaded.') }}
 			</NcNoteCard>
-			<template v-if="settings['faces.enabled'] || settings['imagenet.enabled'] || settings['musicnn.enabled'] || settings['movinet.enabled']">
+			<NcNoteCard v-if="nodejs === false">
+				{{ t('recognize', 'Could not execute the Node.js binary. You may need to set the path to a working binary manually.') }}
+			</NcNoteCard>
+			<template v-else-if="settings['faces.enabled'] || settings['imagenet.enabled'] || settings['musicnn.enabled'] || settings['movinet.enabled']">
 				<NcNoteCard show-alert type="success">
 					{{ t('recognize', 'The app is installed and will automatically classify files in background processes.') }}
 				</NcNoteCard>
@@ -182,16 +185,16 @@
 				</label>
 			</p>
 		</NcSettingsSection>
-		<NcSettingsSection :title="t('recognize', 'Tensorflow plain mode')">
+		<NcSettingsSection :title="t('recognize', 'Tensorflow WASM mode')">
 			<p v-if="avx === undefined || platform === undefined || musl === undefined">
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking CPU') }}
 			</p>
 			<NcNoteCard v-else-if="avx === null || platform === null || musl === null">
 				{{ t('recognize', 'Could not check whether your machine supports native TensorFlow operation.') }}
 			</NcNoteCard>
-			<p v-else-if="avx && platform === 'x86_64' && !musl">
+			<NcNoteCard v-else-if="avx && platform === 'x86_64' && !musl" type="success">
 				{{ t('recognize', 'Your machine supports native TensorFlow operation, you do not need WASM mode.') }}
-			</p>
+			</NcNoteCard>
 			<template v-else>
 				<p>
 					{{ t('recognize', 'WASM mode was activated automatically, because your machine does not support native TensorFlow operation:') }}
@@ -208,7 +211,25 @@
 				</NcCheckboxRadioSwitch>
 			</p>
 		</NcSettingsSection>
-		<NcSettingsSection :title="t('recognize', 'Node.js path')">
+		<NcSettingsSection :title="t('recognize', 'Node.js')">
+			<p v-if="nodejs === undefined">
+				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking Node.js') }}
+			</p>
+			<NcNoteCard v-else-if="nodejs === false">
+				{{ t('recognize', 'Could not execute the Node.js binary. You may need to set the path to a working binary manually.') }}
+			</NcNoteCard>
+			<NcNoteCard v-else type="success">
+				{{ t('recognize', 'Node.js {version} binary was installed successfully.', { version: nodejs }) }}
+			</NcNoteCard>
+			<p v-if="libtensorflow === undefined">
+				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking libtensorflow') }}
+			</p>
+			<NcNoteCard v-else-if="nodejs !== false && libtensorflow === false">
+				{{ t('recognize', 'Could not load libtensorflow in Node.js. You can try to manually install libtensorflow or run in WASM mode.') }}
+			</NcNoteCard>
+			<NcNoteCard v-else-if="libtensorflow === true" type="success">
+				{{ t('recognize', 'Libtensorflow was loaded successfully into Node.js.') }}
+			</NcNoteCard>
 			<p>
 				{{ t('recognize', 'If the shipped Node.js binary doesn\'t work on your system for some reason you can set the path to a custom node.js binary. Currently supported is Node v14.17 and newer v14 releases.') }}
 			</p>
@@ -248,6 +269,8 @@ export default {
 			avx: undefined,
 			platform: undefined,
 			musl: undefined,
+			nodejs: undefined,
+			libtensorflow: undefined,
 			modelsDownloaded: null,
 		}
 	},
@@ -280,6 +303,8 @@ export default {
 		this.getAVX()
 		this.getPlatform()
 		this.getMusl()
+		this.getNodejsStatus()
+		this.getLibtensorflowStatus()
 
 		setInterval(async () => {
 			this.getCount()
@@ -357,6 +382,16 @@ export default {
 			const resp = await axios.get(generateUrl('/apps/recognize/admin/musl'))
 			const { musl } = resp.data
 			this.musl = musl
+		},
+		async getNodejsStatus() {
+			const resp = await axios.get(generateUrl('/apps/recognize/admin/nodejs'))
+			const { nodejs } = resp.data
+			this.nodejs = nodejs
+		},
+		async getLibtensorflowStatus() {
+			const resp = await axios.get(generateUrl('/apps/recognize/admin/libtensorflow'))
+			const { libtensorflow } = resp.data
+			this.libtensorflow = libtensorflow
 		},
 		onChange() {
 			if (this.timeout) {

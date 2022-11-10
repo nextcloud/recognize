@@ -117,6 +117,35 @@ class AdminController extends Controller {
 		return new JSONResponse(['musl' => strpos($ldd, 'musl') !== false]);
 	}
 
+	public function nodejs(): JSONResponse {
+		try {
+			exec($this->settingsService->getSetting('node_binary') . ' --version' . ' 2>&1', $output, $returnCode);
+		} catch (\Throwable $e) {
+			return new JSONResponse(['nodejs' => null]);
+		}
+
+		if ($returnCode !== 0) {
+			return new JSONResponse(['nodejs' => false]);
+		}
+
+		$version = trim(implode("\n", $output));
+		return new JSONResponse(['nodejs' => $version]);
+	}
+
+	public function libtensorflow(): JSONResponse {
+		try {
+			exec($this->settingsService->getSetting('node_binary') . ' ' . __DIR__ . '/../../src/test_libtensorflow.js' . ' 2>&1', $output, $returnCode);
+		} catch (\Throwable $e) {
+			return new JSONResponse(['libtensorflow' => false]);
+		}
+
+		if ($returnCode !== 0) {
+			return new JSONResponse(['libtensorflow' => false]);
+		}
+
+		return new JSONResponse(['libtensorflow' => true]);
+	}
+
 	public function setSetting(string $setting, $value): JSONResponse {
 		try {
 			$this->settingsService->setSetting($setting, $value);

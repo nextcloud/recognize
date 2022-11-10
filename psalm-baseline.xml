@@ -446,7 +446,8 @@
     <MixedArgument occurrences="1">
       <code>$value</code>
     </MixedArgument>
-    <MixedArgumentTypeCoercion occurrences="2">
+    <MixedArgumentTypeCoercion occurrences="3">
+      <code>$output</code>
       <code>$output</code>
       <code>$output</code>
     </MixedArgumentTypeCoercion>
