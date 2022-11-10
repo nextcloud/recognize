@@ -15,6 +15,7 @@ use OCP\DB\Exception;
 use OCP\Files\IRootFolder;
 use OCP\IConfig;
 use OCP\ITempManager;
+use OCP\Preview\IProviderV2;
 
 class ImagenetClassifier extends Classifier {
 	public const IMAGE_TIMEOUT = 480; // seconds
@@ -24,8 +25,8 @@ class ImagenetClassifier extends Classifier {
 	private TagManager $tagManager;
 	protected QueueService $queue;
 
-	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager, QueueService $queue, IRootFolder $rootFolder, ITempManager $tempManager) {
-		parent::__construct($logger, $config, $rootFolder, $queue, $tempManager);
+	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager, QueueService $queue, IRootFolder $rootFolder, ITempManager $tempManager, IProviderV2 $previewProvider) {
+		parent::__construct($logger, $config, $rootFolder, $queue, $tempManager, $previewProvider);
 		$this->tagManager = $tagManager;
 		$this->queue = $queue;
 	}
