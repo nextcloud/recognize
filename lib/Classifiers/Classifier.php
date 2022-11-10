@@ -61,7 +61,13 @@ class Classifier {
 				continue;
 			}
 			try {
-				$paths[] = $this->getConvertedFilePath($files[0]);
+				$path = $this->getConvertedFilePath($files[0]);
+				$filesizeMb = filesize($path) / (1024 * 1024);
+				if ($filesizeMb > 8) {
+					$this->logger->debug('File is too large for classifier: ' . $files[0]->getPath());
+					continue;
+				}
+				$paths[] = $path;
 				$processedFiles[] = $queueFile;
 			} catch (NotFoundException $e) {
 				$this->logger->warning('Could not find file', ['exception' => $e]);
