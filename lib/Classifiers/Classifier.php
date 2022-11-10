@@ -45,6 +45,7 @@ class Classifier {
 	public function classifyFiles(string $model, array $queueFiles, int $timeout): \Generator {
 		$paths = [];
 		$processedFiles = [];
+		$fsFiles = [];
 		foreach ($queueFiles as $queueFile) {
 			$files = $this->rootFolder->getById($queueFile->getFileId());
 			if (count($files) === 0) {
@@ -58,6 +59,7 @@ class Classifier {
 			try {
 				$paths[] = $this->getConvertedFilePath($files[0]);
 				$processedFiles[] = $queueFile;
+				$fsFiles[] = $files[0];
 			} catch (NotFoundException $e) {
 				$this->logger->warning('Could not find file', ['exception' => $e]);
 				continue;
@@ -129,25 +131,34 @@ class Classifier {
 						$results = json_decode($result, true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
 						yield $processedFiles[$i] => $results;
 						$this->queue->removeFromQueue($model, $processedFiles[$i]);
+						$i++;
 					} catch (\JsonException $e) {
 						$this->logger->warning('JSON exception');
 						$this->logger->warning($e->getMessage(), ['exception' => $e]);
 						$this->logger->warning($result);
+						$proc->stop();
+						break 2;
 					} catch (Exception $e) {
 						$this->logger->warning($e->getMessage(), ['exception' => $e]);
+						$proc->stop();
+						break 2;
 					}
-					$i++;
 				}
 			}
 			if ($i !== count($paths)) {
 				$this->logger->warning('Classifier process output: '.$errOut);
+				if (isset($fsFiles[$i + 1])) {
+					$this->logger->warning('Classifier failed between ' . $fsFiles[$i]->getPath() . ' and ' . $fsFiles[$i + 1]->getPath());
+				} else {
+					$this->logger->warning('Classifier failed after ' . $fsFiles[$i]->getPath());
+				}
 				throw new \RuntimeException('Classifier process error');
 			}
 		} catch (ProcessTimedOutException $e) {
 			$this->logger->warning($proc->getErrorOutput());
 			throw new \RuntimeException('Classifier process timeout');
 		} catch (RuntimeException $e) {
-			$this->logger->warning($proc->getErrorOutput());
+			$this->logger->warning('Classifier process output: ' . $proc->getErrorOutput());
 			throw new \RuntimeException('Classifier process could not be started');
 		}
 	}
