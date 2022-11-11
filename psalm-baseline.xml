@@ -311,11 +311,6 @@
     <InvalidScalarArgument occurrences="1">
       <code>$queueFile-&gt;getFileId()</code>
     </InvalidScalarArgument>
-    <MissingDependency occurrences="3">
-      <code>$this-&gt;rootFolder</code>
-      <code>IRootFolder</code>
-      <code>IRootFolder</code>
-    </MissingDependency>
     <MixedArrayAccess occurrences="2">
       <code>$dimensions['height']</code>
       <code>$dimensions['width']</code>
@@ -334,13 +329,6 @@
     <PossiblyNullOperand occurrences="1">
       <code>$proc-&gt;getPid()</code>
     </PossiblyNullOperand>
-    <PropertyNotSetInConstructor occurrences="5">
-      <code>$config</code>
-      <code>$logger</code>
-      <code>$queue</code>
-      <code>$rootFolder</code>
-      <code>$tempManager</code>
-    </PropertyNotSetInConstructor>
     <UnusedFunctionCall occurrences="1">
       <code>json_decode</code>
     </UnusedFunctionCall>
