@@ -14,7 +14,6 @@ use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
 use OCA\Recognize\Classifiers\Video\MovinetClassifier;
 use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Db\QueueMapper;
-use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 use OCP\BackgroundJob\IJobList;
 use OCP\IConfig;
 
@@ -48,14 +47,12 @@ class QueueService {
 		if ($this->config->getAppValue('recognize', $model.'.enabled', 'false') !== 'true') {
 			return;
 		}
-		try {
-			// Only ad to queue if it's not in there already
-			if ($this->queueMapper->existsQueueItem($model, $file) !== null) {
-				return;
-			}
-		} catch (MultipleObjectsReturnedException $e) {
+
+		// Only add to queue if it's not in there already
+		if ($this->queueMapper->existsQueueItem($model, $file)) {
 			return;
 		}
+
 		$this->queueMapper->insertIntoQueue($model, $file);
 		$this->scheduleJob($model, $file);
 	}

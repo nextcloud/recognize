@@ -8,7 +8,9 @@ use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
 use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
 use OCA\Recognize\Classifiers\Video\MovinetClassifier;
 use OCP\AppFramework\Db\DoesNotExistException;
+use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 use OCP\AppFramework\Db\QBMapper;
+use OCP\DB\Exception;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 
@@ -86,11 +88,9 @@ class QueueMapper extends QBMapper {
 	/**
 	 * @param string $model
 	 * @param \OCA\Recognize\Db\QueueFile $file
-	 * @return \OCA\Recognize\Db\QueueFile|null
-	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
-	 * @throws \OCP\DB\Exception
+	 * @return bool
 	 */
-	public function existsQueueItem(string $model, QueueFile $file) : ?QueueFile {
+	public function existsQueueItem(string $model, QueueFile $file) : bool {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select(QueueFile::$columns)
 			->from($this->getQueueTable($model))
@@ -98,9 +98,14 @@ class QueueMapper extends QBMapper {
 			->setMaxResults(1);
 
 		try {
-			return $this->findEntity($qb);
+			$this->findEntity($qb);
+			return true;
 		} catch (DoesNotExistException $e) {
-			return null;
+			return false;
+		} catch (MultipleObjectsReturnedException $e) {
+			return false;
+		} catch (Exception $e) {
+			return false;
 		}
 	}
 
