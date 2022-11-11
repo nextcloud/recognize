@@ -63,6 +63,7 @@
 				<NcTextField :disabled="!settings['faces.enabled']"
 					:value.sync="settings['faces.batchSize']"
 					:label-visible="true"
+					@update:value="onChange"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~500 or more, in WASM mode ~50 is recommended)')" />
 			</p>
 			<p>&nbsp;</p>
@@ -73,6 +74,7 @@
 				<NcTextField :disabled="!settings['imagenet.enabled']"
 					:value.sync="settings['imagenet.batchSize']"
 					:label-visible="true"
+					@update:value="onChange"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')" />
 			</p>
 			<p>&nbsp;</p>
@@ -86,6 +88,7 @@
 				<NcTextField :disabled="!settings['imagenet.enabled'] || !settings['landmarks.enabled']"
 					:value.sync="settings['landmarks.batchSize']"
 					:label-visible="true"
+					@update:value="onChange"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')" />
 			</p>
 		</NcSettingsSection>
@@ -111,6 +114,7 @@
 				<NcTextField :disabled="!settings['musicnn.enabled']"
 					:value.sync="settings['musicnn.batchSize']"
 					:label-visible="true"
+					@update:value="onChange"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')" />
 			</p>
 		</NcSettingsSection>
@@ -138,6 +142,7 @@
 				</NcCheckboxRadioSwitch>
 				<NcTextField :disabled="!settings['movinet.enabled']"
 					:value.sync="settings['movinet.batchSize']"
+					@update:value="onChange"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~20 or more, in WASM mode ~5 is recommended)')" />
 			</p>
