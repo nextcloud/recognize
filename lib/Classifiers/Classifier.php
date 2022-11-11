@@ -176,7 +176,7 @@ class Classifier {
 	private function getConvertedFilePath(Node $file): string {
 		$path = $file->getStorage()->getLocalFile($file->getInternalPath());
 
-		if ($path === false || !is_string($path)) {
+		if ($path === false || !is_string($path) || !$file instanceof File) {
 			throw new NotFoundException();
 		}
 
