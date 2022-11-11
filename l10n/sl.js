@@ -8,7 +8,6 @@ OC.L10N.register(
     "Video tagging" : "Označevanje videoposnetkov",
     "Reset" : "Ponastavi",
     "CPU cores" : "Jedra CPE",
-    "Node.js path" : "Pot do Node.js",
     "Failed to load settings" : "Nalaganje nastavitev je spodletelo.",
     "Failed to save settings" : "Shranjevanje nastavitev je spodletelo",
     "never" : "nikoli",

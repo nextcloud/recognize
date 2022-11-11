@@ -9,8 +9,6 @@ OC.L10N.register(
     "Video tagging" : "Пометка видеозаписей",
     "Reset" : "Сброс",
     "CPU cores" : "Ядра процессора",
-    "Tensorflow plain mode" : "Обычный режим Tensorflow",
-    "Node.js path" : "Путь к Node.js",
     "Failed to load settings" : "Не удалось загрузить настройки",
     "Failed to save settings" : "Не удалось сохранить настройки",
     "never" : "никогда",

@@ -9,8 +9,6 @@ OC.L10N.register(
     "Video tagging" : "Etiquetatge de vídeo",
     "Reset" : "Restableix",
     "CPU cores" : "Nuclis de CPU",
-    "Tensorflow plain mode" : "Mode senzill de tensorflow",
-    "Node.js path" : "Camí de Node.js",
     "Failed to load settings" : "Ha fallat carregar la configuració",
     "Failed to save settings" : "Ha fallat desar la configuració",
     "never" : "mai",

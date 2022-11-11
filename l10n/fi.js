@@ -21,7 +21,6 @@ OC.L10N.register(
     "Number of CPU Cores (0 for no limit)" : "Suoritinydinten määrä (0 tarkoittaa rajoittamatonta)",
     "Checking CPU" : "Tarkistetaan suoritinta",
     "Enable WASM mode" : "Käytä WASM-tilaa",
-    "Node.js path" : "Node.js:n polku",
     "Your server does not support AVX instructions" : "Palvelin ei tue AVX-käskykantaa",
     "Your server does not have an x86 64-bit CPU" : "Palvelimessa ei ole 64-bittistä x86-suoritinta",
     "Failed to load settings" : "Asetusten lataaminen epäonnistui",

@@ -9,7 +9,6 @@ OC.L10N.register(
     "Video tagging" : "Означување на видеа",
     "Reset" : "Ресетирање",
     "CPU cores" : "CPU јадра",
-    "Node.js path" : "Node.js патека",
     "Failed to load settings" : "Неуспешно вчитување на параметрите",
     "Failed to save settings" : "Неуспешно зачувување на параметрите",
     "never" : "никогаш",

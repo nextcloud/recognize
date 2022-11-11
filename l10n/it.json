@@ -24,7 +24,6 @@
     "Number of CPU Cores (0 for no limit)" : "Numero dei core della CPU (0 per illimitato)",
     "Checking CPU" : "Analisi CPU in corso",
     "Enable WASM mode" : "Abilita modalità WASM",
-    "Node.js path" : "Percorso di Node.js",
     "Your server does not support AVX instructions" : "Il server non supporta le istruzioni AVX",
     "Your server does not have an x86 64-bit CPU" : "Il server non possiede una CPU x86 a 64-bit",
     "Your server uses musl libc" : "Il server utilizza la libc musl",

@@ -4,7 +4,6 @@ OC.L10N.register(
     "Status" : "Status",
     "Reset" : "Herstellen",
     "CPU cores" : "CPU cores",
-    "Tensorflow plain mode" : "Tensorflow plain mode",
     "Failed to load settings" : "Kon instellingen niet laden",
     "Failed to save settings" : "Kon instellingen niet opslaan",
     "never" : "nooit",
