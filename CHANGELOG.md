@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.0] - 2022-11-11
+
+### Added
+- Add status indicators about Node.js and libtensorflow installation
+- Allow setting batch sizes in admin settings
+- Support .nomedia tags (thanks to  @fa0311)
+- DAV faces endpoint: Provide number of files per face
+
+### Fixed
+- Classifier: Don't process images larger than 8MiB
+- Classifier: Use nc preview provider to generate smaller tempfiles
+- Don't create duplicate queue entries
+- Classifier: Remove file from queue if it can't be found in IRootFolder
+
 ## [3.1.2] - 2022-11-03
 
 ### Fixed
