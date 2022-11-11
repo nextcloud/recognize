@@ -47,6 +47,12 @@ class QueueService {
 		if ($this->config->getAppValue('recognize', $model.'.enabled', 'false') !== 'true') {
 			return;
 		}
+
+		// Only add to queue if it's not in there already
+		if ($this->queueMapper->existsQueueItem($model, $file)) {
+			return;
+		}
+
 		$this->queueMapper->insertIntoQueue($model, $file);
 		$this->scheduleJob($model, $file);
 	}

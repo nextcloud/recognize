@@ -552,8 +552,9 @@
     <FalsableReturnStatement occurrences="1">
       <code>$result-&gt;fetchOne()</code>
     </FalsableReturnStatement>
-    <LessSpecificReturnStatement occurrences="1">
+    <LessSpecificReturnStatement occurrences="2">
       <code>$this-&gt;findEntities($qb)</code>
+      <code>$this-&gt;findEntity($qb)</code>
     </LessSpecificReturnStatement>
     <MixedInferredReturnType occurrences="1">
       <code>int</code>
@@ -561,7 +562,8 @@
     <MixedReturnStatement occurrences="1">
       <code>$result-&gt;fetchOne()</code>
     </MixedReturnStatement>
-    <MoreSpecificReturnType occurrences="1">
+    <MoreSpecificReturnType occurrences="2">
+      <code>\OCA\Recognize\Db\QueueFile|null</code>
       <code>list&lt;\OCA\Recognize\Db\QueueFile&gt;</code>
     </MoreSpecificReturnType>
   </file>
