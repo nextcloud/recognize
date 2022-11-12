@@ -153,7 +153,7 @@ class InstallDeps implements IRepairStep {
 			$name = $name . '-'.$flavor;
 		}
 		$url = $server.$version.'/'.$name.'.tar.gz';
-		$file = $this->binaryDir.'/'.$arch.'.tar.gz';
+		$file = $this->binaryDir.$arch.'.tar.gz';
 		try {
 			$this->clientService->newClient()->get($url, ['timeout' => 60, 'sink' => $file]);
 		} catch (\Exception $e) {
@@ -161,8 +161,8 @@ class InstallDeps implements IRepairStep {
 			throw new \Exception('Downloading of node binary failed');
 		}
 		$tar = new TAR($file);
-		$tar->extractFile($name.'/bin/node', $this->binaryDir.'/node');
-		return $this->binaryDir.'/node';
+		$tar->extractFile($name.'/bin/node', $this->binaryDir.'node');
+		return $this->binaryDir.'node';
 	}
 
 	/**
