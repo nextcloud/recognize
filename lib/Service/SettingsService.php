@@ -75,7 +75,7 @@ class SettingsService {
 	 * @throws \OCA\Recognize\Exception\Exception
 	 */
 	public function setSetting(string $key, string $value): void {
-		if (!isset(self::DEFAULTS[$key])) {
+		if (!array_key_exists($key, self::DEFAULTS)) {
 			throw new Exception('Unknown settings key '.$key);
 		}
 		if ($value === 'true' && $this->config->getAppValue('recognize', $key, 'false') === 'false') {
