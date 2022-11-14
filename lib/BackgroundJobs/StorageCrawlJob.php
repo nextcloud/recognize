@@ -64,12 +64,13 @@ class StorageCrawlJob extends QueuedJob {
 		return $dir;
 	}
 
-	private function getIgnoreFileids(array $ignore_maekers): array {
+	private function getIgnoreFileids(int $storageId, array $ignore_maekers): array {
 		$directoryTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::DIRECTORY_FORMATS);
 		/** @var \OCP\DB\QueryBuilder\IQueryBuilder $qb */
 		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
 		$ignoreFiles = $qb->selectFileCache()
 			->andWhere($qb->expr()->in('name', $qb->createNamedParameter($ignore_maekers, IQueryBuilder::PARAM_STR_ARRAY)))
+			->andWhere($qb->expr()->eq('storage', $qb->createNamedParameter($storageId, IQueryBuilder::PARAM_INT)))
 			->executeQuery()->fetchAll();
 		$ignoreFileids = array_map(fn ($dir) => $dir['parent'], $ignoreFiles);
 		foreach ($ignoreFiles as $ignoreFile) {
@@ -113,10 +114,10 @@ class StorageCrawlJob extends QueuedJob {
 		}
 
 		try {
-			$ignoreAllFileids = $this->getIgnoreFileids(Constants::IGNORE_MARKERS_ALL);
-			$ignoreImageFileids = $this->getIgnoreFileids(Constants::IGNORE_MARKERS_IMAGE);
-			$ignoreVideoFileids = $this->getIgnoreFileids(Constants::IGNORE_MARKERS_VIDEO);
-			$ignoreAudioFileids = $this->getIgnoreFileids(Constants::IGNORE_MARKERS_AUDIO);
+			$ignoreAllFileids = $this->getIgnoreFileids($storageId, Constants::IGNORE_MARKERS_ALL);
+			$ignoreImageFileids = $this->getIgnoreFileids($storageId,Constants::IGNORE_MARKERS_IMAGE);
+			$ignoreVideoFileids = $this->getIgnoreFileids($storageId, Constants::IGNORE_MARKERS_VIDEO);
+			$ignoreAudioFileids = $this->getIgnoreFileids($storageId, Constants::IGNORE_MARKERS_AUDIO);
 		} catch (Exception $e) {
 			$this->logger->error('Could not fetch ignore files', ['exception' => $e]);
 			return;
