@@ -66,12 +66,22 @@ class Classifier {
 				$filesizeMb = filesize($path) / (1024 * 1024);
 				if ($filesizeMb > 8) {
 					$this->logger->debug('File is too large for classifier: ' . $files[0]->getPath());
+					try {
+						$this->queue->removeFromQueue($model, $queueFile);
+					} catch (Exception $e) {
+						$this->logger->warning($e->getMessage(), ['exception' => $e]);
+					}
 					continue;
 				}
 				$paths[] = $path;
 				$processedFiles[] = $queueFile;
 			} catch (NotFoundException $e) {
 				$this->logger->warning('Could not find file', ['exception' => $e]);
+				try {
+					$this->queue->removeFromQueue($model, $queueFile);
+				} catch (Exception $e) {
+					$this->logger->warning($e->getMessage(), ['exception' => $e]);
+				}
 				continue;
 			}
 		}
@@ -193,7 +203,11 @@ class Classifier {
 			return $path;
 		}
 
-		$image = $this->previewProvider->getPreview($file, self::TEMP_FILE_DIMENSION, self::TEMP_FILE_DIMENSION);
+		try {
+			$image = $this->previewProvider->getPreview($file, self::TEMP_FILE_DIMENSION, self::TEMP_FILE_DIMENSION);
+		} catch(NotFoundException $e) {
+			return $path;
+		}
 
 		$tmpfile = fopen($tmpname, 'w');
 
