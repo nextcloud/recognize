@@ -56,9 +56,15 @@ Recognize uses
 
 Go to "Apps" in your nextcloud, search for "recognize" and click install.
 
+[Help: If one-click install fails](https://github.com/nextcloud/recognize/wiki/Manual-install)
+
 ### Configuration
 
 Any configuration is done in Settings/Recognize of your Nextcloud instance.
+
+#### Ignoring directories
+
+If you want path/to/your/folder/* to be excluded from image recognition, add a file `path/to/your/folder/.noimage`. If you want to exclude it from music genre recognition, add a file `path/to/your/folder/.nomusic`. If you want to exclude it from video recognition, add a file `path/to/your/folder/.novideo`. If you want to exclude it from all recognition, add a file `path/to/your/folder/.nomedia`.
 
 ### Manual install
 
