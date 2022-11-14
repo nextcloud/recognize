@@ -192,7 +192,8 @@
       <code>string</code>
       <code>string</code>
     </MixedInferredReturnType>
-    <MixedMethodCall occurrences="62">
+    <MixedMethodCall occurrences="63">
+      <code>andWhere</code>
       <code>andWhere</code>
       <code>andWhere</code>
       <code>andWhere</code>
@@ -297,35 +298,14 @@
     <InvalidScalarArgument occurrences="1">
       <code>time()</code>
     </InvalidScalarArgument>
-    <MissingDependency occurrences="1">
-      <code>IRootFolder</code>
-    </MissingDependency>
-    <PropertyNotSetInConstructor occurrences="4">
-      <code>$tagManager</code>
-      <code>MusicnnClassifier</code>
-      <code>MusicnnClassifier</code>
-      <code>MusicnnClassifier</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Classifiers/Classifier.php">
     <InvalidScalarArgument occurrences="1">
       <code>$queueFile-&gt;getFileId()</code>
     </InvalidScalarArgument>
-    <MixedArrayAccess occurrences="2">
-      <code>$dimensions['height']</code>
-      <code>$dimensions['width']</code>
-    </MixedArrayAccess>
-    <MixedAssignment occurrences="3">
-      <code>$dimensions</code>
+    <MixedAssignment occurrences="1">
       <code>$results</code>
-      <code>$tmpname</code>
     </MixedAssignment>
-    <MixedInferredReturnType occurrences="1">
-      <code>string</code>
-    </MixedInferredReturnType>
-    <MixedReturnStatement occurrences="1">
-      <code>$tmpname</code>
-    </MixedReturnStatement>
     <PossiblyNullOperand occurrences="1">
       <code>$proc-&gt;getPid()</code>
     </PossiblyNullOperand>
@@ -338,9 +318,6 @@
       <code>$queueFile-&gt;getFileId()</code>
       <code>time()</code>
     </InvalidScalarArgument>
-    <MissingDependency occurrences="1">
-      <code>IRootFolder</code>
-    </MissingDependency>
     <MixedArgument occurrences="5">
       <code>$face['height']</code>
       <code>$face['vector']</code>
@@ -348,22 +325,11 @@
       <code>$face['x']</code>
       <code>$face['y']</code>
     </MixedArgument>
-    <PropertyNotSetInConstructor occurrences="6">
-      <code>$faceDetections</code>
-      <code>$jobList</code>
-      <code>$userMountCache</code>
-      <code>ClusteringFaceClassifier</code>
-      <code>ClusteringFaceClassifier</code>
-      <code>ClusteringFaceClassifier</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Classifiers/Images/ImagenetClassifier.php">
     <InvalidScalarArgument occurrences="1">
       <code>time()</code>
     </InvalidScalarArgument>
-    <MissingDependency occurrences="1">
-      <code>IRootFolder</code>
-    </MissingDependency>
     <MixedArgument occurrences="2">
       <code>$queueFile</code>
       <code>$queueFile-&gt;getFileId()</code>
@@ -374,20 +340,11 @@
     <MixedMethodCall occurrences="1">
       <code>getFileId</code>
     </MixedMethodCall>
-    <PropertyNotSetInConstructor occurrences="4">
-      <code>$queue</code>
-      <code>$tagManager</code>
-      <code>ImagenetClassifier</code>
-      <code>ImagenetClassifier</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Classifiers/Images/LandmarksClassifier.php">
     <InvalidScalarArgument occurrences="1">
       <code>time()</code>
     </InvalidScalarArgument>
-    <MissingDependency occurrences="1">
-      <code>IRootFolder</code>
-    </MissingDependency>
     <MixedArgument occurrences="1">
       <code>$queueFile-&gt;getFileId()</code>
     </MixedArgument>
@@ -397,20 +354,11 @@
     <MixedMethodCall occurrences="1">
       <code>getFileId</code>
     </MixedMethodCall>
-    <PropertyNotSetInConstructor occurrences="4">
-      <code>$tagManager</code>
-      <code>LandmarksClassifier</code>
-      <code>LandmarksClassifier</code>
-      <code>LandmarksClassifier</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Classifiers/Video/MovinetClassifier.php">
     <InvalidScalarArgument occurrences="1">
       <code>time()</code>
     </InvalidScalarArgument>
-    <MissingDependency occurrences="1">
-      <code>IRootFolder</code>
-    </MissingDependency>
     <MixedArgument occurrences="1">
       <code>$queueFile-&gt;getFileId()</code>
     </MixedArgument>
@@ -420,12 +368,6 @@
     <MixedMethodCall occurrences="1">
       <code>getFileId</code>
     </MixedMethodCall>
-    <PropertyNotSetInConstructor occurrences="4">
-      <code>$tagManager</code>
-      <code>MovinetClassifier</code>
-      <code>MovinetClassifier</code>
-      <code>MovinetClassifier</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Controller/AdminController.php">
     <MissingParamType occurrences="1">
@@ -552,9 +494,8 @@
     <FalsableReturnStatement occurrences="1">
       <code>$result-&gt;fetchOne()</code>
     </FalsableReturnStatement>
-    <LessSpecificReturnStatement occurrences="2">
+    <LessSpecificReturnStatement occurrences="1">
       <code>$this-&gt;findEntities($qb)</code>
-      <code>$this-&gt;findEntity($qb)</code>
     </LessSpecificReturnStatement>
     <MixedInferredReturnType occurrences="1">
       <code>int</code>
@@ -562,8 +503,7 @@
     <MixedReturnStatement occurrences="1">
       <code>$result-&gt;fetchOne()</code>
     </MixedReturnStatement>
-    <MoreSpecificReturnType occurrences="2">
-      <code>\OCA\Recognize\Db\QueueFile|null</code>
+    <MoreSpecificReturnType occurrences="1">
       <code>list&lt;\OCA\Recognize\Db\QueueFile&gt;</code>
     </MoreSpecificReturnType>
   </file>

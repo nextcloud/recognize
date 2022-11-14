@@ -115,7 +115,7 @@ class StorageCrawlJob extends QueuedJob {
 
 		try {
 			$ignoreAllFileids = $this->getIgnoreFileids($storageId, Constants::IGNORE_MARKERS_ALL);
-			$ignoreImageFileids = $this->getIgnoreFileids($storageId,Constants::IGNORE_MARKERS_IMAGE);
+			$ignoreImageFileids = $this->getIgnoreFileids($storageId, Constants::IGNORE_MARKERS_IMAGE);
 			$ignoreVideoFileids = $this->getIgnoreFileids($storageId, Constants::IGNORE_MARKERS_VIDEO);
 			$ignoreAudioFileids = $this->getIgnoreFileids($storageId, Constants::IGNORE_MARKERS_AUDIO);
 		} catch (Exception $e) {
@@ -176,7 +176,7 @@ class StorageCrawlJob extends QueuedJob {
 		while ($file = $files->fetch()) {
 			$i++;
 			$queueFile = new QueueFile();
-			$queueFile->setStorageId($storageId);
+			$queueFile->setStorageId((string) $storageId);
 			$queueFile->setRootId($rootId);
 			$queueFile->setFileId($file['fileid']);
 			$queueFile->setUpdate(false);
