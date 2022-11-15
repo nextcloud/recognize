@@ -9,6 +9,7 @@ use OCA\Recognize\Classifiers\Video\MovinetClassifier;
 use OCA\Recognize\Constants;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Db\QueueFile;
+use OCA\Recognize\Service\IgnoreService;
 use OCA\Recognize\Service\QueueService;
 use OCP\DB\Exception;
 use OCP\EventDispatcher\Event;
@@ -25,11 +26,13 @@ class FileListener implements IEventListener {
 	private FaceDetectionMapper $faceDetectionMapper;
 	private LoggerInterface $logger;
 	private QueueService $queue;
+	private IgnoreService $ignoreService;
 
-	public function __construct(FaceDetectionMapper $faceDetectionMapper, LoggerInterface $logger, QueueService $queue) {
+	public function __construct(FaceDetectionMapper $faceDetectionMapper, LoggerInterface $logger, QueueService $queue, IgnoreService $ignoreService) {
 		$this->faceDetectionMapper = $faceDetectionMapper;
 		$this->logger = $logger;
 		$this->queue = $queue;
+		$this->ignoreService = $ignoreService;
 	}
 
 	public function handle(Event $event): void {
@@ -80,10 +83,39 @@ class FileListener implements IEventListener {
 		}
 	}
 
+	/**
+	 * @throws \OCP\Files\InvalidPathException
+	 */
 	public function postInsert(Node $node): void {
 		$queueFile = new QueueFile();
 		$queueFile->setStorageId($node->getMountPoint()->getStorageId());
 		$queueFile->setRootId((string) $node->getMountPoint()->getStorageRootId());
+
+		$ignoreMarkers = [];
+		if (in_array($node->getMimetype(), Constants::IMAGE_FORMATS)) {
+			$ignoreMarkers = array_merge($ignoreMarkers, Constants::IGNORE_MARKERS_IMAGE);
+		}
+		if (in_array($node->getMimetype(), Constants::VIDEO_FORMATS)) {
+			$ignoreMarkers = array_merge($ignoreMarkers, Constants::IGNORE_MARKERS_VIDEO);
+		}
+		if (in_array($node->getMimetype(), Constants::AUDIO_FORMATS)) {
+			$ignoreMarkers = array_merge($ignoreMarkers, Constants::IGNORE_MARKERS_AUDIO);
+		}
+		if (count($ignoreMarkers) === 0) {
+			return;
+		}
+		$ignoreMarkers = array_merge($ignoreMarkers, Constants::IGNORE_MARKERS_ALL);
+		$ignoredDirectories = $this->ignoreService->getIgnoredDirectories($node->getMountPoint()->getNumericStorageId(), $ignoreMarkers);
+
+		try {
+			if (in_array($node->getParent()->getId(), $ignoredDirectories)) {
+				return;
+			}
+		} catch (InvalidPathException $e) {
+			return;
+		} catch (NotFoundException $e) {
+			return;
+		}
 
 		try {
 			$queueFile->setFileId($node->getId());
