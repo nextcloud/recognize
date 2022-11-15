@@ -115,6 +115,35 @@ class ClassifierTest extends TestCase {
 	 * @throws \OCP\Files\InvalidPathException
 	 * @throws \OCP\Files\NotFoundException
 	 * @throws \OCP\Files\NotPermittedException
+	 */
+	public function testFileListener(string $ignoreFileName) : void {
+		$this->config->setAppValue('recognize', 'imagenet.enabled', 'true');
+
+		$this->testFile = $this->userFolder->newFile('/alpine.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
+		$this->userFolder->newFolder('/test/ignore/');
+		$this->ignoredFile = $this->userFolder->newFile('/test/ignore/alpine.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
+		$this->userFolder->newFile('/test/' . $ignoreFileName, '');
+
+		$storageId = $this->testFile->getMountPoint()->getNumericStorageId();
+		$rootId = $this->testFile->getMountPoint()->getStorageRootId();
+
+		self::assertCount(1, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'one element should have been added to imagenet queue');
+
+		$this->testFile->delete();
+
+		self::assertCount(0, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'entry should have been removed from imagenet queue');
+
+		// disable again
+		$this->config->setAppValue('recognize', 'imagenet.enabled', 'false');
+	}
+
+	/**
+	 * @dataProvider ignoreImageFilesProvider
+	 * @return void
+	 * @throws \OCP\DB\Exception
+	 * @throws \OCP\Files\InvalidPathException
+	 * @throws \OCP\Files\NotFoundException
+	 * @throws \OCP\Files\NotPermittedException
 	 * @throws \Psr\Container\ContainerExceptionInterface
 	 * @throws \Psr\Container\NotFoundExceptionInterface
 	 */
