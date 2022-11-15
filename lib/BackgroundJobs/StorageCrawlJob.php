@@ -16,6 +16,7 @@ use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
 use OCA\Recognize\Classifiers\Video\MovinetClassifier;
 use OCA\Recognize\Constants;
 use OCA\Recognize\Db\QueueFile;
+use OCA\Recognize\Service\IgnoreService;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
 use OCA\Recognize\Service\TagManager;
@@ -36,8 +37,9 @@ class StorageCrawlJob extends QueuedJob {
 	private IDBConnection $db;
 	private SystemConfig $systemConfig;
 	private TagManager $tagManager;
+	private IgnoreService $ignoreService;
 
-	public function __construct(ITimeFactory $timeFactory, Logger $logger, IMimeTypeLoader $mimeTypes, QueueService $queue, IJobList $jobList, IDBConnection $db, SystemConfig $systemConfig, TagManager $tagManager) {
+	public function __construct(ITimeFactory $timeFactory, Logger $logger, IMimeTypeLoader $mimeTypes, QueueService $queue, IJobList $jobList, IDBConnection $db, SystemConfig $systemConfig, TagManager $tagManager, IgnoreService $ignoreService) {
 		parent::__construct($timeFactory);
 		$this->logger = $logger;
 		$this->mimeTypes = $mimeTypes;
@@ -46,39 +48,7 @@ class StorageCrawlJob extends QueuedJob {
 		$this->db = $db;
 		$this->systemConfig = $systemConfig;
 		$this->tagManager = $tagManager;
-	}
-
-	private function getDir(int $fileid, array $directoryTypes, bool $recursive = false): array {
-		/** @var \OCP\DB\QueryBuilder\IQueryBuilder $qb */
-		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
-		$dir = $qb->selectFileCache()
-			->andWhere($qb->expr()->in('mimetype', $qb->createNamedParameter($directoryTypes, IQueryBuilder::PARAM_INT_ARRAY)))
-			->andWhere($qb->expr()->eq('parent', $qb->createNamedParameter($fileid)))
-			->executeQuery()->fetchAll();
-
-		if ($recursive) {
-			foreach ($dir as $item) {
-				$dir = array_merge($dir, $this->getDir($item['fileid'], $directoryTypes, $recursive));
-			}
-		}
-		return $dir;
-	}
-
-	private function getIgnoreFileids(int $storageId, array $ignore_maekers): array {
-		$directoryTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::DIRECTORY_FORMATS);
-		/** @var \OCP\DB\QueryBuilder\IQueryBuilder $qb */
-		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
-		$ignoreFiles = $qb->selectFileCache()
-			->andWhere($qb->expr()->in('name', $qb->createNamedParameter($ignore_maekers, IQueryBuilder::PARAM_STR_ARRAY)))
-			->andWhere($qb->expr()->eq('storage', $qb->createNamedParameter($storageId, IQueryBuilder::PARAM_INT)))
-			->executeQuery()->fetchAll();
-		$ignoreFileids = array_map(fn ($dir) => $dir['parent'], $ignoreFiles);
-		foreach ($ignoreFiles as $ignoreFile) {
-			$ignoreDir = $this->getDir($ignoreFile['parent'], $directoryTypes, true);
-			$fileids = array_map(fn ($dir) => $dir['fileid'], $ignoreDir);
-			$ignoreFileids = array_merge($ignoreFileids, $fileids);
-		}
-		return $ignoreFileids;
+		$this->ignoreService = $ignoreService;
 	}
 
 	protected function run($argument): void {
@@ -114,10 +84,10 @@ class StorageCrawlJob extends QueuedJob {
 		}
 
 		try {
-			$ignoreAllFileids = $this->getIgnoreFileids($storageId, Constants::IGNORE_MARKERS_ALL);
-			$ignoreImageFileids = $this->getIgnoreFileids($storageId, Constants::IGNORE_MARKERS_IMAGE);
-			$ignoreVideoFileids = $this->getIgnoreFileids($storageId, Constants::IGNORE_MARKERS_VIDEO);
-			$ignoreAudioFileids = $this->getIgnoreFileids($storageId, Constants::IGNORE_MARKERS_AUDIO);
+			$ignoreAllFileids = $this->ignoreService->getIgnoredDirectories($storageId, Constants::IGNORE_MARKERS_ALL);
+			$ignoreImageFileids = $this->ignoreService->getIgnoredDirectories($storageId, Constants::IGNORE_MARKERS_IMAGE);
+			$ignoreVideoFileids = $this->ignoreService->getIgnoredDirectories($storageId, Constants::IGNORE_MARKERS_VIDEO);
+			$ignoreAudioFileids = $this->ignoreService->getIgnoredDirectories($storageId, Constants::IGNORE_MARKERS_AUDIO);
 		} catch (Exception $e) {
 			$this->logger->error('Could not fetch ignore files', ['exception' => $e]);
 			return;
