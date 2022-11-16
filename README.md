@@ -89,14 +89,6 @@ make
 
 - [Marcel Klehr](https://github.com/marcelklehr)
 
-## Donate
-
-If you'd like to support the creation and maintenance of this software, consider donating.
-
-| [<img src="https://img.shields.io/badge/paypal-donate-blue.svg?logo=paypal&style=for-the-badge">](https://www.paypal.me/marcelklehr1) | [<img src="http://img.shields.io/liberapay/receives/marcelklehr.svg?logo=liberapay&style=for-the-badge">](https://liberapay.com/marcelklehr/donate) |[<img src="https://img.shields.io/badge/github-sponsors-violet.svg?logo=github&style=for-the-badge">](https://github.com/sponsors/marcelklehr) |
-| :-----------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------: |:--:|
-
-
 ## Contribute
 
 We always welcome contributions. Have an issue or an idea for a feature? Let us know. Additionally, we happily accept pull requests.
