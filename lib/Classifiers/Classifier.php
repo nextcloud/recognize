@@ -12,6 +12,7 @@ use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
 use OCP\DB\Exception;
 use OCP\Files\File;
+use OCP\Files\InvalidPathException;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
@@ -55,6 +56,7 @@ class Classifier {
 			$files = $this->rootFolder->getById($queueFile->getFileId());
 			if (count($files) === 0) {
 				try {
+					$this->logger->debug('removing '.$queueFile->getFileId().' from '.$model.' queue');
 					$this->queue->removeFromQueue($model, $queueFile);
 				} catch (Exception $e) {
 					$this->logger->warning($e->getMessage(), ['exception' => $e]);
@@ -67,6 +69,7 @@ class Classifier {
 				if ($filesizeMb > 8) {
 					$this->logger->debug('File is too large for classifier: ' . $files[0]->getPath());
 					try {
+						$this->logger->debug('removing '.$queueFile->getFileId().' from '.$model.' queue');
 						$this->queue->removeFromQueue($model, $queueFile);
 					} catch (Exception $e) {
 						$this->logger->warning($e->getMessage(), ['exception' => $e]);
@@ -204,6 +207,7 @@ class Classifier {
 		}
 
 		try {
+			$this->logger->debug('generating preview of ' . $file->getId() . ' with dimension '.self::TEMP_FILE_DIMENSION);
 			$image = $this->previewProvider->getPreview($file, self::TEMP_FILE_DIMENSION, self::TEMP_FILE_DIMENSION);
 		} catch(NotFoundException $e) {
 			return $path;
@@ -218,6 +222,7 @@ class Classifier {
 			return $path;
 		}
 
+		$this->logger->debug('Copying ' . $file->getId() . ' preview to tempfolder');
 		if (stream_copy_to_stream($preview, $tmpfile) === false) {
 			$this->logger->warning('Could not copy preview file to temp folder');
 			fclose($preview);
