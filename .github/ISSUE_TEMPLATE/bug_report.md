@@ -21,12 +21,14 @@ Steps to reproduce the behavior:
 A clear and concise description of what you expected to happen.
 
 **Recognize (please complete the following information):**
- - JS-only mode: [e.g. Yes/No]
+ - Installed app version: [e.g. v3.1.2]
+ - WASM mode: [e.g. Yes/No]
  - Enabled modes: [e.g. object detection, face recognition]
 
 **Server (please complete the following information):**
- - Nextcloud: [e.g. 21.0.4]
- - OS: [e.g. iOS]
+ - Nextcloud version: [e.g. 21.0.4]
+ - OS: [e.g. debian]
+ - Docker container (if applicable):
  - RAM: [e.g. 16GB]
  - Processor Architecture [e.g. x86, ARM64, etc. ]
 
