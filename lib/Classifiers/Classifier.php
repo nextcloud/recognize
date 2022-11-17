@@ -12,7 +12,6 @@ use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
 use OCP\DB\Exception;
 use OCP\Files\File;
-use OCP\Files\InvalidPathException;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
