@@ -23,6 +23,7 @@ OC.L10N.register(
     "Info" : "정보",
     "Document" : "문서",
     "Bucket" : "버킷",
+    "Theme park" : "테마파크",
     "Sign" : "서명",
     "Gallery" : "갤러리",
     "Park" : "공원"
