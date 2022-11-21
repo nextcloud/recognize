@@ -45,6 +45,7 @@ abstract class ClassifierJob extends TimedJob {
 		}
 		$this->logger->debug('Classifying files of storage '.$storageId. ' using '.$model);
 		try {
+			$this->logger->debug('fetching '.$this->getBatchSize().' files from '.$model.' queue');
 			$files = $this->queue->getFromQueue($model, $storageId, $rootId, $this->getBatchSize());
 		} catch (Exception $e) {
 			$this->settingsService->setSetting($model.'.status', 'false');
@@ -61,6 +62,7 @@ abstract class ClassifierJob extends TimedJob {
 		}
 
 		try {
+			$this->logger->debug('Running '.$model.' classifier');
 			$this->classify($files);
 		} catch(\Throwable $e) {
 			$this->settingsService->setSetting($model.'.status', 'false');
@@ -71,6 +73,7 @@ abstract class ClassifierJob extends TimedJob {
 			// If there is at least one file left in the queue, reschedule this job
 			$files = $this->queue->getFromQueue($model, $storageId, $rootId, 1);
 			if (count($files) === 0) {
+				$this->logger->debug('Removing '.static::class.' with argument ' . var_export($argument, true) . 'from oc_jobs');
 				// `static` to get extending subclasse name
 				$this->jobList->remove(static::class, $argument);
 			}

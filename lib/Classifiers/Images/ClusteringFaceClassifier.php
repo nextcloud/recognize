@@ -56,10 +56,12 @@ class ClusteringFaceClassifier extends Classifier {
 			try {
 				$facesByFileCount = count($this->faceDetections->findByFileId($queueFile->getFileId()));
 			} catch (Exception $e) {
+				$this->logger->debug('finding faces by file '.$queueFile->getFileId().' failed', ['exception' => $e]);
 				$facesByFileCount = 1;
 			}
 			if ($facesByFileCount !== 0) {
 				try {
+					$this->logger->debug('Remove file with existing faces from queue '.$queueFile->getFileId());
 					$this->queue->removeFromQueue(self::MODEL_NAME, $queueFile);
 				} catch (Exception $e) {
 					$this->logger->error('Could not remove file from queue', ['exception' => $e]);
@@ -76,8 +78,10 @@ class ClusteringFaceClassifier extends Classifier {
 		 * @var list<array> $faces
 		 */
 		foreach ($classifierProcess as $queueFile => $faces) {
+			$this->logger->debug('Face results for '.$queueFile->getFileId().' are in');
 			foreach ($faces as $face) {
 				if ($face['score'] < self::MIN_FACE_RECOGNITION_SCORE) {
+					$this->logger->debug('Face score too low. continuing with next face.');
 					continue;
 				}
 
@@ -88,6 +92,7 @@ class ClusteringFaceClassifier extends Classifier {
 
 				// Insert face detection for all users with access
 				foreach ($userIds as $userId) {
+					print('preparing face detection for user '.$userId);
 					$faceDetection = new FaceDetection();
 					$faceDetection->setX($face['x']);
 					$faceDetection->setY($face['y']);
@@ -112,8 +117,10 @@ class ClusteringFaceClassifier extends Classifier {
 		$usersToCluster = array_unique($usersToCluster);
 		foreach ($usersToCluster as $userId) {
 			if (!$this->jobList->has(ClusterFacesJob::class, ['userId' => $userId])) {
+				$this->logger->debug('scheduling ClusterFacesJob for user '.$userId);
 				$this->jobList->add(ClusterFacesJob::class, ['userId' => $userId]);
 			}
 		}
+		$this->logger->debug('face classifier end');
 	}
 }

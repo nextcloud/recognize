@@ -32,6 +32,7 @@ class FaceClusterAnalyzer {
 	 * @throws \JsonException
 	 */
 	public function calculateClusters(string $userId): void {
+		$this->logger->debug('Find face detection for use '.$userId);
 		$detections = $this->faceDetections->findByUserId($userId);
 
 		if (count($detections) === 0) {
@@ -44,6 +45,7 @@ class FaceClusterAnalyzer {
 			return $detection->getVector();
 		}, $detections));
 		$clusterer = new DBSCAN(self::MAX_INNER_CLUSTER_RADIUS, self::MIN_CLUSTER_DENSITY, new BallTree(20, new Euclidean()));
+		$this->logger->debug('Calculate clusters for '.count($detections).' faces');
 		$results = $clusterer->predict($dataset);
 		$numClusters = max($results);
 
