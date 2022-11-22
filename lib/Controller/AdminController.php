@@ -13,6 +13,7 @@ use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\BackgroundJob\IJobList;
 use OCP\DB\Exception;
+use OCP\IConfig;
 use OCP\IRequest;
 
 class AdminController extends Controller {
@@ -22,8 +23,9 @@ class AdminController extends Controller {
 	private QueueService $queue;
 	private FaceClusterMapper $clusterMapper;
 	private FaceDetectionMapper $detectionMapper;
+	private IConfig $config;
 
-	public function __construct(string $appName, IRequest $request, TagManager $tagManager, IJobList $jobList, SettingsService $settingsService, QueueService $queue, FaceClusterMapper $clusterMapper, FaceDetectionMapper $detectionMapper) {
+	public function __construct(string $appName, IRequest $request, TagManager $tagManager, IJobList $jobList, SettingsService $settingsService, QueueService $queue, FaceClusterMapper $clusterMapper, FaceDetectionMapper $detectionMapper, IConfig $config) {
 		parent::__construct($appName, $request);
 		$this->tagManager = $tagManager;
 		$this->jobList = $jobList;
@@ -31,6 +33,7 @@ class AdminController extends Controller {
 		$this->queue = $queue;
 		$this->clusterMapper = $clusterMapper;
 		$this->detectionMapper = $detectionMapper;
+		$this->config = $config;
 	}
 
 	public function reset(): JSONResponse {
@@ -158,6 +161,11 @@ class AdminController extends Controller {
 		}
 
 		return new JSONResponse(['wasmtensorflow' => true]);
+	}
+
+	public function cron(): JSONResponse {
+		$cron = $this->config->getAppValue('core', 'backgroundjobs_mode', '');
+		return new JSONResponse(['cron' => $cron]);
 	}
 
 	public function setSetting(string $setting, $value): JSONResponse {
