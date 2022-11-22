@@ -1,4 +1,4 @@
-let tf = require('@tensorflow/tfjs')
+const tf = require('@tensorflow/tfjs')
 require('@tensorflow/tfjs-backend-wasm')
 
 tf.setBackend('wasm')
