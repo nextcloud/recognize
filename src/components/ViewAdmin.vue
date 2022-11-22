@@ -63,8 +63,8 @@
 				<NcTextField :disabled="!settings['faces.enabled']"
 					:value.sync="settings['faces.batchSize']"
 					:label-visible="true"
-					@update:value="onChange"
-					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~500 or more, in WASM mode ~50 is recommended)')" />
+					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~500 or more, in WASM mode ~50 is recommended)')"
+					@update:value="onChange" />
 			</p>
 			<p>&nbsp;</p>
 			<p>
@@ -74,8 +74,8 @@
 				<NcTextField :disabled="!settings['imagenet.enabled']"
 					:value.sync="settings['imagenet.batchSize']"
 					:label-visible="true"
-					@update:value="onChange"
-					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')" />
+					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
+					@update:value="onChange" />
 			</p>
 			<p>&nbsp;</p>
 			<p>
@@ -88,8 +88,8 @@
 				<NcTextField :disabled="!settings['imagenet.enabled'] || !settings['landmarks.enabled']"
 					:value.sync="settings['landmarks.batchSize']"
 					:label-visible="true"
-					@update:value="onChange"
-					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')" />
+					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
+					@update:value="onChange" />
 			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Audio tagging')">
@@ -114,8 +114,8 @@
 				<NcTextField :disabled="!settings['musicnn.enabled']"
 					:value.sync="settings['musicnn.batchSize']"
 					:label-visible="true"
-					@update:value="onChange"
-					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')" />
+					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
+					@update:value="onChange" />
 			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Video tagging')">
@@ -142,9 +142,9 @@
 				</NcCheckboxRadioSwitch>
 				<NcTextField :disabled="!settings['movinet.enabled']"
 					:value.sync="settings['movinet.batchSize']"
-					@update:value="onChange"
 					:label-visible="true"
-					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~20 or more, in WASM mode ~5 is recommended)')" />
+					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~20 or more, in WASM mode ~5 is recommended)')"
+					@update:value="onChange" />
 			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Reset')">
@@ -226,15 +226,25 @@
 			<NcNoteCard v-else type="success">
 				{{ t('recognize', 'Node.js {version} binary was installed successfully.', { version: nodejs }) }}
 			</NcNoteCard>
-			<p v-if="libtensorflow === undefined">
+			<p v-if="libtensorflow === undefined || wasmtensorflow === undefined">
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking libtensorflow') }}
 			</p>
-			<NcNoteCard v-else-if="nodejs !== false && libtensorflow === false">
-				{{ t('recognize', 'Could not load libtensorflow in Node.js. You can try to manually install libtensorflow or run in WASM mode.') }}
-			</NcNoteCard>
-			<NcNoteCard v-else-if="libtensorflow === true" type="success">
-				{{ t('recognize', 'Libtensorflow was loaded successfully into Node.js.') }}
-			</NcNoteCard>
+			<template v-if="settings['tensorflow.purejs'] === false">
+				<NcNoteCard v-if="nodejs !== false && libtensorflow === false">
+					{{ t('recognize', 'Could not load libtensorflow in Node.js. You can try to manually install libtensorflow or run in WASM mode.') }}
+				</NcNoteCard>
+				<NcNoteCard v-else-if="libtensorflow === true" type="success">
+					{{ t('recognize', 'Libtensorflow was loaded successfully into Node.js.') }}
+				</NcNoteCard>
+			</template>
+			<template v-else>
+				<NcNoteCard v-if="nodejs !== false && wasmtensorflow === false">
+					{{ t('recognize', 'Could not load Tensorflow WASM in Node.js. Something is wrong with your setup.') }}
+				</NcNoteCard>
+				<NcNoteCard v-else-if="wasmtensorflow === true" type="success">
+					{{ t('recognize', 'Tensorflow WASM was loaded successfully into Node.js.') }}
+				</NcNoteCard>
+			</template>
 			<p>
 				{{ t('recognize', 'If the shipped Node.js binary doesn\'t work on your system for some reason you can set the path to a custom node.js binary. Currently supported is Node v14.17 and newer v14 releases.') }}
 			</p>
@@ -276,6 +286,7 @@ export default {
 			musl: undefined,
 			nodejs: undefined,
 			libtensorflow: undefined,
+			wasmtensorflow: undefined,
 			modelsDownloaded: null,
 		}
 	},
@@ -310,6 +321,7 @@ export default {
 		this.getMusl()
 		this.getNodejsStatus()
 		this.getLibtensorflowStatus()
+		this.getWasmtensorflowStatus()
 
 		setInterval(async () => {
 			this.getCount()
@@ -397,6 +409,11 @@ export default {
 			const resp = await axios.get(generateUrl('/apps/recognize/admin/libtensorflow'))
 			const { libtensorflow } = resp.data
 			this.libtensorflow = libtensorflow
+		},
+		async getWasmtensorflowStatus() {
+			const resp = await axios.get(generateUrl('/apps/recognize/admin/wasmtensorflow'))
+			const { wasmtensorflow } = resp.data
+			this.wasmtensorflow = wasmtensorflow
 		},
 		onChange() {
 			if (this.timeout) {

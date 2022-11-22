@@ -146,6 +146,20 @@ class AdminController extends Controller {
 		return new JSONResponse(['libtensorflow' => true]);
 	}
 
+	public function wasmtensorflow(): JSONResponse {
+		try {
+			exec($this->settingsService->getSetting('node_binary') . ' ' . __DIR__ . '/../../src/test_wasmtensorflow.js' . ' 2>&1', $output, $returnCode);
+		} catch (\Throwable $e) {
+			return new JSONResponse(['wasmtensorflow' => false]);
+		}
+
+		if ($returnCode !== 0) {
+			return new JSONResponse(['wasmtensorflow' => false]);
+		}
+
+		return new JSONResponse(['wasmtensorflow' => true]);
+	}
+
 	public function setSetting(string $setting, $value): JSONResponse {
 		try {
 			$this->settingsService->setSetting($setting, $value);
