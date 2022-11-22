@@ -18,14 +18,19 @@
 			<NcNoteCard v-if="nodejs === false">
 				{{ t('recognize', 'Could not execute the Node.js binary. You may need to set the path to a working binary manually.') }}
 			</NcNoteCard>
-			<template v-else-if="settings['faces.enabled'] || settings['imagenet.enabled'] || settings['musicnn.enabled'] || settings['movinet.enabled']">
-				<NcNoteCard show-alert type="success">
-					{{ t('recognize', 'The app is installed and will automatically classify files in background processes.') }}
-				</NcNoteCard>
+			<NcNoteCard v-if="cron !== undefined && cron !== 'cron'">
+				{{ t('recognize', 'Background Jobs are not executed via cron. Recognize requires background jobs to be executed via cron.') }}
+			</NcNoteCard>
+			<template v-if="nodejs && (libtensorflow || wasmtensorflow) && cron === 'cron'">
+				<template v-if="settings['faces.enabled'] || settings['imagenet.enabled'] || settings['musicnn.enabled'] || settings['movinet.enabled']">
+					<NcNoteCard show-alert type="success">
+						{{ t('recognize', 'The app is installed and will automatically classify files in background processes.') }}
+					</NcNoteCard>
+				</template>
+				<p v-else>
+					{{ t('recognize', 'None of the tagging options below are currently selected. The app will currently do nothing.') }}
+				</p>
 			</template>
-			<p v-else>
-				{{ t('recognize', 'None of the tagging options below are currently selected. The app will currently do nothing.') }}
-			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Image tagging')">
 			<template v-if="settings['faces.enabled']">
@@ -287,6 +292,7 @@ export default {
 			nodejs: undefined,
 			libtensorflow: undefined,
 			wasmtensorflow: undefined,
+			cron: undefined,
 			modelsDownloaded: null,
 		}
 	},
@@ -322,6 +328,7 @@ export default {
 		this.getNodejsStatus()
 		this.getLibtensorflowStatus()
 		this.getWasmtensorflowStatus()
+		this.getCronStatus()
 
 		setInterval(async () => {
 			this.getCount()
@@ -414,6 +421,11 @@ export default {
 			const resp = await axios.get(generateUrl('/apps/recognize/admin/wasmtensorflow'))
 			const { wasmtensorflow } = resp.data
 			this.wasmtensorflow = wasmtensorflow
+		},
+		async getCronStatus() {
+			const resp = await axios.get(generateUrl('/apps/recognize/admin/cron'))
+			const { cron } = resp.data
+			this.cron = cron
 		},
 		onChange() {
 			if (this.timeout) {
