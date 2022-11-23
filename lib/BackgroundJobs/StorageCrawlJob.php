@@ -119,7 +119,7 @@ class StorageCrawlJob extends QueuedJob {
 
 		try {
 			$path = $root['path'] === '' ? '' :  $root['path'] . '/';
-			$ignoreExprAll = array_map(fn (string $path): string => $qb->expr()->notLike('path', $qb->createNamedParameter($path ? $path . '/%' : '%')), $ignorePathsImage);
+			$ignoreExprAll = array_map(fn (string $path): string => $qb->expr()->notLike('path', $qb->createNamedParameter($path ? $path . '/%' : '%')), $ignorePathsAll);
 
 			$qb->selectFileCache()
 				->whereStorageId($storageId)
