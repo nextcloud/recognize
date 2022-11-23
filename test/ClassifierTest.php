@@ -76,6 +76,10 @@ class ClassifierTest extends TestCase {
 		$this->queue->clearQueue(LandmarksClassifier::MODEL_NAME);
 		$this->queue->clearQueue(MovinetClassifier::MODEL_NAME);
 		$this->queue->clearQueue(MusicnnClassifier::MODEL_NAME);
+		$this->config->setAppValue('recognize', 'imagenet.enabled', 'false');
+		$this->config->setAppValue('recognize', 'faces.enabled', 'false');
+		$this->config->setAppValue('recognize', 'movinet.enabled', 'false');
+		$this->config->setAppValue('recognize', 'musicnn.enabled', 'false');
 	}
 
 	public function testSchedulerJob() : void {
@@ -118,6 +122,7 @@ class ClassifierTest extends TestCase {
 	 */
 	public function testFileListener(string $ignoreFileName) : void {
 		$this->config->setAppValue('recognize', 'imagenet.enabled', 'true');
+		$this->queue->clearQueue(ImagenetClassifier::MODEL_NAME);
 
 		$this->testFile = $this->userFolder->newFile('/alpine.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
 		$this->userFolder->newFolder('/test/ignore/');
@@ -132,9 +137,6 @@ class ClassifierTest extends TestCase {
 		$this->testFile->delete();
 
 		self::assertCount(0, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'entry should have been removed from imagenet queue');
-
-		// disable again
-		$this->config->setAppValue('recognize', 'imagenet.enabled', 'false');
 	}
 
 	/**
@@ -152,7 +154,9 @@ class ClassifierTest extends TestCase {
 		$this->userFolder->newFolder('/test/ignore/');
 		$this->ignoredFile = $this->userFolder->newFile('/test/ignore/alpine.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
 		$this->userFolder->newFile('/test/' . $ignoreFileName, '');
+
 		$this->config->setAppValue('recognize', 'imagenet.enabled', 'true');
+
 		/** @var StorageCrawlJob $scheduler */
 		$crawler = \OC::$server->get(StorageCrawlJob::class);
 		/** @var IJobList $this->jobList */
