@@ -121,8 +121,8 @@ class ClassifierTest extends TestCase {
 
 		$this->testFile = $this->userFolder->newFile('/alpine.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
 		$this->userFolder->newFolder('/test/ignore/');
-		$this->ignoredFile = $this->userFolder->newFile('/test/ignore/alpine.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
 		$this->userFolder->newFile('/test/' . $ignoreFileName, '');
+		$this->ignoredFile = $this->userFolder->newFile('/test/ignore/alpine.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
 
 		$storageId = $this->testFile->getMountPoint()->getNumericStorageId();
 		$rootId = $this->testFile->getMountPoint()->getStorageRootId();

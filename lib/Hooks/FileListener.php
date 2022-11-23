@@ -88,7 +88,7 @@ class FileListener implements IEventListener {
 	 */
 	public function postInsert(Node $node): void {
 		$queueFile = new QueueFile();
-		$queueFile->setStorageId($node->getMountPoint()->getStorageId());
+		$queueFile->setStorageId((string) $node->getMountPoint()->getNumericStorageId());
 		$queueFile->setRootId((string) $node->getMountPoint()->getStorageRootId());
 
 		$ignoreMarkers = [];
