@@ -12,6 +12,7 @@ OC.L10N.register(
     "Dog" : "Σκύλος",
     "Music" : "Μουσική",
     "Office" : "Office",
+    "Food" : "Φαγητό",
     "Train" : "Τρένο",
     "Car" : "Αμάξι",
     "Computer" : "Υπολογιστής",
