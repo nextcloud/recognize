@@ -22,36 +22,10 @@ class IgnoreService {
 		$this->logger = $logger;
 		$this->mimeTypes = $mimeTypes;
 	}
-
-	/**
-	 * @param int $fileid
-	 * @param array $directoryTypes
-	 * @param bool $recursive
-	 * @return list<array>
-	 */
-	public function getDir(int $fileid, array $directoryTypes, bool $recursive = false): array {
-		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
-		$result = $qb->selectFileCache()
-			->andWhere($qb->expr()->in('mimetype', $qb->createNamedParameter($directoryTypes, IQueryBuilder::PARAM_INT_ARRAY)))
-			->andWhere($qb->expr()->eq('parent', $qb->createNamedParameter($fileid)))
-			->executeQuery();
-		/**
-		 * @var list<array> $dir
-		 */
-		$dir = $result->fetchAll();
-
-		if ($recursive) {
-			foreach ($dir as $item) {
-				$dir = array_merge($dir, $this->getDir((int) $item['fileid'], $directoryTypes, $recursive));
-			}
-		}
-		return $dir;
-	}
-
 	/**
 	 * @param int $storageId
 	 * @param array $ignoreMarkers
-	 * @return array
+	 * @return list<string>
 	 */
 	public function getIgnoredDirectories(int $storageId, array $ignoreMarkers): array {
 		$directoryTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::DIRECTORY_FORMATS);
@@ -64,12 +38,7 @@ class IgnoreService {
 		 * @var list<array> $ignoreFiles
 		 */
 		$ignoreFiles = $result->fetchAll();
-		$ignoreFileIds = array_map(fn ($dir): int => (int)$dir['parent'], $ignoreFiles);
-		foreach ($ignoreFiles as $ignoreFile) {
-			$ignoreDir = $this->getDir((int) $ignoreFile['parent'], $directoryTypes, true);
-			$fileIds = array_map(fn ($dir): int => (int) $dir['fileid'], $ignoreDir);
-			$ignoreFileIds = array_merge($ignoreFileIds, $fileIds);
-		}
-		return $ignoreFileIds;
+		$ignoredPaths = array_map(fn ($dir): string => dirname($dir['path']), $ignoreFiles);
+		return $ignoredPaths;
 	}
 }

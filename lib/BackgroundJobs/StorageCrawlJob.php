@@ -84,10 +84,10 @@ class StorageCrawlJob extends QueuedJob {
 		}
 
 		try {
-			$ignoreAllFileids = $this->ignoreService->getIgnoredDirectories($storageId, Constants::IGNORE_MARKERS_ALL);
-			$ignoreImageFileids = $this->ignoreService->getIgnoredDirectories($storageId, Constants::IGNORE_MARKERS_IMAGE);
-			$ignoreVideoFileids = $this->ignoreService->getIgnoredDirectories($storageId, Constants::IGNORE_MARKERS_VIDEO);
-			$ignoreAudioFileids = $this->ignoreService->getIgnoredDirectories($storageId, Constants::IGNORE_MARKERS_AUDIO);
+			$ignorePathsAll = $this->ignoreService->getIgnoredDirectories($storageId, Constants::IGNORE_MARKERS_ALL);
+			$ignorePathsImage = $this->ignoreService->getIgnoredDirectories($storageId, Constants::IGNORE_MARKERS_IMAGE);
+			$ignorePathsVideo = $this->ignoreService->getIgnoredDirectories($storageId, Constants::IGNORE_MARKERS_VIDEO);
+			$ignorePathsAudio = $this->ignoreService->getIgnoredDirectories($storageId, Constants::IGNORE_MARKERS_AUDIO);
 		} catch (Exception $e) {
 			$this->logger->error('Could not fetch ignore files', ['exception' => $e]);
 			return;
@@ -100,15 +100,15 @@ class StorageCrawlJob extends QueuedJob {
 		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
 		$ignoreFileidsExpr = [];
 		if (count(array_intersect([ClusteringFaceClassifier::MODEL_NAME, ImagenetClassifier::MODEL_NAME, LandmarksClassifier::MODEL_NAME], $models)) > 0) {
-			$expr = array_map(fn ($chunk): string => $qb->expr()->notIn('parent', $qb->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)), array_chunk($ignoreImageFileids, 999, true));
+			$expr = array_map(fn (string $path): string => $qb->expr()->notLike('path', $qb->createNamedParameter($path ? $path . '/%' : '%')), $ignorePathsImage);
 			$ignoreFileidsExpr[] = $qb->expr()->andX($qb->expr()->in('mimetype', $qb->createNamedParameter($imageTypes, IQueryBuilder::PARAM_INT_ARRAY)), ...$expr);
 		}
 		if (in_array(MovinetClassifier::MODEL_NAME, $models)) {
-			$expr = array_map(fn ($chunk): string => $qb->expr()->notIn('parent', $qb->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)), array_chunk($ignoreVideoFileids, 999, true));
+			$expr = array_map(fn (string $path): string => $qb->expr()->notLike('path', $qb->createNamedParameter($path ? $path . '/%' : '%')), $ignorePathsVideo);
 			$ignoreFileidsExpr[] = $qb->expr()->andX($qb->expr()->in('mimetype', $qb->createNamedParameter($videoTypes, IQueryBuilder::PARAM_INT_ARRAY)), ...$expr);
 		}
 		if (in_array(MusicnnClassifier::MODEL_NAME, $models)) {
-			$expr = array_map(fn ($chunk): string => $qb->expr()->notIn('parent', $qb->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)), array_chunk($ignoreAudioFileids, 999, true));
+			$expr = array_map(fn (string $path): string => $qb->expr()->notLike('path', $qb->createNamedParameter($path ? $path . '/%' : '%')), $ignorePathsAudio);
 			$ignoreFileidsExpr[] = $qb->expr()->andX($qb->expr()->in('mimetype', $qb->createNamedParameter($audioTypes, IQueryBuilder::PARAM_INT_ARRAY)), ...$expr);
 		}
 		if (count($ignoreFileidsExpr) === 0) {
@@ -119,7 +119,7 @@ class StorageCrawlJob extends QueuedJob {
 
 		try {
 			$path = $root['path'] === '' ? '' :  $root['path'] . '/';
-			$ignoreAllFileidsExpr = array_map(fn ($chunk): string => $qb->expr()->notIn('parent', $qb->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)), array_chunk($ignoreAllFileids, 999, true));
+			$ignoreExprAll = array_map(fn (string $path): string => $qb->expr()->notLike('path', $qb->createNamedParameter($path ? $path . '/%' : '%')), $ignorePathsImage);
 
 			$qb->selectFileCache()
 				->whereStorageId($storageId)
@@ -127,8 +127,8 @@ class StorageCrawlJob extends QueuedJob {
 				->andWhere($qb->expr()->eq('storage', $qb->createNamedParameter($storageId)))
 				->andWhere($qb->expr()->gt('filecache.fileid', $qb->createNamedParameter($lastFileId)))
 				->andWhere($qb->expr()->orX(...$ignoreFileidsExpr));
-			if (count($ignoreAllFileidsExpr) > 0) {
-				$qb->andWhere($qb->expr()->andX(...$ignoreAllFileidsExpr));
+			if (count($ignoreExprAll) > 0) {
+				$qb->andWhere($qb->expr()->andX(...$ignoreExprAll));
 			}
 			$files = $qb->orderBy('filecache.fileid', 'ASC')
 				->setMaxResults(100)
