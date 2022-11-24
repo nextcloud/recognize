@@ -66,6 +66,8 @@ OC.L10N.register(
     "Checking libtensorflow" : "libtensorflow denetleniyor",
     "Could not load libtensorflow in Node.js. You can try to manually install libtensorflow or run in WASM mode." : "Libtensorflow node.js içine yüklenemedi. Libtensorflow uygulamasını el ile kurmayı ya da WASM kipinde çalıştırmauı deneyebilirsiniz.",
     "Libtensorflow was loaded successfully into Node.js." : "Libtensorflow Node.js içine yüklendi.",
+    "Could not load Tensorflow WASM in Node.js. Something is wrong with your setup." : "Tensorflow WASM, Node.js içine yüklenemedi. Kurulumunuzda bir sorun var.",
+    "Tensorflow WASM was loaded successfully into Node.js." : "Tensorflow WASM, Node.js içine yüklendi.",
     "If the shipped Node.js binary doesn't work on your system for some reason you can set the path to a custom node.js binary. Currently supported is Node v14.17 and newer v14 releases." : "Birlikte verilen Node.js binary dosyası herhangi bir nedenle sisteminizde çalışmıyorsa, özel bir node.js binary dosyasının yolunu ayarlayabilirsiniz. Şu anda Node v14.17 ve daha yeni v14 sürümleri destekleniyor.",
     "Your server does not support AVX instructions" : "Sunucunuz AVX komutlarını desteklemiyor",
     "Your server does not have an x86 64-bit CPU" : "Sunucunuzun işlemcisi x86 64 bit değil",
