@@ -92,7 +92,7 @@ class ClusteringFaceClassifier extends Classifier {
 
 				// Insert face detection for all users with access
 				foreach ($userIds as $userId) {
-					print('preparing face detection for user '.$userId);
+					$this->logger->debug('preparing face detection for user '.$userId);
 					$faceDetection = new FaceDetection();
 					$faceDetection->setX($face['x']);
 					$faceDetection->setY($face['y']);
