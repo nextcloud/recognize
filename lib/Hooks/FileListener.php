@@ -107,7 +107,7 @@ class FileListener implements IEventListener {
 		$ignoreMarkers = array_merge($ignoreMarkers, Constants::IGNORE_MARKERS_ALL);
 		$ignoredPaths = $this->ignoreService->getIgnoredDirectories($node->getMountPoint()->getNumericStorageId(), $ignoreMarkers);
 
-		if (count(array_filter($ignoredPaths, fn (string $ignoredPath) => stripos($node->getPath(), $ignoredPath ? $ignoredPath . '/' : $ignoredPath) === 0)) > 0) {
+		if (count(array_filter($ignoredPaths, fn (string $ignoredPath) => stripos($node->getInternalPath(), $ignoredPath ? $ignoredPath . '/' : $ignoredPath) === 0)) > 0) {
 			return;
 		}
 
