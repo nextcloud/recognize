@@ -5,7 +5,6 @@ namespace OCA\Recognize\Service;
 use OC\Files\Cache\CacheQueryBuilder;
 use OC\SystemConfig;
 use OCP\DB\QueryBuilder\IQueryBuilder;
-use OCP\Files\IMimeTypeLoader;
 use OCP\IDBConnection;
 use Psr\Log\LoggerInterface;
 
@@ -14,11 +13,10 @@ class IgnoreService {
 	private SystemConfig $systemConfig;
 	private LoggerInterface $logger;
 
-	public function __construct(IDBConnection $db, SystemConfig $systemConfig, LoggerInterface $logger, IMimeTypeLoader $mimeTypes) {
+	public function __construct(IDBConnection $db, SystemConfig $systemConfig, LoggerInterface $logger) {
 		$this->db = $db;
 		$this->systemConfig = $systemConfig;
 		$this->logger = $logger;
-		$this->mimeTypes = $mimeTypes;
 	}
 	/**
 	 * @param int $storageId
