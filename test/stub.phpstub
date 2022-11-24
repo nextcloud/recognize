@@ -8,3 +8,27 @@ namespace OC\Hooks {
 		public function listen(string $class, string $value, $closure) {}
 	}
 }
+
+namespace OC {
+    class SystemConfig {
+    	public function getKeys();
+    	public function setValue($key, $value);
+    	public function setValues(array $configs);
+    	public function getValue($key, $default = '');
+    	public function getFilteredValue($key, $default = '');
+    	public function deleteValue($key);
+    }
+}
+
+
+namespace OC\Files\Cache {
+    class CacheQueryBuilder extends \OCP\DB\QueryBuilder\IQueryBuilder {
+        public function __construct(\OCP\IDBCOnnection $db, \OC\SystemConfig $config, \Psr\Log\LoggerInterface $logger);
+        public function selectFileCache(string $alias = null, bool $joinExtendedCache = true):CacheQueryBuilder;
+        public function whereStorageId(int $storageId):CacheQueryBuilder;
+        public function whereFileId(int $fileId):CacheQueryBuilder;
+        public function wherePath(string $path):CacheQueryBuilder;
+        public function whereParent(int $parent):CacheQueryBuilder;
+        public function whereParentInParameter(string $parameter):CacheQueryBuilder;
+    }
+}

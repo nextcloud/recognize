@@ -9,5 +9,3 @@ require_once __DIR__ . '/../../../lib/base.php';
 
 // load all enabled apps
 \OC_App::loadApps();
-
-OC_Hook::clear();
