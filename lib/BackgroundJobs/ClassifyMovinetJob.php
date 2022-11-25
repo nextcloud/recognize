@@ -7,12 +7,12 @@
 namespace OCA\Recognize\BackgroundJobs;
 
 use OCA\Recognize\Classifiers\Video\MovinetClassifier;
+use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
 use OCA\Recognize\Service\SettingsService;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\IJobList;
 use OCP\Files\Config\IUserMountCache;
-use Psr\Log\LoggerInterface;
 
 class ClassifyMovinetJob extends ClassifierJob {
 	public const MODEL_NAME = 'movinet';
@@ -20,7 +20,7 @@ class ClassifyMovinetJob extends ClassifierJob {
 	private SettingsService $settingsService;
 	private MovinetClassifier $movinet;
 
-	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, SettingsService $settingsService, MovinetClassifier $movinet, IUserMountCache $mountCache, IJobList $jobList) {
+	public function __construct(ITimeFactory $time, Logger $logger, QueueService $queue, SettingsService $settingsService, MovinetClassifier $movinet, IUserMountCache $mountCache, IJobList $jobList) {
 		parent::__construct($time, $logger, $queue, $mountCache, $jobList, $settingsService);
 		$this->settingsService = $settingsService;
 		$this->movinet = $movinet;

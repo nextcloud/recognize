@@ -22,10 +22,12 @@ class IgnoreService {
 		$this->systemConfig = $systemConfig;
 		$this->logger = $logger;
 	}
+
 	/**
 	 * @param int $storageId
 	 * @param array $ignoreMarkers
 	 * @return list<string>
+	 * @throws \OCP\DB\Exception
 	 */
 	public function getIgnoredDirectories(int $storageId, array $ignoreMarkers): array {
 		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);

@@ -7,6 +7,7 @@
 namespace OCA\Recognize\BackgroundJobs;
 
 use OCA\Recognize\Service\FaceClusterAnalyzer;
+use OCA\Recognize\Service\Logger;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\IJobList;
 use OCP\BackgroundJob\QueuedJob;
@@ -18,7 +19,7 @@ class ClusterFacesJob extends QueuedJob {
 	private IJobList $jobList;
 	private LoggerInterface $logger;
 
-	public function __construct(ITimeFactory $time, LoggerInterface $logger, IJobList $jobList, FaceClusterAnalyzer $clusterAnalyzer) {
+	public function __construct(ITimeFactory $time, Logger $logger, IJobList $jobList, FaceClusterAnalyzer $clusterAnalyzer) {
 		parent::__construct($time);
 		$this->logger = $logger;
 		$this->jobList = $jobList;
