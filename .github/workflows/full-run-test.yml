@@ -131,6 +131,8 @@ jobs:
           make all
           make remove-binaries
           rm -rf models # Make it download from github
+          wget https://github.com/nextcloud/recognize/releases/download/v2.2.0/test-files.zip
+          unzip test-files.zip -d test/res/
 
       - name: Set up Nextcloud and install app
         if: ${{ matrix.databases != 'pgsql'}}
