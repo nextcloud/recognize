@@ -50,9 +50,6 @@ The app does not send any sensitive data to cloud providers or similar services.
 		<php min-version="7.4" />
 		<nextcloud min-version="25" max-version="26" />
 	</dependencies>
-	<background-jobs>
-		<job>OCA\Recognize\BackgroundJobs\SchedulerJob</job>
-	</background-jobs>
 
 	<repair-steps>
 		<post-migration>
