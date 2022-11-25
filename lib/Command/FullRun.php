@@ -15,6 +15,8 @@ use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Exception\Exception;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\StorageService;
+use OCP\Files\Config\ICachedMountInfo;
+use OCP\Files\Config\IUserMountCache;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -26,8 +28,9 @@ class FullRun extends Command {
 	private ClusteringFaceClassifier $faces;
 	private MovinetClassifier $movinet;
 	private MusicnnClassifier $musicnn;
+	private IUserMountCache $userMountCache;
 
-	public function __construct(StorageService $storageService, Logger $logger, ImagenetClassifier $imagenet, ClusteringFaceClassifier $faces, MovinetClassifier $movinet, MusicnnClassifier $musicnn) {
+	public function __construct(StorageService $storageService, Logger $logger, ImagenetClassifier $imagenet, ClusteringFaceClassifier $faces, MovinetClassifier $movinet, MusicnnClassifier $musicnn, IUserMountCache $userMountCache) {
 		parent::__construct();
 		$this->storageService = $storageService;
 		$this->logger = $logger;
@@ -35,6 +38,7 @@ class FullRun extends Command {
 		$this->faces = $faces;
 		$this->movinet = $movinet;
 		$this->musicnn = $musicnn;
+		$this->userMountCache = $userMountCache;
 	}
 
 	/**
@@ -67,6 +71,15 @@ class FullRun extends Command {
 
 		foreach ($this->storageService->getMounts() as $mount) {
 			$this->logger->info('Processing storage ' . $mount['storage_id'] . ' with root ID ' . $mount['override_root']);
+
+			// Setup Filesystem for a users that can access this mount
+			$mounts = array_values(array_filter($this->userMountCache->getMountsForStorageId($mount['storage_id']), function (ICachedMountInfo $mountInfo) use ($mount) {
+				return $mountInfo->getRootId() === $mount['root_id'];
+			}));
+			if (count($mounts) > 0) {
+				\OC_Util::setupFS($mounts[0]->getUser()->getUID());
+			}
+
 			$lastFileId = 0;
 			do {
 				$i = 0;

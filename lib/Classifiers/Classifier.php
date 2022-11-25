@@ -56,7 +56,7 @@ class Classifier {
 			$files = $this->rootFolder->getById($queueFile->getFileId());
 			if (count($files) === 0) {
 				try {
-					$this->logger->debug('removing '.$queueFile->getFileId().' from '.$model.' queue');
+					$this->logger->debug('removing '.$queueFile->getFileId().' from '.$model.' queue because it couldn\'t be found');
 					$this->queue->removeFromQueue($model, $queueFile);
 				} catch (Exception $e) {
 					$this->logger->warning($e->getMessage(), ['exception' => $e]);
