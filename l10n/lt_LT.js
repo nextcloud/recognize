@@ -52,6 +52,7 @@ OC.L10N.register(
     "Bear" : "Lokys",
     "Cow" : "Karvė",
     "Elephant" : "Dramblys",
+    "Panda" : "Panda",
     "Music" : "Muzika",
     "Tractor" : "Traktorius",
     "Office" : "Biuras",

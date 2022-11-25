@@ -66,6 +66,8 @@ OC.L10N.register(
     "Checking libtensorflow" : "A libtensorflow ellenőrzése",
     "Could not load libtensorflow in Node.js. You can try to manually install libtensorflow or run in WASM mode." : "Nem sikerült betölteni a libtensorflowt a Node.js-ben. Próbálja kézileg telepíteni a libtensorflowt vagy futtassa WASM módban.",
     "Libtensorflow was loaded successfully into Node.js." : "A libtensorflow sikeresen be lett töltve a Node.js-ben.",
+    "Could not load Tensorflow WASM in Node.js. Something is wrong with your setup." : "Nem sikerült a Tensorflow WADM betöltése a Node.js-be. Valami hibás a beállításaiban.",
+    "Tensorflow WASM was loaded successfully into Node.js." : "A Tensorflow WASM sikeresen be lett töltve a Node.js-be.",
     "If the shipped Node.js binary doesn't work on your system for some reason you can set the path to a custom node.js binary. Currently supported is Node v14.17 and newer v14 releases." : "Ha a szállított Node.js bináris valamilyen oknál fogva nem működik a rendszerén, akkor beállítja az egyéni Node.js bináris útvonalát. Jelenleg a Node v14.17 vagy az újabb v14-es kiadások támogatottak.",
     "Your server does not support AVX instructions" : "A kiszolgáló nem támogatja az AVX utasításokat",
     "Your server does not have an x86 64-bit CPU" : "A kiszolgálónak nem 64 bites x86 CPU-ja van",

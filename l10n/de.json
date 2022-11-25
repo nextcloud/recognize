@@ -64,6 +64,7 @@
     "Checking libtensorflow" : "Überprüfen von libtensorflow",
     "Could not load libtensorflow in Node.js. You can try to manually install libtensorflow or run in WASM mode." : "libtensorflow konnte nicht in Node.js geladen werden. Du kannst versuchen, libtensorflow manuell zu installieren oder im WASM-Modus auszuführen.",
     "Libtensorflow was loaded successfully into Node.js." : "Libtensorflow wurde erfolgreich in Node.js geladen.",
+    "Could not load Tensorflow WASM in Node.js. Something is wrong with your setup." : "Tensorflow WASM konnte nicht in Node.js geladen werden. Irgendetwas stimmt mit deinem Setup nicht.",
     "If the shipped Node.js binary doesn't work on your system for some reason you can set the path to a custom node.js binary. Currently supported is Node v14.17 and newer v14 releases." : "Wenn die mitgelieferte Node.js-Binärdatei aus irgendeinem Grund auf deinem System nicht funktioniert, kannst du den Pfad zu einer benutzerdefinierte node.js-Binärdatei festlegen. Derzeit werden Node v14.17 und neuere v14-Releases unterstützt.",
     "Your server does not support AVX instructions" : "Dein Server unterstützt keine AVX-Anweisungen",
     "Your server does not have an x86 64-bit CPU" : "Dein Server hat keine x86 64-Bit-CPU",
