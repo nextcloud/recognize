@@ -86,6 +86,7 @@ class StorageService {
 				'override_root' => $overrideRoot,
 			];
 		}
+		$result->closeCursor();
 	}
 
 	/**
@@ -99,9 +100,11 @@ class StorageService {
 	public function getFilesInMount(int $storageId, int $rootId, array $models, int $lastFileId = 0, int $maxResults = 100) : \Generator {
 		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
 		try {
-			$root = $qb->selectFileCache()
+			$result = $qb->selectFileCache()
 				->andWhere($qb->expr()->eq('filecache.fileid', $qb->createNamedParameter($rootId, IQueryBuilder::PARAM_INT)))
-				->executeQuery()->fetch();
+				->executeQuery();
+			$root = $result->fetch();
+			$result->closeCursor();
 		} catch (Exception $e) {
 			$this->logger->error('Could not fetch storage root', ['exception' => $e]);
 			return;
@@ -176,5 +179,7 @@ class StorageService {
 				'audio' => in_array($file['mimetype'], $audioTypes),
 			];
 		}
+
+		$files->closeCursor();
 	}
 }

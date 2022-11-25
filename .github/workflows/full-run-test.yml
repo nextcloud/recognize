@@ -28,7 +28,7 @@ jobs:
         movinet-enabled: ['true', 'false']
         include:
           # stable25,sqlite,php8
-          - server-versions: stable23
+          - server-versions: stable25
             databases: sqlite
             php-versions: 8.0
             pure-js-mode: false
@@ -48,7 +48,7 @@ jobs:
             musicnn-enabled: true
             movinet-enabled: false
           # stable25,sqlite,php8.1
-          - server-versions: stable23
+          - server-versions: stable25
             databases: sqlite
             php-versions: 8.1
             pure-js-mode: false

@@ -53,7 +53,7 @@ class Classifier {
 		$paths = [];
 		$processedFiles = [];
 		foreach ($queueFiles as $queueFile) {
-			$files = $this->rootFolder->getById($queueFile->getFileId());
+			$files = $this->rootFolder->getById(intval($queueFile->getFileId()));
 			if (count($files) === 0) {
 				try {
 					$this->logger->debug('removing '.$queueFile->getFileId().' from '.$model.' queue because it couldn\'t be found');
