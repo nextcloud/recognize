@@ -94,7 +94,7 @@ class FullRun extends Command {
 					$i++;
 					$lastFileId = $file['fileid'];
 					$queueFile = new QueueFile();
-					$queueFile->setStorageId((string)$mount['storage_id']);
+					$queueFile->setStorageId($mount['storage_id']);
 					$queueFile->setRootId($mount['root_id']);
 					$queueFile->setFileId($file['fileid']);
 					$queueFile->setUpdate(false);

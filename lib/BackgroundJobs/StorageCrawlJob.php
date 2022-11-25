@@ -6,14 +6,12 @@
 
 namespace OCA\Recognize\BackgroundJobs;
 
-use OC\SystemConfig;
 use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
 use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
 use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
 use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
 use OCA\Recognize\Classifiers\Video\MovinetClassifier;
 use OCA\Recognize\Db\QueueFile;
-use OCA\Recognize\Service\IgnoreService;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
 use OCA\Recognize\Service\StorageService;
@@ -28,9 +26,8 @@ class StorageCrawlJob extends QueuedJob {
 	private LoggerInterface $logger;
 	private QueueService $queue;
 	private IJobList $jobList;
-	private SystemConfig $systemConfig;
 	private TagManager $tagManager;
-	private IgnoreService $ignoreService;
+	private StorageService $storageService;
 
 	public function __construct(ITimeFactory $timeFactory, Logger $logger, QueueService $queue, IJobList $jobList, TagManager $tagManager, StorageService $storageService) {
 		parent::__construct($timeFactory);
@@ -41,6 +38,10 @@ class StorageCrawlJob extends QueuedJob {
 		$this->storageService = $storageService;
 	}
 
+	/**
+	 * @param array{storage_id:int, root_id:int, override_root:int, last_file_id:int} $argument
+	 * @return void
+	 */
 	protected function run($argument): void {
 		$storageId = $argument['storage_id'];
 		$rootId = $argument['root_id'];
@@ -64,7 +65,7 @@ class StorageCrawlJob extends QueuedJob {
 		foreach ($this->storageService->getFilesInMount($storageId, $overrideRoot, $models, $lastFileId) as $file) {
 			$i++;
 			$queueFile = new QueueFile();
-			$queueFile->setStorageId((string) $storageId);
+			$queueFile->setStorageId($storageId);
 			$queueFile->setRootId($rootId);
 			$queueFile->setFileId($file['fileid']);
 			$queueFile->setUpdate(false);

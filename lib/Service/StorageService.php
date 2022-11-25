@@ -48,7 +48,7 @@ class StorageService {
 	}
 
 	/**
-	 * @return \Generator
+	 * @return \Generator<array{root_id: int, override_root: int, storage_id: int}>
 	 * @throws \OCP\DB\Exception
 	 */
 	public function getMounts(): \Generator {
@@ -58,8 +58,11 @@ class StorageService {
 			->where($qb->expr()->in('mount_provider_class', $qb->createPositionalParameter(self::ALLOWED_MOUNT_TYPES, IQueryBuilder::PARAM_STR_ARRAY)));
 		$result = $qb->executeQuery();
 
-		/** @var array $row */
-		while ($row = $result->fetch()) {
+
+		while (
+			/** @var array{storage_id:int, root_id:int,mount_provider_class:string} $row */
+			$row = $result->fetch()
+		) {
 			$storageId = intval($row['storage_id']);
 			$rootId = intval($row['root_id']);
 			$overrideRoot = $rootId;
@@ -95,7 +98,7 @@ class StorageService {
 	 * @param array $models
 	 * @param int $lastFileId
 	 * @param int $maxResults
-	 * @return \Generator
+	 * @return \Generator<int,array{fileid:int, image:bool, video:bool, audio:bool},mixed,void>
 	 */
 	public function getFilesInMount(int $storageId, int $rootId, array $models, int $lastFileId = 0, int $maxResults = 100) : \Generator {
 		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
@@ -103,15 +106,11 @@ class StorageService {
 			$result = $qb->selectFileCache()
 				->andWhere($qb->expr()->eq('filecache.fileid', $qb->createNamedParameter($rootId, IQueryBuilder::PARAM_INT)))
 				->executeQuery();
+			/** @var array{path:string} $root */
 			$root = $result->fetch();
 			$result->closeCursor();
 		} catch (Exception $e) {
 			$this->logger->error('Could not fetch storage root', ['exception' => $e]);
-			return;
-		}
-
-		if ($root === false) {
-			$this->logger->error('Could not find storage root');
 			return;
 		}
 
@@ -170,8 +169,10 @@ class StorageService {
 			return;
 		}
 
-		/** @var array $file */
-		while ($file = $files->fetch()) {
+		while (
+			/** @var array{fileid:int,mimetype:int} $file */
+			$file = $files->fetch()
+		) {
 			yield [
 				'fileid' => $file['fileid'],
 				'image' => in_array($file['mimetype'], $imageTypes),
