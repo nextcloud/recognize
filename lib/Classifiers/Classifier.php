@@ -6,6 +6,9 @@
 
 namespace OCA\Recognize\Classifiers;
 
+use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
+use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
+use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
 use OCA\Recognize\Constants;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
@@ -64,7 +67,7 @@ class Classifier {
 			try {
 				$path = $this->getConvertedFilePath($files[0]);
 				$filesizeMb = filesize($path) / (1024 * 1024);
-				if ($filesizeMb > 8) {
+				if ($filesizeMb > 8 && in_array($model, [ImagenetClassifier::MODEL_NAME, LandmarksClassifier::MODEL_NAME, ClusteringFaceClassifier::MODEL_NAME])) {
 					$this->logger->debug('File is too large for classifier: ' . $files[0]->getPath());
 					try {
 						$this->logger->debug('removing '.$queueFile->getFileId().' from '.$model.' queue');
