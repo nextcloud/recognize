@@ -61,7 +61,7 @@ class StorageCrawlJob extends QueuedJob {
 		$this->jobList->remove(self::class, $argument);
 
 		$i = 0;
-		foreach ($this->storageService->getFilesInMount($storageId, $overrideRoot, $lastFileId, 100) as $file) {
+		foreach ($this->storageService->getFilesInMount($storageId, $overrideRoot, $models, $lastFileId) as $file) {
 			$i++;
 			$queueFile = new QueueFile();
 			$queueFile->setStorageId((string) $storageId);
