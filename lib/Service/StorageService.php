@@ -95,7 +95,7 @@ class StorageService {
 	 * @param int $maxResults
 	 * @return \Generator|void
 	 */
-	public function getFilesInMount(int $storageId, int $rootId, array $models, int $lastFileId = 0, int $maxResults = 100) {
+	public function getFilesInMount(int $storageId, int $rootId, array $models, int $lastFileId = 0, int $maxResults = 100) : \Generator {
 		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
 		try {
 			$root = $qb->selectFileCache()

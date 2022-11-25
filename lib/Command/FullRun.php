@@ -79,6 +79,7 @@ class FullRun extends Command {
 				];
 				foreach ($this->storageService->getFilesInMount($mount['storage_id'], $mount['override_root'], $models, $lastFileId) as $file) {
 					$i++;
+					$lastFileId = $file['fileid'];
 					$queueFile = new QueueFile();
 					$queueFile->setStorageId((string)$mount['storage_id']);
 					$queueFile->setRootId($mount['root_id']);
@@ -86,12 +87,8 @@ class FullRun extends Command {
 					$queueFile->setUpdate(false);
 
 					if ($file['image']) {
-						if (in_array(ImagenetClassifier::MODEL_NAME, $models)) {
-							$queues[ImagenetClassifier::MODEL_NAME][] = $queueFile;
-						}
-						if (in_array(ClusteringFaceClassifier::MODEL_NAME, $models)) {
-							$queues[ClusteringFaceClassifier::MODEL_NAME][] = $queueFile;
-						}
+						$queues[ImagenetClassifier::MODEL_NAME][] = $queueFile;
+						$queues[ClusteringFaceClassifier::MODEL_NAME][] = $queueFile;
 					}
 					if ($file['video']) {
 						$queues[MovinetClassifier::MODEL_NAME][] = $queueFile;

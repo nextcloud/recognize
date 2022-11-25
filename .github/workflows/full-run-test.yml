@@ -58,7 +58,7 @@ jobs:
             musicnn-enabled: true
             movinet-enabled: true
 
-    name: Test full-run command on ${{ matrix.databases }}-${{ matrix.server-versions }}
+    name: Test full-run command on ${{ matrix.databases }}-${{ matrix.server-versions }} wasm:${{ matrix.pure-js-mode }},imagenet:${{ matrix.imagenet-enabled }},faces:${{ matrix.faces-enabled }},landmarks:${{ matrix.landmarks-enabled }},movinet:${{ matrix.movinet-enabled }},musicnn:${{ matrix.musicnn-enabled }}
 
     env:
       MYSQL_PORT: 4444
