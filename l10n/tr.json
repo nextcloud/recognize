@@ -6,6 +6,7 @@
     "The machine learning models have been downloaded successfully." : "Makine öğrenmesi modelleri indirildi.",
     "The machine learning models still need to be downloaded." : "Makine öğrenmesi modellerinin indirilmesi gerekiyor.",
     "Could not execute the Node.js binary. You may need to set the path to a working binary manually." : "Node.js binary dosyası yürütülemedi. Çalışan bir binary dosyasının yolunu el ile ayarlamanız gerekebilir.",
+    "Background Jobs are not executed via cron. Recognize requires background jobs to be executed via cron." : "Arka plan görevleri cron zamanlanmış görevi ile yürütülmüyor. Recognize için arka plan görevlerinin cron ile yürütülmesi gereklidir.",
     "The app is installed and will automatically classify files in background processes." : "Uygulama kuruldu ve arka planda dosyaları otomatik olarak sınıflandıracak.",
     "None of the tagging options below are currently selected. The app will currently do nothing." : "Aşağıdaki etiketleme seçeneklerinden hiçbiri seçilmemiş Uygulama bir işlem yapmayacak.",
     "Image tagging" : "Görsel etiketleme",

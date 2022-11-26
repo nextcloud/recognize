@@ -8,6 +8,7 @@ OC.L10N.register(
     "The machine learning models have been downloaded successfully." : "Modely strojového učení byly úspěšně staženy.",
     "The machine learning models still need to be downloaded." : "Pořád ještě je třeba stáhnout si modely strojového učení.",
     "Could not execute the Node.js binary. You may need to set the path to a working binary manually." : "Nedaří se spustit Node.js. Může být třeba ručně nastavit popis umístění fungujícího spustitelného souboru s ním.",
+    "Background Jobs are not executed via cron. Recognize requires background jobs to be executed via cron." : "Úlohy na pozadí nejsou vykonávány prostřednictvím plánovače cron. Aplikace Rozpoznání ovšem vyžaduje, aby tomu tak bylo.",
     "The app is installed and will automatically classify files in background processes." : "Aplikace je nainstalovaná a bude klasifikovat obrázky v procesech, spuštěných na pozadí.",
     "None of the tagging options below are currently selected. The app will currently do nothing." : "V tuto chvíli nejsou vybrány žádné možnosti opatřování štítky. Aplikace v tuto chvíli nic nedělá.",
     "Image tagging" : "Označování obrázků štítky",
