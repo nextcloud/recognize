@@ -6,6 +6,7 @@
     "The machine learning models have been downloaded successfully." : "A gép tanulási modellek sikeresen le lettek töltve.",
     "The machine learning models still need to be downloaded." : "A gépi tanulási modelleket még le kell tölteni.",
     "Could not execute the Node.js binary. You may need to set the path to a working binary manually." : "A Node.js bináris futtatása sikertelen. Lehet, hogy kézileg kell beállítania a PATH környezeti változót egy működő binárishoz.",
+    "Background Jobs are not executed via cron. Recognize requires background jobs to be executed via cron." : "A háttérfeladatok nem cron használatával futnak. A Felismerés számára cronnal kell futtatni a háttérfeladatokat.",
     "The app is installed and will automatically classify files in background processes." : "Az alkalmazás telepítve van, és automatikusan osztályozza a fájlokat a háttérfolyamatokban.",
     "None of the tagging options below are currently selected. The app will currently do nothing." : "Jelenleg a címkézési lehetőséget egyike sincs kiválasztva. Az alkalmazás jelenleg semmit sem fog csinálni.",
     "Image tagging" : "Képcímkézés",
