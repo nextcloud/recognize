@@ -3,6 +3,8 @@ OC.L10N.register(
     {
     "Status" : "Status",
     "Reset" : "Nulstil",
+    "Node.js" : "Node.js",
+    "Checking Node.js" : "Tjekker Node.js",
     "Failed to load settings" : "Fejl ved indlæsning af indstillinger",
     "Failed to save settings" : "Kunne ikke gemme indstillinger",
     "never" : "aldrig",
