@@ -12,12 +12,12 @@ use OCP\AppFramework\Db\Entity;
  * Class QueueFile
  *
  * @package OCA\Recognize\Db
- * @method string getFileId()
+ * @method int getFileId()
  * @method setFileId(int $fileId)
- * @method string getStorageId()
- * @method setStorageId(string $storageId)
- * @method string getRootId()
- * @method setRootId(string $rootId)
+ * @method int getStorageId()
+ * @method setStorageId(int $storageId)
+ * @method int getRootId()
+ * @method setRootId(int $rootId)
  * @method setUpdate(boolean $update)
  * @method bool getUpdate()
  */

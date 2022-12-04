@@ -10,7 +10,6 @@ use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
 use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
 use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
 use OCA\Recognize\Constants;
-use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
 use OCP\DB\Exception;
 use OCP\Files\File;
@@ -35,7 +34,7 @@ class Classifier {
 	private ITempManager $tempManager;
 	private IPreview $previewProvider;
 
-	public function __construct(Logger $logger, IConfig $config, IRootFolder $rootFolder, QueueService $queue, ITempManager $tempManager, IPreview  $previewProvider) {
+	public function __construct(LoggerInterface $logger, IConfig $config, IRootFolder $rootFolder, QueueService $queue, ITempManager $tempManager, IPreview  $previewProvider) {
 		$this->logger = $logger;
 		$this->config = $config;
 		$this->rootFolder = $rootFolder;
@@ -54,10 +53,10 @@ class Classifier {
 		$paths = [];
 		$processedFiles = [];
 		foreach ($queueFiles as $queueFile) {
-			$files = $this->rootFolder->getById($queueFile->getFileId());
+			$files = $this->rootFolder->getById(intval($queueFile->getFileId()));
 			if (count($files) === 0) {
 				try {
-					$this->logger->debug('removing '.$queueFile->getFileId().' from '.$model.' queue');
+					$this->logger->debug('removing '.$queueFile->getFileId().' from '.$model.' queue because it couldn\'t be found');
 					$this->queue->removeFromQueue($model, $queueFile);
 				} catch (Exception $e) {
 					$this->logger->warning($e->getMessage(), ['exception' => $e]);

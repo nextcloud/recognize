@@ -48,33 +48,33 @@ class TagManager {
 	}
 
 	/**
-	 * @param string $fileId
+	 * @param int $fileId
 	 * @param string $name
 	 * @param string $oldName
 	 * @return void
 	 */
-	public function assignFace(string $fileId, string $name, string $oldName = '') {
+	public function assignFace(int $fileId, string $name, string $oldName = '') {
 		if ($oldName) {
 			$this->getTag($oldName);
-			$this->objectMapper->unassignTags($fileId, 'files', [$this->getTag($oldName)->getId()]);
+			$this->objectMapper->unassignTags((string)$fileId, 'files', [$this->getTag($oldName)->getId()]);
 		}
 		$this->assignTags($fileId, [$name]);
 	}
 
 	/**
-	 * @param string $fileId
+	 * @param int $fileId
 	 * @param array<string> $tags
 	 * @return void
 	 */
-	public function assignTags(string $fileId, array $tags): void {
+	public function assignTags(int $fileId, array $tags): void {
 		$tags = array_map(function ($tag) : string {
 			return $this->getTag($tag)->getId();
 		}, $tags);
 		$tags[] = $this->getProcessedTag()->getId();
 		/** @var array<string, string[]> $tagsByFile */
 		$tagsByFile = $this->objectMapper->getTagIdsForObjects([$fileId], 'files');
-		$oldTags = $tagsByFile[$fileId];
-		$this->objectMapper->assignTags($fileId, 'files', array_unique(array_merge($tags, $oldTags)));
+		$oldTags = $tagsByFile[(string) $fileId];
+		$this->objectMapper->assignTags((string)$fileId, 'files', array_unique(array_merge($tags, $oldTags)));
 	}
 
 	/**
