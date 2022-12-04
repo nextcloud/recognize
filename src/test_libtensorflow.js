@@ -1,4 +1,4 @@
-let tf = require('@tensorflow/tfjs-node')
+const tf = require('@tensorflow/tfjs-node')
 
 tf.setBackend('tensorflow')
 	.then(() => process.exit(0))

@@ -50,7 +50,7 @@ class InstallDeps implements IRepairStep {
 	private string $tfjsPath;
 	private IClientService $clientService;
 	private LoggerInterface $logger;
-	private string $runTfjsGpuInstall;
+	private string $tfjsGpuInstallScript;
 	private string $tfjsGPUPath;
 
 	public function __construct(IConfig $config, IClientService $clientService, LoggerInterface $logger) {
@@ -59,7 +59,7 @@ class InstallDeps implements IRepairStep {
 		$this->preGypBinaryDir = dirname(__DIR__, 2) . '/node_modules/@mapbox/node-pre-gyp/bin/';
 		$this->ffmpegDir = dirname(__DIR__, 2) . '/node_modules/ffmpeg-static/';
 		$this->tfjsInstallScript = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node/scripts/install.js';
-		$this->runTfjsGpuInstall = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node-gpu/scripts/install.js';
+		$this->tfjsGpuInstallScript = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node-gpu/scripts/install.js';
 		$this->tfjsPath = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node/';
 		$this->tfjsGPUPath = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node-gpu/';
 		$this->clientService = $clientService;
