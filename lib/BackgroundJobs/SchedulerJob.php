@@ -6,7 +6,6 @@
 
 namespace OCA\Recognize\BackgroundJobs;
 
-use OC\SystemConfig;
 use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
 use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
 use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
@@ -17,7 +16,6 @@ use OCA\Recognize\Service\StorageService;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\IJobList;
 use OCP\BackgroundJob\QueuedJob;
-use OCP\IDBConnection;
 use Psr\Log\LoggerInterface;
 
 class SchedulerJob extends QueuedJob {
@@ -35,15 +33,7 @@ class SchedulerJob extends QueuedJob {
 	];
 
 	private LoggerInterface $logger;
-	private IDBConnection $db;
 	private IJobList $jobList;
-	/**
-	 * @var \OC\SystemConfig
-	 */
-	private SystemConfig $systemConfig;
-	/**
-	 * @var \OCA\Recognize\Service\StorageService
-	 */
 	private StorageService $storageService;
 
 	public function __construct(ITimeFactory $timeFactory, Logger $logger, IJobList $jobList, StorageService $storageService) {
