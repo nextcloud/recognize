@@ -6,7 +6,11 @@ if (process.env.RECOGNIZE_PUREJS === 'true') {
 	Jimp = require('jimp')
 } else {
 	try {
-		tf = require('@tensorflow/tfjs-node')
+		if (process.env.RECOGNIZE_GPU === 'true') {
+			tf = require('@tensorflow/tfjs-node-gpu')
+		} else {
+			tf = require('@tensorflow/tfjs-node')
+		}
 	} catch (e) {
 		console.error(e)
 		console.error('Trying js-only mode')

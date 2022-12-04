@@ -39,6 +39,8 @@ remove-binaries:
 	# make it download appropriate tf binaries
 	rm -rf node_modules/@tensorflow/tfjs-node/deps/lib/*
 	rm -rf node_modules/@tensorflow/tfjs-node/lib/*
+	rm -rf node_modules/@tensorflow/tfjs-node-gpu/lib/*
+	rm -rf node_modules/@tensorflow/tfjs-node-gpu/deps/lib/*
 
 remove-devdeps:
 	rm -rf node_modules

@@ -33,6 +33,7 @@ return [
 		['name' => 'admin#nodejs', 'url' => '/admin/nodejs', 'verb' => 'GET'],
 		['name' => 'admin#libtensorflow', 'url' => '/admin/libtensorflow', 'verb' => 'GET'],
 		['name' => 'admin#wasmtensorflow', 'url' => '/admin/wasmtensorflow', 'verb' => 'GET'],
+		['name' => 'admin#gputensorflow', 'url' => '/admin/gputensorflow', 'verb' => 'GET'],
 		['name' => 'admin#cron', 'url' => '/admin/cron', 'verb' => 'GET'],
 		['name' => 'admin#get_setting', 'url' => '/admin/settings/{setting}', 'verb' => 'GET'],
 		['name' => 'admin#set_setting', 'url' => '/admin/settings/{setting}', 'verb' => 'PUT'],

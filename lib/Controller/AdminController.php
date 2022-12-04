@@ -167,6 +167,20 @@ class AdminController extends Controller {
 		return new JSONResponse(['wasmtensorflow' => true]);
 	}
 
+	public function gputensorflow(): JSONResponse {
+		try {
+			exec($this->settingsService->getSetting('node_binary') . ' ' . __DIR__ . '/../../src/test_gputensorflow.js' . ' 2>&1', $output, $returnCode);
+		} catch (\Throwable $e) {
+			return new JSONResponse(['gputensorflow' => false]);
+		}
+
+		if ($returnCode !== 0) {
+			return new JSONResponse(['gputensorflow' => false]);
+		}
+
+		return new JSONResponse(['gputensorflow' => true]);
+	}
+
 	public function cron(): JSONResponse {
 		$cron = $this->config->getAppValue('core', 'backgroundjobs_mode', '');
 		return new JSONResponse(['cron' => $cron]);
