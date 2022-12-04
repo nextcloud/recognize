@@ -21,7 +21,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class FullRun extends Command {
+class Classify extends Command {
 	private StorageService $storageService;
 	private Logger $logger;
 	private ImagenetClassifier $imagenet;
@@ -47,7 +47,7 @@ class FullRun extends Command {
 	 * @return void
 	 */
 	protected function configure() {
-		$this->setName('recognize:full-run')
+		$this->setName('recognize:classify')
 			->setDescription('Classify all files with the current settings in one go (will likely take a long time)');
 	}
 
