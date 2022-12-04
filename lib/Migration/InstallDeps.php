@@ -50,6 +50,8 @@ class InstallDeps implements IRepairStep {
 	private string $tfjsPath;
 	private IClientService $clientService;
 	private LoggerInterface $logger;
+	private string $tfjsGpuInstallScript;
+	private string $tfjsGPUPath;
 
 	public function __construct(IConfig $config, IClientService $clientService, LoggerInterface $logger) {
 		$this->config = $config;
@@ -57,7 +59,9 @@ class InstallDeps implements IRepairStep {
 		$this->preGypBinaryDir = dirname(__DIR__, 2) . '/node_modules/@mapbox/node-pre-gyp/bin/';
 		$this->ffmpegDir = dirname(__DIR__, 2) . '/node_modules/ffmpeg-static/';
 		$this->tfjsInstallScript = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node/scripts/install.js';
+		$this->tfjsGpuInstallScript = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node-gpu/scripts/install.js';
 		$this->tfjsPath = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node/';
+		$this->tfjsGPUPath = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node-gpu/';
 		$this->clientService = $clientService;
 		$this->logger = $logger;
 	}
@@ -116,6 +120,7 @@ class InstallDeps implements IRepairStep {
 		$this->setBinariesPermissions();
 
 		$this->runTfjsInstall($binaryPath);
+		$this->runTfjsGpuInstall($binaryPath);
 	}
 
 	protected function testBinary(string $binaryPath): ?string {
@@ -147,7 +152,25 @@ class InstallDeps implements IRepairStep {
 		}
 		chdir($oriCwd);
 		if ($returnCode !== 0) {
+			$this->logger->error('Failed to install Tensorflow.js: '.trim(implode("\n", $output)));
 			throw new \Exception('Failed to install Tensorflow.js: '.trim(implode("\n", $output)));
+		}
+	}
+
+	protected function runTfjsGpuInstall(string $nodeBinary) : void {
+		$oriCwd = getcwd();
+		chdir($this->tfjsGPUPath);
+		$cmd = 'PATH='.escapeshellcmd($this->preGypBinaryDir).':'.escapeshellcmd($this->binaryDir).':$PATH ' . escapeshellcmd($nodeBinary) . ' ' . escapeshellarg($this->tfjsGpuInstallScript) . ' gpu ' . escapeshellarg('download');
+		try {
+			exec($cmd . ' 2>&1', $output, $returnCode); // Appending  2>&1 to avoid leaking sterr
+		} catch (\Throwable $e) {
+			$this->logger->error('Failed to install Tensorflow.js for GPU: '.$e->getMessage(), ['exception' => $e]);
+			throw new \Exception('Failed to install Tensorflow.js for GPU: '.$e->getMessage());
+		}
+		chdir($oriCwd);
+		if ($returnCode !== 0) {
+			$this->logger->error('Failed to install Tensorflow.js for GPU: '.trim(implode("\n", $output)));
+			throw new \Exception('Failed to install Tensorflow.js for GPU: '.trim(implode("\n", $output)));
 		}
 	}
 

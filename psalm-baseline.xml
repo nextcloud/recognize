@@ -102,195 +102,53 @@
     <MixedAssignment occurrences="1">
       <code>$row</code>
     </MixedAssignment>
-    <MixedMethodCall occurrences="6">
-      <code>andWhere</code>
-      <code>andWhere</code>
-      <code>eq</code>
-      <code>eq</code>
-      <code>executeQuery</code>
-      <code>fetch</code>
-    </MixedMethodCall>
-    <PropertyNotSetInConstructor occurrences="5">
-      <code>$db</code>
-      <code>$jobList</code>
-      <code>$logger</code>
-      <code>$systemConfig</code>
-      <code>SchedulerJob</code>
-    </PropertyNotSetInConstructor>
     <TypeDoesNotContainType occurrences="1">
       <code>$result === false</code>
     </TypeDoesNotContainType>
-    <UndefinedClass occurrences="8">
-      <code>$qb</code>
-      <code>$qb</code>
-      <code>$qb</code>
-      <code>$qb</code>
-      <code>$qb</code>
-      <code>CacheQueryBuilder</code>
-      <code>SystemConfig</code>
-      <code>SystemConfig</code>
-    </UndefinedClass>
   </file>
   <file src="lib/BackgroundJobs/StorageCrawlJob.php">
-    <MissingClosureParamType occurrences="1">
-      <code>$dir</code>
-    </MissingClosureParamType>
-    <MissingClosureReturnType occurrences="2">
-      <code>fn ($dir) =&gt; $dir['fileid']</code>
-      <code>fn ($dir) =&gt; $dir['parent']</code>
-    </MissingClosureReturnType>
     <MissingParamType occurrences="1">
       <code>$argument</code>
     </MissingParamType>
-    <MixedArgument occurrences="7">
-      <code>$dir</code>
+    <MixedArgument occurrences="3">
       <code>$file['fileid']</code>
-      <code>$ignoreFile['parent']</code>
-      <code>$ignoreFiles</code>
-      <code>$item['fileid']</code>
       <code>$rootId</code>
       <code>$storageId</code>
     </MixedArgument>
-    <MixedArrayAccess occurrences="15">
+    <MixedArrayAccess occurrences="11">
       <code>$argument['last_file_id']</code>
       <code>$argument['models']</code>
       <code>$argument['override_root']</code>
       <code>$argument['root_id']</code>
       <code>$argument['storage_id']</code>
-      <code>$dir['fileid']</code>
-      <code>$dir['parent']</code>
       <code>$file['fileid']</code>
       <code>$file['mimetype']</code>
       <code>$file['mimetype']</code>
       <code>$file['mimetype']</code>
-      <code>$ignoreFile['parent']</code>
-      <code>$item['fileid']</code>
       <code>$root['path']</code>
       <code>$root['path']</code>
     </MixedArrayAccess>
-    <MixedAssignment occurrences="15">
-      <code>$dir</code>
+    <MixedAssignment occurrences="6">
       <code>$file</code>
-      <code>$files</code>
-      <code>$ignoreFile</code>
-      <code>$ignoreFileidsExpr[]</code>
-      <code>$ignoreFileidsExpr[]</code>
-      <code>$ignoreFileidsExpr[]</code>
-      <code>$ignoreFiles</code>
-      <code>$item</code>
       <code>$lastFileId</code>
       <code>$overrideRoot</code>
-      <code>$qb</code>
       <code>$root</code>
       <code>$rootId</code>
       <code>$storageId</code>
     </MixedAssignment>
-    <MixedInferredReturnType occurrences="5">
-      <code>array</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-    </MixedInferredReturnType>
-    <MixedMethodCall occurrences="63">
+    <MixedMethodCall occurrences="4">
       <code>andWhere</code>
-      <code>andWhere</code>
-      <code>andWhere</code>
-      <code>andWhere</code>
-      <code>andWhere</code>
-      <code>andWhere</code>
-      <code>andWhere</code>
-      <code>andWhere</code>
-      <code>andWhere</code>
-      <code>andWhere</code>
-      <code>andX</code>
-      <code>andX</code>
-      <code>andX</code>
-      <code>andX</code>
-      <code>createNamedParameter</code>
-      <code>createNamedParameter</code>
-      <code>createNamedParameter</code>
-      <code>createNamedParameter</code>
-      <code>createNamedParameter</code>
-      <code>createNamedParameter</code>
-      <code>createNamedParameter</code>
-      <code>createNamedParameter</code>
-      <code>createNamedParameter</code>
-      <code>createNamedParameter</code>
-      <code>eq</code>
       <code>executeQuery</code>
-      <code>executeQuery</code>
-      <code>executeQuery</code>
-      <code>executeQuery</code>
-      <code>expr</code>
-      <code>expr</code>
-      <code>expr</code>
-      <code>expr</code>
-      <code>expr</code>
-      <code>expr</code>
-      <code>expr</code>
-      <code>expr</code>
-      <code>expr</code>
-      <code>expr</code>
-      <code>expr</code>
-      <code>expr</code>
-      <code>expr</code>
-      <code>expr</code>
-      <code>expr</code>
       <code>fetch</code>
-      <code>fetch</code>
-      <code>fetchAll</code>
-      <code>fetchAll</code>
       <code>getFileId</code>
-      <code>gt</code>
-      <code>in</code>
-      <code>in</code>
-      <code>in</code>
-      <code>like</code>
-      <code>notIn</code>
-      <code>notIn</code>
-      <code>notIn</code>
-      <code>notIn</code>
-      <code>orX</code>
-      <code>orderBy</code>
-      <code>selectFileCache</code>
-      <code>setMaxResults</code>
-      <code>whereStorageId</code>
     </MixedMethodCall>
     <MixedOperand occurrences="1">
       <code>$root['path']</code>
     </MixedOperand>
-    <MixedReturnStatement occurrences="5">
-      <code>$dir</code>
-      <code>$qb-&gt;expr()-&gt;notIn('parent', $qb-&gt;createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY))</code>
-      <code>$qb-&gt;expr()-&gt;notIn('parent', $qb-&gt;createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY))</code>
-      <code>$qb-&gt;expr()-&gt;notIn('parent', $qb-&gt;createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY))</code>
-      <code>$qb-&gt;expr()-&gt;notIn('parent', $qb-&gt;createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY))</code>
-    </MixedReturnStatement>
     <PossiblyUndefinedVariable occurrences="1">
       <code>$queueFile</code>
     </PossiblyUndefinedVariable>
-    <PropertyNotSetInConstructor occurrences="8">
-      <code>$db</code>
-      <code>$jobList</code>
-      <code>$logger</code>
-      <code>$mimeTypes</code>
-      <code>$queue</code>
-      <code>$systemConfig</code>
-      <code>$tagManager</code>
-      <code>StorageCrawlJob</code>
-    </PropertyNotSetInConstructor>
-    <UndefinedClass occurrences="6">
-      <code>CacheQueryBuilder</code>
-      <code>CacheQueryBuilder</code>
-      <code>CacheQueryBuilder</code>
-      <code>CacheQueryBuilder</code>
-      <code>SystemConfig</code>
-      <code>SystemConfig</code>
-    </UndefinedClass>
-    <UndefinedInterfaceMethod occurrences="3">
-      <code>selectFileCache</code>
-      <code>selectFileCache</code>
+    <UndefinedInterfaceMethod occurrences="1">
       <code>selectFileCache</code>
     </UndefinedInterfaceMethod>
   </file>
@@ -610,7 +468,10 @@
       <code>$item-&gt;getPathname()</code>
       <code>$item-&gt;getPathname()</code>
     </MixedArgument>
-    <MixedArgumentTypeCoercion occurrences="2">
+    <MixedArgumentTypeCoercion occurrences="5">
+      <code>$output</code>
+      <code>$output</code>
+      <code>$output</code>
       <code>$output</code>
       <code>$output</code>
     </MixedArgumentTypeCoercion>

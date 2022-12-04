@@ -221,6 +221,13 @@
 				</NcCheckboxRadioSwitch>
 			</p>
 		</NcSettingsSection>
+		<NcSettingsSection :title="t('recognize', 'Tensorflow GPU mode')">
+			<p>
+				<NcCheckboxRadioSwitch :checked.sync="settings['tensorflow.gpu']" type="switch" @update:checked="onChange">
+					{{ t('recognize', 'Enable GPU mode') }}
+				</NcCheckboxRadioSwitch>
+			</p>
+		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Node.js')">
 			<p v-if="nodejs === undefined">
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking Node.js') }}
@@ -231,12 +238,18 @@
 			<NcNoteCard v-else type="success">
 				{{ t('recognize', 'Node.js {version} binary was installed successfully.', { version: nodejs }) }}
 			</NcNoteCard>
-			<p v-if="libtensorflow === undefined || wasmtensorflow === undefined">
+			<p v-if="libtensorflow === undefined || wasmtensorflow === undefined || gputensorflow === undefined">
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking libtensorflow') }}
 			</p>
 			<template v-if="settings['tensorflow.purejs'] === false">
 				<NcNoteCard v-if="nodejs !== false && libtensorflow === false">
 					{{ t('recognize', 'Could not load libtensorflow in Node.js. You can try to manually install libtensorflow or run in WASM mode.') }}
+				</NcNoteCard>
+				<NcNoteCard v-else-if="nodejs !== false && libtensorflow === true && settings['tensorflow.gpu'] === true && gputensorflow === false">
+					{{ t('recognize', 'Successfully loaded libtensorflow in Node.js, but couldn\'t load GPU. Make sure CUDA Toolkit and cuDNN are installed and accessible, or turn off GPU mode.') }}
+				</NcNoteCard>
+				<NcNoteCard v-else-if="settings['tensorflow.gpu'] === false && libtensorflow === true" type="success">
+					{{ t('recognize', 'Libtensorflow was loaded successfully into Node.js.') }}
 				</NcNoteCard>
 				<NcNoteCard v-else-if="libtensorflow === true" type="success">
 					{{ t('recognize', 'Libtensorflow was loaded successfully into Node.js.') }}
@@ -292,6 +305,7 @@ export default {
 			nodejs: undefined,
 			libtensorflow: undefined,
 			wasmtensorflow: undefined,
+			gputensorflow: undefined,
 			cron: undefined,
 			modelsDownloaded: null,
 		}
@@ -328,6 +342,7 @@ export default {
 		this.getNodejsStatus()
 		this.getLibtensorflowStatus()
 		this.getWasmtensorflowStatus()
+		this.getGputensorflowStatus()
 		this.getCronStatus()
 
 		setInterval(async () => {
@@ -421,6 +436,11 @@ export default {
 			const resp = await axios.get(generateUrl('/apps/recognize/admin/wasmtensorflow'))
 			const { wasmtensorflow } = resp.data
 			this.wasmtensorflow = wasmtensorflow
+		},
+		async getGputensorflowStatus() {
+			const resp = await axios.get(generateUrl('/apps/recognize/admin/gputensorflow'))
+			const { gputensorflow } = resp.data
+			this.gputensorflow = gputensorflow
 		},
 		async getCronStatus() {
 			const resp = await axios.get(generateUrl('/apps/recognize/admin/cron'))
