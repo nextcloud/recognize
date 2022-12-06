@@ -25,6 +25,7 @@ OC.L10N.register(
     "Bucket" : "Bucket",
     "Gas station" : "Gasolineira",
     "Parking" : "Aparcadoiro",
+    "Sign" : "Asinar",
     "Gallery" : "Galería",
     "Park" : "Parque"
 },

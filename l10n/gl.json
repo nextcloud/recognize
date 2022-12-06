@@ -23,6 +23,7 @@
     "Bucket" : "Bucket",
     "Gas station" : "Gasolineira",
     "Parking" : "Aparcadoiro",
+    "Sign" : "Asinar",
     "Gallery" : "Galería",
     "Park" : "Parque"
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
