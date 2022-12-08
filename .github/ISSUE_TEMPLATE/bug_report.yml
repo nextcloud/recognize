@@ -88,7 +88,7 @@ body:
   - type: markdown
     attributes:
       value: Before posting the issue go through the steps you've written down to make sure the steps provided are detailed and clear.
-  - type: markdown
+  - type: textarea
     attributes:
       label: Debug log
       description: It is often useful to provide a debug log file along with the issue. You can enable debugging by setting debug => true in config.php
