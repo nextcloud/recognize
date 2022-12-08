@@ -39,7 +39,11 @@ class RemoveLegacyTags extends Command {
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output): int {
 		try {
-			$tagNames = \Safe\json_decode(file_get_contents(__DIR__ . '/../../src/things.json'), true);
+			/** @var list<string> $tagNames */
+			$tagNames = \json_decode(file_get_contents(__DIR__ . '/../../src/things.json'), true);
+			if (JSON_ERROR_NONE !== json_last_error()) {
+				throw new \Exception('JSON error');
+			}
 			$tagNames = array_map(fn ($tagName) => strtolower($tagName), $tagNames);
 			$this->tagManager->removeTags($tagNames);
 		} catch (\Exception $ex) {
