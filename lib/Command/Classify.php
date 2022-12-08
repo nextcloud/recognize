@@ -14,6 +14,7 @@ use OCA\Recognize\Classifiers\Video\MovinetClassifier;
 use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Exception\Exception;
 use OCA\Recognize\Service\Logger;
+use OCA\Recognize\Service\SettingsService;
 use OCA\Recognize\Service\StorageService;
 use OCP\Files\Config\ICachedMountInfo;
 use OCP\Files\Config\IUserMountCache;
@@ -29,8 +30,9 @@ class Classify extends Command {
 	private MovinetClassifier $movinet;
 	private MusicnnClassifier $musicnn;
 	private IUserMountCache $userMountCache;
+	private SettingsService $settings;
 
-	public function __construct(StorageService $storageService, Logger $logger, ImagenetClassifier $imagenet, ClusteringFaceClassifier $faces, MovinetClassifier $movinet, MusicnnClassifier $musicnn, IUserMountCache $userMountCache) {
+	public function __construct(StorageService $storageService, Logger $logger, ImagenetClassifier $imagenet, ClusteringFaceClassifier $faces, MovinetClassifier $movinet, MusicnnClassifier $musicnn, IUserMountCache $userMountCache, SettingsService $settings) {
 		parent::__construct();
 		$this->storageService = $storageService;
 		$this->logger = $logger;
@@ -39,6 +41,7 @@ class Classify extends Command {
 		$this->movinet = $movinet;
 		$this->musicnn = $musicnn;
 		$this->userMountCache = $userMountCache;
+		$this->settings = $settings;
 	}
 
 	/**
@@ -61,13 +64,13 @@ class Classify extends Command {
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$this->logger->setCliOutput($output);
-		$models = [
+		$models = array_values(array_filter([
 			ClusteringFaceClassifier::MODEL_NAME,
 			ImagenetClassifier::MODEL_NAME,
 			LandmarksClassifier::MODEL_NAME,
 			MovinetClassifier::MODEL_NAME,
 			MusicnnClassifier::MODEL_NAME,
-		];
+		], fn ($modelName) => $this->settings->getSetting($modelName . '.enabled') === 'true'));
 
 		foreach ($this->storageService->getMounts() as $mount) {
 			$this->logger->info('Processing storage ' . $mount['storage_id'] . ' with root ID ' . $mount['override_root']);
