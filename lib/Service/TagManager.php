@@ -139,4 +139,13 @@ class TagManager {
 			}
 		}
 	}
+
+	public function removeTags(array $tagNames) :void {
+		$tags = $this->tagManager->getAllTags();
+		foreach ($tags as $tag) {
+			if (in_array($tag->getName(), $tagNames)) {
+				$this->tagManager->deleteTags($tag->getId());
+			}
+		}
+	}
 }
