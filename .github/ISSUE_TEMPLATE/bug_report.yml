@@ -1,0 +1,97 @@
+name: Bug Report
+description: Create a bug report for recognize
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to file a bug report! Please fill out this form as completely as possible.
+  - type: markdown
+    attributes:
+      value: If you leave out sections there is a high likelihood it will be moved to the GitHub Discussions.
+  - type: input
+    attributes:
+      label: Which version of recognize are you using?
+      description: 'Please specify the exact version instead of "latest". For example: 3.2.1'
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Enabled Modes
+      description: Which modes do you have enabled?
+      multiple: true
+      options:
+        - Object recognition
+        - Face recognition
+        - Video recognition
+        - Music recognition
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: TensorFlow mode
+      description: How do you run tensorflow?
+      multiple: true
+      options:
+        - Normal mode
+        - WASM mode
+        - GPU mode
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Which Nextcloud version do you have installed?
+      description: 'Please specify the exact version instead of "latest". For example: Nextcloud 25.0.2'
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Which Operating system do you have installed?
+      description: 'For example: Debian 11'
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Which Docker container are you using to run Nextcloud? (if applicable)
+      description: 'For example: v23.0.1'
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: How much RAM does your server have?
+      description: 'For example: 2GiB'
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: What processor Architecture does your CPU have?
+      description: 'For example: x86_64 or ARM64'
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Describe the Bug
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected Behavior
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: To Reproduce
+      description: Steps to reproduce the behavior, please provide a clear number of steps that always reproduces the issue. Screenshots can be provided in the issue body below.
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: Before posting the issue go through the steps you've written down to make sure the steps provided are detailed and clear.
+  - type: markdown
+    attributes:
+      label: Debug log
+      description: It is often useful to provide a debug log file along with the issue. You can enable debugging by setting debug => true in config.php
+  - type: markdown
+    attributes:
+      value: 'Note: As your debug log usually contains private data, make sure to remove sensitive bits'
