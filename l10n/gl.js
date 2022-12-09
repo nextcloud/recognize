@@ -10,6 +10,7 @@ OC.L10N.register(
     "People" : "Xente",
     "Music" : "Música",
     "Office" : "Oficina",
+    "Food" : "Comida",
     "Train" : "Tren",
     "Car" : "Coche",
     "Computer" : "Computador",
