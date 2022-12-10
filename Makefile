@@ -88,6 +88,7 @@ appstore:
 	--include=/src \
 	--include=/js \
 	--include=/lib \
+	--include=/l10n \
 	--include=/img \
 	--include=/appinfo \
 	--include=/bin \
