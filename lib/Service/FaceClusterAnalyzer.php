@@ -20,6 +20,7 @@ use Rubix\ML\Kernels\Distance\Euclidean;
 class FaceClusterAnalyzer {
 	public const MIN_CLUSTER_DENSITY = 2;
 	public const MAX_INNER_CLUSTER_RADIUS = 0.44;
+	public const MAX_INNER_CLUSTER_DISTANCE = 0.5;
 	public const DIMENSIONS = 128;
 
 	private FaceDetectionMapper $faceDetections;
@@ -52,11 +53,8 @@ class FaceClusterAnalyzer {
 			return $detection->getVector();
 		}, $detections));
 
-		//$clusterer = new MeanShift(0.15, 1, 1000, 1e-6, new BallTree(100, new Euclidean()), new KMC2());
-
 		$clusterer = new DBSCAN(self::MAX_INNER_CLUSTER_RADIUS, self::MIN_CLUSTER_DENSITY, new BallTree(100, new Euclidean()));
 		$this->logger->debug('Calculate clusters for '.count($detections).' faces');
-		//$clusterer->train($dataset);
 		$results = $clusterer->predict($dataset);
 		$numClusters = max($results);
 
@@ -76,7 +74,8 @@ class FaceClusterAnalyzer {
 			sort($distances);
 
 			// if this cluster is larger than what could possibly be the same face we ignore it
-			if ($distances[count($distances) - 1] > self::MAX_INNER_CLUSTER_RADIUS) {
+			if ($distances[count($distances) - 1] > self::MAX_INNER_CLUSTER_DISTANCE) {
+				$this->logger->debug('Inner cluster distance for cluster '.$i.' is '.$distances[count($distances) - 1].' which is too large. Ignoring cluster.');
 				continue;
 			}
 

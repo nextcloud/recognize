@@ -90,67 +90,17 @@
     <MissingParamType occurrences="1">
       <code>$argument</code>
     </MissingParamType>
-    <MixedArgument occurrences="1">
-      <code>IQueryBuilder::PARAM_STR_ARRAY</code>
-    </MixedArgument>
-    <MixedArrayAccess occurrences="4">
+    <MixedArrayAccess occurrences="1">
       <code>$argument['models']</code>
-      <code>$row['mount_provider_class']</code>
-      <code>$row['root_id']</code>
-      <code>$row['storage_id']</code>
     </MixedArrayAccess>
-    <MixedAssignment occurrences="1">
-      <code>$row</code>
-    </MixedAssignment>
-    <TypeDoesNotContainType occurrences="1">
-      <code>$result === false</code>
-    </TypeDoesNotContainType>
   </file>
   <file src="lib/BackgroundJobs/StorageCrawlJob.php">
-    <MissingParamType occurrences="1">
-      <code>$argument</code>
-    </MissingParamType>
-    <MixedArgument occurrences="3">
-      <code>$file['fileid']</code>
-      <code>$rootId</code>
-      <code>$storageId</code>
-    </MixedArgument>
-    <MixedArrayAccess occurrences="11">
-      <code>$argument['last_file_id']</code>
-      <code>$argument['models']</code>
-      <code>$argument['override_root']</code>
-      <code>$argument['root_id']</code>
-      <code>$argument['storage_id']</code>
-      <code>$file['fileid']</code>
-      <code>$file['mimetype']</code>
-      <code>$file['mimetype']</code>
-      <code>$file['mimetype']</code>
-      <code>$root['path']</code>
-      <code>$root['path']</code>
-    </MixedArrayAccess>
-    <MixedAssignment occurrences="6">
-      <code>$file</code>
-      <code>$lastFileId</code>
-      <code>$overrideRoot</code>
-      <code>$root</code>
-      <code>$rootId</code>
-      <code>$storageId</code>
-    </MixedAssignment>
-    <MixedMethodCall occurrences="4">
-      <code>andWhere</code>
-      <code>executeQuery</code>
-      <code>fetch</code>
+    <MixedMethodCall occurrences="1">
       <code>getFileId</code>
     </MixedMethodCall>
-    <MixedOperand occurrences="1">
-      <code>$root['path']</code>
-    </MixedOperand>
     <PossiblyUndefinedVariable occurrences="1">
       <code>$queueFile</code>
     </PossiblyUndefinedVariable>
-    <UndefinedInterfaceMethod occurrences="1">
-      <code>selectFileCache</code>
-    </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Classifiers/Audio/MusicnnClassifier.php">
     <InvalidScalarArgument occurrences="1">
@@ -158,9 +108,6 @@
     </InvalidScalarArgument>
   </file>
   <file src="lib/Classifiers/Classifier.php">
-    <InvalidScalarArgument occurrences="1">
-      <code>$queueFile-&gt;getFileId()</code>
-    </InvalidScalarArgument>
     <MixedAssignment occurrences="1">
       <code>$results</code>
     </MixedAssignment>
@@ -172,8 +119,7 @@
     </UnusedFunctionCall>
   </file>
   <file src="lib/Classifiers/Images/ClusteringFaceClassifier.php">
-    <InvalidScalarArgument occurrences="2">
-      <code>$queueFile-&gt;getFileId()</code>
+    <InvalidScalarArgument occurrences="1">
       <code>time()</code>
     </InvalidScalarArgument>
     <MixedArgument occurrences="5">
@@ -516,7 +462,8 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$results</code>
     </ArgumentTypeCoercion>
-    <InternalMethod occurrences="2">
+    <InternalMethod occurrences="3">
+      <code>compute</code>
       <code>compute</code>
       <code>compute</code>
     </InternalMethod>
