@@ -103,14 +103,22 @@ class Classify extends Command {
 					$queueFile->setUpdate(false);
 
 					if ($file['image']) {
-						$queues[ImagenetClassifier::MODEL_NAME][] = $queueFile;
-						$queues[ClusteringFaceClassifier::MODEL_NAME][] = $queueFile;
+						if (in_array(ImagenetClassifier::MODEL_NAME, $models)) {
+							$queues[ImagenetClassifier::MODEL_NAME][] = $queueFile;
+						}
+						if (in_array(ClusteringFaceClassifier::MODEL_NAME, $models)) {
+							$queues[ClusteringFaceClassifier::MODEL_NAME][] = $queueFile;
+						}
 					}
 					if ($file['video']) {
-						$queues[MovinetClassifier::MODEL_NAME][] = $queueFile;
+						if (in_array(MovinetClassifier::MODEL_NAME, $models)) {
+							$queues[MovinetClassifier::MODEL_NAME][] = $queueFile;
+						}
 					}
 					if ($file['audio']) {
-						$queues[MusicnnClassifier::MODEL_NAME][] = $queueFile;
+						if (in_array(MusicnnClassifier::MODEL_NAME, $models)) {
+							$queues[MusicnnClassifier::MODEL_NAME][] = $queueFile;
+						}
 					}
 				}
 
