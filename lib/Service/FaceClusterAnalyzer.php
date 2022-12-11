@@ -11,6 +11,8 @@ use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use Rubix\ML\Clusterers\DBSCAN;
+use Rubix\ML\Clusterers\MeanShift;
+use Rubix\ML\Clusterers\Seeders\KMC2;
 use Rubix\ML\Datasets\Unlabeled;
 use Rubix\ML\Graph\Trees\BallTree;
 use Rubix\ML\Kernels\Distance\Euclidean;
@@ -18,6 +20,7 @@ use Rubix\ML\Kernels\Distance\Euclidean;
 class FaceClusterAnalyzer {
 	public const MIN_CLUSTER_DENSITY = 2;
 	public const MAX_INNER_CLUSTER_RADIUS = 0.44;
+	public const DIMENSIONS = 128;
 
 	private FaceDetectionMapper $faceDetections;
 	private FaceClusterMapper $faceClusters;
@@ -48,8 +51,12 @@ class FaceClusterAnalyzer {
 		$dataset = new Unlabeled(array_map(function (FaceDetection $detection) : array {
 			return $detection->getVector();
 		}, $detections));
-		$clusterer = new DBSCAN(self::MAX_INNER_CLUSTER_RADIUS, self::MIN_CLUSTER_DENSITY, new BallTree(20, new Euclidean()));
+
+		//$clusterer = new MeanShift(0.15, 1, 1000, 1e-6, new BallTree(100, new Euclidean()), new KMC2());
+
+		$clusterer = new DBSCAN(self::MAX_INNER_CLUSTER_RADIUS, self::MIN_CLUSTER_DENSITY, new BallTree(100, new Euclidean()));
 		$this->logger->debug('Calculate clusters for '.count($detections).' faces');
+		//$clusterer->train($dataset);
 		$results = $clusterer->predict($dataset);
 		$numClusters = max($results);
 
@@ -63,6 +70,15 @@ class FaceClusterAnalyzer {
 			$detectionClusters = array_map(function ($detection) : array {
 				return $this->faceClusters->findByDetectionId($detection->getId());
 			}, $clusterDetections);
+
+			$distance = new Euclidean();
+			$distances = array_merge(...array_map(fn($detection) => array_map(fn($detection2)=> $distance->compute($detection->getVector(), $detection2->getVector()), $clusterDetections), $clusterDetections));
+			sort($distances);
+
+			// if this cluster is larger than what could possibly be the same face we ignore it
+			if ($distances[count($distances) - 1] > self::MAX_INNER_CLUSTER_RADIUS) {
+				continue;
+			}
 
 			// Since recognize works incrementally, we need to check if some of these face
 			// detections have been added to an existing cluster already
@@ -172,7 +188,7 @@ class FaceClusterAnalyzer {
 		// init 128 dimensional vector
 		/** @var list<float> $sum */
 		$sum = [];
-		for ($i = 0; $i < 128; $i++) {
+		for ($i = 0; $i < self::DIMENSIONS; $i++) {
 			$sum[] = 0;
 		}
 
