@@ -11,8 +11,6 @@ use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use Rubix\ML\Clusterers\DBSCAN;
-use Rubix\ML\Clusterers\MeanShift;
-use Rubix\ML\Clusterers\Seeders\KMC2;
 use Rubix\ML\Datasets\Unlabeled;
 use Rubix\ML\Graph\Trees\BallTree;
 use Rubix\ML\Kernels\Distance\Euclidean;
@@ -70,7 +68,7 @@ class FaceClusterAnalyzer {
 			}, $clusterDetections);
 
 			$distance = new Euclidean();
-			$distances = array_merge(...array_map(fn($detection) => array_map(fn($detection2)=> $distance->compute($detection->getVector(), $detection2->getVector()), $clusterDetections), $clusterDetections));
+			$distances = array_merge(...array_map(fn ($detection) => array_map(fn ($detection2) => $distance->compute($detection->getVector(), $detection2->getVector()), $clusterDetections), $clusterDetections));
 			sort($distances);
 
 			// if this cluster is larger than what could possibly be the same face we ignore it

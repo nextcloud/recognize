@@ -65,16 +65,31 @@ class Classifier {
 			}
 			try {
 				$path = $this->getConvertedFilePath($files[0]);
-				$filesizeMb = filesize($path) / (1024 * 1024);
-				if ($filesizeMb > 8 && in_array($model, [ImagenetClassifier::MODEL_NAME, LandmarksClassifier::MODEL_NAME, ClusteringFaceClassifier::MODEL_NAME])) {
-					$this->logger->debug('File is too large for classifier: ' . $files[0]->getPath());
-					try {
-						$this->logger->debug('removing '.$queueFile->getFileId().' from '.$model.' queue');
-						$this->queue->removeFromQueue($model, $queueFile);
-					} catch (Exception $e) {
-						$this->logger->warning($e->getMessage(), ['exception' => $e]);
+				if (in_array($model, [ImagenetClassifier::MODEL_NAME, LandmarksClassifier::MODEL_NAME, ClusteringFaceClassifier::MODEL_NAME])) {
+					// Check file data size
+					$filesizeMb = filesize($path) / (1024 * 1024);
+					if ($filesizeMb > 8) {
+						$this->logger->debug('File is too large for classifier: ' . $files[0]->getPath());
+						try {
+							$this->logger->debug('removing ' . $queueFile->getFileId() . ' from ' . $model . ' queue');
+							$this->queue->removeFromQueue($model, $queueFile);
+						} catch (Exception $e) {
+							$this->logger->warning($e->getMessage(), ['exception' => $e]);
+						}
+						continue;
 					}
-					continue;
+					// Check file dimensions
+					$dimensions = getimagesize($path);
+					if ($dimensions !== false && $dimensions[0] > 1024 || $dimensions[1] > 1024) {
+						$this->logger->debug('File dimensions are too large for classifier: ' . $files[0]->getPath());
+						try {
+							$this->logger->debug('removing ' . $queueFile->getFileId() . ' from ' . $model . ' queue');
+							$this->queue->removeFromQueue($model, $queueFile);
+						} catch (Exception $e) {
+							$this->logger->warning($e->getMessage(), ['exception' => $e]);
+						}
+						continue;
+					}
 				}
 				$paths[] = $path;
 				$processedFiles[] = $queueFile;
