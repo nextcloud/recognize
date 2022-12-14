@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.3.2] - 2022-12-14
+
+### Fixed
+ - Don't allow setting cluster title to the same value as the ID of a cluster without a title
+ - Classifier#getConvertedFilePath: Don't throw if $preview is false
+ - Classifier: Don't let images larger than 1024x1024 into the classifier
+ - Classify command: Only add items to queue if model is enabled
+ - FaceClusterAnalyzer: Ignore clusters that are larger than what could possibly be the same face (Fixes the mega-cluster issue; make sure to delete mega-clusters after the update)
+
 ## [3.3.1] - 2022-12-10
 
 ### Fixed
