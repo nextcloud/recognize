@@ -8,6 +8,7 @@ namespace OCA\Recognize\Db;
 
 use OCP\AppFramework\Db\Entity;
 use OCP\AppFramework\Db\QBMapper;
+use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 
 class FaceClusterMapper extends QBMapper {
@@ -54,7 +55,13 @@ class FaceClusterMapper extends QBMapper {
 		$qb->select(FaceCluster::$columns)
 			->from('recognize_face_clusters')
 			->where($qb->expr()->eq('user_id', $qb->createPositionalParameter($userId)))
-			->andWhere($qb->expr()->eq('title', $qb->createPositionalParameter($title)));
+			->andWhere($qb->expr()->orX(
+				$qb->expr()->eq('title', $qb->createPositionalParameter($title)),
+				$qb->expr()->andX(
+					$qb->expr()->eq('title', $qb->createPositionalParameter('')),
+					$qb->expr()->eq('id', $qb->createPositionalParameter((int) $title, IQueryBuilder::PARAM_INT))
+				)
+			));
 		return $this->findEntity($qb);
 	}
 
