@@ -80,7 +80,7 @@ class Classifier {
 					}
 					// Check file dimensions
 					$dimensions = getimagesize($path);
-					if ($dimensions !== false && $dimensions[0] > 1024 || $dimensions[1] > 1024) {
+					if ($dimensions !== false && ($dimensions[0] > 1024 || $dimensions[1] > 1024)) {
 						$this->logger->debug('File dimensions are too large for classifier: ' . $files[0]->getPath());
 						try {
 							$this->logger->debug('removing ' . $queueFile->getFileId() . ' from ' . $model . ' queue');
@@ -228,12 +228,22 @@ class Classifier {
 			return $path;
 		}
 
-		$tmpfile = fopen($tmpname, 'w');
+		$tmpfile = fopen($tmpname, 'wb');
+
+		if ($tmpfile === false) {
+			$this->logger->warning('Could not open tmpfile');
+			return $path;
+		}
 
 		try {
 			$preview = $image->read();
 		} catch (NotPermittedException $e) {
 			$this->logger->warning('Could not read preview file', ['exception' => $e]);
+			return $path;
+		}
+
+		if ($preview === false) {
+			$this->logger->warning('Could not open preview file');
 			return $path;
 		}
 
