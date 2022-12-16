@@ -313,7 +313,7 @@ class ClusterTest extends TestCase {
 		$clusters = $this->faceClusterMapper->findByUserId(self::TEST_USER1);
 		self::assertGreaterThan(2, $clusters);
 
-		foreach($clusters as $cluster) {
+		foreach ($clusters as $cluster) {
 			$detections = $this->faceDetectionMapper->findByClusterId($cluster->getId());
 			self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER, $detections);
 		}

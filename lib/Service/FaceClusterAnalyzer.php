@@ -20,6 +20,7 @@ class FaceClusterAnalyzer {
 	public const MAX_INNER_CLUSTER_RADIUS = 0.44;
 	public const MAX_INNER_CLUSTER_DISTANCE = 0.5;
 	public const DIMENSIONS = 128;
+	public const MIN_DETECTION_SIZE = 0.09;
 
 	private FaceDetectionMapper $faceDetections;
 	private FaceClusterMapper $faceClusters;
@@ -40,6 +41,10 @@ class FaceClusterAnalyzer {
 	public function calculateClusters(string $userId): void {
 		$this->logger->debug('Find face detection for use '.$userId);
 		$detections = $this->faceDetections->findByUserId($userId);
+
+		$detections = array_values(array_filter($detections, fn ($detection) =>
+			$detection->getHeight() > self::MIN_DETECTION_SIZE && $detection->getWidth() > self::MIN_DETECTION_SIZE
+		));
 
 		if (count($detections) === 0) {
 			$this->logger->debug('No face detections found');
@@ -66,16 +71,6 @@ class FaceClusterAnalyzer {
 			$detectionClusters = array_map(function ($detection) : array {
 				return $this->faceClusters->findByDetectionId($detection->getId());
 			}, $clusterDetections);
-
-			$distance = new Euclidean();
-			$distances = array_merge(...array_map(fn ($detection) => array_map(fn ($detection2) => $distance->compute($detection->getVector(), $detection2->getVector()), $clusterDetections), $clusterDetections));
-			sort($distances);
-
-			// if this cluster is larger than what could possibly be the same face we ignore it
-			if ($distances[count($distances) - 1] > self::MAX_INNER_CLUSTER_DISTANCE) {
-				$this->logger->debug('Inner cluster distance for cluster '.$i.' is '.$distances[count($distances) - 1].' which is too large. Ignoring cluster.');
-				continue;
-			}
 
 			// Since recognize works incrementally, we need to check if some of these face
 			// detections have been added to an existing cluster already
