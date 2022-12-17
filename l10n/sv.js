@@ -1,6 +1,7 @@
 OC.L10N.register(
     "recognize",
     {
+    "Smart media tagging for Nextcloud" : "Smart taggning för media i Nextcloud",
     "Status" : "Status",
     "Reset" : "Återställ",
     "Failed to load settings" : "Kunde inte läsa in inställningar",
