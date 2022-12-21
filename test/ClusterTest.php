@@ -51,6 +51,8 @@ class ClusterTest extends TestCase {
 			$vector[0] = $cluster1Value + 0.001 * $i;
 			$detection->setVector($vector);
 			$detection->setFileId($i);
+			$detection->setHeight(0.5);
+			$detection->setWidth(0.5);
 			$this->faceDetectionMapper->insert($detection);
 		}
 
@@ -62,6 +64,8 @@ class ClusterTest extends TestCase {
 			$vector[0] = $cluster2Value + 0.001 * $i;
 			$detection->setVector($vector);
 			$detection->setFileId($numOfDetections + $i);
+			$detection->setHeight(0.5);
+			$detection->setWidth(0.5);
 			$this->faceDetectionMapper->insert($detection);
 		}
 	}
@@ -190,6 +194,8 @@ class ClusterTest extends TestCase {
 		}
 
 		$newDetection = new FaceDetection();
+		$newDetection->setHeight(0.5);
+		$newDetection->setWidth(0.5);
 		$newDetection->setFileId(500000);
 		$nullVector = self::getNullVector();
 		$nullVector[0] = 0.8;
@@ -242,6 +248,8 @@ class ClusterTest extends TestCase {
 			$vector[0] = $clusterValue + 0.001 * $i;
 			$detection->setVector($vector);
 			$detection->setFileId($i);
+			$detection->setHeight(0.5);
+			$detection->setWidth(0.5);
 			$this->faceDetectionMapper->insert($detection);
 		}
 
@@ -277,6 +285,8 @@ class ClusterTest extends TestCase {
 			$vector[0] = $clusterValue + 0.001 * $i;
 			$detection->setVector($vector);
 			$detection->setFileId($i);
+			$detection->setHeight(0.5);
+			$detection->setWidth(0.5);
 			$this->faceDetectionMapper->insert($detection);
 		}
 
@@ -304,6 +314,8 @@ class ClusterTest extends TestCase {
 			$vector[0] = $clusterValue + 0.001 * $i;
 			$detection->setVector($vector);
 			$detection->setFileId($i);
+			$detection->setHeight(0.5);
+			$detection->setWidth(0.5);
 			$this->faceDetectionMapper->insert($detection);
 		}
 
