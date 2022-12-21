@@ -182,7 +182,7 @@ class InstallDeps implements IRepairStep {
 		$url = $server.$version.'/'.$name.'.tar.gz';
 		$file = $this->binaryDir.$arch.'.tar.gz';
 		try {
-			$this->clientService->newClient()->get($url, ['timeout' => 60, 'sink' => $file]);
+			$this->clientService->newClient()->get($url, ['timeout' => 300, 'sink' => $file]);
 		} catch (\Exception $e) {
 			$this->logger->error('Downloading of node binary failed', ['exception' => $e]);
 			throw new \Exception('Downloading of node binary failed');
