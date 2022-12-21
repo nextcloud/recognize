@@ -78,12 +78,11 @@ class FaceClusterAnalyzer {
 			$clusterCentroid = self::calculateCentroidOfDetections($clusterDetections);
 
 			foreach ($clusterDetections as $detection) {
-				$distance = new Euclidean();
 				// If threshold is larger than 0 and $clusterCentroid is not the null vector
 				if ($detection->getThreshold() > 0.0 && count(array_filter($clusterCentroid, fn ($el) => $el !== 0.0)) > 0) {
 					// If a threshold is set for this detection and its vector is farther away from the centroid
 					// than the threshold, skip assigning this detection to the cluster
-					$distanceValue = $distance->compute($clusterCentroid, $detection->getVector());
+					$distanceValue = self::distance($clusterCentroid, $detection->getVector());
 					if ($distanceValue >= $detection->getThreshold()) {
 						continue;
 					}
@@ -120,8 +119,7 @@ class FaceClusterAnalyzer {
 			foreach ($filesWithDuplicateFaces as $fileDetections) {
 				$detectionsByDistance = [];
 				foreach ($fileDetections as $detection) {
-					$distance = new Euclidean();
-					$detectionsByDistance[$detection->getId()] = $distance->compute($centroid, $detection->getVector());
+					$detectionsByDistance[$detection->getId()] = self::distance($centroid, $detection->getVector());
 				}
 				asort($detectionsByDistance);
 				$bestMatchingDetectionId = array_keys($detectionsByDistance)[0];
@@ -189,7 +187,7 @@ class FaceClusterAnalyzer {
 
 	/**
 	 * @param string $userId
-	 * @param array $detections
+	 * @param list<FaceDetection> $detections
 	 * @return list<FaceDetection>
 	 * @throws \OCP\DB\Exception
 	 */
@@ -202,7 +200,6 @@ class FaceClusterAnalyzer {
 
 		$unclusteredDetections = [];
 
-		$distance = new Euclidean();
 		foreach ($detections as $detection) {
 			$bestCluster = null;
 			$bestClusterDistance = 999;
@@ -214,12 +211,12 @@ class FaceClusterAnalyzer {
 				}
 				foreach ($clusterDetections as $clusterDetection) {
 					if (
-						$distance->compute($clusterDetection->getVector(), $detection->getVector()) <= self::MAX_INNER_CLUSTER_RADIUS
-						&& $distance->compute($clusterCentroid, $detection->getVector()) >= $detection->getThreshold()
-						&& (!isset($bestCluster) || $distance->compute($clusterDetection->getVector(), $detection->getVector()) < $bestClusterDistance)
+						self::distance($clusterDetection->getVector(), $detection->getVector()) <= self::MAX_INNER_CLUSTER_RADIUS
+						&& self::distance($clusterCentroid, $detection->getVector()) >= $detection->getThreshold()
+						&& (!isset($bestCluster) || self::distance($clusterDetection->getVector(), $detection->getVector()) < $bestClusterDistance)
 					) {
 						$bestCluster = $cluster;
-						$bestClusterDistance = $distance->compute($clusterDetection->getVector(), $detection->getVector());
+						$bestClusterDistance = self::distance($clusterDetection->getVector(), $detection->getVector());
 						break;
 					}
 				}
@@ -227,5 +224,19 @@ class FaceClusterAnalyzer {
 			$unclusteredDetections[] = $detection;
 		}
 		return $unclusteredDetections;
+	}
+
+	private static ?Euclidean $distance;
+
+	/**
+	 * @param list<int|float> $v1
+	 * @param list<int|float> $v2
+	 * @return float
+	 */
+	private static function distance(array $v1, array $v2): float {
+		if (!isset(self::$distance)) {
+			self::$distance = new Euclidean();
+		}
+		return self::$distance->compute($v1, $v2);
 	}
 }
