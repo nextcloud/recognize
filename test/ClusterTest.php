@@ -51,6 +51,8 @@ class ClusterTest extends TestCase {
 			$vector[0] = $cluster1Value + 0.001 * $i;
 			$detection->setVector($vector);
 			$detection->setFileId($i);
+			$detection->setHeight(0.5);
+			$detection->setWidth(0.5);
 			$this->faceDetectionMapper->insert($detection);
 		}
 
@@ -62,6 +64,8 @@ class ClusterTest extends TestCase {
 			$vector[0] = $cluster2Value + 0.001 * $i;
 			$detection->setVector($vector);
 			$detection->setFileId($numOfDetections + $i);
+			$detection->setHeight(0.5);
+			$detection->setWidth(0.5);
 			$this->faceDetectionMapper->insert($detection);
 		}
 	}
@@ -190,6 +194,8 @@ class ClusterTest extends TestCase {
 		}
 
 		$newDetection = new FaceDetection();
+		$newDetection->setHeight(0.5);
+		$newDetection->setWidth(0.5);
 		$newDetection->setFileId(500000);
 		$nullVector = self::getNullVector();
 		$nullVector[0] = 0.8;
@@ -241,7 +247,9 @@ class ClusterTest extends TestCase {
 			$vector = self::getNullVector();
 			$vector[0] = $clusterValue + 0.001 * $i;
 			$detection->setVector($vector);
-			$detection->setFileId($i);
+			$detection->setFileId($clusterValue + $i);
+			$detection->setHeight(0.5);
+			$detection->setWidth(0.5);
 			$this->faceDetectionMapper->insert($detection);
 		}
 
@@ -277,6 +285,8 @@ class ClusterTest extends TestCase {
 			$vector[0] = $clusterValue + 0.001 * $i;
 			$detection->setVector($vector);
 			$detection->setFileId($i);
+			$detection->setHeight(0.5);
+			$detection->setWidth(0.5);
 			$this->faceDetectionMapper->insert($detection);
 		}
 
@@ -304,6 +314,8 @@ class ClusterTest extends TestCase {
 			$vector[0] = $clusterValue + 0.001 * $i;
 			$detection->setVector($vector);
 			$detection->setFileId($i);
+			$detection->setHeight(0.5);
+			$detection->setWidth(0.5);
 			$this->faceDetectionMapper->insert($detection);
 		}
 
@@ -311,12 +323,16 @@ class ClusterTest extends TestCase {
 
 		/** @var \OCA\Recognize\Db\FaceCluster[] $clusters */
 		$clusters = $this->faceClusterMapper->findByUserId(self::TEST_USER1);
-		self::assertGreaterThan(2, $clusters);
+		self::assertCount(3, $clusters);
 
-		foreach ($clusters as $cluster) {
-			$detections = $this->faceDetectionMapper->findByClusterId($cluster->getId());
-			self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER, $detections);
-		}
+		$detections = $this->faceDetectionMapper->findByClusterId($clusters[0]->getId());
+		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER * 2, $detections);
+
+		$detections = $this->faceDetectionMapper->findByClusterId($clusters[1]->getId());
+		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER, $detections);
+
+		$detections = $this->faceDetectionMapper->findByClusterId($clusters[2]->getId());
+		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER, $detections);
 	}
 
 	private static function getNullVector() {
