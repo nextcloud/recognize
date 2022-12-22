@@ -52,13 +52,18 @@ class FaceClusterAnalyzer {
 
 		$unclusteredDetections = $this->assignToExistingClusters($userId, $detections);
 
+		if (count($unclusteredDetections) === 0) {
+			$this->logger->debug('No unclustered face detections left after incremental run');
+			return;
+		}
+
 		// Here we use RubixMLs DBSCAN clustering algorithm
 		$dataset = new Unlabeled(array_map(function (FaceDetection $detection) : array {
 			return $detection->getVector();
 		}, $unclusteredDetections));
 
 		$clusterer = new DBSCAN(self::MAX_INNER_CLUSTER_RADIUS, self::MIN_CLUSTER_DENSITY, new BallTree(100, new Euclidean()));
-		$this->logger->debug('Calculate clusters for '.count($detections).' faces');
+		$this->logger->debug('Calculate clusters for '.count($unclusteredDetections).' faces');
 		$results = $clusterer->predict($dataset);
 		$numClusters = max($results);
 
@@ -66,8 +71,8 @@ class FaceClusterAnalyzer {
 
 		for ($i = 0; $i <= $numClusters; $i++) {
 			$keys = array_keys($results, $i);
-			$clusterDetections = array_map(function ($key) use ($detections) : FaceDetection {
-				return $detections[$key];
+			$clusterDetections = array_map(function ($key) use ($unclusteredDetections) : FaceDetection {
+				return $unclusteredDetections[$key];
 			}, $keys);
 
 			$cluster = new FaceCluster();
@@ -203,23 +208,33 @@ class FaceClusterAnalyzer {
 		foreach ($detections as $detection) {
 			$bestCluster = null;
 			$bestClusterDistance = 999;
+			if ($detection->getClusterId() !== null) {
+				continue;
+			}
 			foreach ($clusters as $cluster) {
 				$clusterDetections = $this->faceDetections->findByClusterId($cluster->getId());
-				$clusterCentroid = self::calculateCentroidOfDetections($clusterDetections);
 				if (count($clusterDetections) > 50) {
 					$clusterDetections = array_map(fn ($key) => $clusterDetections[$key], array_rand($clusterDetections, 50));
 				}
+				$clusterCentroid = self::calculateCentroidOfDetections($clusterDetections);
+				if ($detection->getThreshold() > 0 && self::distance($clusterCentroid, $detection->getVector()) >= $detection->getThreshold()) {
+					continue;
+				}
 				foreach ($clusterDetections as $clusterDetection) {
+					$distance = self::distance($clusterDetection->getVector(), $detection->getVector());
 					if (
-						self::distance($clusterDetection->getVector(), $detection->getVector()) <= self::MAX_INNER_CLUSTER_RADIUS
-						&& self::distance($clusterCentroid, $detection->getVector()) >= $detection->getThreshold()
-						&& (!isset($bestCluster) || self::distance($clusterDetection->getVector(), $detection->getVector()) < $bestClusterDistance)
+						$distance <= self::MAX_INNER_CLUSTER_RADIUS
+						&& (!isset($bestCluster) || $distance < $bestClusterDistance)
 					) {
 						$bestCluster = $cluster;
 						$bestClusterDistance = self::distance($clusterDetection->getVector(), $detection->getVector());
 						break;
 					}
 				}
+			}
+			if ($bestCluster !== null) {
+				$this->faceDetections->assocWithCluster($detection, $bestCluster);
+				continue;
 			}
 			$unclusteredDetections[] = $detection;
 		}
