@@ -465,14 +465,11 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$results</code>
     </ArgumentTypeCoercion>
-    <InternalMethod occurrences="3">
-      <code>compute</code>
-      <code>compute</code>
+    <InternalMethod occurrences="1">
       <code>compute</code>
     </InternalMethod>
-    <UnusedClosureParam occurrences="2">
-      <code>$item</code>
-      <code>$item</code>
-    </UnusedClosureParam>
+    <RedundantConditionGivenDocblockType occurrences="1">
+      <code>$detection-&gt;getClusterId() !== null</code>
+    </RedundantConditionGivenDocblockType>
   </file>
 </files>
