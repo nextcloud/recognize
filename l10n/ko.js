@@ -15,6 +15,7 @@ OC.L10N.register(
     "Computer" : "컴퓨터",
     "Clock" : "시계",
     "Screen" : "화면",
+    "Library" : "도서관",
     "Display" : "표시",
     "Bike" : "오토바이",
     "Camping" : "캠핑하기",
@@ -24,6 +25,8 @@ OC.L10N.register(
     "Document" : "문서",
     "Bucket" : "버킷",
     "Theme park" : "테마파크",
+    "Gas station" : "주유소",
+    "Parking" : "주차",
     "Sign" : "서명",
     "Gallery" : "갤러리",
     "Park" : "공원"
