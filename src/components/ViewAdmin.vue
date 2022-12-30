@@ -12,7 +12,7 @@
 			<NcNoteCard v-if="modelsDownloaded" show-alert type="success">
 				{{ t('recognize', 'The machine learning models have been downloaded successfully.') }}
 			</NcNoteCard>
-			<NcNoteCard v-else-if="!modelsDownloaded" show-alert type="success">
+			<NcNoteCard v-else-if="!modelsDownloaded">
 				{{ t('recognize', 'The machine learning models still need to be downloaded.') }}
 			</NcNoteCard>
 			<NcNoteCard v-if="nodejs === false">
