@@ -35,7 +35,7 @@ class Classifier {
 	protected QueueService $queue;
 	private ITempManager $tempManager;
 	private IPreview $previewProvider;
-	private int $maxExecutionTime;
+	private int $maxExecutionTime = self::MAX_EXECUTION_TIME;
 
 	public function __construct(LoggerInterface $logger, IConfig $config, IRootFolder $rootFolder, QueueService $queue, ITempManager $tempManager, IPreview  $previewProvider) {
 		$this->logger = $logger;
@@ -46,7 +46,7 @@ class Classifier {
 		$this->previewProvider = $previewProvider;
 	}
 
-	public function setMaxExecutionTime(int $time) {
+	public function setMaxExecutionTime(int $time): void {
 		$this->maxExecutionTime = $time;
 	}
 
@@ -61,8 +61,7 @@ class Classifier {
 		$processedFiles = [];
 		$startTime = time();
 		foreach ($queueFiles as $queueFile) {
-			$maxExecutionTime = $this->maxExecutionTime ?? self::MAX_EXECUTION_TIME;
-			if ($maxExecutionTime > 0 && time() - $startTime > $maxExecutionTime) {
+			if ($this->maxExecutionTime > 0 && time() - $startTime > $this->maxExecutionTime) {
 				return;
 			}
 			$files = $this->rootFolder->getById($queueFile->getFileId());
@@ -158,8 +157,7 @@ class Classifier {
 					$this->logger->debug('Classifier process output: '.$data);
 					continue;
 				}
-				$maxExecutionTime = $this->maxExecutionTime ?? self::MAX_EXECUTION_TIME;
-				if ($maxExecutionTime > 0 && time() - $startTime > $maxExecutionTime) {
+				if ($this->maxExecutionTime > 0 && time() - $startTime > $this->maxExecutionTime) {
 					$proc->stop(10, 9);
 					return;
 				}
