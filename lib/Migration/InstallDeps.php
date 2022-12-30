@@ -75,6 +75,14 @@ class InstallDeps implements IRepairStep {
 		$isMusl = false;
 		$uname = php_uname('m');
 
+		$existingBinary = $this->config->getAppValue('recognize', 'node_binary', '');
+		if ($existingBinary !== '') {
+			$version = $this->testBinary($existingBinary);
+			if ($version !== null) {
+				return;
+			}
+		}
+
 		if ($uname === 'x86_64') {
 			$binaryPath = $this->downloadNodeBinary(self::NODE_SERVER_OFFICIAL, self::NODE_VERSION, 'x64');
 			$version = $this->testBinary($binaryPath);
