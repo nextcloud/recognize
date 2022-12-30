@@ -27,12 +27,15 @@ use Symfony\Component\Process\Process;
 
 class Classifier {
 	public const TEMP_FILE_DIMENSION = 1024;
+	public const MAX_EXECUTION_TIME = 60 * 5;
+
 	protected LoggerInterface $logger;
 	protected IConfig $config;
 	private IRootFolder $rootFolder;
 	protected QueueService $queue;
 	private ITempManager $tempManager;
 	private IPreview $previewProvider;
+	private int $maxExecutionTime;
 
 	public function __construct(LoggerInterface $logger, IConfig $config, IRootFolder $rootFolder, QueueService $queue, ITempManager $tempManager, IPreview  $previewProvider) {
 		$this->logger = $logger;
@@ -41,6 +44,10 @@ class Classifier {
 		$this->queue = $queue;
 		$this->tempManager = $tempManager;
 		$this->previewProvider = $previewProvider;
+	}
+
+	public function setMaxExecutionTime(int $time) {
+		$this->maxExecutionTime = $time;
 	}
 
 	/**
@@ -52,8 +59,13 @@ class Classifier {
 	public function classifyFiles(string $model, array $queueFiles, int $timeout): \Generator {
 		$paths = [];
 		$processedFiles = [];
+		$startTime = time();
 		foreach ($queueFiles as $queueFile) {
-			$files = $this->rootFolder->getById(intval($queueFile->getFileId()));
+			$maxExecutionTime = $this->maxExecutionTime ?? self::MAX_EXECUTION_TIME;
+			if ($maxExecutionTime > 0 && time() - $startTime > $maxExecutionTime) {
+				return;
+			}
+			$files = $this->rootFolder->getById($queueFile->getFileId());
 			if (count($files) === 0) {
 				try {
 					$this->logger->debug('removing '.$queueFile->getFileId().' from '.$model.' queue because it couldn\'t be found');
@@ -65,7 +77,7 @@ class Classifier {
 			}
 			try {
 				$path = $this->getConvertedFilePath($files[0]);
-				if (in_array($model, [ImagenetClassifier::MODEL_NAME, LandmarksClassifier::MODEL_NAME, ClusteringFaceClassifier::MODEL_NAME])) {
+				if (in_array($model, [ImagenetClassifier::MODEL_NAME, LandmarksClassifier::MODEL_NAME, ClusteringFaceClassifier::MODEL_NAME], true)) {
 					// Check file data size
 					$filesizeMb = filesize($path) / (1024 * 1024);
 					if ($filesizeMb > 8) {
@@ -145,6 +157,11 @@ class Classifier {
 					$errOut .= $data;
 					$this->logger->debug('Classifier process output: '.$data);
 					continue;
+				}
+				$maxExecutionTime = $this->maxExecutionTime ?? self::MAX_EXECUTION_TIME;
+				if ($maxExecutionTime > 0 && time() - $startTime > $maxExecutionTime) {
+					$proc->stop(10, 9);
+					return;
 				}
 				$buffer .= $data;
 				$lines = explode("\n", $buffer);

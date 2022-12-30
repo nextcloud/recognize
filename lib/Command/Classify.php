@@ -123,15 +123,18 @@ class Classify extends Command {
 				}
 
 				if (count($queues[ImagenetClassifier::MODEL_NAME]) > 0) {
+					$this->imagenet->setMaxExecutionTime(0);
 					$this->imagenet->classify($queues[ImagenetClassifier::MODEL_NAME]);
 				}
 
 				if (count($queues[ClusteringFaceClassifier::MODEL_NAME]) > 0) {
+					$this->faces->setMaxExecutionTime(0);
 					$this->faces->classify($queues[ClusteringFaceClassifier::MODEL_NAME]);
 				}
 
 				if (count($queues[MovinetClassifier::MODEL_NAME]) > 0) {
 					try {
+						$this->movinet->setMaxExecutionTime(0);
 						$this->movinet->classify($queues[MovinetClassifier::MODEL_NAME]);
 					} catch (Exception $e) {
 						$this->logger->warning($e->getMessage(), ['exception' => $e]);
@@ -139,6 +142,7 @@ class Classify extends Command {
 				}
 
 				if (count($queues[MusicnnClassifier::MODEL_NAME]) > 0) {
+					$this->musicnn->setMaxExecutionTime(0);
 					$this->musicnn->classify($queues[MusicnnClassifier::MODEL_NAME]);
 				}
 			} while ($i > 0);
