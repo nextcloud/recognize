@@ -41,6 +41,7 @@ remove-binaries:
 	rm -rf node_modules/@tensorflow/tfjs-node/lib/*
 	rm -rf node_modules/@tensorflow/tfjs-node-gpu/lib/*
 	rm -rf node_modules/@tensorflow/tfjs-node-gpu/deps/lib/*
+	rm -rf node_modules/ffmpeg-static/ffmpeg
 
 remove-devdeps:
 	rm -rf node_modules

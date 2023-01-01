@@ -51,6 +51,7 @@ class InstallDeps implements IRepairStep {
 	private IClientService $clientService;
 	private LoggerInterface $logger;
 	private string $tfjsGpuInstallScript;
+	private string $ffmpegInstallScript;
 	private string $tfjsGPUPath;
 
 	public function __construct(IConfig $config, IClientService $clientService, LoggerInterface $logger) {
@@ -58,6 +59,7 @@ class InstallDeps implements IRepairStep {
 		$this->binaryDir = dirname(__DIR__, 2) . '/bin/';
 		$this->preGypBinaryDir = dirname(__DIR__, 2) . '/node_modules/@mapbox/node-pre-gyp/bin/';
 		$this->ffmpegDir = dirname(__DIR__, 2) . '/node_modules/ffmpeg-static/';
+		$this->ffmpegInstallScript = dirname(__DIR__, 2) . '/node_modules/ffmpeg-static/install.js';
 		$this->tfjsInstallScript = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node/scripts/install.js';
 		$this->tfjsGpuInstallScript = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node-gpu/scripts/install.js';
 		$this->tfjsPath = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node/';
@@ -71,17 +73,29 @@ class InstallDeps implements IRepairStep {
 	}
 
 	public function run(IOutput $output): void {
-		$isARM = false;
-		$isMusl = false;
-		$uname = php_uname('m');
-
 		$existingBinary = $this->config->getAppValue('recognize', 'node_binary', '');
 		if ($existingBinary !== '') {
 			$version = $this->testBinary($existingBinary);
 			if ($version !== null) {
-				return;
+				$this->installNodeBinary($output);
 			}
+		} else {
+			$this->installNodeBinary($output);
 		}
+
+		$this->setBinariesPermissions();
+
+		$binaryPath = $this->config->getAppValue('recognize', 'node_binary', '');
+
+		$this->runTfjsInstall($binaryPath);
+		$this->runTfjsGpuInstall($binaryPath);
+		$this->runFfmpegInstall($binaryPath);
+	}
+
+	protected function installNodeBinary($output) : void {
+		$isARM = false;
+		$isMusl = false;
+		$uname = php_uname('m');
 
 		if ($uname === 'x86_64') {
 			$binaryPath = $this->downloadNodeBinary(self::NODE_SERVER_OFFICIAL, self::NODE_VERSION, 'x64');
@@ -124,11 +138,6 @@ class InstallDeps implements IRepairStep {
 			$output->info('Enabling purejs mode (isMusl='.$isMusl.', isARM='.$isARM.', supportsAVX='.$supportsAVX.')');
 			$this->config->setAppValue('recognize', 'tensorflow.purejs', 'true');
 		}
-
-		$this->setBinariesPermissions();
-
-		$this->runTfjsInstall($binaryPath);
-		$this->runTfjsGpuInstall($binaryPath);
 	}
 
 	protected function testBinary(string $binaryPath): ?string {
@@ -179,6 +188,23 @@ class InstallDeps implements IRepairStep {
 		if ($returnCode !== 0) {
 			$this->logger->error('Failed to install Tensorflow.js for GPU: '.trim(implode("\n", $output)));
 			throw new \Exception('Failed to install Tensorflow.js for GPU: '.trim(implode("\n", $output)));
+		}
+	}
+
+	protected function runFfmpegInstall(string $nodeBinary): void {
+		$oriCwd = getcwd();
+		chdir($this->tfjsGPUPath);
+		$cmd = escapeshellcmd($nodeBinary) . ' ' . escapeshellarg($this->ffmpegInstallScript);
+		try {
+			exec($cmd . ' 2>&1', $output, $returnCode); // Appending  2>&1 to avoid leaking sterr
+		} catch (\Throwable $e) {
+			$this->logger->error('Failed to install ffmpeg: '.$e->getMessage(), ['exception' => $e]);
+			throw new \Exception('Failed to install ffmpeg: '.$e->getMessage());
+		}
+		chdir($oriCwd);
+		if ($returnCode !== 0) {
+			$this->logger->error('Failed to install ffmpeg: '.trim(implode("\n", $output)));
+			throw new \Exception('Failed to install ffmpeg: '.trim(implode("\n", $output)));
 		}
 	}
 
