@@ -17,7 +17,7 @@ use OCP\ITempManager;
 
 class MusicnnClassifier extends Classifier {
 	public const AUDIO_TIMEOUT = 40; // seconds
-	public const AUDIO_PUREJS_TIMEOUT = 300; // seconds
+	public const AUDIO_PUREJS_TIMEOUT = 420; // seconds
 	public const MODEL_NAME = 'musicnn';
 
 	private TagManager $tagManager;
