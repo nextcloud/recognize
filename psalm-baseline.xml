@@ -125,13 +125,19 @@
     <InvalidScalarArgument occurrences="1">
       <code>time()</code>
     </InvalidScalarArgument>
-    <MixedArgument occurrences="5">
+    <MixedArgument occurrences="7">
+      <code>$face['angle']['roll']</code>
+      <code>$face['angle']['yaw']</code>
       <code>$face['height']</code>
       <code>$face['vector']</code>
       <code>$face['width']</code>
       <code>$face['x']</code>
       <code>$face['y']</code>
     </MixedArgument>
+    <MixedArrayAccess occurrences="2">
+      <code>$face['angle']['roll']</code>
+      <code>$face['angle']['yaw']</code>
+    </MixedArrayAccess>
   </file>
   <file src="lib/Classifiers/Images/ImagenetClassifier.php">
     <InvalidScalarArgument occurrences="1">
