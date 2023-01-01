@@ -25,6 +25,10 @@ class ClusteringFaceClassifier extends Classifier {
 	public const IMAGE_TIMEOUT = 120; // seconds
 	public const IMAGE_PUREJS_TIMEOUT = 360; // seconds
 	public const MIN_FACE_RECOGNITION_SCORE = 0.9;
+
+	public const MAX_FACE_YAW = 50;
+	public const MAX_FACE_ROLL = 30;
+
 	public const MODEL_NAME = 'faces';
 
 	private FaceDetectionMapper $faceDetections;
@@ -81,6 +85,10 @@ class ClusteringFaceClassifier extends Classifier {
 			foreach ($faces as $face) {
 				if ($face['score'] < self::MIN_FACE_RECOGNITION_SCORE) {
 					$this->logger->debug('Face score too low. continuing with next face.');
+					continue;
+				}
+				if (abs($face['angle']['roll']) > self::MAX_FACE_ROLL || abs($face['angle']['yaw']) > self::MAX_FACE_YAW) {
+					$this->logger->debug('Face is not straight. continuing with next face.');
 					continue;
 				}
 

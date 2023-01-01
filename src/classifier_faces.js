@@ -57,9 +57,9 @@ async function main() {
 			}
 			const results = await faceapi.detectAllFaces(tensor).withFaceLandmarks().withFaceDescriptors()
 			tensor.dispose()
-
 			const vectors = results
 				.map(result => ({
+					angle: result.angle,
 					vector: result.descriptor,
 					x: result.detection.relativeBox.x,
 					y: result.detection.relativeBox.y,
