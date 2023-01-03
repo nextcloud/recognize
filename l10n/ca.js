@@ -265,7 +265,7 @@ OC.L10N.register(
     "Toy" : "Joguina",
     "Vase" : "Gerro",
     "Mailbox" : "Bústia",
-    "Sign" : "Signar",
+    "Sign" : "Senyal",
     "Gallery" : "Galeria",
     "Park" : "Parc"
 },
