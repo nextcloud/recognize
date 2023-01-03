@@ -6,25 +6,27 @@
 
 namespace OCA\Recognize\Service;
 
+use OCA\Recognize\ChineseWhispersClusterer;
 use OCA\Recognize\Db\FaceCluster;
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
-use Rubix\ML\Clusterers\DBSCAN;
-use Rubix\ML\Datasets\Unlabeled;
-use Rubix\ML\Graph\Trees\BallTree;
+use Rubix\ML\Datasets\Labeled;
 use Rubix\ML\Kernels\Distance\Euclidean;
 
 class FaceClusterAnalyzer {
-	public const MIN_CLUSTER_DENSITY = 6;
-	public const MAX_INNER_CLUSTER_RADIUS = 0.44;
+	public const NEIGHBOR_RADIUS = 0.4;
+	public const MIN_NEIGHBOR_COUNT = 5;
+	public const ITERATIONS = 30;
+
 	public const DIMENSIONS = 128;
-	public const MIN_DETECTION_SIZE = 0.09;
 
 	private FaceDetectionMapper $faceDetections;
 	private FaceClusterMapper $faceClusters;
 	private TagManager $tagManager;
 	private Logger $logger;
+
+
 
 	public function __construct(FaceDetectionMapper $faceDetections, FaceClusterMapper $faceClusters, TagManager $tagManager, Logger $logger) {
 		$this->faceDetections = $faceDetections;
@@ -33,77 +35,69 @@ class FaceClusterAnalyzer {
 		$this->logger = $logger;
 	}
 
+
 	/**
 	 * @throws \OCP\DB\Exception
 	 * @throws \JsonException
 	 */
 	public function calculateClusters(string $userId): void {
-		$this->logger->debug('Find face detection for use '.$userId);
+		$this->logger->debug('ClusterDebug: Retrieving face detections for user ' . $userId);
+
 		$detections = $this->faceDetections->findByUserId($userId);
 
-		$detections = array_values(array_filter($detections, fn ($detection) =>
-			$detection->getHeight() > self::MIN_DETECTION_SIZE && $detection->getWidth() > self::MIN_DETECTION_SIZE
-		));
-
-		if (count($detections) === 0) {
-			$this->logger->debug('No face detections found');
+		if (count($detections) < self::MIN_NEIGHBOR_COUNT) {
+			$this->logger->debug('ClusterDebug: Not enough face detections found');
 			return;
 		}
 
-		$unclusteredDetections = $this->assignToExistingClusters($userId, $detections);
+		$this->logger->debug('ClusterDebug: Found ' . count($detections) . " detections. Calculating clusters.");
 
-		if (count($unclusteredDetections) === 0) {
-			$this->logger->debug('No unclustered face detections left after incremental run');
-			return;
-		}
-
-		// Here we use RubixMLs DBSCAN clustering algorithm
-		$dataset = new Unlabeled(array_map(function (FaceDetection $detection) : array {
+		$dataset = new Labeled(array_map(function (FaceDetection $detection): array {
 			return $detection->getVector();
-		}, $unclusteredDetections));
+		}, $detections), array_combine(array_keys($detections), array_keys($detections)), false);
 
-		$clusterer = new DBSCAN(self::MAX_INNER_CLUSTER_RADIUS, self::MIN_CLUSTER_DENSITY, new BallTree(100, new Euclidean()));
-		$this->logger->debug('Calculate clusters for '.count($unclusteredDetections).' faces');
-		$results = $clusterer->predict($dataset);
-		$numClusters = max($results);
+		$cwClusterer = new ChineseWhispersClusterer($dataset, new Euclidean(), self::NEIGHBOR_RADIUS, self::MIN_NEIGHBOR_COUNT);
 
-		$this->logger->debug('Found '.$numClusters.' new face clusters');
+		$cwClusterer->iterate(self::ITERATIONS);
 
-		for ($i = 0; $i <= $numClusters; $i++) {
-			$keys = array_keys($results, $i);
-			$clusterDetections = array_map(function ($key) use ($unclusteredDetections) : FaceDetection {
-				return $unclusteredDetections[$key];
-			}, $keys);
+		$detectionClusters = $cwClusterer->getClusterIds();
 
-			$cluster = new FaceCluster();
-			$cluster->setTitle('');
-			$cluster->setUserId($userId);
-			$this->faceClusters->insert($cluster);
+		// Write clusters to db
+		// TODO: For now just discard all previous clusters.
+		if (count($this->faceClusters->findByUserId($userId)) > 0) {
+			$this->faceClusters->deleteAll();
+		}
 
-			$clusterCentroid = self::calculateCentroidOfDetections($clusterDetections);
+		foreach (array_unique($detectionClusters) as $clusterId) {
+			$clusterDetectionKeys = array_keys($detectionClusters, $clusterId);
 
-			foreach ($clusterDetections as $detection) {
-				// If threshold is larger than 0 and $clusterCentroid is not the null vector
-				if ($detection->getThreshold() > 0.0 && count(array_filter($clusterCentroid, fn ($el) => $el !== 0.0)) > 0) {
-					// If a threshold is set for this detection and its vector is farther away from the centroid
-					// than the threshold, skip assigning this detection to the cluster
-					$distanceValue = self::distance($clusterCentroid, $detection->getVector());
-					if ($distanceValue >= $detection->getThreshold()) {
-						continue;
-					}
+			if (is_null($clusterId)) {
+				foreach ($clusterDetectionKeys as $detectionKey) {
+					$detections[$detectionKey]->setClusterId(null);
+					$this->faceDetections->update($detections[$detectionKey]);
 				}
+			} else {
+				$cluster = new FaceCluster();
+				$cluster->setTitle('');
+				$cluster->setUserId($userId);
+				$this->faceClusters->insert($cluster);
 
-				$this->faceDetections->assocWithCluster($detection, $cluster);
+				foreach ($clusterDetectionKeys as $detectionKey) {
+					$this->faceDetections->assocWithCluster($detections[$detectionKey], $cluster);
+				}
 			}
 		}
 
-		$this->pruneDuplicateFilesFromClusters($userId);
+		$this->logger->debug('ClusterDebug: Clustering complete. ');
+		$this->pruneClusters($userId);
 	}
+
+
 
 	/**
 	 * @throws \OCP\DB\Exception
 	 */
-	public function pruneDuplicateFilesFromClusters(string $userId): void {
+	public function pruneClusters(string $userId): void {
 		$clusters = $this->faceClusters->findByUserId($userId);
 
 		if (count($clusters) === 0) {
@@ -124,7 +118,8 @@ class FaceClusterAnalyzer {
 			foreach ($filesWithDuplicateFaces as $fileDetections) {
 				$detectionsByDistance = [];
 				foreach ($fileDetections as $detection) {
-					$detectionsByDistance[$detection->getId()] = self::distance($centroid, $detection->getVector());
+					$distance = new Euclidean();
+					$detectionsByDistance[$detection->getId()] = $distance->compute($centroid, $detection->getVector());
 				}
 				asort($detectionsByDistance);
 				$bestMatchingDetectionId = array_keys($detectionsByDistance)[0];
@@ -191,67 +186,34 @@ class FaceClusterAnalyzer {
 	}
 
 	/**
-	 * @param string $userId
-	 * @param list<FaceDetection> $detections
-	 * @return list<FaceDetection>
 	 * @throws \OCP\DB\Exception
+	 * @param array<int> $clusterIdsToMerge
+	 * @param int $parentClusterId
+	 * @return void
 	 */
-	private function assignToExistingClusters(string $userId, array $detections): array {
-		$clusters = $this->faceClusters->findByUserId($userId);
-
-		if (count($clusters) === 0) {
-			return $detections;
-		}
-
-		$unclusteredDetections = [];
-
-		foreach ($detections as $detection) {
-			$bestCluster = null;
-			$bestClusterDistance = 999;
-			if ($detection->getClusterId() !== null) {
+	private function mergeClusters(array $clusterIdsToMerge, int $parentClusterId): void {
+		$clusterIdsToMerge = array_unique($clusterIdsToMerge);
+		foreach ($clusterIdsToMerge as $childClusterId) {
+			if ($childClusterId == $parentClusterId) {
 				continue;
 			}
-			foreach ($clusters as $cluster) {
-				$clusterDetections = $this->faceDetections->findByClusterId($cluster->getId());
-				if (count($clusterDetections) > 50) {
-					$clusterDetections = array_map(fn ($key) => $clusterDetections[$key], array_rand($clusterDetections, 50));
-				}
-				$clusterCentroid = self::calculateCentroidOfDetections($clusterDetections);
-				if ($detection->getThreshold() > 0 && self::distance($clusterCentroid, $detection->getVector()) >= $detection->getThreshold()) {
-					continue;
-				}
-				foreach ($clusterDetections as $clusterDetection) {
-					$distance = self::distance($clusterDetection->getVector(), $detection->getVector());
-					if (
-						$distance <= self::MAX_INNER_CLUSTER_RADIUS
-						&& (!isset($bestCluster) || $distance < $bestClusterDistance)
-					) {
-						$bestCluster = $cluster;
-						$bestClusterDistance = self::distance($clusterDetection->getVector(), $detection->getVector());
-						break;
-					}
-				}
-			}
-			if ($bestCluster !== null) {
-				$this->faceDetections->assocWithCluster($detection, $bestCluster);
+
+			$detections = $this->faceDetections->findByClusterId($childClusterId);
+			$parentCluster = $this->faceClusters->find($parentClusterId);
+
+
+			try {
+				$childCluster = $this->faceClusters->find($childClusterId);
+			} catch (\Exception $e) {
+				$this->logger->debug('ExtraDebug: Child cluster already deleted: ' . $childClusterId);
 				continue;
 			}
-			$unclusteredDetections[] = $detection;
-		}
-		return $unclusteredDetections;
-	}
 
-	private static ?Euclidean $distance;
+			foreach ($detections as $detection) {
+				$this->faceDetections->assocWithCluster($detection, $parentCluster);
+			}
 
-	/**
-	 * @param list<int|float> $v1
-	 * @param list<int|float> $v2
-	 * @return float
-	 */
-	private static function distance(array $v1, array $v2): float {
-		if (!isset(self::$distance)) {
-			self::$distance = new Euclidean();
+			$this->faceClusters->delete($childCluster);
 		}
-		return self::$distance->compute($v1, $v2);
 	}
 }
