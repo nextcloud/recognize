@@ -9,7 +9,6 @@ namespace OCA\Recognize\Dav\Faces;
 use OCA\DAV\Connector\Sabre\File;
 use \OCA\DAV\Connector\Sabre\FilesPlugin;
 use \OCA\DAV\Connector\Sabre\TagsPlugin;
-use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Db\FaceDetectionWithTitle;
 use Sabre\DAV\INode;
@@ -44,7 +43,12 @@ class PropFindPlugin extends ServerPlugin {
 			});
 
 			$propFind->handle(self::FACE_DETECTIONS_PROPERTYNAME, function () use ($node) {
-				return json_encode(array_map(fn (FaceDetectionWithTitle $face) => $face->toArray(), array_values(array_filter($this->faceDetectionMapper->findByFileIdWithTitle($node->getFile()->getId()), fn (FaceDetection $face) => $face->getClusterId() !== null))));
+				return json_encode(
+					array_map(
+						fn (FaceDetectionWithTitle $face) => $face->toArray(),
+						$this->faceDetectionMapper->findByFileIdWithTitle($node->getFile()->getId())
+					)
+				);
 			});
 
 			$propFind->handle(FilesPlugin::INTERNAL_FILEID_PROPERTYNAME, fn () => $node->getFile()->getId());
@@ -61,7 +65,12 @@ class PropFindPlugin extends ServerPlugin {
 
 		if ($node instanceof File) {
 			$propFind->handle(self::FACE_DETECTIONS_PROPERTYNAME, function () use ($node) {
-				return json_encode(array_map(fn (FaceDetectionWithTitle $face) => $face->toArray(), array_values(array_filter($this->faceDetectionMapper->findByFileIdWithTitle($node->getId()), fn (FaceDetection $face) => $face->getClusterId() !== null))));
+				return json_encode(
+					array_map(
+						fn (FaceDetectionWithTitle $face) => $face->toArray(),
+						$this->faceDetectionMapper->findByFileIdWithTitle($node->getId()),
+					)
+				);
 			});
 		}
 	}
