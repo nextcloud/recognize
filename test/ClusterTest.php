@@ -326,13 +326,13 @@ class ClusterTest extends TestCase {
 		self::assertCount(3, $clusters);
 
 		$detections = $this->faceDetectionMapper->findByClusterId($clusters[0]->getId());
-		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER * 2, $detections);
+		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER, $detections);
 
 		$detections = $this->faceDetectionMapper->findByClusterId($clusters[1]->getId());
 		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER, $detections);
 
 		$detections = $this->faceDetectionMapper->findByClusterId($clusters[2]->getId());
-		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER, $detections);
+		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER * 2, $detections);
 	}
 
 	private static function getNullVector() {
