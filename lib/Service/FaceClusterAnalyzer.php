@@ -17,7 +17,7 @@ use Rubix\ML\Kernels\Distance\Euclidean;
 
 class FaceClusterAnalyzer {
 	public const MIN_SAMPLE_SIZE = 4; // Conservative value: 10
-	public const MIN_CLUSTER_SIZE = 6; // Conservative value: 10
+	public const MIN_CLUSTER_SIZE = 5; // Conservative value: 10
 	public const MAX_CLUSTER_EDGE_LENGHT = 99.0;
 	public const MIN_CLUSTER_SEPARATION = 0.0;
 	// For incremental clustering
@@ -28,22 +28,13 @@ class FaceClusterAnalyzer {
 
 	private FaceDetectionMapper $faceDetections;
 	private FaceClusterMapper $faceClusters;
-	private TagManager $tagManager;
 	private Logger $logger;
 
-	private array $edges;
-	private Labeled $dataset;
-
-	private MRDistance $distanceKernel;
-
-	public function __construct(FaceDetectionMapper $faceDetections, FaceClusterMapper $faceClusters, TagManager $tagManager, Logger $logger) {
+	public function __construct(FaceDetectionMapper $faceDetections, FaceClusterMapper $faceClusters, Logger $logger) {
 		$this->faceDetections = $faceDetections;
 		$this->faceClusters = $faceClusters;
-		$this->tagManager = $tagManager;
 		$this->logger = $logger;
 	}
-
-
 
 	/**
 	 * @throws \OCP\DB\Exception
@@ -67,46 +58,46 @@ class FaceClusterAnalyzer {
 
 		$this->logger->debug('ClusterDebug: Found ' . count($unclusteredDetections) . " unclustered detections. Calculating clusters.");
 
-		$this->dataset = new Labeled(array_map(function (FaceDetection $detection): array {
+		$dataset = new Labeled(array_map(static function (FaceDetection $detection): array {
 			return $detection->getVector();
-		}, $detections), array_combine(array_keys($detections), array_keys($detections)), false);
+		}, $unclusteredDetections), array_combine(array_keys($unclusteredDetections), array_keys($unclusteredDetections)), false);
 
-		$this->distanceKernel = new MRDistance(self::MIN_SAMPLE_SIZE, $this->dataset, new Euclidean());
+		$distanceKernel = new MRDistance(self::MIN_SAMPLE_SIZE, $dataset, new Euclidean());
 
 		$primsStartTime = microtime(true);// DEBUG
 
 		// Prim's algorithm:
 
-		$this->unconnectedVertices = array_combine(array_keys($detections), array_keys($detections));
+		$unconnectedVertices = array_combine(array_keys($detections), array_keys($detections));
 
-		$firstVertex = current($this->unconnectedVertices);
-		$firstVertexVector = $this->dataset->sample($firstVertex);
-		unset($this->unconnectedVertices[$firstVertex]);
+		$firstVertex = current($unconnectedVertices);
+		$firstVertexVector = $dataset->sample($firstVertex);
+		unset($unconnectedVertices[$firstVertex]);
 
-		$this->edges = [];
-		foreach ($this->unconnectedVertices as $vertex) {
-			$this->edges[$vertex] = [$firstVertex, $this->distanceKernel->distance($firstVertex, $firstVertexVector, $vertex, $this->dataset->sample($vertex))];
+		$edges = [];
+		foreach ($unconnectedVertices as $vertex) {
+			$edges[$vertex] = [$firstVertex, $distanceKernel->distance($firstVertex, $firstVertexVector, $vertex, $dataset->sample($vertex))];
 		}
 
-		while (count($this->unconnectedVertices) > 0) {
+		while (count($unconnectedVertices) > 0) {
 			$minDistance = INF;
 			$minVertex = null;
 
-			foreach ($this->unconnectedVertices as $vertex) {
-				$distance = $this->edges[$vertex][1];
+			foreach ($unconnectedVertices as $vertex) {
+				$distance = $edges[$vertex][1];
 				if ($distance < $minDistance) {
 					$minDistance = $distance;
 					$minVertex = $vertex;
 				}
 			}
 
-			unset($this->unconnectedVertices[$minVertex]);
-			$minVertexVector = $this->dataset->sample($minVertex);
+			unset($unconnectedVertices[$minVertex]);
+			$minVertexVector = $dataset->sample($minVertex);
 
-			foreach ($this->unconnectedVertices as $vertex) {
-				$distance = $this->distanceKernel->distance($minVertex, $minVertexVector, $vertex, $this->dataset->sample($vertex));
-				if ($this->edges[$vertex][1] > $distance) {
-					$this->edges[$vertex] = [$minVertex,$distance];
+			foreach ($unconnectedVertices as $vertex) {
+				$distance = $distanceKernel->distance($minVertex, $minVertexVector, $vertex, $dataset->sample($vertex));
+				if ($edges[$vertex][1] > $distance) {
+					$edges[$vertex] = [$minVertex,$distance];
 				}
 			}
 		}
@@ -116,7 +107,7 @@ class FaceClusterAnalyzer {
 
 		// Calculate the face clusters based on the minimum spanning tree.
 
-		$mstClusterer = new MstClusterer($this->edges, self::MIN_CLUSTER_SIZE, null, self::MAX_CLUSTER_EDGE_LENGHT, self::MIN_CLUSTER_SEPARATION);
+		$mstClusterer = new MstClusterer($edges, self::MIN_CLUSTER_SIZE, null, self::MAX_CLUSTER_EDGE_LENGHT, self::MIN_CLUSTER_SEPARATION);
 		$flatClusters = $mstClusterer->processCluster();
 
 		$numberOfClusteredDetections = 0;
@@ -209,12 +200,12 @@ class FaceClusterAnalyzer {
 		}
 
 		foreach ($detections as $detection) {
-			$sum = array_map(function ($el, $el2) {
+			$sum = array_map(static function ($el, $el2) {
 				return $el + $el2;
 			}, $detection->getVector(), $sum);
 		}
 
-		$centroid = array_map(function ($el) use ($detections) {
+		$centroid = array_map(static function ($el) use ($detections) {
 			return $el / count($detections);
 		}, $sum);
 
@@ -235,13 +226,19 @@ class FaceClusterAnalyzer {
 		}
 
 		/** @var array<int,FaceDetection[]> $filesWithDuplicateFaces */
-		$filesWithDuplicateFaces = array_filter($files, function ($detections) {
+		$filesWithDuplicateFaces = array_filter($files, static function ($detections) {
 			return count($detections) > 1;
 		});
 
 		return $filesWithDuplicateFaces;
 	}
 
+	/**
+	 * @param string $userId
+	 * @param list<FaceDetection> $detections
+	 * @return list<FaceDetection>
+	 * @throws \OCP\DB\Exception
+	 */
 	private function assignToExistingClusters(string $userId, array $detections): array {
 		$clusters = $this->faceClusters->findByUserId($userId);
 

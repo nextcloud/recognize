@@ -9,21 +9,34 @@ namespace OCA\Recognize\Clustering;
 // TODO: core edges are not always stored properly (if two halves of the remaining clusters are both pruned at the same time)
 // TODO: store vertex lambda length (relative to cluster lambda length) for all vertices for soft clustering.
 class MstClusterer {
+	/**
+	 * @var array<int, array{int, float}>
+	 */
 	private array $edges;
+	/**
+	 * @var array<int, array{int, float}>
+	 */
 	private array $remainingEdges;
 	private float $startingLambda;
-	private float $finalLambda;
 	private float $clusterWeight;
 	private int $minimumClusterSize;
 	private array $coreEdges;
 	private bool $isRoot;
 	private float $maxEdgeLength;
 	private float $minClusterSeparation;
+
+	/**
+	 * @param array<int, array{int, float}>  $edges
+	 * @param int $minimumClusterSize
+	 * @param float|null $startingLambda
+	 * @param float $maxEdgeLength
+	 * @param float $minClusterSeparation
+	 */
 	public function __construct(array $edges, int $minimumClusterSize, ?float $startingLambda = null, float $maxEdgeLength = 0.5, float $minClusterSeparation = 0.1) {
 		//Ascending sort of edges while perserving original keys.
 		$this->edges = $edges;
 
-		uasort($this->edges, function ($a, $b) {
+		uasort($this->edges, static function ($a, $b) {
 			if ($a[1] > $b[1]) {
 				return 1;
 			}
@@ -65,7 +78,6 @@ class MstClusterer {
 					return [];
 				}
 
-				$this->finalLambda = $currentLambda;
 				$this->coreEdges = $this->remainingEdges;
 
 				return [$this];
@@ -102,10 +114,10 @@ class MstClusterer {
 				// Return a list of children if the weight of all children is more than $this->clusterWeight.
 				// Otherwise return the current cluster and discard the children. This way we "choose" a combination
 				// of clusters that weigh the most (i.e. have most (excess of) mass). Always discard the root cluster.
-				$this->finalLambda = $currentLambda;
+				$finalLambda = $currentLambda;
 
-				$childCluster1 = new MstClusterer($childClusterEdges1, $this->minimumClusterSize, $this->finalLambda, $this->maxEdgeLength, $this->minClusterSeparation);
-				$childCluster2 = new MstClusterer($childClusterEdges2, $this->minimumClusterSize, $this->finalLambda, $this->maxEdgeLength, $this->minClusterSeparation);
+				$childCluster1 = new MstClusterer($childClusterEdges1, $this->minimumClusterSize, $finalLambda, $this->maxEdgeLength, $this->minClusterSeparation);
+				$childCluster2 = new MstClusterer($childClusterEdges2, $this->minimumClusterSize, $finalLambda, $this->maxEdgeLength, $this->minClusterSeparation);
 
 				// Resolve all chosen child clusters recursively
 				$childClusters = array_merge($childCluster1->processCluster(), $childCluster2->processCluster());
@@ -113,7 +125,7 @@ class MstClusterer {
 				$childrenWeight = 0.0;
 				foreach ($childClusters as $childCluster) {
 					$childrenWeight += $childCluster->getClusterWeight();
-					array_merge($this->coreEdges, $childCluster->getCoreEdges());
+					$this->coreEdges = array_merge($this->coreEdges, $childCluster->getCoreEdges());
 				}
 
 				if (($childrenWeight > $this->clusterWeight) || $this->isRoot) {
@@ -198,6 +210,10 @@ class MstClusterer {
 		return $this->clusterWeight;
 	}
 
+
+	/**
+	 * @returns list<int>
+	 */
 	public function getVertexKeys(): array {
 		$vertexKeys = [];
 

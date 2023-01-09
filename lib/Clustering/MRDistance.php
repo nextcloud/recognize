@@ -12,6 +12,10 @@ use Rubix\ML\Kernels\Distance\Distance;
 
 class MRDistance {
 	private Distance $kernel;
+
+	/**
+	 * @var list<float|int|string> $coreDistances
+	 */
 	private array $coreDistances;
 	private int $coreDistSampleSize;
 	private Labeled $dataset;
@@ -29,6 +33,13 @@ class MRDistance {
 		$this->kernel = $kernel;
 	}
 
+	/**
+	 * @param int $a
+	 * @param list<float|int|string> $aVector
+	 * @param int $b
+	 * @param list<float|int|string> $bVector
+	 * @return float
+	 */
 	public function distance(int $a, array $aVector, int $b, array $bVector): float {
 		$distance = $this->kernel->compute($aVector, $bVector);
 
