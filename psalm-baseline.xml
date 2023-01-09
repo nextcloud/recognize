@@ -182,6 +182,79 @@
       <code>getFileId</code>
     </MixedMethodCall>
   </file>
+  <file src="lib/Clustering/MRDistance.php">
+    <InternalMethod occurrences="3">
+      <code>compute</code>
+      <code>grow</code>
+      <code>nearest</code>
+    </InternalMethod>
+    <InvalidReturnStatement occurrences="1">
+      <code>$this-&gt;coreDistances[$index]</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>float</code>
+    </InvalidReturnType>
+    <MixedArgumentTypeCoercion occurrences="1">
+      <code>$this-&gt;dataset-&gt;sample($index)</code>
+    </MixedArgumentTypeCoercion>
+    <PropertyTypeCoercion occurrences="1">
+      <code>$this-&gt;coreDistances</code>
+    </PropertyTypeCoercion>
+  </file>
+  <file src="lib/Clustering/MstClusterer.php">
+    <MixedArgument occurrences="3">
+      <code>$childCluster-&gt;getCoreEdges()</code>
+      <code>$finalLambda</code>
+      <code>$vertexConnectedFrom</code>
+    </MixedArgument>
+    <MixedArgumentTypeCoercion occurrences="4">
+      <code>$childClusterEdges1</code>
+      <code>$childClusterEdges2</code>
+      <code>$vertexConnectedTo</code>
+      <code>$vertexConnectedTo</code>
+    </MixedArgumentTypeCoercion>
+    <MixedArrayAccess occurrences="6">
+      <code>$a[1]</code>
+      <code>$a[1]</code>
+      <code>$b[1]</code>
+      <code>$b[1]</code>
+      <code>$currentLongestEdge[0]</code>
+      <code>$currentLongestEdge[1]</code>
+    </MixedArrayAccess>
+    <MixedAssignment occurrences="11">
+      <code>$childCluster</code>
+      <code>$childrenWeight</code>
+      <code>$currentLambda</code>
+      <code>$currentLambda</code>
+      <code>$currentLongestEdge</code>
+      <code>$edgeLength</code>
+      <code>$finalLambda</code>
+      <code>$lastLambda</code>
+      <code>$lastLambda</code>
+      <code>$this-&gt;clusterWeight</code>
+      <code>$vertexConnectedFrom</code>
+    </MixedAssignment>
+    <MixedMethodCall occurrences="2">
+      <code>getClusterWeight</code>
+      <code>getCoreEdges</code>
+    </MixedMethodCall>
+    <MixedOperand occurrences="6">
+      <code>$childCluster-&gt;getClusterWeight()</code>
+      <code>$currentLambda - $lastLambda</code>
+      <code>$edgeLength</code>
+      <code>$edgeLength</code>
+      <code>$lastLambda</code>
+      <code>$this-&gt;clusterWeight</code>
+    </MixedOperand>
+    <MixedPropertyTypeCoercion occurrences="2">
+      <code>$this-&gt;remainingEdges</code>
+      <code>count($childClusterEdges1) &gt; count($childClusterEdges2) ? $childClusterEdges1 : $childClusterEdges2</code>
+    </MixedPropertyTypeCoercion>
+    <PossiblyNullArgument occurrences="2">
+      <code>$vertexConnectedTo</code>
+      <code>$vertexConnectedTo</code>
+    </PossiblyNullArgument>
+  </file>
   <file src="lib/Controller/AdminController.php">
     <MissingParamType occurrences="1">
       <code>$value</code>
@@ -423,7 +496,9 @@
       <code>$item-&gt;getPathname()</code>
       <code>$item-&gt;getPathname()</code>
     </MixedArgument>
-    <MixedArgumentTypeCoercion occurrences="5">
+    <MixedArgumentTypeCoercion occurrences="7">
+      <code>$output</code>
+      <code>$output</code>
       <code>$output</code>
       <code>$output</code>
       <code>$output</code>
@@ -468,12 +543,42 @@
     </MixedReturnStatement>
   </file>
   <file src="lib/Service/FaceClusterAnalyzer.php">
-    <ArgumentTypeCoercion occurrences="1">
-      <code>$results</code>
-    </ArgumentTypeCoercion>
-    <InternalMethod occurrences="1">
+    <InternalMethod occurrences="2">
+      <code>compute</code>
       <code>compute</code>
     </InternalMethod>
+    <MissingClosureParamType occurrences="1">
+      <code>$key</code>
+    </MissingClosureParamType>
+    <MixedArgument occurrences="2">
+      <code>$detectionKeys</code>
+      <code>$firstVertex</code>
+    </MixedArgument>
+    <MixedArgumentTypeCoercion occurrences="4">
+      <code>$dataset-&gt;sample($vertex)</code>
+      <code>$dataset-&gt;sample($vertex)</code>
+      <code>$firstVertexVector</code>
+      <code>$minVertexVector</code>
+    </MixedArgumentTypeCoercion>
+    <MixedArrayOffset occurrences="2">
+      <code>$unclusteredDetections[$detectionKey]</code>
+      <code>$unclusteredDetections[$key]</code>
+    </MixedArrayOffset>
+    <MixedAssignment occurrences="4">
+      <code>$detectionKey</code>
+      <code>$detectionKeys</code>
+      <code>$firstVertex</code>
+      <code>$flatCluster</code>
+    </MixedAssignment>
+    <MixedMethodCall occurrences="1">
+      <code>getVertexKeys</code>
+    </MixedMethodCall>
+    <PossiblyNullArgument occurrences="1">
+      <code>$minVertex</code>
+    </PossiblyNullArgument>
+    <PossiblyNullArrayOffset occurrences="1">
+      <code>$unconnectedVertices</code>
+    </PossiblyNullArrayOffset>
     <RedundantConditionGivenDocblockType occurrences="1">
       <code>$detection-&gt;getClusterId() !== null</code>
     </RedundantConditionGivenDocblockType>
