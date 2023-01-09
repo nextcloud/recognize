@@ -92,7 +92,7 @@ class InstallDeps implements IRepairStep {
 		$this->runTfjsGpuInstall($binaryPath);
 	}
 
-	protected function installNodeBinary($output) : void {
+	protected function installNodeBinary(IOutput $output) : void {
 		$isARM = false;
 		$isMusl = false;
 		$uname = php_uname('m');
