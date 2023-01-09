@@ -68,7 +68,7 @@ class FaceClusterAnalyzer {
 
 		// Prim's algorithm:
 
-		$unconnectedVertices = array_combine(array_keys($detections), array_keys($detections));
+		$unconnectedVertices = array_combine(array_keys($unclusteredDetections), array_keys($unclusteredDetections));
 
 		$firstVertex = current($unconnectedVertices);
 		$firstVertexVector = $dataset->sample($firstVertex);
