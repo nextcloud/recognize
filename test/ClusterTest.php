@@ -325,14 +325,13 @@ class ClusterTest extends TestCase {
 		$clusters = $this->faceClusterMapper->findByUserId(self::TEST_USER1);
 		self::assertCount(3, $clusters);
 
-		$detections = $this->faceDetectionMapper->findByClusterId($clusters[0]->getId());
-		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER, $detections);
+		$detections1 = $this->faceDetectionMapper->findByClusterId($clusters[0]->getId());
+		$detections2 = $this->faceDetectionMapper->findByClusterId($clusters[1]->getId());
+		$detections3 = $this->faceDetectionMapper->findByClusterId($clusters[2]->getId());
+		$counts = [count($detections1), count($detections2), count($detections3)];
 
-		$detections = $this->faceDetectionMapper->findByClusterId($clusters[1]->getId());
-		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER, $detections);
-
-		$detections = $this->faceDetectionMapper->findByClusterId($clusters[2]->getId());
-		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER * 2, $detections);
+		self::assertCount(2, array_filter($counts, fn($count) => $count === self::INITIAL_DETECTIONS_PER_CLUSTER));
+		self::assertCount(1, array_filter($counts, fn($count) => $count === self::INITIAL_DETECTIONS_PER_CLUSTER * 2));
 	}
 
 	private static function getNullVector() {
