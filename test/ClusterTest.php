@@ -238,6 +238,7 @@ class ClusterTest extends TestCase {
 			$detection->setClusterId($clusters[0]->getId());
 			$this->faceDetectionMapper->update($detection);
 		}
+		$this->faceClusterMapper->delete($clusters[0]);
 
 		$numOfDetections = self::INITIAL_DETECTIONS_PER_CLUSTER;
 		$clusterValue = 3 * self::INITIAL_DETECTIONS_PER_CLUSTER;
@@ -259,11 +260,12 @@ class ClusterTest extends TestCase {
 		$clusters = $this->faceClusterMapper->findByUserId(self::TEST_USER1);
 		self::assertCount(2, $clusters);
 
-		$detections = $this->faceDetectionMapper->findByClusterId($clusters[0]->getId());
-		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER * 2, $detections);
+		$detections1 = $this->faceDetectionMapper->findByClusterId($clusters[0]->getId());
+		$detections2 = $this->faceDetectionMapper->findByClusterId($clusters[1]->getId());
+		$counts = [count($detections1), count($detections2)];
 
-		$detections = $this->faceDetectionMapper->findByClusterId($clusters[1]->getId());
-		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER, $detections);
+		self::assertCount(1, array_filter($counts, fn($count) => $count === self::INITIAL_DETECTIONS_PER_CLUSTER));
+		self::assertCount(1, array_filter($counts, fn($count) => $count === self::INITIAL_DETECTIONS_PER_CLUSTER * 2));
 	}
 
 	/**
