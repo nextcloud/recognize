@@ -40,6 +40,7 @@
     "Your machine supports native TensorFlow operation, you do not need WASM mode." : "Zure makinak TensorFlow jatorrizko eragiketa onartzen du, ez duzu WASM modua behar.",
     "WASM mode was activated automatically, because your machine does not support native TensorFlow operation:" : "WASM modua automatikoki aktibatu zen, zure makinak ez duelako onartzen TensorFlow jatorrizko eragiketa:",
     "Enable WASM mode" : "Gaitu WASM modua",
+    "Enable GPU mode" : "Gaitu GPU modua",
     "If the shipped Node.js binary doesn't work on your system for some reason you can set the path to a custom node.js binary. Currently supported is Node v14.17 and newer v14 releases." : "Bidaltako Node.js binarioak zure sisteman funtzionatzen ez badu arrazoiren batengatik, node.js bitar pertsonalizatu baterako bidea ezar dezakezu. Gaur egun onartzen da Node v14.17 eta v14 bertsio berriagoak.",
     "Your server does not support AVX instructions" : "Zure zerbitzariak ez ditu AVX instrukzioak onartzen",
     "Your server does not have an x86 64-bit CPU" : "Zerbitzariak ez du x86 64-biteko PUZa",
