@@ -88,8 +88,8 @@ class InstallDeps implements IRepairStep {
 		$binaryPath = $this->config->getAppValue('recognize', 'node_binary', '');
 
 		$this->runTfjsInstall($binaryPath);
-		$this->runTfjsGpuInstall($binaryPath);
 		$this->runFfmpegInstall($binaryPath);
+		$this->runTfjsGpuInstall($binaryPath);
 	}
 
 	protected function installNodeBinary($output) : void {
