@@ -106,10 +106,15 @@ class StorageService {
 			$result = $qb->selectFileCache()
 				->andWhere($qb->expr()->eq('filecache.fileid', $qb->createNamedParameter($rootId, IQueryBuilder::PARAM_INT)))
 				->executeQuery();
-			/** @var array{path:string} $root */
+			/** @var array{path:string}|false $root */
 			$root = $result->fetch();
 			$result->closeCursor();
 		} catch (Exception $e) {
+			$this->logger->error('Could not fetch storage root', ['exception' => $e]);
+			return;
+		}
+
+		if($root === false) {
 			$this->logger->error('Could not fetch storage root', ['exception' => $e]);
 			return;
 		}
