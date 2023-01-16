@@ -76,7 +76,7 @@ class InstallDeps implements IRepairStep {
 		$existingBinary = $this->config->getAppValue('recognize', 'node_binary', '');
 		if ($existingBinary !== '') {
 			$version = $this->testBinary($existingBinary);
-			if ($version !== null) {
+			if ($version === null) {
 				$this->installNodeBinary($output);
 			}
 		} else {
