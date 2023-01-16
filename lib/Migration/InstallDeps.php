@@ -141,11 +141,12 @@ class InstallDeps implements IRepairStep {
 	}
 
 	protected function testBinary(string $binaryPath): ?string {
-		// Make binary executable
-		chmod($binaryPath, 0755);
-
-		$cmd = escapeshellcmd($binaryPath) . ' ' . escapeshellarg('--version');
 		try {
+			// Make binary executable
+			chmod($binaryPath, 0755);
+
+			$cmd = escapeshellcmd($binaryPath) . ' ' . escapeshellarg('--version');
+
 			exec($cmd . ' 2>&1', $output, $returnCode);
 		} catch (\Throwable $e) {
 		}
