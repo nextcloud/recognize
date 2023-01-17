@@ -86,6 +86,13 @@ jobs:
           mkdir data
           ./occ maintenance:install --verbose --database=sqlite --database-name=nextcloud --database-host=127.0.0.1 --database-port=$DB_PORT --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass password
           ./occ app:enable --force ${{ env.APP_NAME }}
+
+      - name: Set up test resources
+        working-directory: apps/${{ env.APP_NAME }}
+        run: |
+          wget https://github.com/nextcloud/recognize/releases/download/v2.2.0/test-files.zip
+          unzip test-files.zip -d tests/res/
+
       - name: Check PHPUnit script is defined
         id: check_phpunit
         continue-on-error: true
