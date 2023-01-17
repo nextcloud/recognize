@@ -37,6 +37,9 @@ class Classifier {
 	private IPreview $previewProvider;
 	private int $maxExecutionTime = self::MAX_EXECUTION_TIME;
 
+	/**
+	 * @var list<string>
+	 */
 	private array $tmpFiles = [];
 
 	public function __construct(LoggerInterface $logger, IConfig $config, IRootFolder $rootFolder, QueueService $queue, ITempManager $tempManager, IPreview  $previewProvider) {
@@ -283,7 +286,7 @@ class Classifier {
 		return $tmpname;
 	}
 
-	public function cleanUpTmpFiles() {
+	public function cleanUpTmpFiles():void {
 		foreach ($this->tmpFiles as $tmpFile) {
 			unlink($tmpFile);
 		}

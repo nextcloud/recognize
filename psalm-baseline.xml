@@ -423,7 +423,9 @@
       <code>$item-&gt;getPathname()</code>
       <code>$item-&gt;getPathname()</code>
     </MixedArgument>
-    <MixedArgumentTypeCoercion occurrences="5">
+    <MixedArgumentTypeCoercion occurrences="7">
+      <code>$output</code>
+      <code>$output</code>
       <code>$output</code>
       <code>$output</code>
       <code>$output</code>

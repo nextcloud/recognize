@@ -115,7 +115,7 @@ class StorageService {
 		}
 
 		if ($root === false) {
-			$this->logger->error('Could not fetch storage root', ['exception' => $e]);
+			$this->logger->error('Could not fetch storage root');
 			return;
 		}
 
