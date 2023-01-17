@@ -37,6 +37,8 @@ class Classifier {
 	private IPreview $previewProvider;
 	private int $maxExecutionTime = self::MAX_EXECUTION_TIME;
 
+	private array $tmpFiles = [];
+
 	public function __construct(LoggerInterface $logger, IConfig $config, IRootFolder $rootFolder, QueueService $queue, ITempManager $tempManager, IPreview  $previewProvider) {
 		$this->logger = $logger;
 		$this->config = $config;
@@ -159,6 +161,7 @@ class Classifier {
 				}
 				if ($this->maxExecutionTime > 0 && time() - $startTime > $this->maxExecutionTime) {
 					$proc->stop(10, 9);
+					$this->cleanUpTmpFiles();
 					return;
 				}
 				$buffer .= $data;
@@ -194,14 +197,17 @@ class Classifier {
 					$i++;
 				}
 			}
+			$this->cleanUpTmpFiles();
 			if ($i !== count($paths)) {
 				$this->logger->warning('Classifier process output: '.$errOut);
 				throw new \RuntimeException('Classifier process error');
 			}
 		} catch (ProcessTimedOutException $e) {
+			$this->cleanUpTmpFiles();
 			$this->logger->warning($proc->getErrorOutput());
 			throw new \RuntimeException('Classifier process timeout');
 		} catch (RuntimeException $e) {
+			$this->cleanUpTmpFiles();
 			$this->logger->warning($proc->getErrorOutput());
 			throw new \RuntimeException('Classifier process could not be started');
 		}
@@ -271,6 +277,16 @@ class Classifier {
 		}
 		fclose($preview);
 		fclose($tmpfile);
+
+		$this->tmpFiles[] = $tmpname;
+
 		return $tmpname;
+	}
+
+	public function cleanUpTmpFiles() {
+		foreach ($this->tmpFiles as $tmpFile) {
+			unlink($tmpFile);
+		}
+		$this->tmpFiles = [];
 	}
 }
