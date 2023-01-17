@@ -37,6 +37,8 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      # do not stop on another job's failure
+      fail-fast: false
       matrix:
         php-versions: ['8.0']
         server-versions: ['stable25', 'master']
