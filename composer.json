@@ -22,7 +22,7 @@
         "cs:check": "php-cs-fixer fix --dry-run --diff",
         "cs:fix": "php-cs-fixer fix",
         "psalm": "psalm.phar",
-        "test:unit": "phpunit --config tests/phpunit.xml",
+        "test:unit": "phpunit --config tests/phpunit.xml"
     },
     "config": {
         "platform": {
