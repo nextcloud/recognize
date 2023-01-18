@@ -21,11 +21,11 @@ jobs:
         databases: ['sqlite']
         server-versions: ['stable25']
         pure-js-mode: ['false']
-        imagenet-enabled: ['true', 'false']
-        faces-enabled: ['true', 'false']
-        landmarks-enabled: ['true', 'false']
-        musicnn-enabled: ['true', 'false']
-        movinet-enabled: ['true', 'false']
+        imagenet-enabled: ['true']
+        faces-enabled: ['true']
+        landmarks-enabled: ['true']
+        musicnn-enabled: ['true']
+        movinet-enabled: ['true']
         include:
           # stable25,sqlite,php8
           - server-versions: stable25
