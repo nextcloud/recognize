@@ -11,6 +11,7 @@ on:
       - '.github/workflows/**'
       - 'appinfo/**'
       - 'lib/**'
+      - 'src/**'
       - 'templates/**'
       - 'tests/**'
       - 'vendor/**'
