@@ -66,7 +66,7 @@
     "Node.js {version} binary was installed successfully." : "El binari Node.js {version} s'ha instal·lat correctament.",
     "Checking libtensorflow" : "Comprovant libtensorflow",
     "Could not load libtensorflow in Node.js. You can try to manually install libtensorflow or run in WASM mode." : "No s'ha pogut carregar libtensorflow a Node.js. Podeu provar d'instal·lar manualment libtensorflow o executar-lo en mode WASM.",
-    "Successfully loaded libtensorflow in Node.js, but couldn't load GPU. Make sure CUDA Toolkit and cuDNN are installed and accessible, or turn off GPU mode." : "S'ha carregat libtensorflow correctament al Node.js, però no s'ha pogut carregar la GPUI. Assegureu-vos que el Toolkit CUDA i cuDNN es troben instal·lats i són accessibles, o desactiveu el mode GPU.",
+    "Successfully loaded libtensorflow in Node.js, but couldn't load GPU. Make sure CUDA Toolkit and cuDNN are installed and accessible, or turn off GPU mode." : "S'ha carregat libtensorflow correctament al Node.js, però no s'ha pogut carregar la GPU. Assegureu-vos que el Toolkit CUDA i cuDNN es troben instal·lats i són accessibles, o desactiveu el mode GPU.",
     "Libtensorflow was loaded successfully into Node.js." : "Libtensorflow s'ha carregat correctament a Node.js.",
     "Could not load Tensorflow WASM in Node.js. Something is wrong with your setup." : "No s'ha pogut carregar Tensorflow WASM a Node.js. Alguna cosa no funciona amb la vostra configuració.",
     "Tensorflow WASM was loaded successfully into Node.js." : "Tensorflow WASM s'ha carregat correctament a Node.js.",
