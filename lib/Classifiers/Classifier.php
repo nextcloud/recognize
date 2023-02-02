@@ -248,7 +248,7 @@ class Classifier {
 		try {
 			$this->logger->debug('generating preview of ' . $file->getId() . ' with dimension '.self::TEMP_FILE_DIMENSION);
 			$image = $this->previewProvider->getPreview($file, self::TEMP_FILE_DIMENSION, self::TEMP_FILE_DIMENSION);
-		} catch(NotFoundException $e) {
+		} catch(NotFoundException|\InvalidArgumentException $e) {
 			return $path;
 		}
 
