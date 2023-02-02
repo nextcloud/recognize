@@ -191,3 +191,4 @@ jobs:
           GITHUB_REF: ${{ github.ref }}
         run: |
           ./occ recognize:classify
+          ./occ recognize:cluster-faces

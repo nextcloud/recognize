@@ -68,6 +68,7 @@ The app does not send any sensitive data to cloud providers or similar services.
 		<command>OCA\Recognize\Command\Recrawl</command>
 		<command>OCA\Recognize\Command\DownloadModels</command>
 		<command>OCA\Recognize\Command\Classify</command>
+		<command>OCA\Recognize\Command\ClusterFaces</command>
 	</commands>
 
 	<settings>
