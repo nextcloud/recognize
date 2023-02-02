@@ -141,6 +141,9 @@ class InstallDeps implements IRepairStep {
 	}
 
 	protected function testBinary(string $binaryPath): ?string {
+		if (!file_exists($binaryPath)) {
+			return null;
+		}
 		try {
 			// Make binary executable
 			chmod($binaryPath, 0755);
