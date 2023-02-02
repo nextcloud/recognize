@@ -117,6 +117,9 @@
     <PossiblyNullOperand occurrences="1">
       <code>$proc-&gt;getPid()</code>
     </PossiblyNullOperand>
+    <RedundantCondition occurrences="1">
+      <code>isset($dimensions)</code>
+    </RedundantCondition>
     <UnusedFunctionCall occurrences="1">
       <code>json_decode</code>
     </UnusedFunctionCall>
@@ -479,5 +482,11 @@
     <RedundantConditionGivenDocblockType occurrences="1">
       <code>$detection-&gt;getClusterId() !== null</code>
     </RedundantConditionGivenDocblockType>
+  </file>
+  <file src="lib/Service/StorageService.php">
+    <RedundantCastGivenDocblockType occurrences="2">
+      <code>(int)$row['root_id']</code>
+      <code>(int)$row['storage_id']</code>
+    </RedundantCastGivenDocblockType>
   </file>
 </files>
