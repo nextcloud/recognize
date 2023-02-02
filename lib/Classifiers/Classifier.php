@@ -64,6 +64,7 @@ class Classifier {
 	public function classifyFiles(string $model, array $queueFiles, int $timeout): \Generator {
 		$paths = [];
 		$processedFiles = [];
+		$fileNames = [];
 		$startTime = time();
 		foreach ($queueFiles as $queueFile) {
 			if ($this->maxExecutionTime > 0 && time() - $startTime > $this->maxExecutionTime) {
@@ -109,6 +110,7 @@ class Classifier {
 				}
 				$paths[] = $path;
 				$processedFiles[] = $queueFile;
+				$fileNames[] = $files[0]->getPath();
 			} catch (NotFoundException $e) {
 				$this->logger->warning('Could not find file', ['exception' => $e]);
 				try {
@@ -184,7 +186,7 @@ class Classifier {
 						$buffer .= "\n".$result;
 						continue;
 					}
-					$this->logger->debug('Result for ' . basename($paths[$i]) . ' = ' . $result);
+					$this->logger->debug('Result for ' . $fileNames[$i] .'(' . basename($paths[$i]) . ') = ' . $result);
 					try {
 						// decode json
 						$results = json_decode($result, true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
