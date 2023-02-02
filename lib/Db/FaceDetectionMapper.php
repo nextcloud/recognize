@@ -119,6 +119,17 @@ class FaceDetectionMapper extends QBMapper {
 		return $this->findEntity($qb);
 	}
 
+	/**
+	 * @return list<string>
+	 * @throws \OCP\DB\Exception
+	 */
+	public function findUserIds() :array {
+		$qb = $this->db->getQueryBuilder();
+		$qb->selectDistinct('d.user_id')
+			->from('recognize_face_detections', 'd');
+		return $qb->executeQuery()->fetchAll(\PDO::FETCH_COLUMN);
+	}
+
 	protected function mapRowToEntity(array $row): Entity {
 		try {
 			return parent::mapRowToEntity($row);

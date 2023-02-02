@@ -158,9 +158,7 @@ jobs:
 
       - name: Upload photos
         run: |
-          for filename in apps/${{ env.APP_NAME }}/tests/res/*; do
-            curl -u 'admin:password' -T "$filename" 'http://localhost:8080/remote.php/webdav/'
-          done
+          find apps/${{ env.APP_NAME }}/tests/res/ -type f -exec curl -u 'admin:password' -T "{}" 'http://localhost:8080/remote.php/webdav/' \;
 
       - name: Set pure-js mode
         run: |
@@ -191,3 +189,4 @@ jobs:
           GITHUB_REF: ${{ github.ref }}
         run: |
           ./occ recognize:classify
+          ./occ recognize:cluster-faces
