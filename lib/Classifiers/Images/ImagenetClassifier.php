@@ -46,7 +46,7 @@ class ImagenetClassifier extends Classifier {
 		/** @var list<string> $results */
 		foreach ($classifierProcess as $queueFile => $results) {
 			$this->tagManager->assignTags($queueFile->getFileId(), $results);
-			$landmarkTags = array_filter($results, function ($tagName) {
+			$landmarkTags = array_filter($results, static function ($tagName) {
 				return in_array($tagName, LandmarksClassifier::PRECONDITION_TAGS);
 			});
 			$this->config->setAppValue('recognize', self::MODEL_NAME.'.status', 'true');
