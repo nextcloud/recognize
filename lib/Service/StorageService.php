@@ -63,8 +63,8 @@ class StorageService {
 			/** @var array{storage_id:int, root_id:int,mount_provider_class:string} $row */
 			$row = $result->fetch()
 		) {
-			$storageId = intval($row['storage_id']);
-			$rootId = intval($row['root_id']);
+			$storageId = (int)$row['storage_id'];
+			$rootId = (int)$row['root_id'];
 			$overrideRoot = $rootId;
 			if (in_array($row['mount_provider_class'], self::HOME_MOUNT_TYPES)) {
 				// Only crawl files, not cache or trashbin
