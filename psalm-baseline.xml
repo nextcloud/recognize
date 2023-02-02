@@ -280,6 +280,10 @@
       <code>$this-&gt;findEntity($qb)</code>
       <code>$this-&gt;findEntity($qb)</code>
     </LessSpecificReturnStatement>
+    <MixedReturnTypeCoercion occurrences="2">
+      <code>$qb-&gt;executeQuery()-&gt;fetchAll(\PDO::FETCH_COLUMN)</code>
+      <code>list&lt;string&gt;</code>
+    </MixedReturnTypeCoercion>
     <MoreSpecificReturnType occurrences="6">
       <code>FaceDetection</code>
       <code>FaceDetection</code>
