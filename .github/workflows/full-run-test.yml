@@ -131,7 +131,7 @@ jobs:
           make all
           make remove-binaries
           rm -rf models # Make it download from github
-          wget https://github.com/nextcloud/recognize/releases/download/v2.2.0/test-files.zip
+          wget https://github.com/nextcloud/recognize/releases/download/v3.4.0/test-files.zip
           unzip test-files.zip -d tests/res/
 
       - name: Set up Nextcloud and install app
