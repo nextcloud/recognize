@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.4.0] - 2023-02-03
+ - Classifier: Log real file names
+ - Implement cluster-faces command
+ - Update tfjs
+ - InstallDeps: Avoid chmod error by checking if file exists
+ - Add another catch handler for previewProvider#getPreview
+ - Classifier: Suppress getimagesize errors
+ - Classifier: Clean up tmp files after classification
+
 ## [3.3.6] - 2023-01-16
 
 ### Fixed
