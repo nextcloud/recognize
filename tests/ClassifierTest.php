@@ -17,12 +17,14 @@ use OCA\Recognize\Classifiers\Video\MovinetClassifier;
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Db\QueueFile;
+use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
 use OCP\BackgroundJob\IJobList;
 use OCP\Files\Folder;
 use OCP\Files\IRootFolder;
 use OCP\IConfig;
 use OCP\SystemTag\ISystemTagObjectMapper;
+use Symfony\Component\Console\Output\OutputInterface;
 use Test\TestCase;
 
 /**
@@ -62,6 +64,11 @@ class ClassifierTest extends TestCase {
 		$this->rootFolder = \OC::$server->getRootFolder();
 		$this->userFolder = $this->loginAndGetUserFolder(self::TEST_USER1);
 		$this->faceDetectionMapper = \OC::$server->get(FaceDetectionMapper::class);
+		$logger = \OC::$server->get(Logger::class);
+		$cliOutput = $this->createMock(OutputInterface::class);
+		$cliOutput->method('writeln')
+			->willReturnCallback(fn ($msg) => print($msg."\n"));
+		$logger->setCliOutput($cliOutput);
 		$this->jobList = \OC::$server->get(IJobList::class);
 		$this->config = \OC::$server->getConfig();
 		$this->queue = \OC::$server->get(QueueService::class);
