@@ -38,7 +38,7 @@
     "get-port": "^5.1.1",
     "get-stdin": "^9.0.0",
     "humanize-duration": "^3.27.3",
-    "jimp": "^0.16.2",
+    "jimp": "^0.16.8",
     "lodash": "^4.17.21",
     "static-server": "^2.2.1",
     "tar": "^6.1.12",
