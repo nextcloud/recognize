@@ -31,7 +31,7 @@ Requirements:
 The app does not send any sensitive data to cloud providers or similar services. All processing is done on your Nextcloud machine, using Tensorflow.js running in Node.js.
 
 ]]></description>
-	<version>3.3.4</version>
+	<version>3.4.0</version>
 	<licence>agpl</licence>
 	<author mail="mklehr@gmx.net">Marcel Klehr</author>
 	<types>
@@ -68,6 +68,7 @@ The app does not send any sensitive data to cloud providers or similar services.
 		<command>OCA\Recognize\Command\Recrawl</command>
 		<command>OCA\Recognize\Command\DownloadModels</command>
 		<command>OCA\Recognize\Command\Classify</command>
+		<command>OCA\Recognize\Command\ClusterFaces</command>
 	</commands>
 
 	<settings>

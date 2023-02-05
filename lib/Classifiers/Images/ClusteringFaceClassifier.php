@@ -92,7 +92,7 @@ class ClusteringFaceClassifier extends Classifier {
 					continue;
 				}
 
-				$mounts = $this->userMountCache->getMountsForRootId(intval($queueFile->getRootId()));
+				$mounts = $this->userMountCache->getMountsForRootId($queueFile->getRootId());
 				$userIds = array_map(function (ICachedMountInfo $mount) {
 					return $mount->getUser()->getUID();
 				}, $mounts);
@@ -106,7 +106,7 @@ class ClusteringFaceClassifier extends Classifier {
 					$faceDetection->setWidth($face['width']);
 					$faceDetection->setHeight($face['height']);
 					$faceDetection->setVector($face['vector']);
-					$faceDetection->setFileId(intval($queueFile->getFileId()));
+					$faceDetection->setFileId($queueFile->getFileId());
 					$faceDetection->setUserId($userId);
 					try {
 						$this->faceDetections->insert($faceDetection);

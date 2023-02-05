@@ -3,7 +3,8 @@
         "symfony/process": "^5.2",
         "ext-json": "*",
         "php": ">=7.4",
-        "rubix/ml": "^2.0"
+        "rubix/ml": "^2.0",
+      "ext-pdo": "*"
     },
     "autoload": {
         "psr-4": {
@@ -21,7 +22,8 @@
         "lint": "find . -name \\*.php -not -path './vendor/*' -print0 | xargs -0 -n1 php -l",
         "cs:check": "php-cs-fixer fix --dry-run --diff",
         "cs:fix": "php-cs-fixer fix",
-        "psalm": "psalm.phar"
+        "psalm": "psalm.phar",
+        "test:unit": "phpunit --config tests/phpunit.xml"
     },
     "config": {
         "platform": {

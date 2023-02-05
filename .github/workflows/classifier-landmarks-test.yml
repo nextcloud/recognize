@@ -53,4 +53,4 @@ jobs:
           FLICKR_API_KEY: ${{ secrets.FLICKR_API_KEY }}
           RECOGNIZE_PUREJS: ${{ matrix.pure-js-mode }}
         run: |
-          node test/landmarks-tests.js ${{ matrix.models }}
+          node tests/landmarks-tests.js ${{ matrix.models }}

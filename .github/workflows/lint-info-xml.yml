@@ -27,13 +27,13 @@ jobs:
     name: info.xml lint
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
 
       - name: Download schema
         run: wget https://raw.githubusercontent.com/nextcloud/appstore/master/nextcloudappstore/api/v1/release/info.xsd
 
       - name: Lint info.xml
-        uses: ChristophWurst/xmllint-action@v1
+        uses: ChristophWurst/xmllint-action@d18a551aab4728e4af449617638600634d7a48cb # v1
         with:
           xml-file: ./appinfo/info.xml
           xml-schema-file: ./info.xsd

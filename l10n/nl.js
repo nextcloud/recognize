@@ -11,6 +11,8 @@ OC.L10N.register(
     "Water" : "Water",
     "Plant" : "Plant",
     "Farm" : "Boerderij",
+    "Landscape" : "Landschap",
+    "Portrait" : "Portret",
     "People" : "Mensen",
     "Insect" : "Insect",
     "Salamander" : "Salamander",

@@ -76,7 +76,7 @@ class InstallDeps implements IRepairStep {
 		$existingBinary = $this->config->getAppValue('recognize', 'node_binary', '');
 		if ($existingBinary !== '') {
 			$version = $this->testBinary($existingBinary);
-			if ($version !== null) {
+			if ($version === null) {
 				$this->installNodeBinary($output);
 			}
 		} else {
@@ -88,8 +88,8 @@ class InstallDeps implements IRepairStep {
 		$binaryPath = $this->config->getAppValue('recognize', 'node_binary', '');
 
 		$this->runTfjsInstall($binaryPath);
-		$this->runTfjsGpuInstall($binaryPath);
 		$this->runFfmpegInstall($binaryPath);
+		$this->runTfjsGpuInstall($binaryPath);
 	}
 
 	protected function installNodeBinary(IOutput $output) : void {
@@ -141,11 +141,15 @@ class InstallDeps implements IRepairStep {
 	}
 
 	protected function testBinary(string $binaryPath): ?string {
-		// Make binary executable
-		chmod($binaryPath, 0755);
-
-		$cmd = escapeshellcmd($binaryPath) . ' ' . escapeshellarg('--version');
+		if (!file_exists($binaryPath)) {
+			return null;
+		}
 		try {
+			// Make binary executable
+			chmod($binaryPath, 0755);
+
+			$cmd = escapeshellcmd($binaryPath) . ' ' . escapeshellarg('--version');
+
 			exec($cmd . ' 2>&1', $output, $returnCode);
 		} catch (\Throwable $e) {
 		}

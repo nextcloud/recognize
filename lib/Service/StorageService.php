@@ -63,8 +63,8 @@ class StorageService {
 			/** @var array{storage_id:int, root_id:int,mount_provider_class:string} $row */
 			$row = $result->fetch()
 		) {
-			$storageId = intval($row['storage_id']);
-			$rootId = intval($row['root_id']);
+			$storageId = (int)$row['storage_id'];
+			$rootId = (int)$row['root_id'];
 			$overrideRoot = $rootId;
 			if (in_array($row['mount_provider_class'], self::HOME_MOUNT_TYPES)) {
 				// Only crawl files, not cache or trashbin
@@ -106,11 +106,16 @@ class StorageService {
 			$result = $qb->selectFileCache()
 				->andWhere($qb->expr()->eq('filecache.fileid', $qb->createNamedParameter($rootId, IQueryBuilder::PARAM_INT)))
 				->executeQuery();
-			/** @var array{path:string} $root */
+			/** @var array{path:string}|false $root */
 			$root = $result->fetch();
 			$result->closeCursor();
 		} catch (Exception $e) {
 			$this->logger->error('Could not fetch storage root', ['exception' => $e]);
+			return;
+		}
+
+		if ($root === false) {
+			$this->logger->error('Could not fetch storage root');
 			return;
 		}
 

@@ -117,6 +117,9 @@
     <PossiblyNullOperand occurrences="1">
       <code>$proc-&gt;getPid()</code>
     </PossiblyNullOperand>
+    <RedundantCondition occurrences="1">
+      <code>isset($dimensions)</code>
+    </RedundantCondition>
     <UnusedFunctionCall occurrences="1">
       <code>json_decode</code>
     </UnusedFunctionCall>
@@ -350,6 +353,10 @@
       <code>$this-&gt;findEntity($qb)</code>
       <code>$this-&gt;findEntity($qb)</code>
     </LessSpecificReturnStatement>
+    <MixedReturnTypeCoercion occurrences="2">
+      <code>$qb-&gt;executeQuery()-&gt;fetchAll(\PDO::FETCH_COLUMN)</code>
+      <code>list&lt;string&gt;</code>
+    </MixedReturnTypeCoercion>
     <MoreSpecificReturnType occurrences="6">
       <code>FaceDetection</code>
       <code>FaceDetection</code>
@@ -582,5 +589,11 @@
     <RedundantConditionGivenDocblockType occurrences="1">
       <code>$detection-&gt;getClusterId() !== null</code>
     </RedundantConditionGivenDocblockType>
+  </file>
+  <file src="lib/Service/StorageService.php">
+    <RedundantCastGivenDocblockType occurrences="2">
+      <code>(int)$row['root_id']</code>
+      <code>(int)$row['storage_id']</code>
+    </RedundantCastGivenDocblockType>
   </file>
 </files>

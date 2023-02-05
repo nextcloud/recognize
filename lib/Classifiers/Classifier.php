@@ -37,6 +37,11 @@ class Classifier {
 	private IPreview $previewProvider;
 	private int $maxExecutionTime = self::MAX_EXECUTION_TIME;
 
+	/**
+	 * @var list<string>
+	 */
+	private array $tmpFiles = [];
+
 	public function __construct(LoggerInterface $logger, IConfig $config, IRootFolder $rootFolder, QueueService $queue, ITempManager $tempManager, IPreview  $previewProvider) {
 		$this->logger = $logger;
 		$this->config = $config;
@@ -59,6 +64,7 @@ class Classifier {
 	public function classifyFiles(string $model, array $queueFiles, int $timeout): \Generator {
 		$paths = [];
 		$processedFiles = [];
+		$fileNames = [];
 		$startTime = time();
 		foreach ($queueFiles as $queueFile) {
 			if ($this->maxExecutionTime > 0 && time() - $startTime > $this->maxExecutionTime) {
@@ -90,8 +96,8 @@ class Classifier {
 						continue;
 					}
 					// Check file dimensions
-					$dimensions = getimagesize($path);
-					if ($dimensions !== false && ($dimensions[0] > 1024 || $dimensions[1] > 1024)) {
+					$dimensions = @getimagesize($path);
+					if (isset($dimensions) && $dimensions !== false && ($dimensions[0] > 1024 || $dimensions[1] > 1024)) {
 						$this->logger->debug('File dimensions are too large for classifier: ' . $files[0]->getPath());
 						try {
 							$this->logger->debug('removing ' . $queueFile->getFileId() . ' from ' . $model . ' queue');
@@ -104,6 +110,7 @@ class Classifier {
 				}
 				$paths[] = $path;
 				$processedFiles[] = $queueFile;
+				$fileNames[] = $files[0]->getPath();
 			} catch (NotFoundException $e) {
 				$this->logger->warning('Could not find file', ['exception' => $e]);
 				try {
@@ -159,6 +166,7 @@ class Classifier {
 				}
 				if ($this->maxExecutionTime > 0 && time() - $startTime > $this->maxExecutionTime) {
 					$proc->stop(10, 9);
+					$this->cleanUpTmpFiles();
 					return;
 				}
 				$buffer .= $data;
@@ -178,7 +186,7 @@ class Classifier {
 						$buffer .= "\n".$result;
 						continue;
 					}
-					$this->logger->debug('Result for ' . basename($paths[$i]) . ' = ' . $result);
+					$this->logger->debug('Result for ' . $fileNames[$i] .'(' . basename($paths[$i]) . ') = ' . $result);
 					try {
 						// decode json
 						$results = json_decode($result, true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
@@ -194,14 +202,17 @@ class Classifier {
 					$i++;
 				}
 			}
+			$this->cleanUpTmpFiles();
 			if ($i !== count($paths)) {
 				$this->logger->warning('Classifier process output: '.$errOut);
 				throw new \RuntimeException('Classifier process error');
 			}
 		} catch (ProcessTimedOutException $e) {
+			$this->cleanUpTmpFiles();
 			$this->logger->warning($proc->getErrorOutput());
 			throw new \RuntimeException('Classifier process timeout');
 		} catch (RuntimeException $e) {
+			$this->cleanUpTmpFiles();
 			$this->logger->warning($proc->getErrorOutput());
 			throw new \RuntimeException('Classifier process could not be started');
 		}
@@ -239,7 +250,7 @@ class Classifier {
 		try {
 			$this->logger->debug('generating preview of ' . $file->getId() . ' with dimension '.self::TEMP_FILE_DIMENSION);
 			$image = $this->previewProvider->getPreview($file, self::TEMP_FILE_DIMENSION, self::TEMP_FILE_DIMENSION);
-		} catch(NotFoundException $e) {
+		} catch(NotFoundException|\InvalidArgumentException $e) {
 			return $path;
 		}
 
@@ -271,6 +282,16 @@ class Classifier {
 		}
 		fclose($preview);
 		fclose($tmpfile);
+
+		$this->tmpFiles[] = $tmpname;
+
 		return $tmpname;
+	}
+
+	public function cleanUpTmpFiles():void {
+		foreach ($this->tmpFiles as $tmpFile) {
+			unlink($tmpFile);
+		}
+		$this->tmpFiles = [];
 	}
 }
