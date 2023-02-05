@@ -72,14 +72,23 @@ class FaceClusterAnalyzer {
 		$clusters = $hdbscan->predict();
 
 		foreach ($clusters as $flatCluster) {
-			$cluster = new FaceCluster();
-			$cluster->setTitle('');
-			$cluster->setUserId($userId);
-			$this->faceClusters->insert($cluster);
-
 			$detectionKeys = array_keys($flatCluster->getClusterVertices());
 			$clusterCentroid = self::calculateCentroidOfDetections(array_map(static fn ($key) => $detections[$key], $detectionKeys));
 
+			/**
+			 * @var FaceDetection
+			 */
+			$detection = current(array_filter($detectionKeys, fn ($key) => $detections[$key]->getClusterId() !== null));
+			$clusterId = $detection->getClusterId();
+
+			if ($clusterId !== null) {
+				$cluster = $this->faceClusters->find($clusterId);
+			} else {
+				$cluster = new FaceCluster();
+				$cluster->setTitle('');
+				$cluster->setUserId($userId);
+				$this->faceClusters->insert($cluster);
+			}
 
 			foreach ($detectionKeys as $detectionKey) {
 				if ($detectionKey >= count($unclusteredDetections)) {
