@@ -205,7 +205,7 @@ class ClusterTest extends TestCase {
 			$newDetection = new FaceDetection();
 			$newDetection->setHeight(0.5);
 			$newDetection->setWidth(0.5);
-			$newDetection->setFileId(500000+$i);
+			$newDetection->setFileId(500000 + $i);
 			$nullVector = self::getNullVector();
 			$nullVector[0] = 1 + 0.001 * $i;
 			$newDetection->setVector($nullVector);
