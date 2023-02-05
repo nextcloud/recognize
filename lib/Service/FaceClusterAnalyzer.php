@@ -78,7 +78,7 @@ class FaceClusterAnalyzer {
 			$this->faceClusters->insert($cluster);
 
 			$detectionKeys = $flatCluster->getClusterVertices();
-			$clusterCentroid = self::calculateCentroidOfDetections(array_map(static fn ($key) => $unclusteredDetections[$key], $detectionKeys));
+			$clusterCentroid = self::calculateCentroidOfDetections(array_map(static fn ($key) => $detections[$key], $detectionKeys));
 
 
 			foreach ($detectionKeys as $detectionKey) {
