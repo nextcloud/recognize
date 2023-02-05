@@ -9,44 +9,41 @@ namespace OCA\Recognize\Clustering;
 // TODO: core edges are not always stored properly (if two halves of the remaining clusters are both pruned at the same time)
 // TODO: store vertex lambda length (relative to cluster lambda length) for all vertices for soft clustering.
 class MstClusterer {
-	/**
-	 * @var array<int, array{int, float}>
-	 */
 	private array $edges;
-	/**
-	 * @var array<int, array{int, float}>
-	 */
 	private array $remainingEdges;
 	private float $startingLambda;
 	private float $clusterWeight;
 	private int $minimumClusterSize;
 	private array $coreEdges;
 	private bool $isRoot;
-	private float $maxEdgeLength;
+	private array $mapVerticesToEdges;
 	private float $minClusterSeparation;
 
-	/**
-	 * @param array<int, array{int, float}>  $edges
-	 * @param int $minimumClusterSize
-	 * @param float|null $startingLambda
-	 * @param float $maxEdgeLength
-	 * @param float $minClusterSeparation
-	 */
-	public function __construct(array $edges, int $minimumClusterSize, ?float $startingLambda = null, float $maxEdgeLength = 0.5, float $minClusterSeparation = 0.1) {
+	public function __construct(array $edges, ?array $mapVerticesToEdges, int $minimumClusterSize, ?float $startingLambda = null, float $minClusterSeparation = 0.1) {
 		//Ascending sort of edges while perserving original keys.
 		$this->edges = $edges;
 
-		uasort($this->edges, static function ($a, $b) {
-			if ($a[1] > $b[1]) {
+		uasort($this->edges, function ($a, $b) {
+			if ($a["distance"] > $b["distance"]) {
 				return 1;
 			}
-			if ($a[1] < $b[1]) {
+			if ($a["distance"] < $b["distance"]) {
 				return -1;
 			}
 			return 0;
 		});
 
 		$this->remainingEdges = $this->edges;
+
+		if ($mapVerticesToEdges === null) {
+			$mapVerticesToEdges = [];
+			foreach ($this->edges as $edgeIndex => $edge) {
+				$mapVerticesToEdges[$edge['vertexFrom']][$edgeIndex] = true;
+				$mapVerticesToEdges[$edge['vertexTo']][$edgeIndex] = true;
+			}
+		}
+
+		$this->mapVerticesToEdges = $mapVerticesToEdges;
 
 		if (is_null($startingLambda)) {
 			$this->isRoot = true;
@@ -62,7 +59,7 @@ class MstClusterer {
 
 		$this->clusterWeight = 0.0;
 
-		$this->maxEdgeLength = $maxEdgeLength;
+
 		$this->minClusterSeparation = $minClusterSeparation;
 	}
 
@@ -74,39 +71,56 @@ class MstClusterer {
 			$edgeCount = count($this->remainingEdges);
 
 			if ($edgeCount < ($this->minimumClusterSize - 1)) {
-				if ($edgeLength > $this->maxEdgeLength) {
-					return [];
+				foreach ($this->coreEdges as &$edge) {
+					$edge['finalLambda'] = $currentLambda;
 				}
+				unset($edge);
 
-				$this->coreEdges = $this->remainingEdges;
+				foreach (array_keys($this->remainingEdges) as $edgeKey) {
+					$this->edges[$edgeKey]['finalLambda'] = $currentLambda;
+				}
 
 				return [$this];
 			}
 
-			$vertexConnectedTo = array_key_last($this->remainingEdges);
+			if ($edgeCount < (2 * $this->minimumClusterSize - 1)) {
+				// The end is near; this cluster cannot be split into two anymore
+				$this->coreEdges = $this->remainingEdges;
+			}
+
+			$currentLongestEdgeKey = array_key_last($this->remainingEdges);
 			$currentLongestEdge = array_pop($this->remainingEdges);
-			$vertexConnectedFrom = $currentLongestEdge[0];
 
-			$edgeLength = $currentLongestEdge[1];
+			$vertexConnectedFrom = $currentLongestEdge["vertexFrom"];
+			$vertexConnectedTo = $currentLongestEdge["vertexTo"];
+			$edgeLength = $currentLongestEdge["distance"];
 
-			if ($edgeLength > $this->maxEdgeLength) {
-				// Prevent formation of clusters with edges longer than the maximum edge length
-				$currentLambda = $lastLambda = 1 / $edgeLength;
-			} elseif ($edgeLength > 0.0) {
+			unset($this->mapVerticesToEdges[$vertexConnectedFrom][$currentLongestEdgeKey]);
+			unset($this->mapVerticesToEdges[$vertexConnectedTo][$currentLongestEdgeKey]);
+
+			if ($edgeLength > 0.0) {
 				$currentLambda = 1 / $edgeLength;
 			}
 
 			$this->clusterWeight += ($currentLambda - $lastLambda) * $edgeCount;
 			$lastLambda = $currentLambda;
 
-			if (!$this->pruneFromCluster($vertexConnectedTo) && !$this->pruneFromCluster($vertexConnectedFrom)) {
+			$this->edges[$currentLongestEdgeKey]["finalLambda"] = $currentLambda;
+
+			if (!$this->pruneFromCluster($vertexConnectedTo, $currentLambda) && !$this->pruneFromCluster($vertexConnectedFrom, $currentLambda)) {
 				// This cluster will (probably) split into two child clusters:
 
-				$childClusterEdges1 = $this->getChildClusterEdges($vertexConnectedTo);
-				$childClusterEdges2 = $this->getChildClusterEdges($vertexConnectedFrom);
+				[$childClusterEdges1, $childClusterVerticesToEdges1] = $this->getChildClusterComponents($vertexConnectedTo);
+				[$childClusterEdges2, $childClusterVerticesToEdges2] = $this->getChildClusterComponents($vertexConnectedFrom);
 
 				if ($edgeLength < $this->minClusterSeparation) {
-					$this->remainingEdges = count($childClusterEdges1) > count($childClusterEdges2) ? $childClusterEdges1 : $childClusterEdges2;
+					if (count($childClusterEdges1) > count($childClusterEdges2)) {
+						$this->remainingEdges = $childClusterEdges1;
+						$this->mapVerticesToEdges = $childClusterVerticesToEdges1;
+					} else {
+						$this->remainingEdges = $childClusterEdges2;
+						$this->mapVerticesToEdges = $childClusterVerticesToEdges2;
+					}
 					continue;
 				}
 
@@ -114,10 +128,10 @@ class MstClusterer {
 				// Return a list of children if the weight of all children is more than $this->clusterWeight.
 				// Otherwise return the current cluster and discard the children. This way we "choose" a combination
 				// of clusters that weigh the most (i.e. have most (excess of) mass). Always discard the root cluster.
-				$finalLambda = $currentLambda;
 
-				$childCluster1 = new MstClusterer($childClusterEdges1, $this->minimumClusterSize, $finalLambda, $this->maxEdgeLength, $this->minClusterSeparation);
-				$childCluster2 = new MstClusterer($childClusterEdges2, $this->minimumClusterSize, $finalLambda, $this->maxEdgeLength, $this->minClusterSeparation);
+
+				$childCluster1 = new MstClusterer($childClusterEdges1, $childClusterVerticesToEdges1, $this->minimumClusterSize, $currentLambda, $this->minClusterSeparation);
+				$childCluster2 = new MstClusterer($childClusterEdges2, $childClusterVerticesToEdges2, $this->minimumClusterSize, $currentLambda, $this->minClusterSeparation);
 
 				// Resolve all chosen child clusters recursively
 				$childClusters = array_merge($childCluster1->processCluster(), $childCluster2->processCluster());
@@ -130,102 +144,126 @@ class MstClusterer {
 
 				if (($childrenWeight > $this->clusterWeight) || $this->isRoot) {
 					return $childClusters;
+				} else {
+					foreach (array_keys($this->remainingEdges) as $edgeKey) {
+						$this->edges[$edgeKey]['finalLambda'] = $currentLambda;
+					}
 				}
 
 				return [$this];
 			}
-
-			if ($edgeLength > $this->maxEdgeLength) {
-				$this->edges = $this->remainingEdges;
-			}
 		}
 	}
 
-	private function pruneFromCluster(int $vertexId): bool {
+	private function pruneFromCluster(int $vertexId, float $currentLambda): bool {
 		$edgeIndicesToPrune = [];
+		$verticesToPrune = [];
 		$vertexStack = [$vertexId];
 
 		while (!empty($vertexStack)) {
 			$currentVertex = array_pop($vertexStack);
+			$verticesToPrune[] = $currentVertex;
 
-			if (count($edgeIndicesToPrune) >= ($this->minimumClusterSize - 1)) {
+			if (count($verticesToPrune) >= $this->minimumClusterSize) {
 				return false;
 			}
 
-			// Traverse the MST edges backward
-			if (isset($this->remainingEdges[$currentVertex]) && !in_array($currentVertex, $edgeIndicesToPrune)) {
-				$incomingEdge = $this->remainingEdges[$currentVertex];
-				$edgeIndicesToPrune[] = $currentVertex;
+			foreach (array_keys($this->mapVerticesToEdges[$currentVertex]) as $edgeKey) {
+				if (isset($edgeIndicesToPrune[$edgeKey])) {
+					continue;
+				}
 
-				$vertexStack[] = $incomingEdge[0];
-			}
-
-			// Traverse the MST edges forward
-			foreach ($this->remainingEdges as $key => $edge) {
-				if (($edge[0] == $currentVertex) && !in_array($key, $edgeIndicesToPrune)) {
-					$vertexStack[] = $key;
-					$edgeIndicesToPrune[] = $key;
+				if ($this->remainingEdges[$edgeKey]["vertexFrom"] === $currentVertex) {
+					$vertexStack[] = $this->remainingEdges[$edgeKey]["vertexTo"];
+					$edgeIndicesToPrune[$edgeKey] = true;
+				} elseif ($this->remainingEdges[$edgeKey]["vertexTo"] === $currentVertex) {
+					$vertexStack[] = $this->remainingEdges[$edgeKey]["vertexFrom"];
+					$edgeIndicesToPrune[$edgeKey] = true;
 				}
 			}
 		}
 
 		// Prune edges
-		foreach ($edgeIndicesToPrune as $edgeToPrune) {
+		foreach (array_keys($edgeIndicesToPrune) as $edgeToPrune) {
+			$this->edges[$edgeToPrune]['finalLambda'] = $currentLambda;
 			unset($this->remainingEdges[$edgeToPrune]);
+		}
+
+		// Prune vertices to edges map (not stricly necessary but saves some memory)
+		foreach ($verticesToPrune as $vertexLabel) {
+			unset($this->mapVerticesToEdges[$vertexLabel]);
 		}
 
 		return true;
 	}
 
-	private function getChildClusterEdges(int $vertexId): array {
+	private function getChildClusterComponents(int $vertexId): array {
 		$vertexStack = [$vertexId];
-		$edgesInCluster = [];
+		$edgeIndicesInCluster = [];
+		$verticesInCluster = [];
 
 		while (!empty($vertexStack)) {
 			$currentVertex = array_pop($vertexStack);
+			$verticesInCluster[$currentVertex] = $this->mapVerticesToEdges[$currentVertex];
 
-			// Traverse the MST edges backward
-			if (isset($this->remainingEdges[$currentVertex]) && !isset($edgesInCluster[$currentVertex])) {
-				$incomingEdge = $this->remainingEdges[$currentVertex];
+			foreach (array_keys($this->mapVerticesToEdges[$currentVertex]) as $edgeKey) {
+				if (isset($edgeIndicesInCluster[$edgeKey])) {
+					continue;
+				}
 
-				//Edges are indexed by the vertex they're connected to
-				$edgesInCluster[$currentVertex] = $incomingEdge;
-
-				$vertexStack[] = $incomingEdge[0];
-			}
-
-			// Traverse the MST edges forward
-			foreach ($this->remainingEdges as $key => $edge) {
-				if ($edge[0] == $currentVertex && !isset($edgesInCluster[$key])) {
-					$vertexStack[] = $key;
-					$edgesInCluster[$key] = $edge;
+				if ($this->remainingEdges[$edgeKey]["vertexFrom"] === $currentVertex) {
+					$vertexStack[] = $this->remainingEdges[$edgeKey]["vertexTo"];
+					$edgeIndicesInCluster[$edgeKey] = true;
+				} elseif ($this->remainingEdges[$edgeKey]["vertexTo"] === $currentVertex) {
+					$vertexStack[] = $this->remainingEdges[$edgeKey]["vertexFrom"];
+					$edgeIndicesInCluster[$edgeKey] = true;
 				}
 			}
 		}
 
-		return $edgesInCluster;
+		// Collecting the edges is done in a separate loop to perserve the ordering according to length.
+		// (See constructor.)
+		$edgesInCluster = [];
+		foreach ($this->remainingEdges as $edgeKey => $edge) {
+			if (isset($edgeIndicesInCluster[$edgeKey])) {
+				$edgesInCluster[$edgeKey] = $edge;
+			}
+		}
+
+		return [$edgesInCluster, $verticesInCluster];
 	}
 
 	public function getClusterWeight(): float {
 		return $this->clusterWeight;
 	}
 
+	public function getClusterVertices(): array {
+		$vertices = [];
 
-	/**
-	 * @returns list<int>
-	 */
-	public function getVertexKeys(): array {
-		$vertexKeys = [];
-
-		foreach ($this->edges as $key => $edge) {
-			$vertexKeys[] = $key;
-			$vertexKeys[] = $edge[0];
+		foreach ($this->edges as $edge) {
+			$vertices[$edge["vertexTo"]] = min($edge["finalLambda"], $vertices[$edge["vertexTo"]] ?? INF);
+			$vertices[$edge["vertexFrom"]] = min($edge["finalLambda"], $vertices[$edge["vertexFrom"]] ?? INF);
 		}
 
-		return array_unique($vertexKeys);
+		return $vertices;
 	}
 
 	public function getCoreEdges(): array {
 		return $this->coreEdges;
+	}
+
+	public function getClusterEdges(): array {
+		return $this->edges;
+	}
+
+	public function getCoreVertices(): array {
+		$vertices = [];
+
+		foreach ($this->coreEdges as $edge) {
+			$vertices[$edge["vertexTo"]] = min($edge["finalLambda"], $vertices[$edge["vertexTo"]] ?? INF);
+			$vertices[$edge["vertexFrom"]] = min($edge["finalLambda"], $vertices[$edge["vertexFrom"]] ?? INF);
+		}
+
+		return $vertices;
 	}
 }

@@ -6,8 +6,7 @@
 
 namespace OCA\Recognize\Service;
 
-use OCA\Recognize\Clustering\MRDistance;
-use OCA\Recognize\Clustering\MstClusterer;
+use OCA\Recognize\Clustering\HDBSCAN;
 use OCA\Recognize\Db\FaceCluster;
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetection;
@@ -16,15 +15,12 @@ use Rubix\ML\Datasets\Labeled;
 use Rubix\ML\Kernels\Distance\Euclidean;
 
 class FaceClusterAnalyzer {
+	public const MIN_DATASET_SIZE = 30;
 	public const MIN_SAMPLE_SIZE = 4; // Conservative value: 10
 	public const MIN_CLUSTER_SIZE = 5; // Conservative value: 10
-	public const MAX_CLUSTER_EDGE_LENGHT = 99.0;
-	public const MIN_CLUSTER_SEPARATION = 0.0;
-	// For incremental clustering
-	public const MAX_INNER_CLUSTER_RADIUS = 0.44;
 	public const MIN_DETECTION_SIZE = 0.03;
-
 	public const DIMENSIONS = 128;
+	public const SAMPLE_SIZE_EXISTING_CLUSTERS = 42;
 
 	private FaceDetectionMapper $faceDetections;
 	private FaceClusterMapper $faceClusters;
@@ -43,86 +39,54 @@ class FaceClusterAnalyzer {
 	public function calculateClusters(string $userId): void {
 		$this->logger->debug('ClusterDebug: Retrieving face detections for user ' . $userId);
 
-		$detections = $this->faceDetections->findByUserId($userId);
+		$unclusteredDetections = $this->faceDetections->findUnclusteredByUserId($userId);
 
-		$detections = array_values(array_filter($detections, fn ($detection) =>
+		$unclusteredDetections = array_values(array_filter($unclusteredDetections, fn ($detection) =>
 			$detection->getHeight() > self::MIN_DETECTION_SIZE && $detection->getWidth() > self::MIN_DETECTION_SIZE
 		));
 
-		$unclusteredDetections = $this->assignToExistingClusters($userId, $detections);
-
-		if (count($unclusteredDetections) < max(self::MIN_SAMPLE_SIZE, self::MIN_CLUSTER_SIZE)) {
+		if (count($unclusteredDetections) < self::MIN_DATASET_SIZE) {
 			$this->logger->debug('ClusterDebug: Not enough face detections found');
 			return;
 		}
 
 		$this->logger->debug('ClusterDebug: Found ' . count($unclusteredDetections) . " unclustered detections. Calculating clusters.");
 
+		$sampledDetections = [];
+
+		$existingClusters = $this->faceClusters->findByUserId($userId);
+		foreach ($existingClusters as $existingCluster) {
+			$sampled = $this->faceDetections->findClusterSample($existingCluster->getId(), self::SAMPLE_SIZE_EXISTING_CLUSTERS);
+			$sampledDetections = array_merge($sampledDetections, $sampled);
+		}
+
+		$detections = array_merge($unclusteredDetections, $sampledDetections);
+
 		$dataset = new Labeled(array_map(static function (FaceDetection $detection): array {
 			return $detection->getVector();
-		}, $unclusteredDetections), array_combine(array_keys($unclusteredDetections), array_keys($unclusteredDetections)), false);
+		}, $detections), array_combine(array_keys($detections), array_keys($detections)), false);
 
-		$distanceKernel = new MRDistance(self::MIN_SAMPLE_SIZE, $dataset, new Euclidean());
-
-		$primsStartTime = microtime(true);// DEBUG
-
-		// Prim's algorithm:
-
-		$unconnectedVertices = array_combine(array_keys($unclusteredDetections), array_keys($unclusteredDetections));
-
-		$firstVertex = current($unconnectedVertices);
-		$firstVertexVector = $dataset->sample($firstVertex);
-		unset($unconnectedVertices[$firstVertex]);
-
-		$edges = [];
-		foreach ($unconnectedVertices as $vertex) {
-			$edges[$vertex] = [$firstVertex, $distanceKernel->distance($firstVertex, $firstVertexVector, $vertex, $dataset->sample($vertex))];
-		}
-
-		while (count($unconnectedVertices) > 0) {
-			$minDistance = INF;
-			$minVertex = null;
-
-			foreach ($unconnectedVertices as $vertex) {
-				$distance = $edges[$vertex][1];
-				if ($distance < $minDistance) {
-					$minDistance = $distance;
-					$minVertex = $vertex;
-				}
-			}
-
-			unset($unconnectedVertices[$minVertex]);
-			$minVertexVector = $dataset->sample($minVertex);
-
-			foreach ($unconnectedVertices as $vertex) {
-				$distance = $distanceKernel->distance($minVertex, $minVertexVector, $vertex, $dataset->sample($vertex));
-				if ($edges[$vertex][1] > $distance) {
-					$edges[$vertex] = [$minVertex,$distance];
-				}
-			}
-		}
-
-		$executionTime = (microtime(true) - $primsStartTime);// DEBUG
-		$this->logger->debug('ClusterDebug: Prims algo took '.$executionTime." secs.");// DEBUG
-
-		// Calculate the face clusters based on the minimum spanning tree.
-
-		$mstClusterer = new MstClusterer($edges, self::MIN_CLUSTER_SIZE, null, self::MAX_CLUSTER_EDGE_LENGHT, self::MIN_CLUSTER_SEPARATION);
-		$flatClusters = $mstClusterer->processCluster();
+		$hdbscan = new HDBSCAN($dataset, self::MIN_CLUSTER_SIZE, self::MIN_SAMPLE_SIZE);
 
 		$numberOfClusteredDetections = 0;
+		$clusters = $hdbscan->predict();
 
-		foreach ($flatClusters as $flatCluster) {
+		foreach ($clusters as $flatCluster) {
 			$cluster = new FaceCluster();
 			$cluster->setTitle('');
 			$cluster->setUserId($userId);
 			$this->faceClusters->insert($cluster);
 
-			$detectionKeys = $flatCluster->getVertexKeys();
+			$detectionKeys = $flatCluster->getClusterVertices();
 			$clusterCentroid = self::calculateCentroidOfDetections(array_map(static fn ($key) => $unclusteredDetections[$key], $detectionKeys));
 
 
 			foreach ($detectionKeys as $detectionKey) {
+				if ($detectionKey >= count($unclusteredDetections)) {
+					// This is a sampled, already clustered detection, ignore.
+					continue;
+				}
+
 				// If threshold is larger than 0 and $clusterCentroid is not the null vector
 				if ($unclusteredDetections[$detectionKey]->getThreshold() > 0.0 && count(array_filter($clusterCentroid, fn ($el) => $el !== 0.0)) > 0) {
 					// If a threshold is set for this detection and its vector is farther away from the centroid
