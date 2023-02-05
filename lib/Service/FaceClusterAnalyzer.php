@@ -76,12 +76,12 @@ class FaceClusterAnalyzer {
 			$clusterCentroid = self::calculateCentroidOfDetections(array_map(static fn ($key) => $detections[$key], $detectionKeys));
 
 			/**
-			 * @var FaceDetection
+			 * @var int|false $detection
 			 */
-			$detection = current(array_filter($detectionKeys, fn ($key) => $detections[$key]->getClusterId() !== null));
-			$clusterId = $detection->getClusterId();
+			$detection = current(array_filter($detectionKeys, static fn ($key) => $detections[$key]->getClusterId() !== null));
 
-			if ($clusterId !== null) {
+			if ($detection !== false) {
+				$clusterId = $detections[$detection]->getClusterId();
 				$cluster = $this->faceClusters->find($clusterId);
 			} else {
 				$cluster = new FaceCluster();
