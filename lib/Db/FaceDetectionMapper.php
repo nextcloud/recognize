@@ -9,12 +9,16 @@ namespace OCA\Recognize\Db;
 use OCP\AppFramework\Db\Entity;
 use OCP\AppFramework\Db\QBMapper;
 use OCP\DB\QueryBuilder\IQueryBuilder;
+use OCP\IConfig;
 use OCP\IDBConnection;
 
 class FaceDetectionMapper extends QBMapper {
-	public function __construct(IDBConnection $db) {
+	private IConfig $config;
+
+	public function __construct(IDBConnection $db, IConfig $config) {
 		parent::__construct($db, 'recognize_face_detections', FaceDetection::class);
 		$this->db = $db;
+		$this->config = $config;
 	}
 
 	/**
@@ -128,6 +132,36 @@ class FaceDetectionMapper extends QBMapper {
 		$qb->selectDistinct('d.user_id')
 			->from('recognize_face_detections', 'd');
 		return $qb->executeQuery()->fetchAll(\PDO::FETCH_COLUMN);
+	}
+
+	/**
+	 * @param string $userId
+	 * @return \OCA\Recognize\Db\FaceDetection[]
+	 * @throws \OCP\DB\Exception
+	 */
+	public function findUnclusteredByUserId(string $userId) : array {
+		$qb = $this->db->getQueryBuilder();
+		$qb->select(FaceDetection::$columns)
+			->from('recognize_face_detections')
+			->where($qb->expr()->eq('user_id', $qb->createPositionalParameter($userId)))
+			->andWhere($qb->expr()->isNull('cluster_id'));
+		return $this->findEntities($qb);
+	}
+
+	public function findClusterSample(int $clusterId, int $n) {
+		$qb = $this->db->getQueryBuilder();
+		$qb->select(FaceDetection::$columns)
+			->from('recognize_face_detections', 'd')
+			->where($qb->expr()->eq('cluster_id', $qb->createPositionalParameter($clusterId)))
+			->orderBy(
+				$qb->createFunction(
+					$this->config->getSystemValue('dbtype', 'sqlite') === 'mysql'
+						? 'RAND()'
+						: 'RANDOM()'
+				)
+			)
+			->setMaxResults($n);
+		return $this->findEntities($qb);
 	}
 
 	protected function mapRowToEntity(array $row): Entity {

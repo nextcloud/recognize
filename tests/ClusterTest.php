@@ -4,7 +4,9 @@ use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Service\FaceClusterAnalyzer;
+use OCA\Recognize\Service\Logger;
 use Rubix\ML\Kernels\Distance\Euclidean;
+use Symfony\Component\Console\Output\OutputInterface;
 use Test\TestCase;
 
 /**
@@ -30,6 +32,12 @@ class ClusterTest extends TestCase {
 		$this->faceDetectionMapper = \OC::$server->get(FaceDetectionMapper::class);
 		$this->faceClusterAnalyzer = \OC::$server->get(FaceClusterAnalyzer::class);
 		$this->faceClusterMapper = \OC::$server->get(FaceClusterMapper::class);
+
+		$logger = \OC::$server->get(Logger::class);
+		$cliOutput = $this->createMock(OutputInterface::class);
+		$cliOutput->method('writeln')
+			->willReturnCallback(fn ($msg) => print($msg."\n"));
+		$logger->setCliOutput($cliOutput);
 
 		$clusters = $this->faceClusterMapper->findByUserId(self::TEST_USER1);
 		foreach ($clusters as $cluster) {
@@ -193,15 +201,17 @@ class ClusterTest extends TestCase {
 			$this->faceDetectionMapper->update($detection);
 		}
 
-		$newDetection = new FaceDetection();
-		$newDetection->setHeight(0.5);
-		$newDetection->setWidth(0.5);
-		$newDetection->setFileId(500000);
-		$nullVector = self::getNullVector();
-		$nullVector[0] = 0.8;
-		$newDetection->setVector($nullVector);
-		$newDetection->setUserId(self::TEST_USER1);
-		$this->faceDetectionMapper->insert($newDetection);
+		for ($i = 0; $i < self::INITIAL_DETECTIONS_PER_CLUSTER; $i++) {
+			$newDetection = new FaceDetection();
+			$newDetection->setHeight(0.5);
+			$newDetection->setWidth(0.5);
+			$newDetection->setFileId(500000 + $i);
+			$nullVector = self::getNullVector();
+			$nullVector[0] = 1 + 0.001 * $i;
+			$newDetection->setVector($nullVector);
+			$newDetection->setUserId(self::TEST_USER1);
+			$this->faceDetectionMapper->insert($newDetection);
+		}
 
 		$this->faceClusterAnalyzer->calculateClusters(self::TEST_USER1);
 
@@ -210,7 +220,7 @@ class ClusterTest extends TestCase {
 		self::assertCount(1, $clusters);
 
 		$detections = $this->faceDetectionMapper->findByClusterId($clusters[0]->getId());
-		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER * 2 + 1, $detections);
+		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER * 3, $detections);
 	}
 
 	/**
@@ -238,6 +248,7 @@ class ClusterTest extends TestCase {
 			$detection->setClusterId($clusters[0]->getId());
 			$this->faceDetectionMapper->update($detection);
 		}
+		$this->faceClusterMapper->delete($clusters[1]);
 
 		$numOfDetections = self::INITIAL_DETECTIONS_PER_CLUSTER;
 		$clusterValue = 3 * self::INITIAL_DETECTIONS_PER_CLUSTER;
@@ -259,11 +270,11 @@ class ClusterTest extends TestCase {
 		$clusters = $this->faceClusterMapper->findByUserId(self::TEST_USER1);
 		self::assertCount(2, $clusters);
 
-		$detections = $this->faceDetectionMapper->findByClusterId($clusters[0]->getId());
-		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER * 2, $detections);
-
-		$detections = $this->faceDetectionMapper->findByClusterId($clusters[1]->getId());
-		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER, $detections);
+		$detections1 = $this->faceDetectionMapper->findByClusterId($clusters[0]->getId());
+		$detections2 = $this->faceDetectionMapper->findByClusterId($clusters[1]->getId());
+		$counts = [count($detections1), count($detections2)];
+		self::assertCount(1, array_filter($counts, fn ($count) => $count === self::INITIAL_DETECTIONS_PER_CLUSTER), var_export($counts, true));
+		self::assertCount(1, array_filter($counts, fn ($count) => $count === self::INITIAL_DETECTIONS_PER_CLUSTER * 2), var_export($counts, true));
 	}
 
 	/**
@@ -323,16 +334,15 @@ class ClusterTest extends TestCase {
 
 		/** @var \OCA\Recognize\Db\FaceCluster[] $clusters */
 		$clusters = $this->faceClusterMapper->findByUserId(self::TEST_USER1);
-		self::assertCount(3, $clusters);
+		self::assertCount(4, $clusters);
 
-		$detections = $this->faceDetectionMapper->findByClusterId($clusters[0]->getId());
-		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER * 2, $detections);
+		$detections1 = $this->faceDetectionMapper->findByClusterId($clusters[0]->getId());
+		$detections2 = $this->faceDetectionMapper->findByClusterId($clusters[1]->getId());
+		$detections3 = $this->faceDetectionMapper->findByClusterId($clusters[2]->getId());
+		$detections4 = $this->faceDetectionMapper->findByClusterId($clusters[3]->getId());
+		$counts = [count($detections1), count($detections2), count($detections3), count($detections4)];
 
-		$detections = $this->faceDetectionMapper->findByClusterId($clusters[1]->getId());
-		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER, $detections);
-
-		$detections = $this->faceDetectionMapper->findByClusterId($clusters[2]->getId());
-		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER, $detections);
+		self::assertCount(4, array_filter($counts, fn ($count) => $count === self::INITIAL_DETECTIONS_PER_CLUSTER), var_export($counts, true));
 	}
 
 	private static function getNullVector() {
