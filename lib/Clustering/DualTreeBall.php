@@ -13,8 +13,8 @@ use Rubix\ML\Kernels\Distance\Distance;
 use function Rubix\ML\argmax;
 
 class DualTreeBall extends Ball {
-	protected float $longestDistanceInNode;
-	protected bool $fullyConnected;
+	protected float $longestDistanceInNode = INF;
+	protected bool $fullyConnected = false;
 	protected $setId;
 
 
@@ -42,6 +42,9 @@ class DualTreeBall extends Ball {
 		}
 	}
 
+	/**
+	 * @return null|int|string
+	 */
 	public function getSetId() {
 		if (!$this->fullyConnected) {
 			return null;
@@ -53,6 +56,10 @@ class DualTreeBall extends Ball {
 		return $this->fullyConnected;
 	}
 
+	/**
+	 * @param array $labelToSetId
+	 * @return null|int|string
+	 */
 	public function propagateSetChanges(array &$labelToSetId) {
 		if ($this->fullyConnected) {
 			// If we are already fully connected, we just need to check if the

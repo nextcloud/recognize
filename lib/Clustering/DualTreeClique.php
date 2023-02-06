@@ -13,11 +13,14 @@ use Rubix\ML\Kernels\Distance\Distance;
 use function Rubix\ML\argmax;
 
 class DualTreeClique extends Clique {
-	protected float $longestDistanceInNode;
-	protected bool $fullyConnected;
+	protected float $longestDistanceInNode = INF;
+	protected bool $fullyConnected = false;
+	/**
+	 * @var null|int|string
+	 */
 	protected $setId;
 
-	public function setLongestDistance($longestDistance): void {
+	public function setLongestDistance(float $longestDistance): void {
 		$this->longestDistanceInNode = $longestDistance;
 	}
 
@@ -33,6 +36,9 @@ class DualTreeClique extends Clique {
 		$this->fullyConnected = false;
 	}
 
+	/**
+	 * @return int|string|null
+	 */
 	public function getSetId() {
 		if (!$this->fullyConnected) {
 			return null;
@@ -45,6 +51,10 @@ class DualTreeClique extends Clique {
 		return $this->fullyConnected;
 	}
 
+	/**
+	 * @param array<int|string,int|string> $labelToSetId
+	 * @return int|mixed|string|null
+	 */
 	public function propagateSetChanges(array &$labelToSetId) {
 		if ($this->fullyConnected) {
 			$this->setId = $labelToSetId[$this->dataset->label(0)];
@@ -52,8 +62,6 @@ class DualTreeClique extends Clique {
 		}
 
 		$labels = $this->dataset->labels();
-
-		$label =
 
 		$setId = $labelToSetId[array_pop($labels)];
 

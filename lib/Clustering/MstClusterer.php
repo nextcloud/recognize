@@ -10,6 +10,10 @@ namespace OCA\Recognize\Clustering;
 // TODO: store vertex lambda length (relative to cluster lambda length) for all vertices for soft clustering.
 class MstClusterer {
 	private array $edges;
+
+	/**
+	 * @var list<array{vertexFrom: int, vertexTo:int, distance:float}>
+	 */
 	private array $remainingEdges;
 	private float $startingLambda;
 	private float $clusterWeight;
@@ -65,7 +69,6 @@ class MstClusterer {
 
 	public function processCluster(): array {
 		$currentLambda = $lastLambda = $this->startingLambda;
-		$edgeLength = INF;
 
 		while (true) {
 			$edgeCount = count($this->remainingEdges);

@@ -90,6 +90,13 @@ class MstSolver {
 		$queryNode->setLongestDistance($longestDistance);
 	}
 
+	/**
+	 * @param \OCA\Recognize\Clustering\DualTreeBall|\OCA\Recognize\Clustering\DualTreeClique $queryNode
+	 * @param \OCA\Recognize\Clustering\DualTreeBall|\OCA\Recognize\Clustering\DualTreeClique $referenceNode
+	 * @param array $newEdges
+	 * @param array $vertexToSetId
+	 * @return void
+	 */
 	private function findSetNeighbors($queryNode, $referenceNode, array &$newEdges, array &$vertexToSetId): void {
 		if ($queryNode->isFullyConnected() && $referenceNode->isFullyConnected()) {
 			if ($queryNode->getSetId() === $referenceNode->getSetId()) {
@@ -170,6 +177,9 @@ class MstSolver {
 		return;
 	}
 
+	/**
+	 * @return list<array{vertexFrom:int|string,vertexTo:int|string,distance:float}>
+	 */
 	public function getMst(): array {
 		$edges = [];
 

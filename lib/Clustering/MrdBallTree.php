@@ -13,10 +13,10 @@ use Rubix\ML\Graph\Trees\BallTree;
 use Rubix\ML\Kernels\Distance\Distance;
 
 class MrdBallTree extends BallTree {
-	private Labeled $dataset;
-	private array $nativeInterpointCache;
-	private array $coreDistances;
-	private array $coreNeighborDistances;
+	private ?Labeled $dataset = null;
+	private array $nativeInterpointCache = [];
+	private array $coreDistances = [];
+	private array $coreNeighborDistances = [];
 	private int $sampleSize;
 	private array $nodeDistances;
 	private \SplObjectStorage $nodeIds;
@@ -48,6 +48,11 @@ class MrdBallTree extends BallTree {
 		return $this->coreNeighborDistances;
 	}
 
+	/**
+	 * @param \OCA\Recognize\Clustering\DualTreeBall|\OCA\Recognize\Clustering\DualTreeClique $queryNode
+	 * @param \OCA\Recognize\Clustering\DualTreeBall|\OCA\Recognize\Clustering\DualTreeClique $referenceNode
+	 * @return float
+	 */
 	public function nodeDistance($queryNode, $referenceNode): float {
 		// Use cache to accelerate repeated queries
 		if ($this->nodeIds->contains($queryNode)) {
@@ -111,6 +116,14 @@ class MrdBallTree extends BallTree {
 		return $this->dataset;
 	}
 
+	/**
+	 * @param \OCA\Recognize\Clustering\DualTreeBall|\OCA\Recognize\Clustering\DualTreeClique $queryNode
+	 * @param \OCA\Recognize\Clustering\DualTreeBall|\OCA\Recognize\Clustering\DualTreeClique $referenceNode
+	 * @param int $k
+	 * @param float $maxRange
+	 * @param array $bestDistances
+	 * @return void
+	 */
 	private function updateNearestNeighbors($queryNode, $referenceNode, $k, $maxRange, &$bestDistances): void {
 		$querySamples = $queryNode->dataset()->samples();
 		$queryLabels = $queryNode->dataset()->labels();
@@ -242,6 +255,10 @@ class MrdBallTree extends BallTree {
 		$bestDistances = [];
 		foreach ($allLabels as $label) {
 			$bestDistances[$label] = $maxRange;
+		}
+
+		if ($this->root === null) {
+			return;
 		}
 
 		$treeRoot = $this->root;

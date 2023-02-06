@@ -42,13 +42,6 @@ class HDBSCAN {
 	protected int $minClusterSize;
 
 	/**
-	 * The maximum length edge allowed within a cluster.
-	 *
-	 * @var float
-	 */
-	protected float $maxEdgeLength;
-
-	/**
 	 * The number of neighbors used for determining core distance when
 	 * calculating mutual reachability distance between points.
 	 *
@@ -92,6 +85,7 @@ class HDBSCAN {
 		}
 
 		$kernel = $kernel ?? new SquaredDistance();
+		$this->sampleSize = $sampleSize;
 		$this->minClusterSize = $minClusterSize;
 		$this->mstSolver = new MstSolver($dataset, 20, $sampleSize, $kernel, $oldCoreDistances, $useTrueMst);
 	}
@@ -134,7 +128,7 @@ class HDBSCAN {
 	/**
 	 * Form clusters and make predictions from the dataset (hard clustering).
 	 *
-	 * @return list<MstClusterer>//@return list<int>
+	 * @return list<MstClusterer>
 	 */
 	public function predict(): array {
 		// Boruvka algorithm for MST generation

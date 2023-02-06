@@ -206,57 +206,6 @@ class FaceClusterAnalyzer {
 		return $filesWithDuplicateFaces;
 	}
 
-	/**
-	 * @param string $userId
-	 * @param list<FaceDetection> $detections
-	 * @return list<FaceDetection>
-	 * @throws \OCP\DB\Exception
-	 */
-	private function assignToExistingClusters(string $userId, array $detections): array {
-		$clusters = $this->faceClusters->findByUserId($userId);
-
-		if (count($clusters) === 0) {
-			return $detections;
-		}
-
-		$unclusteredDetections = [];
-
-		foreach ($detections as $detection) {
-			$bestCluster = null;
-			$bestClusterDistance = 999;
-			if ($detection->getClusterId() !== null) {
-				continue;
-			}
-			foreach ($clusters as $cluster) {
-				$clusterDetections = $this->faceDetections->findByClusterId($cluster->getId());
-				if (count($clusterDetections) > 50) {
-					$clusterDetections = array_map(fn ($key) => $clusterDetections[$key], array_rand($clusterDetections, 50));
-				}
-				$clusterCentroid = self::calculateCentroidOfDetections($clusterDetections);
-				if ($detection->getThreshold() > 0 && self::distance($clusterCentroid, $detection->getVector()) >= $detection->getThreshold()) {
-					continue;
-				}
-				foreach ($clusterDetections as $clusterDetection) {
-					$distance = self::distance($clusterDetection->getVector(), $detection->getVector());
-					if (
-						$distance <= self::MAX_INNER_CLUSTER_RADIUS
-						&& (!isset($bestCluster) || $distance < $bestClusterDistance)
-					) {
-						$bestCluster = $cluster;
-						$bestClusterDistance = self::distance($clusterDetection->getVector(), $detection->getVector());
-						break;
-					}
-				}
-			}
-			if ($bestCluster !== null) {
-				$this->faceDetections->assocWithCluster($detection, $bestCluster);
-				continue;
-			}
-			$unclusteredDetections[] = $detection;
-		}
-		return $unclusteredDetections;
-	}
-
 	private static ?Euclidean $distance;
 
 	/**
