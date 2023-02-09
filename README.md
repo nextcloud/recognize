@@ -52,6 +52,25 @@ Recognize uses
   - System with glibc or musl (incl. Alpine linux)
 - ~4GB of free RAM (if you're cutting it close, make sure you have some swap available)
 
+#### Tmp
+This app temporarily stores files to be recognized in /tmp. If you're using docker, you might find
+that adding an additional volume for /tmp speeds things up and eases the burden on your disk:
+
+
+`docker run`: Add `--mount type=tmpfs,destination=/tmp` to command line.
+
+`docker compose`: Add the following to the volume section `docker-compose.yml`:
+```yaml
+  app:
+    image: nextcloud:25
+    ...
+    volumes:
+      - type: tmpfs
+        target: /tmp
+      ...
+    ...
+```
+
 ### One click
 
 Go to "Apps" in your nextcloud, search for "recognize" and click install.
