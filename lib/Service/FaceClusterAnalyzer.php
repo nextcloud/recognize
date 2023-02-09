@@ -36,7 +36,7 @@ class FaceClusterAnalyzer {
 	 * @throws \OCP\DB\Exception
 	 * @throws \JsonException
 	 */
-	public function calculateClusters(string $userId): void {
+	public function calculateClusters(string $userId, int $batchSize = -1): void {
 		$this->logger->debug('ClusterDebug: Retrieving face detections for user ' . $userId);
 
 		$unclusteredDetections = $this->faceDetections->findUnclusteredByUserId($userId);
@@ -48,6 +48,10 @@ class FaceClusterAnalyzer {
 		if (count($unclusteredDetections) < self::MIN_DATASET_SIZE) {
 			$this->logger->debug('ClusterDebug: Not enough face detections found');
 			return;
+		}
+
+		if ($batchSize > 0 && count($unclusteredDetections) > $batchSize) {
+			$unclusteredDetections = array_slice($unclusteredDetections, 0, $batchSize);
 		}
 
 		$this->logger->debug('ClusterDebug: Found ' . count($unclusteredDetections) . " unclustered detections. Calculating clusters.");
