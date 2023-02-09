@@ -164,6 +164,14 @@ class FaceDetectionMapper extends QBMapper {
 		return $this->findEntities($qb);
 	}
 
+	public function removeAllClusters(): void {
+		$qb = $this->db->getQueryBuilder();
+		$qb->update('recognize_face_detections')
+			->set('cluster_id', $qb->createPositionalParameter(null))
+			->where($qb->expr()->isNotNull('cluster_id'));
+		$qb->executeStatement();
+	}
+
 	protected function mapRowToEntity(array $row): Entity {
 		try {
 			return parent::mapRowToEntity($row);
