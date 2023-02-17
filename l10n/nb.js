@@ -6,6 +6,7 @@ OC.L10N.register(
     "Failed to load settings" : "Klarte ikke å laste inn innstillinger",
     "Failed to save settings" : "Klarte ikke å lagre innstillinger",
     "never" : "aldri",
+    "People" : "Mennesker",
     "Music" : "Musikk",
     "Office" : "Office",
     "Train" : "Tog",
