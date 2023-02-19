@@ -182,7 +182,7 @@
 			<pre><code>occ recognize:cleanup-tags</code></pre>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'CPU cores') ">
-			<p>{{ t('recognize', 'By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used.') }}</p>
+			<p>{{ t('recognize', 'By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used. (Note: In WASM mode, currently only 1 core can be used at all times.)') }}</p>
 			<p>
 				<label>
 					<input v-model="settings['tensorflow.cores']"
@@ -534,10 +534,6 @@ figure[class^='icon-'] {
 
 #recognize {
 	position: relative;
-}
-
-#recognize .indent {
-	margin-left: 20px;
 }
 
 #recognize .loading,
