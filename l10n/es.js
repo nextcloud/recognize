@@ -53,7 +53,6 @@ OC.L10N.register(
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "Puede reestablecer las etiquetas de todos los archivos que han sido previamente clasificados por medio de reconocimiento con el siguiente comando:",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "Puede eliminar todas las etiquetas que no tienen archivos asociados a ellas con el siguiente comando:",
     "CPU cores" : "Núcleos de CPU",
-    "By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used." : "Por defecto, todos los núcleos del CPU serán utilizados, lo que podría poner su sistema bajo una carga considerable. Para evitarlo, puede limitar la cantidad de núcleos a utilizar.",
     "Number of CPU Cores (0 for no limit)" : "Número de núcleos de CPU (0 para no utilizar límite)",
     "Tensorflow WASM mode" : "Modo WASM Tensorflow",
     "Checking CPU" : "Comprobando CPU",

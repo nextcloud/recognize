@@ -36,7 +36,6 @@
     "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "Ak chcete stiahnuť všetky modely pred vykonaním klasifikačných úloh, spustite nasledujúci príkaz na serverovom termináli.",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "Pomocou nasledujúceho príkazu môžete odstrániť všetky štítky, ku ktorým už nie sú priradené žiadne súbory:",
     "CPU cores" : "CPU jadrá",
-    "By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used." : "V predvolenom nastavení sa použijú všetky dostupné jadrá CPU, čo môže spôsobiť značné zaťaženie vášho systému. Aby ste tomu zabránili, môžete obmedziť množstvo použitých jadier CPU.",
     "Number of CPU Cores (0 for no limit)" : "Počet CPU jadier (0 pre žiadny limit)",
     "Checking CPU" : "Kontrolujem CPU",
     "Your machine supports native TensorFlow operation, you do not need WASM mode." : "Váš systém podporuje natívne operácie TensorFlow, nepotrebujete WASM mód.",

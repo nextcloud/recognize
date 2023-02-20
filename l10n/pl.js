@@ -36,7 +36,6 @@ OC.L10N.register(
     "Terminal commands" : "Polecenia terminala",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "Możesz usunąć wszystkie etykiety, z którymi nie są już powiązane żadne pliki, za pomocą następującego polecenia:",
     "CPU cores" : "Rdzenie procesora",
-    "By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used." : "Domyślnie używane będą wszystkie dostępne rdzenie procesora, co może spowodować znaczne obciążenie systemu. Aby tego uniknąć, możesz ograniczyć liczbę używanych rdzeni procesora.",
     "Number of CPU Cores (0 for no limit)" : "Liczba rdzeni procesora (0 bez limitu)",
     "Checking CPU" : "Sprawdzanie procesora",
     "Your machine supports native TensorFlow operation, you do not need WASM mode." : "Twoja maszyna obsługuje natywne działanie TensorFlow, nie potrzebujesz trybu WASM.",

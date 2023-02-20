@@ -52,7 +52,6 @@ OC.L10N.register(
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "Очистка всех присвоенных распознаванием меток:",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "Удаление всех неиспользуемых меток:",
     "CPU cores" : "Использование ядер процессора",
-    "By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used." : "По умолчанию приложение использует все доступные ядра процессора, что может привести к значительной нагрузке на систему. Чтобы избежать этого, возможно ограничить количество используемых ядер процессора.",
     "Number of CPU Cores (0 for no limit)" : "Количество используемых ядер (0 — все доступные)",
     "Tensorflow WASM mode" : "WASM режим Tensorflow",
     "Checking CPU" : "Проверка ЦП",

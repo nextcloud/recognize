@@ -36,7 +36,6 @@ OC.L10N.register(
     "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "Sailkapen-lanak exekutatzeko aurretiko eredu guztiak deskargatzeko, exekutatu komando hau zerbitzariaren terminalean.",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "Jada haiekin lotutako fitxategirik ez duten etiketa guztiak ezaba ditzakezu komando honekin:",
     "CPU cores" : "PUZ nukleoak",
-    "By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used." : "Modu lehenetsian eskuragarri dauden PUZaren nukleo guztiak erabiliko dira. Zure sistemak karga handia jasan dezake. Hau saihesteko, erabiliko diren PUZaren nukleoak mugatu ditzakezu.",
     "Number of CPU Cores (0 for no limit)" : "PUZ nukleo kopurua (0 mugarik gabe ezartzeko)",
     "Checking CPU" : "PUZa egiaztatzen",
     "Your machine supports native TensorFlow operation, you do not need WASM mode." : "Zure makinak TensorFlow jatorrizko eragiketa onartzen du, ez duzu WASM modua behar.",

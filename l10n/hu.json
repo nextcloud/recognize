@@ -51,7 +51,6 @@
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "A következő paranccsal állíthatja alaphelyzetbe az összes fájl címkéit, amelyeket a Felismerés már előzőleg osztályozott:",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "A következő paranccsal törölheti az összes olyan címkét, amelyhez már egyetlen fájl sem tartozik:",
     "CPU cores" : "CPU-magok",
-    "By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used." : "Alapértelmezett az összes CPU-mag használva lesz, amely jelentős terhelés alá helyezi a rendszert. Ennek elkerüléséhez korlátozhatja a használt CPU-magok számát.",
     "Number of CPU Cores (0 for no limit)" : "CPU-magok száma (0, ha nincs korlát)",
     "Tensorflow WASM mode" : "Tensorflow WASM mód",
     "Checking CPU" : "CPU ellenőrzése",

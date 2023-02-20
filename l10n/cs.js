@@ -53,7 +53,6 @@ OC.L10N.register(
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "Štítky z veškerých souborů, které byly klasifikovány aplikací Rozpoznat je možné odebrat  pomocí následujícího příkazu:",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "Štítky, které už nejsou přiřazené žádným souborům je možné smazat následujícím příkazem:",
     "CPU cores" : "Jader procesoru",
-    "By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used." : "Ve výchozím stavu budou použita veškerá dostupná jádra procesoru, což může vámi využívaný systém podstatně vytížit. Pokud se tomu chcete vyhnout, je možné množství využívaných jader procesoru omezit.",
     "Number of CPU Cores (0 for no limit)" : "Počet jader procesoru (0 znamená bez omezení)",
     "Tensorflow WASM mode" : "WASM režim Tensorflow",
     "Checking CPU" : "Kontrola procesoru",

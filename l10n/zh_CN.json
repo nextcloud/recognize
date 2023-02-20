@@ -51,7 +51,6 @@
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "你可以用下面的命令重置所有以前被 \"识别 \"分类的文件的标签。",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "你可以用以下命令删除所有不再有任何文件与之相关联的标签。",
     "CPU cores" : "CPU 核心",
-    "By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used." : "默认情况下，所有可用的 CPU 核心将被使用，这可能会使你的系统处于相当大的负荷之下。为了避免这种情况，你可以限制 CPU 核心的使用量。",
     "Number of CPU Cores (0 for no limit)" : "CPU 核心数（0 表示无限制）。",
     "Tensorflow WASM mode" : "Tensorflow 的 WASM 模式",
     "Checking CPU" : "正在检查 CPU",

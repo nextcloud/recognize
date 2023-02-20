@@ -53,7 +53,6 @@ OC.L10N.register(
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "You can reset the tags of all files that have been previously classified by Recognise with the following command:",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "You can delete all tags that no longer have any files associated with them with the following command:",
     "CPU cores" : "CPU cores",
-    "By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used." : "By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used.",
     "Number of CPU Cores (0 for no limit)" : "Number of CPU Cores (0 for no limit)",
     "Tensorflow WASM mode" : "Tensorflow WASM mode",
     "Checking CPU" : "Checking CPU",

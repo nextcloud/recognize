@@ -51,7 +51,6 @@
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "Podeu restablir les etiquetes de tots els fitxers que s'han classificat prèviament per Recognize amb l'ordre següent:",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "Podeu suprimir totes les etiquetes que ja no tenen fitxers associats amb l'ordre següent:",
     "CPU cores" : "Nuclis de CPU",
-    "By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used." : "De manera predeterminada, s'utilitzaran tots els nuclis de CPU disponibles que poden posar el vostre sistema sota una càrrega considerable. Per evitar-ho, podeu limitar la quantitat de nuclis de CPU utilitzats.",
     "Number of CPU Cores (0 for no limit)" : "Nombre de nuclis de CPU (0 sense límit)",
     "Tensorflow WASM mode" : "Mode WASM Tensorflow",
     "Checking CPU" : "Comprovació de la CPU",
