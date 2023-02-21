@@ -4,3 +4,5 @@ bin
 build
 .idea
 /.php-cs-fixer.cache
+/vendor-bin/*/vendor
+/lib/Vendor

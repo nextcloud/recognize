@@ -12,22 +12,53 @@
         }
     },
     "require-dev": {
+        "bamarni/composer-bin-plugin": "^1.8",
         "friendsofphp/php-cs-fixer": "^3",
         "nextcloud/coding-standard": "^1",
+        "nextcloud/ocp": "dev-master",
         "phpunit/phpunit": "^9.5",
-        "psalm/phar": "^4.3",
-        "nextcloud/ocp": "dev-master"
+        "psalm/phar": "^4.3"
     },
     "scripts": {
         "lint": "find . -name \\*.php -not -path './vendor/*' -print0 | xargs -0 -n1 php -l",
         "cs:check": "php-cs-fixer fix --dry-run --diff",
         "cs:fix": "php-cs-fixer fix",
         "psalm": "psalm.phar",
-        "test:unit": "phpunit --config tests/phpunit.xml"
+        "test:unit": "phpunit --config tests/phpunit.xml",
+        "post-install-cmd": [
+            "@composer bin all install --ansi",
+            "\"vendor/bin/mozart\" compose",
+            "composer dump-autoload"
+        ],
+        "post-update-cmd": [
+            "@composer bin all update --ansi",
+            "\"vendor/bin/mozart\" compose",
+            "composer dump-autoload"
+        ]
     },
     "config": {
         "platform": {
             "php": "7.4"
+        },
+        "allow-plugins": {
+            "bamarni/composer-bin-plugin": true,
+            "composer/package-versions-deprecated": true
+        },
+        "autoloader-suffix": "Recognize",
+        "classmap-authoritative": true,
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "extra": {
+        "mozart": {
+            "dep_namespace": "OCA\\Recognize\\Vendor\\",
+            "dep_directory": "/lib/Vendor/",
+            "classmap_directory": "/lib/autoload/",
+            "classmap_prefix": "NEXTCLOUDRECOGNIZE_",
+            "packages": [
+                "symfony/process",
+                "rubix/ml"
+            ]
         }
     }
 }
