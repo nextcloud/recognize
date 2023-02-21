@@ -7,7 +7,7 @@
 namespace OCA\Recognize\Service;
 
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use OCA\Recognize\Vendor\Symfony\Component\Console\Output\OutputInterface;
 
 class Logger implements LoggerInterface {
 	private LoggerInterface $logger;
@@ -18,7 +18,7 @@ class Logger implements LoggerInterface {
 	}
 
 	/**
-	 * @param \Symfony\Component\Console\Output\OutputInterface $out
+	 * @param \OCA\Recognize\Vendor\Symfony\Component\Console\Output\OutputInterface $out
 	 * @return $this
 	 */
 	public function setCliOutput(OutputInterface $out): Logger {
