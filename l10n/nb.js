@@ -53,6 +53,7 @@ OC.L10N.register(
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "Du kan tilbakestille merkelappene for alle filer som tidligere har blitt klassifisert av Gjennkjenn med følgende kommando:",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "Du kan slette alle merkelappene som ikke lenger har noen filer knyttet til seg med følgende kommando:",
     "CPU cores" : "CPU-kjerner",
+    "By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used. (Note: In WASM mode, currently only 1 core can be used at all times.)" : "Som standard vil alle tilgjengelige CPU-kjerner bli brukt, noe som kan sette systemet under betydelig belastning. For å unngå dette kan du begrense antall CPU-kjerner som brukes. (Merk: I WASM-modus kan for øyeblikket bare én kjerne brukes til enhver tid.)",
     "Number of CPU Cores (0 for no limit)" : "Antall CPU-kjerner (0 for ingen grense)",
     "Tensorflow WASM mode" : "Tensorflow WASM-modus",
     "Checking CPU" : "Sjekker CPU",

@@ -76,6 +76,7 @@ OC.L10N.register(
     "Bottle" : "Butelis",
     "Camera" : "Kamera",
     "Barbecue" : "Piknikas",
+    "Snowmobile" : "Sniegaeigis",
     "Bridge" : "Tiltas",
     "Theater" : "Teatras",
     "Pizza" : "Pica",
