@@ -6,11 +6,11 @@
 
 namespace OCA\Recognize\Clustering;
 
-use Rubix\ML\Datasets\Labeled;
-use Rubix\ML\Estimator;
-use Rubix\ML\EstimatorType;
-use Rubix\ML\Helpers\Params;
-use Rubix\ML\Kernels\Distance\Distance;
+use OCA\Recognize\Vendor\Rubix\ML\Datasets\Labeled;
+use OCA\Recognize\Vendor\Rubix\ML\Estimator;
+use OCA\Recognize\Vendor\Rubix\ML\EstimatorType;
+use OCA\Recognize\Vendor\Rubix\ML\Helpers\Params;
+use OCA\Recognize\Vendor\Rubix\ML\Kernels\Distance\Distance;
 
 /**
  * HDBSCAN
@@ -60,7 +60,7 @@ class HDBSCAN {
 	 * The distance kernel used for computing interpoint distances.
 	 *
 	 */
-	protected \Rubix\ML\Datasets\Labeled $dataset;
+	protected \OCA\Recognize\Vendor\Rubix\ML\Datasets\Labeled $dataset;
 
 
 
@@ -71,7 +71,7 @@ class HDBSCAN {
 	 * @param int $sampleSize
 	 * @param float $maxEdgeLength
 	 * @param Distance $kernel
-	 * @throws \Rubix\ML\Exceptions\InvalidArgumentException
+	 * @throws \OCA\Recognize\Vendor\Rubix\ML\Exceptions\InvalidArgumentException
 	 */
 	public function __construct(Labeled $dataset, int $minClusterSize = 5, int $sampleSize = 5, array $oldCoreDistances = [], ?Distance $kernel = null, bool $useTrueMst = true) {
 		if ($minClusterSize < 2) {
@@ -97,7 +97,7 @@ class HDBSCAN {
 	/**
 	 * Return the estimator type.
 	 *
-	 * @return \Rubix\ML\EstimatorType
+	 * @return \OCA\Recognize\Vendor\Rubix\ML\EstimatorType
 	 */
 	public function type(): EstimatorType {
 		return EstimatorType::clusterer();
@@ -106,7 +106,7 @@ class HDBSCAN {
 	/**
 	 * Return the data types that the estimator is compatible with.
 	 *
-	 * @return list<\Rubix\ML\DataType>
+	 * @return list<\OCA\Recognize\Vendor\Rubix\ML\DataType>
 	 */
 	public function compatibility(): array {
 		return $this->mstSolver->kernel()->compatibility();

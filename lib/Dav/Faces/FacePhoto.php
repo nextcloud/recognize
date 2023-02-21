@@ -16,7 +16,7 @@ use OCP\Files\Folder;
 use OCP\IPreview;
 use OCP\ITagManager;
 use OCP\ITags;
-use Rubix\ML\Kernels\Distance\Euclidean;
+use OCA\Recognize\Vendor\Rubix\ML\Kernels\Distance\Euclidean;
 use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAV\Exception\NotFound;
 use Sabre\DAV\IFile;

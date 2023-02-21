@@ -6,11 +6,11 @@
 
 namespace OCA\Recognize\Clustering;
 
-use Rubix\ML\Datasets\Labeled;
-use Rubix\ML\Graph\Nodes\Clique;
-use Rubix\ML\Helpers\Stats;
-use Rubix\ML\Kernels\Distance\Distance;
-use function Rubix\ML\argmax;
+use OCA\Recognize\Vendor\Rubix\ML\Datasets\Labeled;
+use OCA\Recognize\Vendor\Rubix\ML\Graph\Nodes\Clique;
+use OCA\Recognize\Vendor\Rubix\ML\Helpers\Stats;
+use OCA\Recognize\Vendor\Rubix\ML\Kernels\Distance\Distance;
+use function OCA\Recognize\Vendor\Rubix\ML\argmax;
 
 class DualTreeClique extends Clique {
 	protected float $longestDistanceInNode = INF;
@@ -80,8 +80,8 @@ class DualTreeClique extends Clique {
 	/**
 	 * Terminate a branch with a dataset.
 	 *
-	 * @param \Rubix\ML\Datasets\Labeled $dataset
-	 * @param \Rubix\ML\Kernels\Distance\Distance $kernel
+	 * @param \OCA\Recognize\Vendor\Rubix\ML\Datasets\Labeled $dataset
+	 * @param \OCA\Recognize\Vendor\Rubix\ML\Kernels\Distance\Distance $kernel
 	 * @return self
 	 */
 	public static function terminate(Labeled $dataset, Distance $kernel): self {
