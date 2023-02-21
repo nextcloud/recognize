@@ -6,7 +6,7 @@ use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Service\FaceClusterAnalyzer;
 use OCA\Recognize\Service\Logger;
 use Rubix\ML\Kernels\Distance\Euclidean;
-use OCA\Recognize\Vendor\Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Test\TestCase;
 
 /**

@@ -24,7 +24,6 @@ use OCP\Files\Folder;
 use OCP\Files\IRootFolder;
 use OCP\IConfig;
 use OCP\SystemTag\ISystemTagObjectMapper;
-use OCA\Recognize\Vendor\Symfony\Component\Console\Output\OutputInterface;
 use Test\TestCase;
 
 /**
@@ -65,7 +64,7 @@ class ClassifierTest extends TestCase {
 		$this->userFolder = $this->loginAndGetUserFolder(self::TEST_USER1);
 		$this->faceDetectionMapper = \OC::$server->get(FaceDetectionMapper::class);
 		$logger = \OC::$server->get(Logger::class);
-		$cliOutput = $this->createMock(OutputInterface::class);
+		$cliOutput = $this->createMock(Symfony\Component\Console\Output\OutputInterface::class);
 		$cliOutput->method('writeln')
 			->willReturnCallback(fn ($msg) => print($msg."\n"));
 		$logger->setCliOutput($cliOutput);
