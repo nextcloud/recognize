@@ -127,7 +127,7 @@ jobs:
       - name: Install app
         working-directory: apps/${{ env.APP_NAME }}
         run: |
-          composer install --ignore-platform-req=php --no-dev
+          composer install --no-dev
           make all
           make remove-binaries
           rm -rf models # Make it download from github

@@ -4,7 +4,8 @@
         "ext-json": "*",
         "ext-pdo": "*",
         "rubix/ml": "^2.0",
-        "bamarni/composer-bin-plugin": "^1.8"
+        "bamarni/composer-bin-plugin": "^1.8",
+        "php": ">=7.4"
     },
     "autoload": {
         "psr-4": {
