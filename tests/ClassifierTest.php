@@ -24,7 +24,7 @@ use OCP\Files\Folder;
 use OCP\Files\IRootFolder;
 use OCP\IConfig;
 use OCP\SystemTag\ISystemTagObjectMapper;
-use Symfony\Component\Console\Output\OutputInterface;
+use OCA\Recognize\Vendor\Symfony\Component\Console\Output\OutputInterface;
 use Test\TestCase;
 
 /**

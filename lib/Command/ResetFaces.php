@@ -8,9 +8,9 @@ namespace OCA\Recognize\Command;
 
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetectionMapper;
-use OCA\Recognize\Vendor\Symfony\Component\Console\Command\Command;
-use OCA\Recognize\Vendor\Symfony\Component\Console\Input\InputInterface;
-use OCA\Recognize\Vendor\Symfony\Component\Console\Output\OutputInterface;
+use OCA\Recognize\Vendor\OCA\Recognize\Vendor\Symfony\Component\Console\Command\Command;
+use OCA\Recognize\Vendor\OCA\Recognize\Vendor\Symfony\Component\Console\Input\InputInterface;
+use OCA\Recognize\Vendor\OCA\Recognize\Vendor\Symfony\Component\Console\Output\OutputInterface;
 
 class ResetFaces extends Command {
 	private FaceDetectionMapper $faceDetectionMapper;
