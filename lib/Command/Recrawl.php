@@ -9,9 +9,9 @@ namespace OCA\Recognize\Command;
 use OCA\Recognize\BackgroundJobs\SchedulerJob;
 use OCP\BackgroundJob\IJobList;
 use Psr\Log\LoggerInterface;
-use OCA\Recognize\Vendor\OCA\Recognize\Vendor\Symfony\Component\Console\Command\Command;
-use OCA\Recognize\Vendor\OCA\Recognize\Vendor\Symfony\Component\Console\Input\InputInterface;
-use OCA\Recognize\Vendor\OCA\Recognize\Vendor\Symfony\Component\Console\Output\OutputInterface;
+use OCA\Recognize\Vendor\Symfony\Component\Console\Command\Command;
+use OCA\Recognize\Vendor\Symfony\Component\Console\Input\InputInterface;
+use OCA\Recognize\Vendor\Symfony\Component\Console\Output\OutputInterface;
 
 class Recrawl extends Command {
 	private IJobList $jobList;

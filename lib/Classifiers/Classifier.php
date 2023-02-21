@@ -21,9 +21,9 @@ use OCP\IConfig;
 use OCP\IPreview;
 use OCP\ITempManager;
 use Psr\Log\LoggerInterface;
-use OCA\Recognize\Vendor\OCA\Recognize\Vendor\Symfony\Component\Process\Exception\ProcessTimedOutException;
-use OCA\Recognize\Vendor\OCA\Recognize\Vendor\Symfony\Component\Process\Exception\RuntimeException;
-use OCA\Recognize\Vendor\OCA\Recognize\Vendor\Symfony\Component\Process\Process;
+use OCA\Recognize\Vendor\Symfony\Component\Process\Exception\ProcessTimedOutException;
+use OCA\Recognize\Vendor\Symfony\Component\Process\Exception\RuntimeException;
+use OCA\Recognize\Vendor\Symfony\Component\Process\Process;
 
 class Classifier {
 	public const TEMP_FILE_DIMENSION = 1024;
