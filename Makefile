@@ -89,6 +89,7 @@ appstore:
 	--include=/img \
 	--include=/appinfo \
 	--include=/bin \
+	--include=/vendor \
 	--exclude=**/*.map \
 	--exclude=/* \
 	--exclude=node \

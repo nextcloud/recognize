@@ -54,6 +54,10 @@
             "packages": [
                 "symfony/process",
                 "rubix/ml"
+            ],
+            "excluded_packages": [
+                "symfony/polyfill-intl-normalizer",
+                "symfony/polyfill-php80"
             ]
         }
     }
