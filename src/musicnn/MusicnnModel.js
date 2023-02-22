@@ -44,15 +44,22 @@ class MusicnnModel {
 	async inference(songPath, options) {
 		const { topK = 10 } = options || {}
 
-		const { stdout } = await execa(ffmpeg, [
+		const proc = execa(ffmpeg, [
 			'-i', songPath,
 			'-f', 'wav',
 			'-ac', '1',
 			'-ar', '8000',
 			'-acodec', 'pcm_s16le',
 			'-t', '120',
+			...(process.env.RECOGNIZE_CORES
+				? ['-threads', process.env.RECOGNIZE_CORES]
+				: []),
 			'-',
 		], { encoding: null, stripFinalNewline: false })
+
+		proc.stderr.pipe(process.stderr)
+
+		const { stdout } = await proc
 
 		const audioData = await WavDecoder.decode(stdout)
 

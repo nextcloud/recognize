@@ -144,13 +144,16 @@ class Classifier {
 		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
 			$proc->setEnv(['RECOGNIZE_PUREJS' => 'true']);
 		}
+		// Set cores
+		$cores = $this->config->getAppValue('recognize', 'tensorflow.cores', '0');
+		if ($cores !== '0') {
+			$proc->setEnv(['RECOGNIZE_CORES' => $cores]);
+		}
 		$proc->setTimeout(count($paths) * $timeout);
 		$proc->setInput(implode("\n", $paths));
 		try {
 			$proc->start();
 
-			// Set cores
-			$cores = $this->config->getAppValue('recognize', 'tensorflow.cores', '0');
 			if ($cores !== '0') {
 				@exec('taskset -cp ' . implode(',', range(0, (int)$cores, 1)) . ' ' . $proc->getPid());
 			}

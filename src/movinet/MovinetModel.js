@@ -59,6 +59,9 @@ class MovinetModel {
 			'-vf', 'fps=2',
 			'-c:v', 'mjpeg',
 			'-f', 'image2pipe',
+			...(process.env.RECOGNIZE_CORES
+				? ['-threads', process.env.RECOGNIZE_CORES]
+				: []),
 			'-',
 		], { encoding: null, stripFinalNewline: false })
 
