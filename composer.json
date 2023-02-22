@@ -12,8 +12,7 @@
             "OCA\\Recognize\\": "lib/"
         },
         "files": [
-            "lib/Vendor/Rubix/ML/functions.php",
-            "lib/Vendor/Rubix/ML/constants.php"
+            "lib/autoload_files.php"
         ]
     },
     "require-dev": {
@@ -55,6 +54,7 @@
             "dep_directory": "/lib/Vendor/",
             "classmap_directory": "/lib/autoload/",
             "classmap_prefix": "NEXTCLOUDRECOGNIZE_",
+            "delete_vendor_directories": false,
             "excluded_packages": [
                 "symfony/polyfill-intl-normalizer",
                 "symfony/polyfill-php80"
