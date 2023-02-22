@@ -92,6 +92,9 @@ class FileListener implements IEventListener {
 	 */
 	public function postInsert(Node $node): void {
 		$queueFile = new QueueFile();
+		if ($node->getMountPoint()->getNumericStorageId() === null) {
+			return;
+		}
 		$queueFile->setStorageId($node->getMountPoint()->getNumericStorageId());
 		$queueFile->setRootId($node->getMountPoint()->getStorageRootId());
 
@@ -109,7 +112,7 @@ class FileListener implements IEventListener {
 			return;
 		}
 		$ignoreMarkers = array_merge($ignoreMarkers, Constants::IGNORE_MARKERS_ALL);
-		$ignoredPaths = $this->ignoreService->getIgnoredDirectories($node->getMountPoint()->getNumericStorageId(), $ignoreMarkers);
+		$ignoredPaths = $this->ignoreService->getIgnoredDirectories($queueFile->getStorageId(), $ignoreMarkers);
 
 		if (count(array_filter($ignoredPaths, fn (string $ignoredPath) => stripos($node->getInternalPath(), $ignoredPath ? $ignoredPath . '/' : $ignoredPath) === 0)) > 0) {
 			return;

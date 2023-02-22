@@ -91,7 +91,7 @@ jobs:
         # Only run if phpunit config file exists
         if: steps.check_composer.outputs.files_exists == 'true'
         working-directory: apps/${{ env.APP_NAME }}
-        run: composer install --ignore-platform-req=php --no-dev
+        run: composer install --no-dev
 
       - name: Set up test resources
         working-directory: apps/${{ env.APP_NAME }}

@@ -6,8 +6,8 @@
 
 namespace OCA\Recognize\Clustering;
 
-use Rubix\ML\Datasets\Labeled;
-use Rubix\ML\Kernels\Distance\Distance;
+use OCA\Recognize\Vendor\Rubix\ML\Datasets\Labeled;
+use OCA\Recognize\Vendor\Rubix\ML\Kernels\Distance\Distance;
 
 class MstSolver {
 	private MrdBallTree $tree;

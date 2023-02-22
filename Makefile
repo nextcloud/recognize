@@ -76,12 +76,8 @@ appstore:
 	composer install --no-dev
 	mkdir -p $(sign_dir)
 	rsync -a --delete \
-	--include=/vendor \
 	--include=/CHANGELOG.md \
 	--include=/README.md \
-	--include=/composer.json \
-	--include=/composer.lock \
-	--include=/vendor \
 	--include=/templates \
 	--include=/node_modules \
 	--include=/package.json \
@@ -93,6 +89,7 @@ appstore:
 	--include=/img \
 	--include=/appinfo \
 	--include=/bin \
+	--include=/vendor \
 	--exclude=**/*.map \
 	--exclude=/* \
 	--exclude=node \
