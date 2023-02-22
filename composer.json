@@ -53,7 +53,8 @@
             "classmap_prefix": "NEXTCLOUDRECOGNIZE_",
             "excluded_packages": [
                 "symfony/polyfill-intl-normalizer",
-                "symfony/polyfill-php80"
+                "symfony/polyfill-php80",
+                "psr/log"
             ]
         }
     }
