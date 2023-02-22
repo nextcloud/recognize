@@ -3,14 +3,18 @@
         "symfony/process": "^5.2",
         "ext-json": "*",
         "ext-pdo": "*",
-        "rubix/ml": "^2.0",
+        "rubix/ml": "2.x",
         "bamarni/composer-bin-plugin": "^1.8",
         "php": ">=7.4"
     },
     "autoload": {
         "psr-4": {
             "OCA\\Recognize\\": "lib/"
-        }
+        },
+        "files": [
+            "lib/Vendor/Rubix/ML/functions.php",
+            "lib/Vendor/Rubix/ML/constants.php"
+        ]
     },
     "require-dev": {
         "nextcloud/ocp": "dev-master"
@@ -51,10 +55,6 @@
             "dep_directory": "/lib/Vendor/",
             "classmap_directory": "/lib/autoload/",
             "classmap_prefix": "NEXTCLOUDRECOGNIZE_",
-            "packages": [
-                "symfony/process",
-                "rubix/ml"
-            ],
             "excluded_packages": [
                 "symfony/polyfill-intl-normalizer",
                 "symfony/polyfill-php80"
