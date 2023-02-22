@@ -10,10 +10,7 @@
     "autoload": {
         "psr-4": {
             "OCA\\Recognize\\": "lib/"
-        },
-        "files": [
-            "lib/autoload_files.php"
-        ]
+        }
     },
     "require-dev": {
         "nextcloud/ocp": "dev-master"
@@ -54,7 +51,6 @@
             "dep_directory": "/lib/Vendor/",
             "classmap_directory": "/lib/autoload/",
             "classmap_prefix": "NEXTCLOUDRECOGNIZE_",
-            "delete_vendor_directories": false,
             "excluded_packages": [
                 "symfony/polyfill-intl-normalizer",
                 "symfony/polyfill-php80"

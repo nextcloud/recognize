@@ -32,6 +32,12 @@ class Application extends App implements IBootstrap {
 
 	public function register(IRegistrationContext $context): void {
 		@include_once __DIR__ . '/../../vendor/autoload.php';
+
+		// Load Rubix functions because Mozart doesn't pick up on them
+		// see https://github.com/coenjacobs/mozart/issues/66
+		require_once(__DIR__.'/../Vendor/Rubix/ML/functions.php');
+		require_once(__DIR__.'/../Vendor/Rubix/ML/constants.php');
+
 		/** Register $principalBackend for the DAV collection */
 		$context->registerServiceAlias('principalBackend', Principal::class);
 	}
