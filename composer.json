@@ -1,11 +1,12 @@
 {
     "require": {
-        "symfony/process": "^5.2",
+        "php": ">=7.4",
         "ext-json": "*",
         "ext-pdo": "*",
-        "rubix/ml": "2.x",
         "bamarni/composer-bin-plugin": "^1.8",
-        "php": ">=7.4"
+        "rubix/ml": "2.x",
+        "symfony/console": "^5.4",
+        "symfony/process": "^5.2"
     },
     "autoload": {
         "psr-4": {
@@ -54,6 +55,7 @@
             "excluded_packages": [
                 "symfony/polyfill-intl-normalizer",
                 "symfony/polyfill-php80",
+                "symfony/console",
                 "psr/log"
             ]
         }
