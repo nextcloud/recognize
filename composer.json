@@ -53,8 +53,12 @@
             "classmap_directory": "/lib/autoload/",
             "classmap_prefix": "NEXTCLOUDRECOGNIZE_",
             "excluded_packages": [
-                "symfony/polyfill-intl-normalizer",
+                "symfony/polyfill-php72",
                 "symfony/polyfill-php80",
+                "symfony/polyfill-iconv",
+                "symfony/polyfill-intl",
+                "symfony/polyfill-intl-normalizer",
+                "symfony/polyfill-mbstring",
                 "symfony/console",
                 "psr/log"
             ]
