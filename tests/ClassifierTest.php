@@ -148,6 +148,55 @@ class ClassifierTest extends TestCase {
 	/**
 	 * @dataProvider ignoreImageFilesProvider
 	 * @return void
+	 * @throws \OCP\Files\InvalidPathException
+	 * @throws \OCP\Files\NotFoundException
+	 */
+	public function testClassifyCommand(string $ignoreFileName) : void {
+		$this->queue->clearQueue(ImagenetClassifier::MODEL_NAME);
+
+		$this->testFile = $this->userFolder->newFile('/alpine.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
+		$this->userFolder->newFolder('/test/ignore/');
+		$this->userFolder->newFile('/test/' . $ignoreFileName, '');
+		$this->ignoredFile = $this->userFolder->newFile('/test/ignore/alpine.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
+
+		/** @var \OCA\Recognize\Command\Classify $classifyCommand */
+		$classifyCommand = \OC::$server->get(\OCA\Recognize\Command\Classify::class);
+
+		$cliOutput = $this->createMock(Symfony\Component\Console\Output\OutputInterface::class);
+		$cliOutput->method('writeln')
+			->willReturnCallback(fn ($msg) => print($msg."\n"));
+		$cliInput = $this->createMock(Symfony\Component\Console\Input\InputInterface::class);
+
+		$this->config->setAppValue('recognize', 'imagenet.enabled', 'true');
+		$classifyCommand->run($cliInput, $cliOutput);
+
+		/** @var \OCP\SystemTag\ISystemTagObjectMapper $objectMapper */
+		$objectMapper = \OC::$server->get(ISystemTagObjectMapper::class);
+		/** @var \OCP\SystemTag\ISystemTagManager $tagManager */
+		$tagManager = \OC::$server->get(OCP\SystemTag\ISystemTagManager::class);
+
+		self::assertTrue(
+			$objectMapper->haveTag(
+				(string)$this->testFile->getId(),
+				'files',
+				$tagManager->getTag('Alpine', true, true)->getId()
+			),
+			'Correct tag should have been set on image file'
+		);
+
+		self::assertFalse(
+			$objectMapper->haveTag(
+				(string)$this->ignoredFile->getId(),
+				'files',
+				$tagManager->getTag('Alpine', true, true)->getId()
+			),
+			'Correct tag should not have been set on ignored image file'
+		);
+	}
+
+	/**
+	 * @dataProvider ignoreImageFilesProvider
+	 * @return void
 	 * @throws \OCP\DB\Exception
 	 * @throws \OCP\Files\InvalidPathException
 	 * @throws \OCP\Files\NotFoundException
