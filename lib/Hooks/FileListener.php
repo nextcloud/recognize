@@ -20,6 +20,7 @@ use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
 use OCP\Files\Events\Node\BeforeNodeDeletedEvent;
 use OCP\Files\Events\Node\NodeCreatedEvent;
+use OCP\Files\Events\Node\NodeDeletedEvent;
 use OCP\Files\FileInfo;
 use OCP\Files\InvalidPathException;
 use OCP\Files\Node;
@@ -40,10 +41,18 @@ class FileListener implements IEventListener {
 	}
 
 	public function handle(Event $event): void {
+		if ($event instanceof NodeDeletedEvent && in_array($event->getNode()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
+			$this->postInsert($event->getNode()->getParent());
+			return;
+		}
 		if ($event instanceof BeforeNodeDeletedEvent) {
 			$this->postDelete($event->getNode());
 		}
 		if ($event instanceof NodeCreatedEvent) {
+			if (in_array($event->getNode()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
+				$this->postDelete($event->getNode()->getParent());
+				return;
+			}
 			$this->postInsert($event->getNode());
 		}
 	}
@@ -91,6 +100,20 @@ class FileListener implements IEventListener {
 	 * @throws \OCP\Files\InvalidPathException
 	 */
 	public function postInsert(Node $node): void {
+		if ($node->getType() === FileInfo::TYPE_FOLDER) {
+			// For normal inserts we probably getone event per node, but, when removing an ignore file,
+			// we only get the folder passed here, so we recurse.
+			try {
+				/** @var \OCP\Files\Folder $node */
+				foreach ($node->getDirectoryListing() as $child) {
+					$this->postInsert($child);
+				}
+			} catch (NotFoundException $e) {
+				$this->logger->debug($e->getMessage(), ['exception' => $e]);
+			}
+			return;
+		}
+
 		$queueFile = new QueueFile();
 		if ($node->getMountPoint()->getNumericStorageId() === null) {
 			return;
