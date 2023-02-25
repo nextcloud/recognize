@@ -4,7 +4,8 @@
     <DeprecatedClass occurrences="1">
       <code>$this-&gt;getContainer()</code>
     </DeprecatedClass>
-    <InvalidArgument occurrences="2">
+    <InvalidArgument occurrences="3">
+      <code>addServiceListener</code>
       <code>addServiceListener</code>
       <code>addServiceListener</code>
     </InvalidArgument>
