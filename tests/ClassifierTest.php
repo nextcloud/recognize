@@ -132,7 +132,7 @@ class ClassifierTest extends TestCase {
 
 		$this->testFile = $this->userFolder->newFile('/alpine.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
 		$this->userFolder->newFolder('/test/ignore/');
-		$this->userFolder->newFile('/test/' . $ignoreFileName, '');
+		$ignoreFile = $this->userFolder->newFile('/test/' . $ignoreFileName, '');
 		$this->ignoredFile = $this->userFolder->newFile('/test/ignore/alpine.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
 
 		$storageId = $this->testFile->getMountPoint()->getNumericStorageId();
@@ -143,6 +143,14 @@ class ClassifierTest extends TestCase {
 		$this->testFile->delete();
 
 		self::assertCount(0, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'entry should have been removed from imagenet queue');
+
+		$ignoreFile->delete();
+
+		self::assertCount(1, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'one element should have been added to imagenet queue after deleting ignore file');
+
+		$ignoreFile = $this->userFolder->newFile('/test/' . $ignoreFileName, '');
+
+		self::assertCount(0, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'entry should have been removed from imagenet queue after creating ignore file');
 	}
 
 	/**
