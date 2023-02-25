@@ -1,6 +1,7 @@
 OC.L10N.register(
     "recognize",
     {
+    "Smart media tagging for Nextcloud" : "Slimme medialabeling voor Nextcloud",
     "Status" : "Status",
     "Reset" : "Herstellen",
     "CPU cores" : "CPU cores",

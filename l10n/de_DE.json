@@ -20,7 +20,7 @@
     "An error occurred during object recognition, please check the Nextcloud logs." : "Bei der Objekterkennung ist ein Fehler aufgetreten, bitte überprüfen Sie die Nextcloud-Protokolle.",
     "Waiting for status reports on object recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs." : "Warten auf Statusberichte zur Gesichtserkennung. Wenn diese Meldung länger als 15 Minuten beteht, bitte die Nextcloud-Protokolle überprüfen.",
     "Object recognition:" : "Objekterkennung:",
-    "Enable face recognition (groups pictures by people that appear in them in the photos app)" : "Gesichtserkennung aktivieren (gruppiert Bilder nach Personen, die in der Foto-App darin erscheinen)",
+    "Enable face recognition (groups pictures by people that appear in them in the photos app)" : "Gesichtserkennung aktivieren (gruppiert Bilder nach Personen, die in der Foto-App entsprechend erscheinen)",
     "The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~500 or more, in WASM mode ~50 is recommended)" : "Die Anzahl der zu verarbeitenden Dateien pro Aufgabenlauf (ein Job wird alle 5 Minuten eingeplant; für den normalen Betrieb ~500 oder mehr, im WASM-Modus werden ~50 empfohlen)",
     "Enable object recognition (e.g. food, vehicles, landscapes)" : "Objekterkennung aktivieren (z. B. Lebensmittel, Fahrzeuge, Landschaften)",
     "The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)" : "Die Anzahl der zu verarbeitenden Dateien pro Aufgabenlauf (ein Job wird alle 5 Minuten eingeplant; für den normalen Betrieb ~100 oder mehr, im WASM-Modus werden ~20 empfohlen)",
