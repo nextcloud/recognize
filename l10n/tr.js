@@ -53,6 +53,7 @@ OC.L10N.register(
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "Tanıma uygulaması tarafından daha önce sınıflandırılmış tüm dosyaların etiketlerini şu komutla sıfırlayabilirsiniz:",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "Daha önce tanınarak sınıflandırılmış tüm dosyaların etiketlerini şu komutla silebilirsiniz:",
     "CPU cores" : "İşlemci çekirdeği sayısı",
+    "By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used. (Note: In WASM mode, currently only 1 core can be used at all times.)" : "Varsayılan olarak, sisteminizin yükünü önemli ölçüde artırabilecek şekilde, var olan tüm işlemci çekirdekleri kullanılır. Bunu önlemek için kullanılacak işlemci çekirdeği sayısını sınırlayabilirsiniz. (Not: WASM kipinde şu anda her zaman yalnızca 1 işlemci çekirdeği kullanılabilir.)",
     "Number of CPU Cores (0 for no limit)" : "Kullanılacak işlemci çekirdeği sayısı (0 sınır yok)",
     "Tensorflow WASM mode" : "Tensorflow WASM kipi",
     "Checking CPU" : "İşlemci denetleniyor",

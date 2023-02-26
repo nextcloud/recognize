@@ -1,6 +1,7 @@
 OC.L10N.register(
     "recognize",
     {
+    "Smart media tagging for Nextcloud" : "Etiquetado multimedia intelixente para Nextcloud",
     "Status" : "Estado",
     "Reset" : "Restabelecer",
     "Failed to load settings" : "Produciuse un fallo ao cargar os axustes",
