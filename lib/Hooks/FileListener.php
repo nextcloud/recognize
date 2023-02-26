@@ -200,6 +200,10 @@ class FileListener implements IEventListener {
 		$mimeType = $node->getMimetype();
 		$storageId = $node->getMountPoint()->getNumericStorageId();
 
+		if ($storageId === null) {
+			return true;
+		}
+
 		if (in_array($mimeType, Constants::IMAGE_FORMATS)) {
 			$ignoreMarkers = array_merge($ignoreMarkers, Constants::IGNORE_MARKERS_IMAGE);
 		}
