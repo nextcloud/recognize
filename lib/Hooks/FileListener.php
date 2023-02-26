@@ -19,8 +19,10 @@ use OCP\DB\Exception;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
 use OCP\Files\Events\Node\BeforeNodeDeletedEvent;
+use OCP\Files\Events\Node\BeforeNodeRenamedEvent;
 use OCP\Files\Events\Node\NodeCreatedEvent;
 use OCP\Files\Events\Node\NodeDeletedEvent;
+use OCP\Files\Events\Node\NodeRenamedEvent;
 use OCP\Files\FileInfo;
 use OCP\Files\InvalidPathException;
 use OCP\Files\Node;
@@ -32,15 +34,51 @@ class FileListener implements IEventListener {
 	private LoggerInterface $logger;
 	private QueueService $queue;
 	private IgnoreService $ignoreService;
+	private ?bool $movingFromIgnoredTerritory;
 
 	public function __construct(FaceDetectionMapper $faceDetectionMapper, LoggerInterface $logger, QueueService $queue, IgnoreService $ignoreService) {
 		$this->faceDetectionMapper = $faceDetectionMapper;
 		$this->logger = $logger;
 		$this->queue = $queue;
 		$this->ignoreService = $ignoreService;
+		$this->movingFromIgnoredTerritory = null;
 	}
 
 	public function handle(Event $event): void {
+		if ($event instanceof BeforeNodeRenamedEvent) {
+			if (in_array($event->getSource()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true) &&
+				in_array($event->getTarget()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
+				return;
+			}
+			// We try to remember whether the source node is in ignored territory
+			// because after moving isIgnored doesn't work anymore :(
+			if ($this->isIgnored($event->getSource())) {
+				$this->movingFromIgnoredTerritory = true;
+			} else {
+				$this->movingFromIgnoredTerritory = false;
+			}
+			return;
+		}
+		if ($event instanceof NodeRenamedEvent) {
+			if (in_array($event->getSource()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true) &&
+				in_array($event->getTarget()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
+				$this->postInsert($event->getSource()->getParent());
+				$this->postDelete($event->getTarget()->getParent());
+				return;
+			}
+			if ($this->movingFromIgnoredTerritory) {
+				if ($this->isIgnored($event->getTarget())) {
+					return;
+				}
+				$this->postInsert($event->getTarget());
+				return;
+			}
+			if ($this->isIgnored($event->getTarget())) {
+				$this->postDelete($event->getTarget());
+				return;
+			}
+			return;
+		}
 		if ($event instanceof NodeDeletedEvent && in_array($event->getNode()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
 			$this->postInsert($event->getNode()->getParent());
 			return;
@@ -101,7 +139,7 @@ class FileListener implements IEventListener {
 	 */
 	public function postInsert(Node $node): void {
 		if ($node->getType() === FileInfo::TYPE_FOLDER) {
-			// For normal inserts we probably getone event per node, but, when removing an ignore file,
+			// For normal inserts we probably get one event per node, but, when removing an ignore file,
 			// we only get the folder passed here, so we recurse.
 			try {
 				/** @var \OCP\Files\Folder $node */
@@ -121,23 +159,7 @@ class FileListener implements IEventListener {
 		$queueFile->setStorageId($node->getMountPoint()->getNumericStorageId());
 		$queueFile->setRootId($node->getMountPoint()->getStorageRootId());
 
-		$ignoreMarkers = [];
-		if (in_array($node->getMimetype(), Constants::IMAGE_FORMATS)) {
-			$ignoreMarkers = array_merge($ignoreMarkers, Constants::IGNORE_MARKERS_IMAGE);
-		}
-		if (in_array($node->getMimetype(), Constants::VIDEO_FORMATS)) {
-			$ignoreMarkers = array_merge($ignoreMarkers, Constants::IGNORE_MARKERS_VIDEO);
-		}
-		if (in_array($node->getMimetype(), Constants::AUDIO_FORMATS)) {
-			$ignoreMarkers = array_merge($ignoreMarkers, Constants::IGNORE_MARKERS_AUDIO);
-		}
-		if (count($ignoreMarkers) === 0) {
-			return;
-		}
-		$ignoreMarkers = array_merge($ignoreMarkers, Constants::IGNORE_MARKERS_ALL);
-		$ignoredPaths = $this->ignoreService->getIgnoredDirectories($queueFile->getStorageId(), $ignoreMarkers);
-
-		if (count(array_filter($ignoredPaths, fn (string $ignoredPath) => stripos($node->getInternalPath(), $ignoredPath ? $ignoredPath . '/' : $ignoredPath) === 0)) > 0) {
+		if ($this->isIgnored($node)) {
 			return;
 		}
 
@@ -164,5 +186,44 @@ class FileListener implements IEventListener {
 			$this->logger->error('Failed to add file to queue', ['exception' => $e]);
 			return;
 		}
+	}
+
+	/**
+	 * @param \OCP\Files\Node $node
+	 * @param string|null $mimeType
+	 * @param int|null $storageId
+	 * @return bool
+	 * @throws \OCP\DB\Exception
+	 */
+	public function isIgnored(Node $node) : bool {
+		$ignoreMarkers = [];
+		$mimeType = $node->getMimetype();
+		$storageId = $node->getMountPoint()->getNumericStorageId();
+
+		if (in_array($mimeType, Constants::IMAGE_FORMATS)) {
+			$ignoreMarkers = array_merge($ignoreMarkers, Constants::IGNORE_MARKERS_IMAGE);
+		}
+		if (in_array($mimeType, Constants::VIDEO_FORMATS)) {
+			$ignoreMarkers = array_merge($ignoreMarkers, Constants::IGNORE_MARKERS_VIDEO);
+		}
+		if (in_array($mimeType, Constants::AUDIO_FORMATS)) {
+			$ignoreMarkers = array_merge($ignoreMarkers, Constants::IGNORE_MARKERS_AUDIO);
+		}
+		if (count($ignoreMarkers) === 0) {
+			return true;
+		}
+
+		$ignoreMarkers = array_merge($ignoreMarkers, Constants::IGNORE_MARKERS_ALL);
+		$ignoredPaths = $this->ignoreService->getIgnoredDirectories($storageId, $ignoreMarkers);
+
+		$relevantIgnorePaths = array_filter($ignoredPaths, static function (string $ignoredPath) use ($node) {
+			return stripos($node->getInternalPath(), $ignoredPath ? $ignoredPath . '/' : $ignoredPath) === 0;
+		});
+
+		if (count($relevantIgnorePaths) > 0) {
+			return true;
+		}
+
+		return false;
 	}
 }

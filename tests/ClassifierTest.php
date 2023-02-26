@@ -133,7 +133,7 @@ class ClassifierTest extends TestCase {
 		$this->testFile = $this->userFolder->newFile('/alpine.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
 		$this->userFolder->newFolder('/test/ignore/');
 		$ignoreFile = $this->userFolder->newFile('/test/' . $ignoreFileName, '');
-		$this->ignoredFile = $this->userFolder->newFile('/test/ignore/alpine.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
+		$this->ignoredFile = $this->userFolder->newFile('/test/ignore/alpine-2.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
 
 		$storageId = $this->testFile->getMountPoint()->getNumericStorageId();
 		$rootId = $this->testFile->getMountPoint()->getStorageRootId();
@@ -151,6 +151,22 @@ class ClassifierTest extends TestCase {
 		$ignoreFile = $this->userFolder->newFile('/test/' . $ignoreFileName, '');
 
 		self::assertCount(0, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'entry should have been removed from imagenet queue after creating ignore file');
+
+		$this->ignoredFile->move($this->userFolder->getPath() . '/alpine-2.jpg');
+
+		self::assertCount(1, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'one element should have been added to imagenet queue after moving it out of ignored territory');
+
+		$ignoreFile->move($this->userFolder->getPath() . '/' . $ignoreFileName);
+
+		self::assertCount(0, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'entry should have been removed from imagenet queue after moving ignore file');
+
+		$ignoreFile->move($this->userFolder->getPath() . '/test/' . $ignoreFileName);
+
+		self::assertCount(1, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'one element should have been added to imagenet queue after moving ignore file');
+
+		$this->ignoredFile->move($this->userFolder->getPath() . '/test/ignore/alpine-2.jpg');
+
+		self::assertCount(0, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'entry should have been removed from imagenet queue after moving it into ignored territory');
 	}
 
 	/**
