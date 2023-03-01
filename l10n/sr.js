@@ -1,6 +1,7 @@
 OC.L10N.register(
     "recognize",
     {
+    "Smart media tagging for Nextcloud" : "Паметно означавање медија за Некстклауд",
     "Status" : "Статус",
     "Reset" : "Ресетуј",
     "Failed to load settings" : "Грешка у дохватању поставки",
