@@ -92,10 +92,10 @@ class ClusteringFaceClassifier extends Classifier {
 					continue;
 				}
 
-				$mounts = $this->userMountCache->getMountsForRootId($queueFile->getRootId());
-				$userIds = array_map(function (ICachedMountInfo $mount) {
-					return $mount->getUser()->getUID();
-				}, $mounts);
+				$mountInfos = $this->userMountCache->getMountsForFileId($queueFile->getFileId());
+				$userIds = array_map(static function (ICachedMountInfo $mountInfo) {
+					return $mountInfo->getUser()->getUID();
+				}, $mountInfos);
 
 				// Insert face detection for all users with access
 				foreach ($userIds as $userId) {
