@@ -6,8 +6,7 @@
 
 namespace OCA\Recognize\Clustering;
 
-// TODO: core edges are not always stored properly (if two halves of the remaining clusters are both pruned at the same time)
-// TODO: store vertex lambda length (relative to cluster lambda length) for all vertices for soft clustering.
+// TODO: store vertex lambda length (relative to cluster lambda length) for all vertices for improved soft clustering (see https://hdbscan.readthedocs.io/en/latest/soft_clustering.html)
 class MstClusterer {
 	private array $edges;
 
@@ -22,8 +21,9 @@ class MstClusterer {
 	private bool $isRoot;
 	private array $mapVerticesToEdges;
 	private float $minClusterSeparation;
+	private float $maxEdgeLength;
 
-	public function __construct(array $edges, ?array $mapVerticesToEdges, int $minimumClusterSize, ?float $startingLambda = null, float $minClusterSeparation = 0.1) {
+	public function __construct(array $edges, ?array $mapVerticesToEdges, int $minimumClusterSize, ?float $startingLambda = null, float $minClusterSeparation = 0.1, float $maxEdgeLength = 0.5) {
 		//Ascending sort of edges while perserving original keys.
 		$this->edges = $edges;
 
@@ -62,7 +62,8 @@ class MstClusterer {
 		$this->coreEdges = [];
 
 		$this->clusterWeight = 0.0;
-
+		
+		$this->maxEdgeLength = $maxEdgeLength;
 
 		$this->minClusterSeparation = $minClusterSeparation;
 	}
@@ -74,6 +75,12 @@ class MstClusterer {
 			$edgeCount = count($this->remainingEdges);
 
 			if ($edgeCount < ($this->minimumClusterSize - 1)) {
+				if ($edgeLength > $this->maxEdgeLength) {
+					// This cluster is too sparse and probably just noise
+                 		   	return [];
+                		}
+				
+				
 				foreach ($this->coreEdges as &$edge) {
 					$edge['finalLambda'] = $currentLambda;
 				}
@@ -101,7 +108,11 @@ class MstClusterer {
 			unset($this->mapVerticesToEdges[$vertexConnectedFrom][$currentLongestEdgeKey]);
 			unset($this->mapVerticesToEdges[$vertexConnectedTo][$currentLongestEdgeKey]);
 
-			if ($edgeLength > 0.0) {
+			if ($edgeLength > $this->maxEdgeLength) {
+                		// Prevent formation of clusters with edges longer than the maximum edge length
+				// This is done by forcing the weight of the current cluster to zero
+                		$lastLambda = $currentLambda = 1 / $edgeLength;				
+            		} else if ($edgeLength > 0.0) {
 				$currentLambda = 1 / $edgeLength;
 			}
 
@@ -155,6 +166,11 @@ class MstClusterer {
 
 				return [$this];
 			}
+			
+			if ($edgeLength > $this->maxEdgeLength) {
+				// Any pruned vertices were too far away to be part of the cluster
+                		$this->edges = $this->remainingEdges;
+            		}
 		}
 	}
 
