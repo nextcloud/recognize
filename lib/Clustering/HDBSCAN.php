@@ -66,11 +66,11 @@ class HDBSCAN {
 
 	/**
 	 * @param Labeled $dataset
-	 * @param array $oldCoreDistances
 	 * @param int $minClusterSize
 	 * @param int $sampleSize
-	 * @param float $maxEdgeLength
+	 * @param array $oldCoreDistances
 	 * @param Distance $kernel
+	 * @param bool $useTrueMst // (Build true or approximate minimum spanning tree)
 	 * @throws \OCA\Recognize\Vendor\Rubix\ML\Exceptions\InvalidArgumentException
 	 */
 	public function __construct(Labeled $dataset, int $minClusterSize = 5, int $sampleSize = 5, array $oldCoreDistances = [], ?Distance $kernel = null, bool $useTrueMst = true) {
@@ -128,9 +128,11 @@ class HDBSCAN {
 	/**
 	 * Form clusters and make predictions from the dataset (hard clustering).
 	 *
+	 * @param float $minClusterSeparation
+	 * @param float $maxEdgeLength
 	 * @return list<MstClusterer>
 	 */
-	public function predict(): array {
+	public function predict(float $minClusterSeparation = 0.0, float $maxEdgeLength=0.5): array {
 		// Boruvka algorithm for MST generation
 		$edges = $this->mstSolver->getMst();
 
@@ -142,8 +144,7 @@ class HDBSCAN {
 		}
 		unset($edge);
 
-		// TODO: Min cluster separation/edge length of MstClusterer to the caller of this class
-		$mstClusterer = new MstClusterer($edges, null, $this->minClusterSize, null, 0.0);
+		$mstClusterer = new MstClusterer($edges, null, $this->minClusterSize, null, $minClusterSeparation, $maxEdgeLength);
 		$flatClusters = $mstClusterer->processCluster();
 
 		return $flatClusters;
