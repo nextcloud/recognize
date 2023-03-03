@@ -83,6 +83,51 @@ class FaceDetectionMapper extends QBMapper {
 	}
 
 	/**
+	 * @throws \OCP\DB\Exception
+	 * @return list<\OCA\Recognize\Db\FaceDetection>
+	 */
+	public function findByFileIdAndUser(int $fileId, string $userId): array {
+		$qb = $this->db->getQueryBuilder();
+		$qb->select(FaceDetection::$columns)
+			->from('recognize_face_detections')
+			->where($qb->expr()->eq('file_id', $qb->createPositionalParameter($fileId, IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()->eq('user_id', $qb->createPositionalParameter($userId, IQueryBuilder::PARAM_STR)));
+		return $this->findEntities($qb);
+	}
+
+	/**
+	 * @throws \OCP\DB\Exception
+	 */
+	public function copyDetectionsForFileFromUserToUser(int $fileId, string $fromUser, string $toUser) : void {
+		$detections = $this->findByFileIdAndUser($fileId, $fromUser);
+		foreach ($detections as $detection) {
+			$detectionCopy = new FaceDetection();
+			$detectionCopy->setX($detection->getX());
+			$detectionCopy->setY($detection->getY());
+			$detectionCopy->setVector($detection->getVector());
+			$detectionCopy->setFileId($detection->getFileId());
+			$detectionCopy->setHeight($detection->getHeight());
+			$detectionCopy->setWidth($detection->getWidth());
+			$detectionCopy->setUserId($toUser);
+			$this->insert($detectionCopy);
+		}
+	}
+
+	/**
+	 * @param int $fileId
+	 * @param string[] $userIds
+	 * @return void
+	 * @throws \OCP\DB\Exception
+	 */
+	public function removeDetectionsForFileFromUsersNotInList(int $fileId, array $userIds) : void {
+		$qb = $this->db->getQueryBuilder();
+		$qb->delete('recognize_face_detections')
+			->where($qb->expr()->eq('file_id', $qb->createPositionalParameter($fileId, IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()->notIn('user_id', $qb->createPositionalParameter($userIds, IQueryBuilder::PARAM_STR_ARRAY)));
+		$qb->executeStatement();
+	}
+
+	/**
 	 * @param \OCA\Recognize\Db\FaceDetection $faceDetection
 	 * @param \OCA\Recognize\Db\FaceCluster $faceCluster
 	 * @return void

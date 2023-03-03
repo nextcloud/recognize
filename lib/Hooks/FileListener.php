@@ -15,9 +15,11 @@ use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Service\IgnoreService;
 use OCA\Recognize\Service\QueueService;
+use OCA\Recognize\Service\StorageService;
 use OCP\DB\Exception;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
+use OCP\Files\Config\IUserMountCache;
 use OCP\Files\Events\Node\BeforeNodeDeletedEvent;
 use OCP\Files\Events\Node\BeforeNodeRenamedEvent;
 use OCP\Files\Events\Node\NodeCreatedEvent;
@@ -27,6 +29,9 @@ use OCP\Files\FileInfo;
 use OCP\Files\InvalidPathException;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
+use OCP\Share\Events\ShareCreatedEvent;
+use OCP\Share\Events\ShareDeletedEvent;
+use OCP\Share\IManager;
 use Psr\Log\LoggerInterface;
 
 class FileListener implements IEventListener {
@@ -36,15 +41,75 @@ class FileListener implements IEventListener {
 	private IgnoreService $ignoreService;
 	private ?bool $movingFromIgnoredTerritory;
 
-	public function __construct(FaceDetectionMapper $faceDetectionMapper, LoggerInterface $logger, QueueService $queue, IgnoreService $ignoreService) {
+	private StorageService $storageService;
+
+	private IUserMountCache $userMountCache;
+
+	private IManager $shareManager;
+
+	public function __construct(FaceDetectionMapper $faceDetectionMapper, LoggerInterface $logger, QueueService $queue, IgnoreService $ignoreService, StorageService $storageService, IUserMountCache $userMountCache, IManager $shareManager) {
 		$this->faceDetectionMapper = $faceDetectionMapper;
 		$this->logger = $logger;
 		$this->queue = $queue;
 		$this->ignoreService = $ignoreService;
 		$this->movingFromIgnoredTerritory = null;
+		$this->storageService = $storageService;
+		$this->userMountCache = $userMountCache;
+		$this->shareManager = $shareManager;
 	}
 
 	public function handle(Event $event): void {
+		if ($event instanceof ShareCreatedEvent) {
+			$share = $event->getShare();
+			$ownerId = $share->getShareOwner();
+			$node = $share->getNode();
+
+			$accessList = $this->shareManager->getAccessList($node, true, true);
+			$userIds = array_keys($accessList['users']);
+
+			if ($node->getType() === FileInfo::TYPE_FOLDER) {
+				$mount = $node->getMountPoint();
+				$files = $this->storageService->getFilesInMount($mount->getNumericStorageId(), $node->getId(), [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
+				foreach ($files as $fileInfo) {
+					foreach ($userIds as $userId) {
+						if ($userId === $ownerId) {
+							continue;
+						}
+						if (count($this->faceDetectionMapper->findByFileIdAndUser($node->getId(), $userId)) > 0) {
+							continue;
+						}
+						$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($fileInfo['fileid'], $ownerId, $userId);
+					}
+				}
+			} else {
+				foreach ($userIds as $userId) {
+					if ($userId === $ownerId) {
+						continue;
+					}
+					if (count($this->faceDetectionMapper->findByFileIdAndUser($node->getId(), $userId)) > 0) {
+						continue;
+					}
+					$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($node->getId(), $ownerId, $userId);
+				}
+			}
+		}
+		if ($event instanceof ShareDeletedEvent) {
+			$share = $event->getShare();
+			$node = $share->getNode();
+
+			$accessList = $this->shareManager->getAccessList($node, true, true);
+			$userIds = array_keys($accessList['users']);
+
+			if ($node->getType() === FileInfo::TYPE_FOLDER) {
+				$mount = $node->getMountPoint();
+				$files = $this->storageService->getFilesInMount($mount->getNumericStorageId(), $node->getId(), [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
+				foreach ($files as $fileInfo) {
+					$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($fileInfo['fileid'], $userIds);
+				}
+			} else {
+				$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($node->getId(), $userIds);
+			}
+		}
 		if ($event instanceof BeforeNodeRenamedEvent) {
 			if (in_array($event->getSource()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true) &&
 				in_array($event->getTarget()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {

@@ -19,6 +19,8 @@ use OCP\Files\Events\Node\BeforeNodeRenamedEvent;
 use OCP\Files\Events\Node\NodeCreatedEvent;
 use OCP\Files\Events\Node\NodeDeletedEvent;
 use OCP\Files\Events\Node\NodeRenamedEvent;
+use OCP\Share\Events\ShareCreatedEvent;
+use OCP\Share\Events\ShareDeletedEvent;
 
 class Application extends App implements IBootstrap {
 	public const APP_ID = 'recognize';
@@ -34,6 +36,8 @@ class Application extends App implements IBootstrap {
 		$dispatcher->addServiceListener(NodeCreatedEvent::class, FileListener::class);
 		$dispatcher->addServiceListener(NodeRenamedEvent::class, FileListener::class);
 		$dispatcher->addServiceListener(BeforeNodeRenamedEvent::class, FileListener::class);
+		$dispatcher->addServiceListener(ShareCreatedEvent::class, FileListener::class);
+		$dispatcher->addServiceListener(ShareDeletedEvent::class, FileListener::class);
 	}
 
 	public function register(IRegistrationContext $context): void {

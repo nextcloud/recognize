@@ -20,7 +20,7 @@ use OCP\AppFramework\Db\Entity;
  * @method float getY()
  * @method float getHeight()
  * @method float getWidth()
- * @method list<float> getVector()
+ * @method float[] getVector()
  * @method setVector(array $vector)
  * @method setX(float $x)
  * @method setY(float $y)
