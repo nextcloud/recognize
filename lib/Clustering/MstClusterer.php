@@ -70,7 +70,7 @@ class MstClusterer {
 
 	public function processCluster(): array {
 		$currentLambda = $lastLambda = $this->startingLambda;
-
+		$edgeLength = INF
 		while (true) {
 			$edgeCount = count($this->remainingEdges);
 
@@ -156,7 +156,7 @@ class MstClusterer {
 					$this->coreEdges = array_merge($this->coreEdges, $childCluster->getCoreEdges());
 				}
 
-				if (($childrenWeight > $this->clusterWeight) || $this->isRoot) {
+				if (($childrenWeight >= $this->clusterWeight) || $this->isRoot) {
 					return $childClusters;
 				} else {
 					foreach (array_keys($this->remainingEdges) as $edgeKey) {
