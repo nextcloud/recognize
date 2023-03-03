@@ -19,6 +19,8 @@ class FaceClusterAnalyzer {
 	public const MIN_SAMPLE_SIZE = 4; // Conservative value: 10
 	public const MIN_CLUSTER_SIZE = 5; // Conservative value: 10
 	public const MIN_DETECTION_SIZE = 0.03;
+	public const MIN_CLUSTER_SEPARATION = 0.0;
+	public const MAX_CLUSTER_EDGE_LENGTH = 0.5;
 	public const DIMENSIONS = 128;
 	public const SAMPLE_SIZE_EXISTING_CLUSTERS = 42;
 
@@ -73,7 +75,7 @@ class FaceClusterAnalyzer {
 		$hdbscan = new HDBSCAN($dataset, self::MIN_CLUSTER_SIZE, self::MIN_SAMPLE_SIZE);
 
 		$numberOfClusteredDetections = 0;
-		$clusters = $hdbscan->predict();
+		$clusters = $hdbscan->predict(self::MIN_CLUSTER_SEPARATION, self::MAX_CLUSTER_EDGE_LENGTH);
 
 		foreach ($clusters as $flatCluster) {
 			$detectionKeys = array_keys($flatCluster->getClusterVertices());
