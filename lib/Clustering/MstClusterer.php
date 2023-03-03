@@ -70,7 +70,7 @@ class MstClusterer {
 
 	public function processCluster(): array {
 		$currentLambda = $lastLambda = $this->startingLambda;
-		$edgeLength = INF
+		$edgeLength = INF;
 		while (true) {
 			$edgeCount = count($this->remainingEdges);
 
