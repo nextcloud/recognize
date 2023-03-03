@@ -19,7 +19,6 @@ use OCA\Recognize\Service\StorageService;
 use OCP\DB\Exception;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
-use OCP\Files\Config\IUserMountCache;
 use OCP\Files\Events\Node\BeforeNodeDeletedEvent;
 use OCP\Files\Events\Node\BeforeNodeRenamedEvent;
 use OCP\Files\Events\Node\NodeCreatedEvent;
@@ -43,18 +42,15 @@ class FileListener implements IEventListener {
 
 	private StorageService $storageService;
 
-	private IUserMountCache $userMountCache;
-
 	private IManager $shareManager;
 
-	public function __construct(FaceDetectionMapper $faceDetectionMapper, LoggerInterface $logger, QueueService $queue, IgnoreService $ignoreService, StorageService $storageService, IUserMountCache $userMountCache, IManager $shareManager) {
+	public function __construct(FaceDetectionMapper $faceDetectionMapper, LoggerInterface $logger, QueueService $queue, IgnoreService $ignoreService, StorageService $storageService, IManager $shareManager) {
 		$this->faceDetectionMapper = $faceDetectionMapper;
 		$this->logger = $logger;
 		$this->queue = $queue;
 		$this->ignoreService = $ignoreService;
 		$this->movingFromIgnoredTerritory = null;
 		$this->storageService = $storageService;
-		$this->userMountCache = $userMountCache;
 		$this->shareManager = $shareManager;
 	}
 
