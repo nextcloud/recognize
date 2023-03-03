@@ -144,8 +144,8 @@ class MstClusterer {
 				// of clusters that weigh the most (i.e. have most (excess of) mass). Always discard the root cluster.
 
 
-				$childCluster1 = new MstClusterer($childClusterEdges1, $childClusterVerticesToEdges1, $this->minimumClusterSize, $currentLambda, $this->minClusterSeparation);
-				$childCluster2 = new MstClusterer($childClusterEdges2, $childClusterVerticesToEdges2, $this->minimumClusterSize, $currentLambda, $this->minClusterSeparation);
+				$childCluster1 = new MstClusterer($childClusterEdges1, $childClusterVerticesToEdges1, $this->minimumClusterSize, $currentLambda, $this->minClusterSeparation, $this->maxEdgeLength);
+				$childCluster2 = new MstClusterer($childClusterEdges2, $childClusterVerticesToEdges2, $this->minimumClusterSize, $currentLambda, $this->minClusterSeparation, $this->maxEdgeLength);
 
 				// Resolve all chosen child clusters recursively
 				$childClusters = array_merge($childCluster1->processCluster(), $childCluster2->processCluster());
