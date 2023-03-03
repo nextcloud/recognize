@@ -4,7 +4,9 @@
     <DeprecatedClass occurrences="1">
       <code>$this-&gt;getContainer()</code>
     </DeprecatedClass>
-    <InvalidArgument occurrences="5">
+    <InvalidArgument occurrences="7">
+      <code>addServiceListener</code>
+      <code>addServiceListener</code>
       <code>addServiceListener</code>
       <code>addServiceListener</code>
       <code>addServiceListener</code>
@@ -927,7 +929,8 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Db/FaceDetectionMapper.php">
-    <LessSpecificReturnStatement occurrences="7">
+    <LessSpecificReturnStatement occurrences="8">
+      <code>$this-&gt;findEntities($qb)</code>
       <code>$this-&gt;findEntities($qb)</code>
       <code>$this-&gt;findEntities($qb)</code>
       <code>$this-&gt;findEntities($qb)</code>
@@ -943,9 +946,10 @@
       <code>$qb-&gt;executeQuery()-&gt;fetchAll(\PDO::FETCH_COLUMN)</code>
       <code>list&lt;string&gt;</code>
     </MixedReturnTypeCoercion>
-    <MoreSpecificReturnType occurrences="7">
+    <MoreSpecificReturnType occurrences="8">
       <code>FaceDetection</code>
       <code>FaceDetection</code>
+      <code>\OCA\Recognize\Db\FaceDetection[]</code>
       <code>\OCA\Recognize\Db\FaceDetection[]</code>
       <code>list&lt;\OCA\Recognize\Db\FaceDetection&gt;</code>
       <code>list&lt;\OCA\Recognize\Db\FaceDetection&gt;</code>
@@ -1091,7 +1095,13 @@
     </UndefinedDocblockClass>
   </file>
   <file src="lib/Hooks/FileListener.php">
-    <PossiblyNullArgument occurrences="1">
+    <MixedArgument occurrences="2">
+      <code>$accessList['users']</code>
+      <code>$accessList['users']</code>
+    </MixedArgument>
+    <PossiblyNullArgument occurrences="3">
+      <code>$mount-&gt;getNumericStorageId()</code>
+      <code>$mount-&gt;getNumericStorageId()</code>
       <code>$node-&gt;getMountPoint()-&gt;getNumericStorageId()</code>
     </PossiblyNullArgument>
   </file>
@@ -1151,7 +1161,9 @@
       <code>$clusterId</code>
       <code>$sampled</code>
     </MixedArgument>
-    <MixedArgumentTypeCoercion occurrences="1">
+    <MixedArgumentTypeCoercion occurrences="3">
+      <code>$detection-&gt;getVector()</code>
+      <code>$unclusteredDetections[$detectionKey]-&gt;getVector()</code>
       <code>array_map(static fn ($key) =&gt; $detections[$key], $detectionKeys)</code>
     </MixedArgumentTypeCoercion>
     <MixedArrayTypeCoercion occurrences="1">

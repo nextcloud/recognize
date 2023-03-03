@@ -61,10 +61,16 @@ class FileListener implements IEventListener {
 			$node = $share->getNode();
 
 			$accessList = $this->shareManager->getAccessList($node, true, true);
+			/**
+			 * @var string[] $userIds
+			 */
 			$userIds = array_keys($accessList['users']);
 
 			if ($node->getType() === FileInfo::TYPE_FOLDER) {
 				$mount = $node->getMountPoint();
+				if ($mount->getNumericStorageId() === null) {
+					return;
+				}
 				$files = $this->storageService->getFilesInMount($mount->getNumericStorageId(), $node->getId(), [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
 				foreach ($files as $fileInfo) {
 					foreach ($userIds as $userId) {
@@ -94,10 +100,16 @@ class FileListener implements IEventListener {
 			$node = $share->getNode();
 
 			$accessList = $this->shareManager->getAccessList($node, true, true);
+			/**
+			 * @var string[] $userIds
+			 */
 			$userIds = array_keys($accessList['users']);
 
 			if ($node->getType() === FileInfo::TYPE_FOLDER) {
 				$mount = $node->getMountPoint();
+				if ($mount->getNumericStorageId() === null) {
+					return;
+				}
 				$files = $this->storageService->getFilesInMount($mount->getNumericStorageId(), $node->getId(), [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
 				foreach ($files as $fileInfo) {
 					$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($fileInfo['fileid'], $userIds);

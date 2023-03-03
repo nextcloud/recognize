@@ -84,7 +84,7 @@ class FaceDetectionMapper extends QBMapper {
 
 	/**
 	 * @throws \OCP\DB\Exception
-	 * @return list<\OCA\Recognize\Db\FaceDetection>
+	 * @return \OCA\Recognize\Db\FaceDetection[]
 	 */
 	public function findByFileIdAndUser(int $fileId, string $userId): array {
 		$qb = $this->db->getQueryBuilder();
