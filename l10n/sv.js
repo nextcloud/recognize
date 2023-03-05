@@ -12,7 +12,7 @@ OC.L10N.register(
     "People" : "Personer",
     "Dog" : "Hund",
     "Music" : "Musik",
-    "Office" : "Kontor",
+    "Office" : "Office",
     "Food" : "Mat",
     "Train" : "Tåg",
     "Car" : "Bil",
