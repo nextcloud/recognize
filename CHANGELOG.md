@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.6.0] - 2023-03-06
+
+### New
+ - Listen to ignore file changes
+
+### Fixed
+ - Copy face detections to sharees on ShareCreated; Delete them on ShareDeleted
+ - Add face detections for all users that can see the file
+ - Implement code paths for moving files
+ - limit ffmpeg CPU core usage according to settings
+ - Utilize mozart to avoid dependency hell
+ - Update translations from Transifex
+ - Add note about 1-core policy for WASM
+ - Allow downloading node builds for arm64 musl
+
 ## [3.5.0] - 2023-02-09
 
 ### New
