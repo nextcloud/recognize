@@ -36,6 +36,7 @@ class Classifier {
 	private ITempManager $tempManager;
 	private IPreview $previewProvider;
 	private int $maxExecutionTime = self::MAX_EXECUTION_TIME;
+	private int $maxFileSize;
 
 	/**
 	 * @var list<string>
@@ -49,6 +50,15 @@ class Classifier {
 		$this->queue = $queue;
 		$this->tempManager = $tempManager;
 		$this->previewProvider = $previewProvider;
+
+		$this->maxFileSize = $this->config->getSystemValue('preview_max_memory'); // Return value in mb
+		if($this->maxFileSize == null || $this->maxFileSize == 0)
+		{
+			$this->maxFileSize = 256; // Recommend so it can do at least 34mp photos. Commen on phones
+		}
+
+		//Now we converted maximum memory usage, to estimated filesize on disk.
+		$this->maxFileSize = $this->maxFileSize / 8; // This is not very accurate, and its a pure guess based on issue threads of files (https://github.com/nextcloud/server/issues/31284)
 	}
 
 	public function setMaxExecutionTime(int $time): void {
@@ -84,9 +94,9 @@ class Classifier {
 				$path = $this->getConvertedFilePath($files[0]);
 				if (in_array($model, [ImagenetClassifier::MODEL_NAME, LandmarksClassifier::MODEL_NAME, ClusteringFaceClassifier::MODEL_NAME], true)) {
 					// Check file data size
-					$filesizeMb = filesize($path) / (self::TEMP_FILE_DIMENSION * self::TEMP_FILE_DIMENSION);
-					if ($filesizeMb > 8) {
-						$this->logger->debug('File is too large for classifier: ' . $files[0]->getPath());
+					$filesizeMb = filesize($path) / (1024 * 1024);
+					if ($filesizeMb > $this->maxFileSize) {
+						$this->logger->debug('File is too large for classifier: ' . $files[0]->getPath() . ' file size is:  ' . $filesizeMb . ' and maximum allowed is ' .  maxFileSize . ' , consider increasing the preview_max_memory nextcloud setting.');
 						try {
 							$this->logger->debug('removing ' . $queueFile->getFileId() . ' from ' . $model . ' queue');
 							$this->queue->removeFromQueue($model, $queueFile);
@@ -98,7 +108,7 @@ class Classifier {
 					// Check file dimensions
 					$dimensions = @getimagesize($path);
 					if (isset($dimensions) && $dimensions !== false && ($dimensions[0] > self::TEMP_FILE_DIMENSION || $dimensions[1] > self::TEMP_FILE_DIMENSION)) {
-						$this->logger->debug('File dimensions are too large for classifier: ' . $files[0]->getPath());
+						$this->logger->debug('File dimensions are too large for classifier: ' . $files[0]->getPath() . ' $dimensions ' . $dimensions[0] . '/' . $dimensions[0] );
 						try {
 							$this->logger->debug('removing ' . $queueFile->getFileId() . ' from ' . $model . ' queue');
 							$this->queue->removeFromQueue($model, $queueFile);
