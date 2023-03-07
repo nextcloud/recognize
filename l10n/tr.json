@@ -46,7 +46,6 @@
     "Click the button below to rescan all files in this instance and add them to the classifier queues." : "Bu Nextcloud kopyasındaki tüm dosyaları yeniden taramak ve bunları sınıflandırma sırasına eklemek için aşağıdaki düğmeye tıklayın.",
     "Rescan all files" : "Tüm dosyaları yeniden tara",
     "Terminal commands" : "Uçbirim komutları",
-    "To trigger a full classification run manually, run the following command on the server terminal." : "Tam bir sınıflandırmayı el ile başlatmak için sunucu uçbiriminde şu komutu yürütün.",
     "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "Sınıflandırma işlerini yürütmeye yönelik tüm modelleri indirmek için sunucu uçbiriminde şu komutu yürütün.",
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "Tanıma uygulaması tarafından daha önce sınıflandırılmış tüm dosyaların etiketlerini şu komutla sıfırlayabilirsiniz:",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "Daha önce tanınarak sınıflandırılmış tüm dosyaların etiketlerini şu komutla silebilirsiniz:",

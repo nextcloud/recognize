@@ -46,7 +46,6 @@
     "Click the button below to rescan all files in this instance and add them to the classifier queues." : "点击下面的按钮，重新扫描这个实例中的所有文件，并将它们添加到分类器队列中。",
     "Rescan all files" : "重新扫描所有文件",
     "Terminal commands" : "终端命令",
-    "To trigger a full classification run manually, run the following command on the server terminal." : "要手动触发全面分类运行，在服务器终端运行以下命令。",
     "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "要在执行分类作业之前下载所有模型，在服务器终端运行以下命令。",
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "你可以用下面的命令重置所有以前被 \"识别 \"分类的文件的标签。",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "你可以用以下命令删除所有不再有任何文件与之相关联的标签。",

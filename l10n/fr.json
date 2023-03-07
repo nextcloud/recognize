@@ -46,7 +46,6 @@
     "Click the button below to rescan all files in this instance and add them to the classifier queues." : "Cliquez sur le bouton ci-dessous pour rescanner tous les fichiers de cette instance et les ajouter aux files d'attente du classifieur.",
     "Rescan all files" : "Rescanner tous les fichiers",
     "Terminal commands" : "Commandes de terminal",
-    "To trigger a full classification run manually, run the following command on the server terminal." : "Pour déclencher manuellement une exécution de classification complète, exécutez la commande suivante sur le terminal du serveur.",
     "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "Pour télécharger tous les modèles avant d'exécuter les travaux de classification, exécutez la commande suivante sur le terminal du serveur.",
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "Vous pouvez réinitialiser les étiquettes de tous les fichiers qui ont été précédemment classifiés par Recognize avec la commande suivante :",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "Vous pouvez supprimer toutes les étiquettes qui n'ont plus de fichiers associés avec la commande suivante :",

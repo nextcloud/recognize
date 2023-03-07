@@ -48,7 +48,6 @@ OC.L10N.register(
     "Click the button below to rescan all files in this instance and add them to the classifier queues." : "Pokud chcete znovu naskenovat veškeré soubory na této instanci, klikněte na níže uvedené tlačítko a přidejte je tak do fronty klasifikace.",
     "Rescan all files" : "Znovu naskenovat veškeré soubory",
     "Terminal commands" : "Příkazy v terminálu",
-    "To trigger a full classification run manually, run the following command on the server terminal." : "Pokud chcete ručně spustit kompletní určování, spusťte v terminálu serveru následující příkaz.",
     "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "Pokud chcete před vykonáním úloh určování stáhnout všechny modely, spusťte v terminálu serveru následující příkaz.",
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "Štítky z veškerých souborů, které byly klasifikovány aplikací Rozpoznat je možné odebrat  pomocí následujícího příkazu:",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "Štítky, které už nejsou přiřazené žádným souborům je možné smazat následujícím příkazem:",

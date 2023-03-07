@@ -46,7 +46,6 @@
     "Click the button below to rescan all files in this instance and add them to the classifier queues." : "Klikk på knappen nedenfor for å skanne alle filene på nytt i dette tilfellet og legge dem til klassifiseringskøene.",
     "Rescan all files" : "Skann alle filene på nytt",
     "Terminal commands" : "Terminalkommandoer",
-    "To trigger a full classification run manually, run the following command on the server terminal." : "For å utløse en full klassifiseringskjøring manuelt, kjør følgende kommando på serverterminalen.",
     "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "For å laste ned alle modellene før utførelse av klassifiseringsjobbene, kjør følgende kommando på serverterminalen.",
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "Du kan tilbakestille merkelappene for alle filer som tidligere har blitt klassifisert av Gjennkjenn med følgende kommando:",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "Du kan slette alle merkelappene som ikke lenger har noen filer knyttet til seg med følgende kommando:",

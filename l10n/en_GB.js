@@ -48,7 +48,6 @@ OC.L10N.register(
     "Click the button below to rescan all files in this instance and add them to the classifier queues." : "Click the button below to rescan all files in this instance and add them to the classifier queues.",
     "Rescan all files" : "Rescan all files",
     "Terminal commands" : "Terminal commands",
-    "To trigger a full classification run manually, run the following command on the server terminal." : "To trigger a full classification run manually, run the following command on the server terminal.",
     "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "To download all models preliminary to executing the classification jobs, run the following command on the server terminal.",
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "You can reset the tags of all files that have been previously classified by Recognise with the following command:",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "You can delete all tags that no longer have any files associated with them with the following command:",

@@ -46,7 +46,6 @@
     "Click the button below to rescan all files in this instance and add them to the classifier queues." : "Kattintson a lenti gombra, hogy újraolvassa a példány összes fájlját, és hozzáadja az osztályozási sorokhoz.",
     "Rescan all files" : "Összes fájl újraolvasása",
     "Terminal commands" : "Terminálparancsok",
-    "To trigger a full classification run manually, run the following command on the server terminal." : "A teljes osztályozás kézileg történő kiváltásához futtassa a következő parancsot a kiszolgáló terminálján.",
     "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "Az osztályozási feladatok végrehajtásához használt összes előzetes modell letöltéséhez futtassa a következő parancsot a kiszolgáló terminálján.",
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "A következő paranccsal állíthatja alaphelyzetbe az összes fájl címkéit, amelyeket a Felismerés már előzőleg osztályozott:",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "A következő paranccsal törölheti az összes olyan címkét, amelyhez már egyetlen fájl sem tartozik:",
