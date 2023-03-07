@@ -97,7 +97,7 @@ class Classifier {
 					}
 					// Check file dimensions
 					$dimensions = @getimagesize($path);
-					if (isset($dimensions) && $dimensions !== false && ($dimensions[0] > 1024 || $dimensions[1] > 1024)) {
+					if (isset($dimensions) && $dimensions !== false && ($dimensions[0] > self::TEMP_FILE_DIMENSION || $dimensions[1] > self::TEMP_FILE_DIMENSION)) {
 						$this->logger->debug('File dimensions are too large for classifier: ' . $files[0]->getPath());
 						try {
 							$this->logger->debug('removing ' . $queueFile->getFileId() . ' from ' . $model . ' queue');
