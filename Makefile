@@ -7,7 +7,7 @@ source_dir=$(build_dir)/source
 sign_dir=$(build_dir)/sign
 package_name=$(app_name)
 cert_dir=$(HOME)/.nextcloud/certificates
-version+=3.6.0
+version+=3.6.1
 
 all: dev-setup build-js-production
 
@@ -82,6 +82,8 @@ appstore:
 	--include=/node_modules \
 	--include=/package.json \
 	--include=/package-lock.json \
+	--include=/composer.json \
+	--include=/composer.lock \
 	--include=/src \
 	--include=/js \
 	--include=/lib \
