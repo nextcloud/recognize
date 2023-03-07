@@ -84,7 +84,7 @@ class Classifier {
 				$path = $this->getConvertedFilePath($files[0]);
 				if (in_array($model, [ImagenetClassifier::MODEL_NAME, LandmarksClassifier::MODEL_NAME, ClusteringFaceClassifier::MODEL_NAME], true)) {
 					// Check file data size
-					$filesizeMb = filesize($path) / (1024 * 1024);
+					$filesizeMb = filesize($path) / (self::TEMP_FILE_DIMENSION * self::TEMP_FILE_DIMENSION);
 					if ($filesizeMb > 8) {
 						$this->logger->debug('File is too large for classifier: ' . $files[0]->getPath());
 						try {
