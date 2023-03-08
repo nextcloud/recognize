@@ -52,13 +52,13 @@ class Classifier {
 		$this->previewProvider = $previewProvider;
 
 		$this->maxFileSize = $this->config->getSystemValue('preview_max_memory'); // Return value in mb
-		if($this->maxFileSize == null || $this->maxFileSize == 0)
+		if(!isset($this->maxFileSize) || $this->maxFileSize !== false  || $this->maxFileSize == null || $this->maxFileSize == 0)
 		{
 			$this->maxFileSize = 256; // Recommend so it can do at least 34mp photos. Commen on phones
 		}
 
 		//Now we converted maximum memory usage, to estimated filesize on disk.
-		$this->maxFileSize = $this->maxFileSize / 8; // This is not very accurate, and its a pure guess based on issue threads of files (https://github.com/nextcloud/server/issues/31284)
+		$this->maxFileSize = $this->maxFileSize / 8; // This is not very accurate, and its a pure guess based on issue threads of files (https://github.com/nextcloud/server/issues/31284) will allow around 32mb
 	}
 
 	public function setMaxExecutionTime(int $time): void {
@@ -107,8 +107,12 @@ class Classifier {
 					}
 					// Check file dimensions
 					$dimensions = @getimagesize($path);
+					if (isset($dimensions) && $dimensions !== false &&  ($dimensions[0] != self::TEMP_FILE_DIMENSION && $dimensions[1] != self::TEMP_FILE_DIMENSION)) {
+						$this->logger->debug('dimension of ' . $queueFile->getFileId() . ' does not contain expected dimension ' . self::TEMP_FILE_DIMENSION . ' dimensions ' . $dimensions[0] . '/' . $dimensions[1]  );
+					}
+
 					if (isset($dimensions) && $dimensions !== false && ($dimensions[0] > self::TEMP_FILE_DIMENSION || $dimensions[1] > self::TEMP_FILE_DIMENSION)) {
-						$this->logger->debug('File dimensions are too large for classifier: ' . $files[0]->getPath() . ' $dimensions ' . $dimensions[0] . '/' . $dimensions[0] );
+						$this->logger->debug('File dimensions are too large for classifier: ' . $files[0]->getPath() . ' dimensions ' . $dimensions[0] . '/' . $dimensions[1] );
 						try {
 							$this->logger->debug('removing ' . $queueFile->getFileId() . ' from ' . $model . ' queue');
 							$this->queue->removeFromQueue($model, $queueFile);
