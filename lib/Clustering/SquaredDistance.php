@@ -6,8 +6,8 @@
 
 namespace OCA\Recognize\Clustering;
 
-use OCA\Recognize\Vendor\Rubix\ML\DataType;
-use OCA\Recognize\Vendor\Rubix\ML\Kernels\Distance\Distance;
+use Rubix\ML\DataType;
+use Rubix\ML\Kernels\Distance\Distance;
 
 /**
  * Squared distance
@@ -24,7 +24,7 @@ class SquaredDistance implements Distance {
 	 *
 	 * @internal
 	 *
-	 * @return list<\OCA\Recognize\Vendor\Rubix\ML\DataType>
+	 * @return list<Rubix\ML\DataType>
 	 */
 	public function compatibility(): array {
 		return [
