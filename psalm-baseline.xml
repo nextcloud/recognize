@@ -194,21 +194,29 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$distances</code>
     </ArgumentTypeCoercion>
+    <InternalClass occurrences="2">
+      <code>Ball</code>
+      <code>Stats::mean($values)</code>
+    </InternalClass>
+    <InternalMethod occurrences="6">
+      <code>Stats::mean($values)</code>
+      <code>compute</code>
+      <code>compute</code>
+      <code>isContinuous</code>
+      <code>new self($center, $radius, $subsets)</code>
+      <code>spatialSplit</code>
+    </InternalMethod>
     <MissingParamType occurrences="1">
       <code>$longestDistance</code>
     </MissingParamType>
     <MissingPropertyType occurrences="1">
       <code>$setId</code>
     </MissingPropertyType>
-    <MixedArgument occurrences="4">
+    <MixedArgument occurrences="2">
       <code>$values</code>
       <code>$values</code>
-      <code>argmax($distances)</code>
-      <code>argmax($distances)</code>
     </MixedArgument>
-    <MixedArgumentTypeCoercion occurrences="8">
-      <code>$center</code>
-      <code>$center</code>
+    <MixedArgumentTypeCoercion occurrences="6">
       <code>$column</code>
       <code>$leftCentroid</code>
       <code>$leftCentroid</code>
@@ -216,8 +224,7 @@
       <code>$sample</code>
       <code>$sample</code>
     </MixedArgumentTypeCoercion>
-    <MixedAssignment occurrences="5">
-      <code>$center[]</code>
+    <MixedAssignment occurrences="4">
       <code>$retVal</code>
       <code>$setId</code>
       <code>$this-&gt;longestDistanceInNode</code>
@@ -232,11 +239,6 @@
       <code>$this-&gt;setId</code>
       <code>$this-&gt;setId</code>
     </MixedReturnStatement>
-    <UndefinedFunction occurrences="3">
-      <code>argmax($distances)</code>
-      <code>argmax($distances)</code>
-      <code>argmax(array_count_values($values))</code>
-    </UndefinedFunction>
     <UndefinedInterfaceMethod occurrences="4">
       <code>propagateSetChanges</code>
       <code>propagateSetChanges</code>
@@ -248,13 +250,21 @@
     <ArgumentTypeCoercion occurrences="1">
       <code>$distances</code>
     </ArgumentTypeCoercion>
+    <InternalClass occurrences="2">
+      <code>Clique</code>
+      <code>Stats::mean($values)</code>
+    </InternalClass>
+    <InternalMethod occurrences="4">
+      <code>Stats::mean($values)</code>
+      <code>compute</code>
+      <code>isContinuous</code>
+      <code>new self($dataset, $center, $radius)</code>
+    </InternalMethod>
     <MixedArgument occurrences="2">
       <code>$values</code>
       <code>$values</code>
     </MixedArgument>
-    <MixedArgumentTypeCoercion occurrences="4">
-      <code>$center</code>
-      <code>$center</code>
+    <MixedArgumentTypeCoercion occurrences="2">
       <code>$column</code>
       <code>$sample</code>
     </MixedArgumentTypeCoercion>
@@ -265,19 +275,23 @@
     <MixedArrayTypeCoercion occurrences="1">
       <code>$labelToSetId[array_pop($labels)]</code>
     </MixedArrayTypeCoercion>
-    <MixedAssignment occurrences="3">
-      <code>$center[]</code>
+    <MixedAssignment occurrences="2">
       <code>$label</code>
       <code>$values</code>
     </MixedAssignment>
     <PossiblyInvalidArrayOffset occurrences="1">
       <code>$labelToSetId[$this-&gt;dataset-&gt;label(0)]</code>
     </PossiblyInvalidArrayOffset>
-    <UndefinedFunction occurrences="1">
-      <code>argmax(array_count_values($values))</code>
-    </UndefinedFunction>
   </file>
   <file src="lib/Clustering/HDBSCAN.php">
+    <InternalClass occurrences="1">
+      <code>EstimatorType::clusterer()</code>
+    </InternalClass>
+    <InternalMethod occurrences="3">
+      <code>EstimatorType::clusterer()</code>
+      <code>Params::stringify($this-&gt;params())</code>
+      <code>compatibility</code>
+    </InternalMethod>
     <MixedReturnTypeCoercion occurrences="2">
       <code>$flatClusters</code>
       <code>list&lt;MstClusterer&gt;</code>
@@ -287,6 +301,36 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Clustering/MrdBallTree.php">
+    <InternalMethod occurrences="28">
+      <code>center</code>
+      <code>center</code>
+      <code>center</code>
+      <code>center</code>
+      <code>cleanup</code>
+      <code>compute</code>
+      <code>compute</code>
+      <code>compute</code>
+      <code>compute</code>
+      <code>dataset</code>
+      <code>dataset</code>
+      <code>dataset</code>
+      <code>dataset</code>
+      <code>dataset</code>
+      <code>dataset</code>
+      <code>isPoint</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>subsets</code>
+    </InternalMethod>
     <InvalidNullableReturnType occurrences="1">
       <code>Labeled</code>
     </InvalidNullableReturnType>
@@ -685,6 +729,14 @@
       <code>$referenceRight</code>
       <code>$referenceRight</code>
     </ArgumentTypeCoercion>
+    <InternalMethod occurrences="6">
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+    </InternalMethod>
     <LessSpecificReturnStatement occurrences="1">
       <code>$edges</code>
     </LessSpecificReturnStatement>
@@ -831,6 +883,12 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Clustering/SquaredDistance.php">
+    <InternalClass occurrences="1">
+      <code>DataType::continuous()</code>
+    </InternalClass>
+    <InternalMethod occurrences="1">
+      <code>DataType::continuous()</code>
+    </InternalMethod>
     <MoreSpecificImplementedParamType occurrences="2">
       <code>$a</code>
       <code>$b</code>
@@ -1157,6 +1215,10 @@
     </MixedReturnStatement>
   </file>
   <file src="lib/Service/FaceClusterAnalyzer.php">
+    <InternalMethod occurrences="2">
+      <code>compute</code>
+      <code>compute</code>
+    </InternalMethod>
     <MixedArgument occurrences="2">
       <code>$clusterId</code>
       <code>$sampled</code>
@@ -1183,10 +1245,5 @@
       <code>(int)$row['root_id']</code>
       <code>(int)$row['storage_id']</code>
     </RedundantCastGivenDocblockType>
-  </file>
-  <file src="lib/autoload/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php">
-    <UndefinedClass occurrences="1">
-      <code>Symfony\Polyfill\Intl\NEXTCLOUDRECOGNIZE_Normalizer\Normalizer</code>
-    </UndefinedClass>
   </file>
 </files>

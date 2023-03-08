@@ -11,8 +11,8 @@ use OCA\Recognize\Db\FaceCluster;
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
-use OCA\Recognize\Vendor\Rubix\ML\Datasets\Labeled;
-use OCA\Recognize\Vendor\Rubix\ML\Kernels\Distance\Euclidean;
+use \Rubix\ML\Datasets\Labeled;
+use \Rubix\ML\Kernels\Distance\Euclidean;
 
 class FaceClusterAnalyzer {
 	public const MIN_DATASET_SIZE = 30;

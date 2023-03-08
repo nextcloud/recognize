@@ -24,12 +24,10 @@
         "test:unit": "phpunit --config tests/phpunit.xml",
         "post-install-cmd": [
             "@composer bin all install --ansi",
-            "\"vendor/bin/mozart\" compose",
             "composer dump-autoload"
         ],
         "post-update-cmd": [
             "@composer bin all update --ansi",
-            "\"vendor/bin/mozart\" compose",
             "composer dump-autoload"
         ]
     },
@@ -45,23 +43,5 @@
         "classmap-authoritative": true,
         "optimize-autoloader": true,
         "sort-packages": true
-    },
-    "extra": {
-        "mozart": {
-            "dep_namespace": "OCA\\Recognize\\Vendor\\",
-            "dep_directory": "/lib/Vendor/",
-            "classmap_directory": "/lib/autoload/",
-            "classmap_prefix": "NEXTCLOUDRECOGNIZE_",
-            "excluded_packages": [
-                "symfony/polyfill-php72",
-                "symfony/polyfill-php80",
-                "symfony/polyfill-iconv",
-                "symfony/polyfill-intl",
-                "symfony/polyfill-intl-normalizer",
-                "symfony/polyfill-mbstring",
-                "symfony/console",
-                "psr/log"
-            ]
-        }
     }
 }
