@@ -5,7 +5,7 @@ use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Service\FaceClusterAnalyzer;
 use OCA\Recognize\Service\Logger;
-use RubixML\Kernels\Distance\Euclidean;
+use \Rubix\ML\Kernels\Distance\Euclidean;
 use Symfony\Component\Console\Output\OutputInterface;
 use Test\TestCase;
 
