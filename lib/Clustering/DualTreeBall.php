@@ -6,11 +6,11 @@
 
 namespace OCA\Recognize\Clustering;
 
-use Rubix\ML\Datasets\Labeled;
-use Rubix\ML\Graph\Nodes\Ball;
-use Rubix\ML\Helpers\Stats;
-use Rubix\ML\Kernels\Distance\Distance;
-use function Rubix\ML\argmax;
+use RubixML\Datasets\Labeled;
+use RubixML\Graph\Nodes\Ball;
+use RubixML\Helpers\Stats;
+use RubixML\Kernels\Distance\Distance;
+use function RubixML\argmax;
 
 class DualTreeBall extends Ball {
 	protected float $longestDistanceInNode = INF;
@@ -97,8 +97,8 @@ class DualTreeBall extends Ball {
 	/**
 	 * Factory method to build a hypersphere by splitting the dataset into left and right clusters.
 	 *
-	 * @param Rubix\ML\Datasets\Labeled $dataset
-	 * @param Rubix\ML\Kernels\Distance\Distance $kernel
+	 * @param RubixML\Datasets\Labeled $dataset
+	 * @param RubixML\Kernels\Distance\Distance $kernel
 	 * @return self
 	 */
 	public static function split(Labeled $dataset, Distance $kernel): self {
