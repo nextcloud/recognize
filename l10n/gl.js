@@ -8,6 +8,8 @@ OC.L10N.register(
     "Failed to save settings" : "Produciuse un fallo ao gardar os axustes",
     "never" : "nunca",
     "{time} ago" : "Hai {time}",
+    "Landscape" : "Orientación horizontal",
+    "Portrait" : "Orientación vertical",
     "People" : "Xente",
     "Music" : "Música",
     "Office" : "Oficina",

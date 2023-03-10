@@ -26,7 +26,7 @@ OC.L10N.register(
     "The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~500 or more, in WASM mode ~50 is recommended)" : "Nombre de fichiers à traiter par lancement (une tâche sera programmée toute les 5 minutes ; ~500 ou plus pour un fonctionnement normal, ~50 est recommandé en mode WASM)",
     "Enable object recognition (e.g. food, vehicles, landscapes)" : "Activer la reconnaissance d'objets (ex : nourriture, véhicules, paysages)",
     "The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)" : "Nombre de fichiers à traiter par lancement (une tâche sera programmée toute les 5 minutes ; ~100 ou plus pour un fonctionnement normal, ~20 est recommandé en mode WASM)",
-    "Enable landmark recognition (e.g. Eiffel Tower, Golden Gate Bridge)" : "Activer la reconnaissance de monuments (ex : Tour Eiffel, pont du Golden Gate)",
+    "Enable landmark recognition (e.g. Eiffel Tower, Golden Gate Bridge)" : "Activer la reconnaissance des sites (ex : Tour Eiffel, pont du Golden Gate)",
     "Audio tagging" : "Étiquetage des fichiers audio",
     "Audio recognition is working." : "Reconnaissance sonore en cours.",
     "An error occurred during audio recognition, please check the Nextcloud logs." : "Une erreur s'est produire pendant la reconnaissance sonore , veuillez consulter les journaux Nextcloud.",

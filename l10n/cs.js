@@ -51,6 +51,7 @@ OC.L10N.register(
     "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "Pokud chcete před vykonáním úloh určování stáhnout všechny modely, spusťte v terminálu serveru následující příkaz.",
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "Štítky z veškerých souborů, které byly klasifikovány aplikací Rozpoznat je možné odebrat  pomocí následujícího příkazu:",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "Štítky, které už nejsou přiřazené žádným souborům je možné smazat následujícím příkazem:",
+    "To remove all detected faces and face clusters run the following on the terminal:" : "Pokud chcete odebrat veškeré zjištěné obličeje a jejich shluky, spusťte v terminálu následující:",
     "CPU cores" : "Jader procesoru",
     "By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used. (Note: In WASM mode, currently only 1 core can be used at all times.)" : "Ve výchozím stavu budou použita veškerá dostupná jádra procesoru, což může vámi využívaný systém podstatně vytížit. Pokud se tomu chcete vyhnout, je možné množství využívaných jader procesoru omezit. (Pozn. v režimu WASM je v tuto chvíli možné využívat pouze jedno jádro.)",
     "Number of CPU Cores (0 for no limit)" : "Počet jader procesoru (0 znamená bez omezení)",
