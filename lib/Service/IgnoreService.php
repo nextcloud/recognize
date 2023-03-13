@@ -58,4 +58,9 @@ class IgnoreService {
 		$this->localCache->set($cacheKey, $directories);
 		return $directories;
 	}
+
+	public function clearCacheForStorage(int $storageId) : void {
+		$this->inMemoryCache = [];
+		$this->localCache->clear($storageId . '-');
+	}
 }

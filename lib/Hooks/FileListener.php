@@ -28,7 +28,6 @@ use OCP\Files\FileInfo;
 use OCP\Files\InvalidPathException;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
-use OCP\ICache;
 use OCP\ICacheFactory;
 use OCP\Share\Events\ShareCreatedEvent;
 use OCP\Share\Events\ShareDeletedEvent;
@@ -46,9 +45,6 @@ class FileListener implements IEventListener {
 
 	private IManager $shareManager;
 
-	private array $ignoredCache = [];
-	private ICache $ignoredDirectoriesCache;
-
 	public function __construct(FaceDetectionMapper $faceDetectionMapper, LoggerInterface $logger, QueueService $queue, IgnoreService $ignoreService, StorageService $storageService, IManager $shareManager, ICacheFactory $cacheFactory) {
 		$this->faceDetectionMapper = $faceDetectionMapper;
 		$this->logger = $logger;
@@ -57,7 +53,6 @@ class FileListener implements IEventListener {
 		$this->movingFromIgnoredTerritory = null;
 		$this->storageService = $storageService;
 		$this->shareManager = $shareManager;
-		$this->ignoredDirectoriesCache = $cacheFactory->createLocal('recognize-ignored-directories');
 	}
 
 	public function handle(Event $event): void {
@@ -127,6 +122,7 @@ class FileListener implements IEventListener {
 		if ($event instanceof BeforeNodeRenamedEvent) {
 			if (in_array($event->getSource()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true) &&
 				in_array($event->getTarget()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
+				$this->resetIgnoreCache($event->getSource());
 				return;
 			}
 			// We try to remember whether the source node is in ignored territory
@@ -141,7 +137,6 @@ class FileListener implements IEventListener {
 		if ($event instanceof NodeRenamedEvent) {
 			if (in_array($event->getSource()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true) &&
 				in_array($event->getTarget()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
-				$this->resetIgnoreCache($event->getSource());
 				$this->resetIgnoreCache($event->getTarget());
 				$this->postInsert($event->getSource()->getParent());
 				$this->postDelete($event->getTarget()->getParent());
@@ -287,16 +282,12 @@ class FileListener implements IEventListener {
 	 * @throws \OCP\Files\NotFoundException
 	 */
 	public function isIgnored(Node $node) : bool {
-		if (isset($this->ignoredCache[$node->getId()])) {
-			return $this->ignoredCache[$node->getId()];
-		}
-
 		$ignoreMarkers = [];
 		$mimeType = $node->getMimetype();
 		$storageId = $node->getMountPoint()->getNumericStorageId();
 
 		if ($storageId === null) {
-			return $this->ignoredCache[$node->getId()] = true;
+			return true;
 		}
 
 		if (in_array($mimeType, Constants::IMAGE_FORMATS)) {
@@ -309,7 +300,7 @@ class FileListener implements IEventListener {
 			$ignoreMarkers = array_merge($ignoreMarkers, Constants::IGNORE_MARKERS_AUDIO);
 		}
 		if (count($ignoreMarkers) === 0) {
-			return $this->ignoredCache[$node->getId()] = true;
+			return true;
 		}
 
 		$ignoreMarkers = array_merge($ignoreMarkers, Constants::IGNORE_MARKERS_ALL);
@@ -320,15 +311,14 @@ class FileListener implements IEventListener {
 		});
 
 		if (count($relevantIgnorePaths) > 0) {
-			return $this->ignoredCache[$node->getId()] = true;
+			return true;
 		}
 
-		return $this->ignoredCache[$node->getId()] = false;
+		return false;
 	}
 
 	private function resetIgnoreCache(Node $node) : void {
-		$this->ignoredCache = [];
 		$storageId = $node->getMountPoint()->getNumericStorageId();
-		$this->ignoredDirectoriesCache->clear($storageId . '-');
+		$this->ignoreService->clearCacheForStorage($storageId);
 	}
 }
