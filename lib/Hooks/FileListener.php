@@ -28,6 +28,8 @@ use OCP\Files\FileInfo;
 use OCP\Files\InvalidPathException;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
+use OCP\ICache;
+use OCP\ICacheFactory;
 use OCP\Share\Events\ShareCreatedEvent;
 use OCP\Share\Events\ShareDeletedEvent;
 use OCP\Share\IManager;
@@ -45,8 +47,9 @@ class FileListener implements IEventListener {
 	private IManager $shareManager;
 
 	private array $ignoredCache = [];
+	private ICache $ignoredDirectoriesCache;
 
-	public function __construct(FaceDetectionMapper $faceDetectionMapper, LoggerInterface $logger, QueueService $queue, IgnoreService $ignoreService, StorageService $storageService, IManager $shareManager) {
+	public function __construct(FaceDetectionMapper $faceDetectionMapper, LoggerInterface $logger, QueueService $queue, IgnoreService $ignoreService, StorageService $storageService, IManager $shareManager, ICacheFactory $cacheFactory) {
 		$this->faceDetectionMapper = $faceDetectionMapper;
 		$this->logger = $logger;
 		$this->queue = $queue;
@@ -54,6 +57,7 @@ class FileListener implements IEventListener {
 		$this->movingFromIgnoredTerritory = null;
 		$this->storageService = $storageService;
 		$this->shareManager = $shareManager;
+		$this->ignoredDirectoriesCache = $cacheFactory->createLocal('recognize-ignored-directories');
 	}
 
 	public function handle(Event $event): void {
@@ -121,7 +125,6 @@ class FileListener implements IEventListener {
 			}
 		}
 		if ($event instanceof BeforeNodeRenamedEvent) {
-			$this->resetIgnoreCache();
 			if (in_array($event->getSource()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true) &&
 				in_array($event->getTarget()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
 				return;
@@ -136,9 +139,10 @@ class FileListener implements IEventListener {
 			return;
 		}
 		if ($event instanceof NodeRenamedEvent) {
-			$this->resetIgnoreCache();
 			if (in_array($event->getSource()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true) &&
 				in_array($event->getTarget()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
+				$this->resetIgnoreCache($event->getSource());
+				$this->resetIgnoreCache($event->getTarget());
 				$this->postInsert($event->getSource()->getParent());
 				$this->postDelete($event->getTarget()->getParent());
 				return;
@@ -158,18 +162,17 @@ class FileListener implements IEventListener {
 		}
 		if ($event instanceof NodeDeletedEvent) {
 			if (in_array($event->getNode()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
-				$this->resetIgnoreCache();
+				$this->resetIgnoreCache($event->getNode());
 				$this->postInsert($event->getNode()->getParent());
 				return;
 			}
 		}
 		if ($event instanceof BeforeNodeDeletedEvent) {
-			$this->resetIgnoreCache();
 			$this->postDelete($event->getNode(), false);
 		}
 		if ($event instanceof NodeCreatedEvent) {
-			$this->resetIgnoreCache();
 			if (in_array($event->getNode()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
+				$this->resetIgnoreCache($event->getNode());
 				$this->postDelete($event->getNode()->getParent());
 				return;
 			}
@@ -323,7 +326,9 @@ class FileListener implements IEventListener {
 		return $this->ignoredCache[$node->getId()] = false;
 	}
 
-	private function resetIgnoreCache() : void {
+	private function resetIgnoreCache(Node $node) : void {
 		$this->ignoredCache = [];
+		$storageId = $node->getMountPoint()->getNumericStorageId();
+		$this->ignoredDirectoriesCache->clear($storageId . '-');
 	}
 }

@@ -9,6 +9,8 @@ namespace OCA\Recognize\Service;
 use OC\Files\Cache\CacheQueryBuilder;
 use OC\SystemConfig;
 use OCP\DB\QueryBuilder\IQueryBuilder;
+use OCP\ICache;
+use OCP\ICacheFactory;
 use OCP\IDBConnection;
 use Psr\Log\LoggerInterface;
 
@@ -16,12 +18,14 @@ class IgnoreService {
 	private IDBConnection $db;
 	private SystemConfig $systemConfig;
 	private LoggerInterface $logger;
-	private array $cache = [];
+	private array $inMemoryCache = [];
+	private ICache $localCache;
 
-	public function __construct(IDBConnection $db, SystemConfig $systemConfig, LoggerInterface $logger) {
+	public function __construct(IDBConnection $db, SystemConfig $systemConfig, LoggerInterface $logger, ICacheFactory $cacheFactory) {
 		$this->db = $db;
 		$this->systemConfig = $systemConfig;
 		$this->logger = $logger;
+		$this->localCache = $cacheFactory->createLocal('recognize-ignored-directories');
 	}
 
 	/**
@@ -31,10 +35,15 @@ class IgnoreService {
 	 * @throws \OCP\DB\Exception
 	 */
 	public function getIgnoredDirectories(int $storageId, array $ignoreMarkers): array {
-		$cacheKey = implode(',', $ignoreMarkers) . '-' . $storageId;
-		if (isset($this->cache[$cacheKey])) {
-			return $this->cache[$cacheKey];
+		$cacheKey = $storageId . '-' . implode(',', $ignoreMarkers);
+		if (isset($this->inMemoryCache[$cacheKey])) {
+			return $this->inMemoryCache[$cacheKey];
 		}
+		$directories = $this->localCache->get($cacheKey);
+		if ($directories !== null) {
+			return $directories;
+		}
+
 		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
 		$result = $qb->selectFileCache()
 			->andWhere($qb->expr()->in('name', $qb->createNamedParameter($ignoreMarkers, IQueryBuilder::PARAM_STR_ARRAY)))
@@ -44,7 +53,9 @@ class IgnoreService {
 		 * @var list<array{path: string}> $ignoreFiles
 		 */
 		$ignoreFiles = $result->fetchAll();
-		$this->cache[$cacheKey] = array_map(fn ($file): string => dirname($file['path']), $ignoreFiles);
-		return $this->cache[$cacheKey];
+		$directories = array_map(static fn ($file): string => dirname($file['path']), $ignoreFiles);
+		$this->inMemoryCache[$cacheKey] = $directories;
+		$this->localCache->set($cacheKey, $directories);
+		return $directories;
 	}
 }
