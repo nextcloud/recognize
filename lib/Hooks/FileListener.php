@@ -152,24 +152,29 @@ class FileListener implements IEventListener {
 			}
 			return;
 		}
-		if ($event instanceof NodeDeletedEvent && in_array($event->getNode()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
-			$this->postInsert($event->getNode()->getParent());
-			return;
+		if ($event instanceof NodeDeletedEvent) {
+			if (in_array($event->getNode()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
+				$this->postInsert($event->getNode()->getParent());
+				return;
+			}
 		}
 		if ($event instanceof BeforeNodeDeletedEvent) {
-			$this->postDelete($event->getNode());
+			$this->postDelete($event->getNode(), false);
 		}
 		if ($event instanceof NodeCreatedEvent) {
 			if (in_array($event->getNode()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
 				$this->postDelete($event->getNode()->getParent());
 				return;
 			}
-			$this->postInsert($event->getNode());
+			$this->postInsert($event->getNode(), false);
 		}
 	}
 
-	public function postDelete(Node $node): void {
+	public function postDelete(Node $node, bool $recurse = true): void {
 		if ($node->getType() === FileInfo::TYPE_FOLDER) {
+			if (!$recurse) {
+				return;
+			}
 			try {
 				/** @var \OCP\Files\Folder $node */
 				foreach ($node->getDirectoryListing() as $child) {
@@ -210,8 +215,11 @@ class FileListener implements IEventListener {
 	/**
 	 * @throws \OCP\Files\InvalidPathException
 	 */
-	public function postInsert(Node $node): void {
+	public function postInsert(Node $node, bool $recurse = true): void {
 		if ($node->getType() === FileInfo::TYPE_FOLDER) {
+			if (!$recurse) {
+				return;
+			}
 			// For normal inserts we probably get one event per node, but, when removing an ignore file,
 			// we only get the folder passed here, so we recurse.
 			try {
