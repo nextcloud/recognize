@@ -30,7 +30,7 @@ class IgnoreService {
 
 	/**
 	 * @param int $storageId
-	 * @param array $ignoreMarkers
+	 * @param string[] $ignoreMarkers
 	 * @return list<string>
 	 * @throws \OCP\DB\Exception
 	 */
@@ -39,6 +39,7 @@ class IgnoreService {
 		if (isset($this->inMemoryCache[$cacheKey])) {
 			return $this->inMemoryCache[$cacheKey];
 		}
+		/** @var list<string> $directories */
 		$directories = $this->localCache->get($cacheKey);
 		if ($directories !== null) {
 			return $directories;

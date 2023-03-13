@@ -1240,6 +1240,17 @@
       <code>getClusterId</code>
     </MixedMethodCall>
   </file>
+  <file src="lib/Service/IgnoreService.php">
+    <MixedInferredReturnType occurrences="1">
+      <code>list&lt;string&gt;</code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement occurrences="1">
+      <code>$this-&gt;inMemoryCache[$cacheKey]</code>
+    </MixedReturnStatement>
+    <RedundantConditionGivenDocblockType occurrences="1">
+      <code>$directories !== null</code>
+    </RedundantConditionGivenDocblockType>
+  </file>
   <file src="lib/Service/StorageService.php">
     <RedundantCastGivenDocblockType occurrences="2">
       <code>(int)$row['root_id']</code>

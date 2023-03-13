@@ -319,6 +319,9 @@ class FileListener implements IEventListener {
 
 	private function resetIgnoreCache(Node $node) : void {
 		$storageId = $node->getMountPoint()->getNumericStorageId();
+		if ($storageId === null) {
+			return;
+		}
 		$this->ignoreService->clearCacheForStorage($storageId);
 	}
 }
