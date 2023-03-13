@@ -44,6 +44,8 @@ class FileListener implements IEventListener {
 
 	private IManager $shareManager;
 
+	private array $ignoredCache = [];
+
 	public function __construct(FaceDetectionMapper $faceDetectionMapper, LoggerInterface $logger, QueueService $queue, IgnoreService $ignoreService, StorageService $storageService, IManager $shareManager) {
 		$this->faceDetectionMapper = $faceDetectionMapper;
 		$this->logger = $logger;
@@ -119,6 +121,7 @@ class FileListener implements IEventListener {
 			}
 		}
 		if ($event instanceof BeforeNodeRenamedEvent) {
+			$this->resetIgnoreCache();
 			if (in_array($event->getSource()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true) &&
 				in_array($event->getTarget()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
 				return;
@@ -133,6 +136,7 @@ class FileListener implements IEventListener {
 			return;
 		}
 		if ($event instanceof NodeRenamedEvent) {
+			$this->resetIgnoreCache();
 			if (in_array($event->getSource()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true) &&
 				in_array($event->getTarget()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
 				$this->postInsert($event->getSource()->getParent());
@@ -154,14 +158,17 @@ class FileListener implements IEventListener {
 		}
 		if ($event instanceof NodeDeletedEvent) {
 			if (in_array($event->getNode()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
+				$this->resetIgnoreCache();
 				$this->postInsert($event->getNode()->getParent());
 				return;
 			}
 		}
 		if ($event instanceof BeforeNodeDeletedEvent) {
+			$this->resetIgnoreCache();
 			$this->postDelete($event->getNode(), false);
 		}
 		if ($event instanceof NodeCreatedEvent) {
+			$this->resetIgnoreCache();
 			if (in_array($event->getNode()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
 				$this->postDelete($event->getNode()->getParent());
 				return;
@@ -271,18 +278,22 @@ class FileListener implements IEventListener {
 
 	/**
 	 * @param \OCP\Files\Node $node
-	 * @param string|null $mimeType
-	 * @param int|null $storageId
 	 * @return bool
 	 * @throws \OCP\DB\Exception
+	 * @throws \OCP\Files\InvalidPathException
+	 * @throws \OCP\Files\NotFoundException
 	 */
 	public function isIgnored(Node $node) : bool {
+		if (isset($this->ignoredCache[$node->getId()])) {
+			return $this->ignoredCache[$node->getId()];
+		}
+
 		$ignoreMarkers = [];
 		$mimeType = $node->getMimetype();
 		$storageId = $node->getMountPoint()->getNumericStorageId();
 
 		if ($storageId === null) {
-			return true;
+			return $this->ignoredCache[$node->getId()] = true;
 		}
 
 		if (in_array($mimeType, Constants::IMAGE_FORMATS)) {
@@ -295,7 +306,7 @@ class FileListener implements IEventListener {
 			$ignoreMarkers = array_merge($ignoreMarkers, Constants::IGNORE_MARKERS_AUDIO);
 		}
 		if (count($ignoreMarkers) === 0) {
-			return true;
+			return $this->ignoredCache[$node->getId()] = true;
 		}
 
 		$ignoreMarkers = array_merge($ignoreMarkers, Constants::IGNORE_MARKERS_ALL);
@@ -306,9 +317,13 @@ class FileListener implements IEventListener {
 		});
 
 		if (count($relevantIgnorePaths) > 0) {
-			return true;
+			return $this->ignoredCache[$node->getId()] = true;
 		}
 
-		return false;
+		return $this->ignoredCache[$node->getId()] = false;
+	}
+
+	private function resetIgnoreCache() : void {
+		$this->ignoredCache = [];
 	}
 }

@@ -16,6 +16,7 @@ class IgnoreService {
 	private IDBConnection $db;
 	private SystemConfig $systemConfig;
 	private LoggerInterface $logger;
+	private array $cache = [];
 
 	public function __construct(IDBConnection $db, SystemConfig $systemConfig, LoggerInterface $logger) {
 		$this->db = $db;
@@ -30,6 +31,10 @@ class IgnoreService {
 	 * @throws \OCP\DB\Exception
 	 */
 	public function getIgnoredDirectories(int $storageId, array $ignoreMarkers): array {
+		$cacheKey = implode(',', $ignoreMarkers) . '-' . $storageId;
+		if (isset($this->cache[$cacheKey])) {
+			return $this->cache[$cacheKey];
+		}
 		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
 		$result = $qb->selectFileCache()
 			->andWhere($qb->expr()->in('name', $qb->createNamedParameter($ignoreMarkers, IQueryBuilder::PARAM_STR_ARRAY)))
@@ -39,6 +44,7 @@ class IgnoreService {
 		 * @var list<array{path: string}> $ignoreFiles
 		 */
 		$ignoreFiles = $result->fetchAll();
-		return array_map(fn ($file): string => dirname($file['path']), $ignoreFiles);
+		$this->cache[$cacheKey] = array_map(fn ($file): string => dirname($file['path']), $ignoreFiles);
+		return $this->cache[$cacheKey];
 	}
 }
