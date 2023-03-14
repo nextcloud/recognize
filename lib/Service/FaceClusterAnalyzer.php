@@ -15,7 +15,7 @@ use \Rubix\ML\Datasets\Labeled;
 use \Rubix\ML\Kernels\Distance\Euclidean;
 
 class FaceClusterAnalyzer {
-	public const MIN_DATASET_SIZE = 30;
+	public const MIN_DATASET_SIZE = 120;
 	public const MIN_SAMPLE_SIZE = 4; // Conservative value: 10
 	public const MIN_CLUSTER_SIZE = 5; // Conservative value: 10
 	public const MIN_DETECTION_SIZE = 0.03;
