@@ -302,6 +302,10 @@ class Classifier {
 
 		$this->tmpFiles[] = $tmpname;
 
+		$dimensions = @getimagesize($tmpname);
+		if (isset($dimensions) && $dimensions !== false && ($dimensions[0] != self::TEMP_FILE_DIMENSION && $dimensions[1] != self::TEMP_FILE_DIMENSION)) {
+			$this->logger->debug('Dimension of ' . $tmpname . ' does not contain expected dimension requested ' . self::TEMP_FILE_DIMENSION . ' ,dimensions ' . $dimensions[0] . '/' . $dimensions[1] );
+		}
 		return $tmpname;
 	}
 
