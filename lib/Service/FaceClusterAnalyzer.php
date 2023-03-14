@@ -33,7 +33,7 @@ class FaceClusterAnalyzer {
 		$this->logger = $logger;
 	}
 
-	public function setMinDatasetSize(int $minSize) {
+	public function setMinDatasetSize(int $minSize) : void {
 		$this->minDatasetSize = $minSize;
 	}
 

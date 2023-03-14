@@ -117,9 +117,11 @@ class TagManager {
 
 	/**
 	 * @return void
+	 * @throws \JsonException
 	 */
 	public function resetClassifications(): void {
 		$json = file_get_contents(__DIR__.'/../../src/things.json');
+		/** @var string[] $things */
 		$things = json_decode($json, true, 512, JSON_THROW_ON_ERROR | JSON_OBJECT_AS_ARRAY);
 		$tags = [];
 		foreach ($things as $tagName) {
