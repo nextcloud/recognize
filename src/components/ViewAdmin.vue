@@ -169,8 +169,14 @@
 			</button>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Terminal commands') ">
-			<p>{{ t('recognize', 'To trigger a full classification run manually, run the following command on the server terminal.') }}</p>
+			<p>{{ t('recognize', 'To trigger a full classification run, run the following command on the server terminal. (The classification will run in multiple background jobs which can run in parallel.)') }}</p>
 			<pre><code>occ recognize:recrawl</code></pre>
+			<p>&nbsp;</p>
+			<p>{{ t('recognize', 'To run a full classification run on the terminal, run the following. (The classification will run in sequence inside your terminal.)') }}</p>
+			<pre><code>occ recognize:classify</code></pre>
+			<p>&nbsp;</p>
+			<p>{{ t('recognize', 'To run a face clustering run on for each user in the terminal, run the following. (The clustering will run in sequence inside your terminal.)') }}</p>
+			<pre><code>occ recognize:cluster-faces</code></pre>
 			<p>&nbsp;</p>
 			<p>{{ t('recognize', 'To download all models preliminary to executing the classification jobs, run the following command on the server terminal.') }}</p>
 			<pre><code>occ recognize:download-models</code></pre>
@@ -180,6 +186,15 @@
 			<p>&nbsp;</p>
 			<p>{{ t('recognize', 'You can delete all tags that no longer have any files associated with them with the following command:') }}</p>
 			<pre><code>occ recognize:cleanup-tags</code></pre>
+			<p>&nbsp;</p>
+			<p>{{ t('recognize', 'To remove all detected faces and face clusters run the following on the terminal:') }}</p>
+			<pre><code>occ recognize:reset-faces</code></pre>
+			<p>&nbsp;</p>
+			<p>{{ t('recognize', 'To remove all face clusters but keep the raw detected faces run the following on the terminal:') }}</p>
+			<pre><code>occ recognize:reset-face-clusters</code></pre>
+			<p>&nbsp;</p>
+			<p>{{ t('recognize', 'To remove tags that were created by recognize version 2 from all files run the following on the terminal:') }}</p>
+			<pre><code>occ recognize:remove-legacy-tags</code></pre>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'CPU cores') ">
 			<p>{{ t('recognize', 'By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used. (Note: In WASM mode, currently only 1 core can be used at all times.)') }}</p>

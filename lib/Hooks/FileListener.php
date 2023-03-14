@@ -19,7 +19,6 @@ use OCA\Recognize\Service\StorageService;
 use OCP\DB\Exception;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
-use OCP\Files\Config\IUserMountCache;
 use OCP\Files\Events\Node\BeforeNodeDeletedEvent;
 use OCP\Files\Events\Node\BeforeNodeRenamedEvent;
 use OCP\Files\Events\Node\NodeCreatedEvent;
@@ -29,6 +28,7 @@ use OCP\Files\FileInfo;
 use OCP\Files\InvalidPathException;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
+use OCP\ICacheFactory;
 use OCP\Share\Events\ShareCreatedEvent;
 use OCP\Share\Events\ShareDeletedEvent;
 use OCP\Share\IManager;
@@ -43,18 +43,15 @@ class FileListener implements IEventListener {
 
 	private StorageService $storageService;
 
-	private IUserMountCache $userMountCache;
-
 	private IManager $shareManager;
 
-	public function __construct(FaceDetectionMapper $faceDetectionMapper, LoggerInterface $logger, QueueService $queue, IgnoreService $ignoreService, StorageService $storageService, IUserMountCache $userMountCache, IManager $shareManager) {
+	public function __construct(FaceDetectionMapper $faceDetectionMapper, LoggerInterface $logger, QueueService $queue, IgnoreService $ignoreService, StorageService $storageService, IManager $shareManager, ICacheFactory $cacheFactory) {
 		$this->faceDetectionMapper = $faceDetectionMapper;
 		$this->logger = $logger;
 		$this->queue = $queue;
 		$this->ignoreService = $ignoreService;
 		$this->movingFromIgnoredTerritory = null;
 		$this->storageService = $storageService;
-		$this->userMountCache = $userMountCache;
 		$this->shareManager = $shareManager;
 	}
 
@@ -65,10 +62,16 @@ class FileListener implements IEventListener {
 			$node = $share->getNode();
 
 			$accessList = $this->shareManager->getAccessList($node, true, true);
+			/**
+			 * @var string[] $userIds
+			 */
 			$userIds = array_keys($accessList['users']);
 
 			if ($node->getType() === FileInfo::TYPE_FOLDER) {
 				$mount = $node->getMountPoint();
+				if ($mount->getNumericStorageId() === null) {
+					return;
+				}
 				$files = $this->storageService->getFilesInMount($mount->getNumericStorageId(), $node->getId(), [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
 				foreach ($files as $fileInfo) {
 					foreach ($userIds as $userId) {
@@ -98,10 +101,16 @@ class FileListener implements IEventListener {
 			$node = $share->getNode();
 
 			$accessList = $this->shareManager->getAccessList($node, true, true);
+			/**
+			 * @var string[] $userIds
+			 */
 			$userIds = array_keys($accessList['users']);
 
 			if ($node->getType() === FileInfo::TYPE_FOLDER) {
 				$mount = $node->getMountPoint();
+				if ($mount->getNumericStorageId() === null) {
+					return;
+				}
 				$files = $this->storageService->getFilesInMount($mount->getNumericStorageId(), $node->getId(), [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
 				foreach ($files as $fileInfo) {
 					$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($fileInfo['fileid'], $userIds);
@@ -113,6 +122,7 @@ class FileListener implements IEventListener {
 		if ($event instanceof BeforeNodeRenamedEvent) {
 			if (in_array($event->getSource()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true) &&
 				in_array($event->getTarget()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
+				$this->resetIgnoreCache($event->getSource());
 				return;
 			}
 			// We try to remember whether the source node is in ignored territory
@@ -127,6 +137,7 @@ class FileListener implements IEventListener {
 		if ($event instanceof NodeRenamedEvent) {
 			if (in_array($event->getSource()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true) &&
 				in_array($event->getTarget()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
+				$this->resetIgnoreCache($event->getTarget());
 				$this->postInsert($event->getSource()->getParent());
 				$this->postDelete($event->getTarget()->getParent());
 				return;
@@ -144,24 +155,31 @@ class FileListener implements IEventListener {
 			}
 			return;
 		}
-		if ($event instanceof NodeDeletedEvent && in_array($event->getNode()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
-			$this->postInsert($event->getNode()->getParent());
-			return;
+		if ($event instanceof NodeDeletedEvent) {
+			if (in_array($event->getNode()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
+				$this->resetIgnoreCache($event->getNode());
+				$this->postInsert($event->getNode()->getParent());
+				return;
+			}
 		}
 		if ($event instanceof BeforeNodeDeletedEvent) {
-			$this->postDelete($event->getNode());
+			$this->postDelete($event->getNode(), false);
 		}
 		if ($event instanceof NodeCreatedEvent) {
 			if (in_array($event->getNode()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
+				$this->resetIgnoreCache($event->getNode());
 				$this->postDelete($event->getNode()->getParent());
 				return;
 			}
-			$this->postInsert($event->getNode());
+			$this->postInsert($event->getNode(), false);
 		}
 	}
 
-	public function postDelete(Node $node): void {
+	public function postDelete(Node $node, bool $recurse = true): void {
 		if ($node->getType() === FileInfo::TYPE_FOLDER) {
+			if (!$recurse) {
+				return;
+			}
 			try {
 				/** @var \OCP\Files\Folder $node */
 				foreach ($node->getDirectoryListing() as $child) {
@@ -202,8 +220,11 @@ class FileListener implements IEventListener {
 	/**
 	 * @throws \OCP\Files\InvalidPathException
 	 */
-	public function postInsert(Node $node): void {
+	public function postInsert(Node $node, bool $recurse = true): void {
 		if ($node->getType() === FileInfo::TYPE_FOLDER) {
+			if (!$recurse) {
+				return;
+			}
 			// For normal inserts we probably get one event per node, but, when removing an ignore file,
 			// we only get the folder passed here, so we recurse.
 			try {
@@ -255,10 +276,10 @@ class FileListener implements IEventListener {
 
 	/**
 	 * @param \OCP\Files\Node $node
-	 * @param string|null $mimeType
-	 * @param int|null $storageId
 	 * @return bool
 	 * @throws \OCP\DB\Exception
+	 * @throws \OCP\Files\InvalidPathException
+	 * @throws \OCP\Files\NotFoundException
 	 */
 	public function isIgnored(Node $node) : bool {
 		$ignoreMarkers = [];
@@ -294,5 +315,13 @@ class FileListener implements IEventListener {
 		}
 
 		return false;
+	}
+
+	private function resetIgnoreCache(Node $node) : void {
+		$storageId = $node->getMountPoint()->getNumericStorageId();
+		if ($storageId === null) {
+			return;
+		}
+		$this->ignoreService->clearCacheForStorage($storageId);
 	}
 }

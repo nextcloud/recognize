@@ -9,6 +9,7 @@ OC.L10N.register(
     "Failed to save settings" : "Kunne ikke gemme indstillinger",
     "never" : "aldrig",
     "{time} ago" : "{time} siden",
+    "Cat" : "Kat",
     "Farm" : "Gård",
     "People" : "Personer",
     "Dog" : "Hund",

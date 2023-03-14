@@ -47,7 +47,6 @@ OC.L10N.register(
     "Click the button below to rescan all files in this instance and add them to the classifier queues." : "Для повторного распознавания всех файлов, нажмите кнопку, расположенную ниже.",
     "Rescan all files" : "Повторно распознать все файлы",
     "Terminal commands" : "Команды для использования в консоли",
-    "To trigger a full classification run manually, run the following command on the server terminal." : "Принудительный запуск распознавания всех объектов:",
     "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "Загрузка всех моделей машинного обучения перед распознаванием:",
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "Очистка всех присвоенных распознаванием меток:",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "Удаление всех неиспользуемых меток:",

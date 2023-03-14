@@ -11,11 +11,11 @@ use OCA\Recognize\Db\FaceCluster;
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
-use OCA\Recognize\Vendor\Rubix\ML\Datasets\Labeled;
-use OCA\Recognize\Vendor\Rubix\ML\Kernels\Distance\Euclidean;
+use \Rubix\ML\Datasets\Labeled;
+use \Rubix\ML\Kernels\Distance\Euclidean;
 
 class FaceClusterAnalyzer {
-	public const MIN_DATASET_SIZE = 30;
+	public const MIN_DATASET_SIZE = 120;
 	public const MIN_SAMPLE_SIZE = 4; // Conservative value: 10
 	public const MIN_CLUSTER_SIZE = 5; // Conservative value: 10
 	public const MIN_DETECTION_SIZE = 0.03;
@@ -27,6 +27,7 @@ class FaceClusterAnalyzer {
 	private FaceDetectionMapper $faceDetections;
 	private FaceClusterMapper $faceClusters;
 	private Logger $logger;
+	private int $minDatasetSize = self::MIN_DATASET_SIZE;
 
 	public function __construct(FaceDetectionMapper $faceDetections, FaceClusterMapper $faceClusters, Logger $logger) {
 		$this->faceDetections = $faceDetections;
@@ -34,26 +35,26 @@ class FaceClusterAnalyzer {
 		$this->logger = $logger;
 	}
 
+	public function setMinDatasetSize(int $minSize) : void {
+		$this->minDatasetSize = $minSize;
+	}
+
 	/**
 	 * @throws \OCP\DB\Exception
 	 * @throws \JsonException
 	 */
-	public function calculateClusters(string $userId, int $batchSize = -1): void {
+	public function calculateClusters(string $userId, int $batchSize = 0): void {
 		$this->logger->debug('ClusterDebug: Retrieving face detections for user ' . $userId);
 
-		$unclusteredDetections = $this->faceDetections->findUnclusteredByUserId($userId);
+		$unclusteredDetections = $this->faceDetections->findUnclusteredByUserId($userId, $batchSize);
 
 		$unclusteredDetections = array_values(array_filter($unclusteredDetections, fn ($detection) =>
 			$detection->getHeight() > self::MIN_DETECTION_SIZE && $detection->getWidth() > self::MIN_DETECTION_SIZE
 		));
 
-		if (count($unclusteredDetections) < self::MIN_DATASET_SIZE) {
+		if (count($unclusteredDetections) < $this->minDatasetSize) {
 			$this->logger->debug('ClusterDebug: Not enough face detections found');
 			return;
-		}
-
-		if ($batchSize > 0 && count($unclusteredDetections) > $batchSize) {
-			$unclusteredDetections = array_slice($unclusteredDetections, 0, $batchSize);
 		}
 
 		$this->logger->debug('ClusterDebug: Found ' . count($unclusteredDetections) . " unclustered detections. Calculating clusters.");

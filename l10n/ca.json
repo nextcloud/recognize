@@ -46,7 +46,6 @@
     "Click the button below to rescan all files in this instance and add them to the classifier queues." : "Feu clic al botó següent per tornar a analitzar tots els fitxers en aquesta instància i afegir-los a les cues de classificadors.",
     "Rescan all files" : "Torna a escanejar tots els fitxers",
     "Terminal commands" : "Mostra les ordres del terminal",
-    "To trigger a full classification run manually, run the following command on the server terminal." : "Per activar una classificació completa manualment, executeu l'ordre següent al terminal del servidor.",
     "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "Per baixar tots els models previs a l'execució dels treballs de classificació, executeu l'ordre següent al terminal del servidor.",
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "Podeu restablir les etiquetes de tots els fitxers que s'han classificat prèviament per Recognize amb l'ordre següent:",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "Podeu suprimir totes les etiquetes que ja no tenen fitxers associats amb l'ordre següent:",

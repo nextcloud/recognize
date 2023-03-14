@@ -3,6 +3,7 @@ OC.L10N.register(
     {
     "Status" : "الحاله",
     "Reset" : "إعادة الضبط",
+    "Failed to save settings" : "فشل حفظ الإعدادات",
     "never" : "بتاتاً",
     "Music" : "الموسيقى",
     "Office" : "مكتب",

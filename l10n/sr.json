@@ -6,10 +6,13 @@
     "Failed to save settings" : "Грешка приликом чувања поставки",
     "never" : "никад",
     "{time} ago" : "Пре {time}",
+    "Farm" : "Фарма",
     "Landscape" : "Положено",
     "Portrait" : "Усправно",
     "People" : "Људи",
+    "Dog" : "Пас",
     "Music" : "Музика",
+    "Office" : "Канцеларија",
     "Food" : "Храна",
     "Train" : "Воз",
     "Car" : "Кола",
@@ -17,11 +20,18 @@
     "Clock" : "Сат",
     "Library" : "Библиотека",
     "Display" : "Приказ",
+    "Bike" : "Бицикл",
+    "Camping" : "Камповање",
     "Camera" : "Камера",
+    "Barbecue" : "Роштиљ",
+    "Theater" : "Позориште",
+    "Pizza" : "Пица",
     "Info" : "Инфо",
     "Bucket" : "Канта",
+    "Festival" : "Фестивал",
     "Gas station" : "Пумпа",
     "Parking" : "Паркинг",
-    "Gallery" : "Галерија"
+    "Gallery" : "Галерија",
+    "Park" : "Парк"
 },"pluralForm" :"nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);"
 }

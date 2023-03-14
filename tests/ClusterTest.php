@@ -5,7 +5,7 @@ use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Service\FaceClusterAnalyzer;
 use OCA\Recognize\Service\Logger;
-use OCA\Recognize\Vendor\Rubix\ML\Kernels\Distance\Euclidean;
+use \Rubix\ML\Kernels\Distance\Euclidean;
 use Symfony\Component\Console\Output\OutputInterface;
 use Test\TestCase;
 
@@ -32,6 +32,8 @@ class ClusterTest extends TestCase {
 		$this->faceDetectionMapper = \OC::$server->get(FaceDetectionMapper::class);
 		$this->faceClusterAnalyzer = \OC::$server->get(FaceClusterAnalyzer::class);
 		$this->faceClusterMapper = \OC::$server->get(FaceClusterMapper::class);
+
+		$this->faceClusterAnalyzer->setMinDatasetSize(30);
 
 		$logger = \OC::$server->get(Logger::class);
 		$cliOutput = $this->createMock(OutputInterface::class);

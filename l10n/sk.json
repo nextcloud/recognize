@@ -32,7 +32,6 @@
     "Reset tags for classified files" : "Obnoviť značky pre klasifikované súbory",
     "Rescan all files" : "Znova skenovať všetky súbory",
     "Terminal commands" : "Príkazy terminálu",
-    "To trigger a full classification run manually, run the following command on the server terminal." : "Ak chcete spustiť úplnú klasifikáciu manuálne, spustite nasledujúci príkaz na serverovom termináli.",
     "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "Ak chcete stiahnuť všetky modely pred vykonaním klasifikačných úloh, spustite nasledujúci príkaz na serverovom termináli.",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "Pomocou nasledujúceho príkazu môžete odstrániť všetky štítky, ku ktorým už nie sú priradené žiadne súbory:",
     "CPU cores" : "CPU jadrá",
