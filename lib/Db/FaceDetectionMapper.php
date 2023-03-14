@@ -184,12 +184,15 @@ class FaceDetectionMapper extends QBMapper {
 	 * @return \OCA\Recognize\Db\FaceDetection[]
 	 * @throws \OCP\DB\Exception
 	 */
-	public function findUnclusteredByUserId(string $userId) : array {
+	public function findUnclusteredByUserId(string $userId, int $limit = 0) : array {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select(FaceDetection::$columns)
 			->from('recognize_face_detections')
 			->where($qb->expr()->eq('user_id', $qb->createPositionalParameter($userId)))
 			->andWhere($qb->expr()->isNull('cluster_id'));
+		if ($limit > 0) {
+			$qb->setMaxResults($limit);
+		}
 		return $this->findEntities($qb);
 	}
 
