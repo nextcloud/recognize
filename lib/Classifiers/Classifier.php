@@ -107,9 +107,6 @@ class Classifier {
 					}
 					// Check file dimensions
 					$dimensions = @getimagesize($path);
-					if (isset($dimensions) && $dimensions !== false &&  ($dimensions[0] != self::TEMP_FILE_DIMENSION && $dimensions[1] != self::TEMP_FILE_DIMENSION)) {
-						$this->logger->debug('dimension of ' . $queueFile->getFileId() . ' does not contain expected dimension ' . self::TEMP_FILE_DIMENSION . ' dimensions ' . $dimensions[0] . '/' . $dimensions[1]  );
-					}
 
 					if (isset($dimensions) && $dimensions !== false && ($dimensions[0] > self::TEMP_FILE_DIMENSION || $dimensions[1] > self::TEMP_FILE_DIMENSION)) {
 						$this->logger->debug('File dimensions are too large for classifier: ' . $files[0]->getPath() . ' dimensions ' . $dimensions[0] . '/' . $dimensions[1] );
