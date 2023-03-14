@@ -25,11 +25,16 @@ class FaceClusterAnalyzer {
 	private FaceDetectionMapper $faceDetections;
 	private FaceClusterMapper $faceClusters;
 	private Logger $logger;
+	private int $minDatasetSize = self::MIN_DATASET_SIZE;
 
 	public function __construct(FaceDetectionMapper $faceDetections, FaceClusterMapper $faceClusters, Logger $logger) {
 		$this->faceDetections = $faceDetections;
 		$this->faceClusters = $faceClusters;
 		$this->logger = $logger;
+	}
+
+	public function setMinDatasetSize(int $minSize) {
+		$this->minDatasetSize = $minSize;
 	}
 
 	/**
@@ -45,7 +50,7 @@ class FaceClusterAnalyzer {
 			$detection->getHeight() > self::MIN_DETECTION_SIZE && $detection->getWidth() > self::MIN_DETECTION_SIZE
 		));
 
-		if (count($unclusteredDetections) < self::MIN_DATASET_SIZE) {
+		if (count($unclusteredDetections) < $this->minDatasetSize) {
 			$this->logger->debug('ClusterDebug: Not enough face detections found');
 			return;
 		}

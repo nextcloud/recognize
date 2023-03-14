@@ -33,6 +33,8 @@ class ClusterTest extends TestCase {
 		$this->faceClusterAnalyzer = \OC::$server->get(FaceClusterAnalyzer::class);
 		$this->faceClusterMapper = \OC::$server->get(FaceClusterMapper::class);
 
+		$this->faceClusterAnalyzer->setMinDatasetSize(30);
+
 		$logger = \OC::$server->get(Logger::class);
 		$cliOutput = $this->createMock(OutputInterface::class);
 		$cliOutput->method('writeln')
