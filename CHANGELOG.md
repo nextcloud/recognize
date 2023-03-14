@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.6.3] - 2023-03-14
+
+### Fixed
+ - Don't remove all tags in resetClassifications
+ - Face clustering: Increase MIN_DATASET_SIZE to avoid shit clusters 
+ - Face Clustering: Avoid OOM by not requesting all unclustered detections from db
+ - Increase node download timeout
+ - FileListener: Add caching of expensive queries and don't recurse when node is created or deleted
+ - 🔠 Update translations from Transifex
+
 ## [3.6.2] - 2023-03-08
 
 ### Fixed
