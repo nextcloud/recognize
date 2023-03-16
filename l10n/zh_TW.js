@@ -8,6 +8,7 @@ OC.L10N.register(
     "Failed to save settings" : "設定儲存失敗",
     "never" : "永不",
     "{time} ago" : "{time}以前",
+    "Cat" : "貓",
     "Farm" : "農場",
     "Landscape" : "風景",
     "Portrait" : "人像",
