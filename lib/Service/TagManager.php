@@ -125,7 +125,11 @@ class TagManager {
 		$things = json_decode($json, true, 512, JSON_THROW_ON_ERROR | JSON_OBJECT_AS_ARRAY);
 		$tags = [];
 		foreach ($things as $tagName) {
-			$tags[] = $this->tagManager->getTag($tagName, true, true);
+			try {
+				$tags[] = $this->tagManager->getTag($tagName, true, true);
+			} catch (TagNotFoundException $e) {
+				// noop
+			}
 		}
 		$tags[] = $this->getProcessedTag();
 		$tagIds = array_map(static fn (ISystemTag $tag) => $tag->getId(), $tags);
