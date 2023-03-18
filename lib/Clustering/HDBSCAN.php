@@ -132,7 +132,7 @@ class HDBSCAN {
 	 * @param float $maxEdgeLength
 	 * @return list<MstClusterer>
 	 */
-	public function predict(float $minClusterSeparation = 0.0, float $maxEdgeLength=0.5): array {
+	public function predict(float $minClusterSeparation = 0.0, float $maxEdgeLength = 0.5): array {
 		// Boruvka algorithm for MST generation
 		$edges = $this->mstSolver->getMst();
 

@@ -77,8 +77,8 @@ class MstClusterer {
 			if ($edgeCount < ($this->minimumClusterSize - 1)) {
 				if ($edgeLength > $this->maxEdgeLength) {
 					// This cluster is too sparse and probably just noise
-                 		   	return [];
-                		}
+					return [];
+				}
 				
 				
 				foreach ($this->coreEdges as &$edge) {
@@ -109,10 +109,10 @@ class MstClusterer {
 			unset($this->mapVerticesToEdges[$vertexConnectedTo][$currentLongestEdgeKey]);
 
 			if ($edgeLength > $this->maxEdgeLength) {
-                		// Prevent formation of clusters with edges longer than the maximum edge length
+				// Prevent formation of clusters with edges longer than the maximum edge length
 				// This is done by forcing the weight of the current cluster to zero
-                		$lastLambda = $currentLambda = 1 / $edgeLength;				
-            		} else if ($edgeLength > 0.0) {
+				$lastLambda = $currentLambda = 1 / $edgeLength;
+			} elseif ($edgeLength > 0.0) {
 				$currentLambda = 1 / $edgeLength;
 			}
 
@@ -169,8 +169,8 @@ class MstClusterer {
 			
 			if ($edgeLength > $this->maxEdgeLength) {
 				// Any pruned vertices were too far away to be part of the cluster
-                		$this->edges = $this->remainingEdges;
-            		}
+				$this->edges = $this->remainingEdges;
+			}
 		}
 	}
 
