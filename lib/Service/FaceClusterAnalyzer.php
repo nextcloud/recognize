@@ -16,8 +16,6 @@ use \Rubix\ML\Kernels\Distance\Euclidean;
 
 class FaceClusterAnalyzer {
 	public const MIN_DATASET_SIZE = 120;
-	public const MIN_SAMPLE_SIZE = 4; // Conservative value: 10
-	public const MIN_CLUSTER_SIZE = 5; // Conservative value: 10
 	public const MIN_DETECTION_SIZE = 0.03;
 	public const MIN_CLUSTER_SEPARATION = 0.0;
 	public const MAX_CLUSTER_EDGE_LENGTH = 0.5;
@@ -73,7 +71,8 @@ class FaceClusterAnalyzer {
 			return $detection->getVector();
 		}, $detections), array_combine(array_keys($detections), array_keys($detections)), false);
 
-		$hdbscan = new HDBSCAN($dataset, self::MIN_CLUSTER_SIZE, self::MIN_SAMPLE_SIZE);
+		$n = count($detections);
+		$hdbscan = new HDBSCAN($dataset, $this->getMinClusterSize($n), $this->getMinSampleSize($n));
 
 		$numberOfClusteredDetections = 0;
 		$clusters = $hdbscan->predict(self::MIN_CLUSTER_SEPARATION, self::MAX_CLUSTER_EDGE_LENGTH);
@@ -225,5 +224,13 @@ class FaceClusterAnalyzer {
 			self::$distance = new Euclidean();
 		}
 		return self::$distance->compute($v1, $v2);
+	}
+
+	private function getMinClusterSize(int $n) : int {
+		return round(max(2, min(8, $n ** (1 / 4))));
+	}
+
+	private function getMinSampleSize(int $n) : int {
+		return round(max(2, min(7, $n ** (1 / 4))));
 	}
 }
