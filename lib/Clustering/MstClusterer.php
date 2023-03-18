@@ -8,6 +8,9 @@ namespace OCA\Recognize\Clustering;
 
 // TODO: store vertex lambda length (relative to cluster lambda length) for all vertices for improved soft clustering (see https://hdbscan.readthedocs.io/en/latest/soft_clustering.html)
 class MstClusterer {
+	/**
+	 * @var array
+	 */
 	private array $edges;
 
 	/**
@@ -62,7 +65,7 @@ class MstClusterer {
 		$this->coreEdges = [];
 
 		$this->clusterWeight = 0.0;
-		
+
 		$this->maxEdgeLength = $maxEdgeLength;
 
 		$this->minClusterSeparation = $minClusterSeparation;
@@ -79,8 +82,8 @@ class MstClusterer {
 					// This cluster is too sparse and probably just noise
 					return [];
 				}
-				
-				
+
+
 				foreach ($this->coreEdges as &$edge) {
 					$edge['finalLambda'] = $currentLambda;
 				}
@@ -166,7 +169,7 @@ class MstClusterer {
 
 				return [$this];
 			}
-			
+
 			if ($edgeLength > $this->maxEdgeLength) {
 				// Any pruned vertices were too far away to be part of the cluster
 				$this->edges = $this->remainingEdges;

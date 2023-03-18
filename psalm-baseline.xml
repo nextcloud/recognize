@@ -619,7 +619,7 @@
       <code>$vertexConnectedFrom</code>
       <code>$vertexConnectedTo</code>
     </MixedArgument>
-    <MixedArrayAccess occurrences="23">
+    <MixedArrayAccess occurrences="26">
       <code>$a["distance"]</code>
       <code>$a["distance"]</code>
       <code>$b["distance"]</code>
@@ -641,14 +641,17 @@
       <code>$edge["vertexTo"]</code>
       <code>$edge['vertexFrom']</code>
       <code>$edge['vertexTo']</code>
+      <code>$this-&gt;edges[$currentLongestEdgeKey]</code>
+      <code>$this-&gt;edges[$edgeKey]</code>
+      <code>$this-&gt;edges[$edgeKey]</code>
       <code>$this-&gt;mapVerticesToEdges[$vertexConnectedFrom]</code>
       <code>$this-&gt;mapVerticesToEdges[$vertexConnectedTo]</code>
     </MixedArrayAccess>
     <MixedArrayAssignment occurrences="5">
       <code>$edge['finalLambda']</code>
-      <code>$this-&gt;edges[$currentLongestEdgeKey]["finalLambda"]</code>
-      <code>$this-&gt;edges[$edgeKey]['finalLambda']</code>
-      <code>$this-&gt;edges[$edgeKey]['finalLambda']</code>
+      <code>$this-&gt;edges[$currentLongestEdgeKey]</code>
+      <code>$this-&gt;edges[$edgeKey]</code>
+      <code>$this-&gt;edges[$edgeKey]</code>
       <code>$this-&gt;edges[$edgeToPrune]['finalLambda']</code>
     </MixedArrayAssignment>
     <MixedArrayOffset occurrences="12">
@@ -670,9 +673,10 @@
       <code>$this-&gt;remainingEdges[$edgeKey]</code>
       <code>$this-&gt;remainingEdges[$edgeToPrune]</code>
     </MixedArrayTypeCoercion>
-    <MixedAssignment occurrences="23">
+    <MixedAssignment occurrences="29">
       <code>$childCluster</code>
       <code>$childrenWeight</code>
+      <code>$currentLambda</code>
       <code>$currentLambda</code>
       <code>$currentLongestEdge</code>
       <code>$edge</code>
@@ -681,8 +685,13 @@
       <code>$edge</code>
       <code>$edgeLength</code>
       <code>$lastLambda</code>
+      <code>$lastLambda</code>
       <code>$this-&gt;clusterWeight</code>
       <code>$this-&gt;coreEdges</code>
+      <code>$this-&gt;edges</code>
+      <code>$this-&gt;edges</code>
+      <code>$this-&gt;edges</code>
+      <code>$this-&gt;edges</code>
       <code>$this-&gt;mapVerticesToEdges</code>
       <code>$this-&gt;mapVerticesToEdges</code>
       <code>$this-&gt;remainingEdges</code>
@@ -699,9 +708,10 @@
       <code>getClusterWeight</code>
       <code>getCoreEdges</code>
     </MixedMethodCall>
-    <MixedOperand occurrences="5">
+    <MixedOperand occurrences="6">
       <code>$childCluster-&gt;getClusterWeight()</code>
       <code>$currentLambda - $lastLambda</code>
+      <code>$edgeLength</code>
       <code>$edgeLength</code>
       <code>$lastLambda</code>
       <code>$this-&gt;clusterWeight</code>
