@@ -52,7 +52,10 @@ class FacesHome implements ICollection {
 	}
 
 	public function createDirectory($name) {
-		throw new Forbidden('Not allowed to create directories in this folder');
+		$entity = new FaceCluster();
+		$entity->setUserId($this->user->getUID());
+		$entity->setTitle($name);
+		$this->faceClusterMapper->insert($entity);
 	}
 
 	public function createFile($name, $data = null) {
