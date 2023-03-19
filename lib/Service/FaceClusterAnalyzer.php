@@ -44,6 +44,10 @@ class FaceClusterAnalyzer {
 	public function calculateClusters(string $userId, int $batchSize = 0): void {
 		$this->logger->debug('ClusterDebug: Retrieving face detections for user ' . $userId);
 
+		if ($batchSize === 0) {
+			ini_set('memory_limit', -1);
+		}
+
 		$unclusteredDetections = $this->faceDetections->findUnclusteredByUserId($userId, $batchSize);
 
 		$unclusteredDetections = array_values(array_filter($unclusteredDetections, fn ($detection) =>
