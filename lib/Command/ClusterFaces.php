@@ -12,6 +12,7 @@ use OCA\Recognize\Service\Logger;
 use OCP\DB\Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ClusterFaces extends Command {
@@ -35,7 +36,8 @@ class ClusterFaces extends Command {
 	 */
 	protected function configure() {
 		$this->setName('recognize:cluster-faces')
-			->setDescription('Cluster detected faces per user');
+			->setDescription('Cluster detected faces per user (Memory usage will grow with O(n²): n=2000: 450MB, n=4000: 700MB, n=5000: 1200MB)')
+			->addOption('batch-size', 'b', InputOption::VALUE_REQUIRED, 'The number of face detections to cluster in one go. 0 for no limit.', 0);
 	}
 
 	/**
@@ -59,7 +61,7 @@ class ClusterFaces extends Command {
 		foreach ($userIds as $userId) {
 			$this->logger->info('Clustering face detections for user ' . $userId);
 			try {
-				$this->clusterAnalyzer->calculateClusters($userId);
+				$this->clusterAnalyzer->calculateClusters($userId, $input->getOption('batch-size'));
 			} catch (\JsonException|Exception $e) {
 				$this->logger->error($e->getMessage(), ['exception' => $e]);
 			}
