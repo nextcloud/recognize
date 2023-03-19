@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.7.0] - 2023-03-19
+
+### New
+ - ClusterFaces command: Add batch-size option
+ - enh(FaceClusterAnalyzer): Use dynamic min cluster size
+ - Limit max edge length and cluster separation (Thanks to @MB-Finski :blue_heart:)
+### Fixed
+ - fix(FaceClusterAnalyzer): If no batch size is set, remove php memory limit
+ - fix(TagManager): Catch exception in resetClassifications
+ - 🔠 Update translations from Transifex
+
 ## [3.6.3] - 2023-03-14
 
 ### Fixed
