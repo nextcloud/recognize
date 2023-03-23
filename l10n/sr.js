@@ -33,6 +33,7 @@ OC.L10N.register(
     "Festival" : "Фестивал",
     "Gas station" : "Пумпа",
     "Parking" : "Паркинг",
+    "Sign" : "Потпис",
     "Gallery" : "Галерија",
     "Park" : "Парк"
 },
