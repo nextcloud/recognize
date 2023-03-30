@@ -104,9 +104,9 @@ class FaceRoot implements ICollection, IMoveTarget {
 			}
 			throw new NotFound("$name not found");
 		}
-		[$fileId,] = explode('-', $name);
+		[$detectionId,] = explode('-', $name);
 		try {
-			$detection = $this->detectionMapper->findByFileIdAndClusterId((int)$fileId, $this->cluster->getId());
+			$detection = $this->detectionMapper->find((int)$detectionId);
 		} catch (DoesNotExistException $e) {
 			throw new NotFound();
 		}

@@ -46,7 +46,8 @@ class FacePhoto implements IFile {
 	 */
 	public function getName() {
 		$file = $this->getFile();
-		return $file->getId() . '-' . $file->getName();
+		$detection = $this->getFaceDetection();
+		return $detection->getId() . '-' . $file->getName();
 	}
 
 	/**
