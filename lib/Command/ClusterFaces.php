@@ -61,7 +61,7 @@ class ClusterFaces extends Command {
 		foreach ($userIds as $userId) {
 			$this->logger->info('Clustering face detections for user ' . $userId);
 			try {
-				$this->clusterAnalyzer->calculateClusters($userId, $input->getOption('batch-size'));
+				$this->clusterAnalyzer->calculateClusters($userId, (int)$input->getOption('batch-size'));
 			} catch (\JsonException|Exception $e) {
 				$this->logger->error($e->getMessage(), ['exception' => $e]);
 			}

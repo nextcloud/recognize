@@ -1229,6 +1229,9 @@
       <code>compute</code>
       <code>compute</code>
     </InternalMethod>
+    <InvalidScalarArgument occurrences="1">
+      <code>-1</code>
+    </InvalidScalarArgument>
     <MixedArgument occurrences="2">
       <code>$clusterId</code>
       <code>$sampled</code>
