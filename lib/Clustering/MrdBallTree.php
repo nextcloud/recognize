@@ -627,8 +627,7 @@ class MrdBallTree extends BallTree {
 	 * @param \Rubix\ML\Datasets\Labeled $dataset
 	 * @throws \Rubix\ML\Exceptions\InvalidArgumentException
 	 */
-	public function grow(Labeled $dataset): void
-	{
+	public function grow(Labeled $dataset): void {
 		$this->dataset = $dataset;
 		$this->root = DualTreeBall::split($dataset, $this->kernel);
 		$stack = [$this->root];
@@ -664,7 +663,6 @@ class MrdBallTree extends BallTree {
 					$current->attachRight($node);
 					$stack[] = $node;
 				}
-				
 			} else {
 				$current->attachRight(DualTreeClique::terminate($right, $this->kernel));
 			}
