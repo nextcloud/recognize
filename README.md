@@ -51,6 +51,7 @@ Recognize uses
   - Processor: x86 64-bit, arm64, armv7l (no AVX needed)
   - System with glibc or musl (incl. Alpine linux)
 - ~4GB of free RAM (if you're cutting it close, make sure you have some swap available)
+- This app is currently incompatible with the *Suspicious Login* app due to a dependency conflict (ie. you can only have one of the two installed)
 
 #### Tmp
 This app temporarily stores files to be recognized in /tmp. If you're using docker, you might find
