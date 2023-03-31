@@ -301,7 +301,7 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Clustering/MrdBallTree.php">
-    <InternalMethod occurrences="28">
+    <InternalMethod occurrences="30">
       <code>center</code>
       <code>center</code>
       <code>center</code>
@@ -329,6 +329,8 @@
       <code>radius</code>
       <code>radius</code>
       <code>radius</code>
+      <code>subsets</code>
+      <code>subsets</code>
       <code>subsets</code>
     </InternalMethod>
     <InvalidNullableReturnType occurrences="1">
@@ -997,14 +999,13 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Db/FaceDetectionMapper.php">
-    <LessSpecificReturnStatement occurrences="8">
+    <LessSpecificReturnStatement occurrences="7">
       <code>$this-&gt;findEntities($qb)</code>
       <code>$this-&gt;findEntities($qb)</code>
       <code>$this-&gt;findEntities($qb)</code>
       <code>$this-&gt;findEntities($qb)</code>
       <code>$this-&gt;findEntities($qb)</code>
       <code>$this-&gt;findEntities($qb)</code>
-      <code>$this-&gt;findEntity($qb)</code>
       <code>$this-&gt;findEntity($qb)</code>
     </LessSpecificReturnStatement>
     <MissingReturnType occurrences="1">
@@ -1014,8 +1015,7 @@
       <code>$qb-&gt;executeQuery()-&gt;fetchAll(\PDO::FETCH_COLUMN)</code>
       <code>list&lt;string&gt;</code>
     </MixedReturnTypeCoercion>
-    <MoreSpecificReturnType occurrences="8">
-      <code>FaceDetection</code>
+    <MoreSpecificReturnType occurrences="7">
       <code>FaceDetection</code>
       <code>\OCA\Recognize\Db\FaceDetection[]</code>
       <code>\OCA\Recognize\Db\FaceDetection[]</code>
