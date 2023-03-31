@@ -630,7 +630,6 @@ class MrdBallTree extends BallTree {
 	public function grow(Labeled $dataset): void {
 		$this->dataset = $dataset;
 		$this->root = DualTreeBall::split($dataset, $this->kernel);
-
 		$stack = [$this->root];
 
 		while ($current = array_pop($stack)) {
@@ -641,24 +640,30 @@ class MrdBallTree extends BallTree {
 			if ($left->numSamples() > $this->maxLeafSize) {
 				$node = DualTreeBall::split($left, $this->kernel);
 
-				$current->attachLeft($node);
+				[$subLeft, $subRight] = $node->subsets();
 
-				$stack[] = $node;
-			} elseif (!$left->empty()) {
+				if ($subLeft->empty() || $subRight->empty()) {
+					$current->attachLeft(DualTreeClique::terminate($left, $this->kernel));
+				} else {
+					$current->attachLeft($node);
+					$stack[] = $node;
+				}
+			} else {
 				$current->attachLeft(DualTreeClique::terminate($left, $this->kernel));
 			}
 
 			if ($right->numSamples() > $this->maxLeafSize) {
 				$node = DualTreeBall::split($right, $this->kernel);
 
-				if ($node->isPoint()) {
+				[$subLeft, $subRight] = $node->subsets();
+
+				if ($node->isPoint() || $subLeft->empty() || $subRight->empty()) {
 					$current->attachRight(DualTreeClique::terminate($right, $this->kernel));
 				} else {
 					$current->attachRight($node);
-
 					$stack[] = $node;
 				}
-			} elseif (!$right->empty()) {
+			} else {
 				$current->attachRight(DualTreeClique::terminate($right, $this->kernel));
 			}
 		}
