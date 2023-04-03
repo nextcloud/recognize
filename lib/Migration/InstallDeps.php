@@ -111,13 +111,6 @@ class InstallDeps implements IRepairStep {
 		} elseif ($uname === 'aarch64') {
 			$binaryPath = $this->downloadNodeBinary(self::NODE_SERVER_OFFICIAL, self::NODE_VERSION, 'arm64');
 			$version = $this->testBinary($binaryPath);
-			if ($version === null) {
-				$binaryPath = $this->downloadNodeBinary(self::NODE_SERVER_UNOFFICIAL, self::NODE_VERSION, 'arm64', 'musl');
-				$version = $this->testBinary($binaryPath);
-				if ($version !== null) {
-					$isMusl = true;
-				}
-			}
 			if ($version !== null) {
 				$isARM = true;
 			}
