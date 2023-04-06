@@ -268,7 +268,7 @@ OC.L10N.register(
     "Stage" : "Sahne",
     "Toy" : "Oyuncak",
     "Vase" : "Vazo",
-    "Mailbox" : "Posta kutusu",
+    "Mailbox" : "E-posta kutusu",
     "Sign" : "İşaret",
     "Gallery" : "Galeri",
     "Park" : "Park"
