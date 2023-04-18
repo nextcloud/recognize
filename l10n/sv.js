@@ -8,6 +8,7 @@ OC.L10N.register(
     "Failed to save settings" : "Kunde inte spara inställningarna",
     "never" : "aldrig",
     "{time} ago" : "{time} sedan",
+    "Cat" : "Katt",
     "Farm" : "Gård",
     "People" : "Personer",
     "Dog" : "Hund",
