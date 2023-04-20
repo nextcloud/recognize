@@ -2,7 +2,7 @@ name: Classifier Faces test
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 0 1 * *'
 
 env:
   APP_NAME: recognize
