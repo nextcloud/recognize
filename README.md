@@ -1,3 +1,4 @@
+
 # Recognize for Nextcloud
 
 [![Join the chat at https://gitter.im/marcelklehr/recognize](https://badges.gitter.im/marcelklehr/recognize.svg)](https://gitter.im/marcelklehr/recognize?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -46,10 +47,10 @@ Recognize uses
 - App "collaborative tags" enabled
 - For native speed:
   - Processor: x86 64-bit (with support for AVX instructions)
-  - System with glibc (usually the norm on Linux; Alpine linux and FreeBSD are *not* such systems)
-- For sub-native speed (using JavaScript mode)
+  - System with glibc (usually the norm on Linux; FreeBSD, Alpine linux and thus also Nextcloud AIO are *not* such systems)
+- For sub-native speed (using WASM mode)
   - Processor: x86 64-bit, arm64, armv7l (no AVX needed)
-  - System with glibc or musl (incl. Alpine linux)
+  - System with glibc or musl (incl. Alpine linux and thus also Nextcloud AIO)
 - ~4GB of free RAM (if you're cutting it close, make sure you have some swap available)
 - This app is currently incompatible with the *Suspicious Login* app due to a dependency conflict (ie. you can only have one of the two installed)
 
