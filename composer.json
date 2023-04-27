@@ -1,6 +1,6 @@
 {
     "require": {
-        "php": ">=7.4",
+        "php": ">=8.0",
         "ext-json": "*",
         "ext-pdo": "*",
         "bamarni/composer-bin-plugin": "^1.8",
@@ -33,7 +33,7 @@
     },
     "config": {
         "platform": {
-            "php": "7.4"
+            "php": "8.0"
         },
         "allow-plugins": {
             "bamarni/composer-bin-plugin": true,
