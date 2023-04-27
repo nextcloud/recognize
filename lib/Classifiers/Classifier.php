@@ -138,17 +138,19 @@ class Classifier {
 		$this->logger->debug('Running '.var_export($command, true));
 
 		$proc = new Process($command, __DIR__);
+		$env = [];
 		if ($this->config->getAppValue('recognize', 'tensorflow.gpu', 'false') === 'true') {
-			$proc->setEnv(['RECOGNIZE_GPU' => 'true']);
+			$env['RECOGNIZE_GPU'] = 'true';
 		}
 		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
-			$proc->setEnv(['RECOGNIZE_PUREJS' => 'true']);
+			$env['RECOGNIZE_PUREJS'] = 'true';
 		}
 		// Set cores
 		$cores = $this->config->getAppValue('recognize', 'tensorflow.cores', '0');
 		if ($cores !== '0') {
-			$proc->setEnv(['RECOGNIZE_CORES' => $cores]);
+			$env['RECOGNIZE_CORES'] = $cores;
 		}
+		$proc->setEnv($env);
 		$proc->setTimeout(count($paths) * $timeout);
 		$proc->setInput(implode("\n", $paths));
 		try {
