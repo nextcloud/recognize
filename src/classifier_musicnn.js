@@ -164,7 +164,7 @@ async function main() {
 	}
 }
 
-tf.setBackend(process.env.RECOGNIZE_PUREJS === 'true' ? 'cpu' : 'tensorflow')
+tf.setBackend(PUREJS ? 'cpu' : 'tensorflow')
 	.then(() => main())
 	.then(() => process.exit(0))
 	.catch(e => {
