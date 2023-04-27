@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.8.0] - 2023-04-27
+
+### New
+ - Allow admins to clear the queues and background jobs
+ - DAV: allow creating clusters
+ - DAV: replace fileId in name with detectionId
+ - 🔠 Update translations from Transifex
+
+### Fixed
+ - Prevent null nodes in MrdBallTree
+ - Fix: Recognize tries to download non-existend nodejs file
+ - chore(README): Be more specific that the app only works in WASM mode on AIO
+ - Classifier: Don't override env vars with every var we set
+ - classifier_musicnn: Always use PUREJS variable instead of env var
+
 ## [3.7.0] - 2023-03-19
 
 ### New
