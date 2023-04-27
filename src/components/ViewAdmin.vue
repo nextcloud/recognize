@@ -167,6 +167,11 @@
 			<button class="button" @click="onRescan">
 				{{ t('recognize', 'Rescan all files') }}
 			</button>
+			<p>&nbsp;</p>
+			<p>{{ t('recognize', 'Click the button below to clear the classifier queues and clear all background jobs. This is useful when you want to do the initial classification using the terminal command.') }}</p>
+			<button class="button" @click="onClearJobs">
+				{{ t('recognize', 'Clear queues and background jobs') }}
+			</button>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Terminal commands') ">
 			<p>{{ t('recognize', 'To trigger a full classification run, run the following command on the server terminal. (The classification will run in multiple background jobs which can run in parallel.)') }}</p>
@@ -174,6 +179,9 @@
 			<p>&nbsp;</p>
 			<p>{{ t('recognize', 'To run a full classification run on the terminal, run the following. (The classification will run in sequence inside your terminal.)') }}</p>
 			<pre><code>occ recognize:classify</code></pre>
+			<p>&nbsp;</p>
+			<p>{{ t('recognize', 'Before running a full initial classification run on the terminal, you should stop all background processing that recognize scheduled upon installation to avoid interference.') }}</p>
+			<pre><code>occ recognize:clear-background-jobs</code></pre>
 			<p>&nbsp;</p>
 			<p>{{ t('recognize', 'To run a face clustering run on for each user in the terminal, run the following. (The clustering will run in sequence inside your terminal.)') }}</p>
 			<pre><code>occ recognize:cluster-faces</code></pre>
@@ -393,6 +401,16 @@ export default {
 		async onReset() {
 			this.loading = true
 			await axios.get(generateUrl('/apps/recognize/admin/reset'))
+			await this.getCount()
+			this.loading = false
+			this.success = true
+			setTimeout(() => {
+				this.success = false
+			}, 3000)
+		},
+		async onClearJobs() {
+			this.loading = true
+			await axios.get(generateUrl('/apps/recognize/admin/clearJobs'))
 			await this.getCount()
 			this.loading = false
 			this.success = true
