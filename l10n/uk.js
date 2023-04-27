@@ -19,6 +19,7 @@ OC.L10N.register(
     "Train" : "Потяг",
     "Car" : "В автомобілі",
     "Clock" : "Годинник",
+    "Library" : "Бібліотека",
     "Display" : "Показати",
     "Bike" : "Велосипед",
     "Camping" : "Лагер",
@@ -30,6 +31,8 @@ OC.L10N.register(
     "Document" : "Документ",
     "Bucket" : "Кошик",
     "Festival" : "Фестиваль",
+    "Gas station" : "АЗС",
+    "Parking" : "Паркінг",
     "Gallery" : "Галерея",
     "Park" : "Парк"
 },
