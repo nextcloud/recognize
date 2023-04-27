@@ -54,7 +54,7 @@ class PropFindPlugin extends ServerPlugin {
 			$propFind->handle(FilesPlugin::INTERNAL_FILEID_PROPERTYNAME, fn () => $node->getFile()->getId());
 			$propFind->handle(self::FILE_NAME_PROPERTYNAME, fn () => $node->getFile()->getName());
 			$propFind->handle(self::REALPATH_PROPERTYNAME, fn () => $node->getFile()->getPath());
-			$propFind->handle(FilesPlugin::FILE_METADATA_SIZE, fn () => json_encode($node->getMetadata()));
+			$propFind->handle(FilesPlugin::FILE_METADATA_SIZE, fn () => $node->getMetadata());
 			$propFind->handle(FilesPlugin::HAS_PREVIEW_PROPERTYNAME, fn () => json_encode($node->hasPreview()));
 			$propFind->handle(TagsPlugin::FAVORITE_PROPERTYNAME, fn () => $node->isFavorite() ? 1 : 0);
 		}
