@@ -10,6 +10,8 @@ OC.L10N.register(
     "{time} ago" : "{time} sedan",
     "Cat" : "Katt",
     "Farm" : "Gård",
+    "Landscape" : "Landskap",
+    "Portrait" : "Porträtt",
     "People" : "Personer",
     "Dog" : "Hund",
     "Music" : "Musik",
