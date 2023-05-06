@@ -27,7 +27,7 @@
     "@exifer/gps": "^1.0.0-beta.2",
     "@tensorflow/tfjs": "^4.2.0",
     "@tensorflow/tfjs-backend-wasm": "^4.2.0",
-    "@tensorflow/tfjs-node": "^4.2.0",
+    "@tensorflow/tfjs-node": "^4.5.0",
     "@tensorflow/tfjs-node-gpu": "^4.2.0",
     "@vladmandic/face-api": "^1.7.7",
     "download": "^8.0.0",
