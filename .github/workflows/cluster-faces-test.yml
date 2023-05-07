@@ -1,0 +1,201 @@
+name: Cluster-faces command test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+env:
+  APP_NAME: recognize
+
+jobs:
+  php:
+    runs-on: ubuntu-latest
+
+    strategy:
+      # do not stop on another job's failure
+      fail-fast: false
+      matrix:
+        php-versions: ['8.1']
+        databases: ['sqlite']
+        server-versions: ['stable26']
+        pure-js-mode: ['false', 'true']
+
+    name: Test cluster-faces command on ${{ matrix.databases }}-${{ matrix.server-versions }} wasm:${{ matrix.pure-js-mode }}
+
+    env:
+      MYSQL_PORT: 4444
+      PGSQL_PORT: 4445
+
+    services:
+      mysql:
+        image: mariadb:10.5
+        ports:
+          - 4444:3306/tcp
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+        options: --health-cmd="mysqladmin ping" --health-interval 5s --health-timeout 2s --health-retries 5
+      postgres:
+        image: postgres
+        ports:
+          - 4445:5432/tcp
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: rootpassword
+          POSTGRES_DB: nextcloud
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 2s --health-retries 5
+
+    steps:
+      - name: Checkout server
+        uses: actions/checkout@v2
+        with:
+          repository: nextcloud/server
+          ref: ${{ matrix.server-versions }}
+
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
+      - name: Set up php ${{ matrix.php-versions }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          tools: phpunit
+          extensions: mbstring, iconv, fileinfo, intl, sqlite, pdo_mysql, pdo_sqlite, pgsql, pdo_pgsql, gd, zip
+
+      - name: Checkout app
+        uses: actions/checkout@v2
+        with:
+          path: apps/${{ env.APP_NAME }}
+
+      - name: Read package.json node and npm engines version
+        uses: skjnldsv/read-package-engines-version-actions@v1.1
+        id: versions
+        with:
+          path: apps/${{ env.APP_NAME }}
+          fallbackNode: '^12'
+          fallbackNpm: '^6'
+
+      - name: Set up node ${{ steps.versions.outputs.nodeVersion }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ steps.versions.outputs.nodeVersion }}
+
+      - name: Set up npm ${{ steps.versions.outputs.npmVersion }}
+        run: npm i -g npm@"${{ steps.versions.outputs.npmVersion }}"
+
+      - name: Install app
+        working-directory: apps/${{ env.APP_NAME }}
+        run: |
+          composer install --no-dev
+          make all
+          make remove-binaries
+          rm -rf models # Make it download from github
+          cd tests/res/
+          wget https://cloud.marcelklehr.de/s/6gxo7j2js9pZi4G/download/IMDb-Face.tar.xz
+          tar -xvf IMDb-Face.tar.xz
+
+      - name: Set up Nextcloud and install app
+        if: ${{ matrix.databases != 'pgsql'}}
+        run: |
+          sleep 25
+          mkdir data
+          ./occ maintenance:install --verbose --database=${{ matrix.databases }} --database-name=nextcloud --database-host=127.0.0.1 --database-port=$MYSQL_PORT --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass password
+          ./occ app:enable -vvv -f ${{ env.APP_NAME }}
+          php -S localhost:8080 &
+
+      - name: Set up Nextcloud and install app
+        if: ${{ matrix.databases == 'pgsql'}}
+        run: |
+          sleep 25
+          mkdir data
+          ./occ maintenance:install --verbose --database=${{ matrix.databases }} --database-name=nextcloud --database-host=127.0.0.1 --database-port=$PGSQL_PORT --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass password
+          ./occ app:enable -vvv -f ${{ env.APP_NAME }}
+          php -S localhost:8080 &
+
+      - name: Install
+        run: |
+          ./occ app:enable -vvv ${{ env.APP_NAME }}
+
+      - name: Upload photos
+        run: |
+          mkdir -p data/admin/files/
+          cp -R apps/${{ env.APP_NAME }}/tests/res/IMDb-Face data/admin/files/
+          ./occ files:scan admin
+
+      - name: Set pure-js mode
+        run: |
+          ./occ config:app:set --value ${{ matrix.pure-js-mode }} recognize tensorflow.purejs
+
+      - name: Set faces.enabled
+        run: |
+          ./occ config:app:set --value true recognize faces.enabled
+
+      - name: Run classifier
+        env:
+          GITHUB_REF: ${{ github.ref }}
+        run: |
+          ./occ recognize:classify
+          ./occ recognize:cluster-faces -b 10000
+          ./occ recognize:cluster-faces -b 10000
+          ./occ recognize:cluster-faces -b 10000
+          ./occ recognize:cluster-faces -b 10000
+
+      - name: Install xq
+        run: |
+          pip install yq
+
+      - name: Download face assignments
+        run: |
+          curl -u 'admin:password' --request PROPFIND 'http://localhost:8080/remote.php/recognize/admin/faces/' --header 'Depth: 2' --data '<?xml version="1.0"?>
+            <d:propfind xmlns:d="DAV:"
+            xmlns:oc="http://owncloud.org/ns"
+            xmlns:nc="http://nextcloud.org/ns"
+            xmlns:ocs="http://open-collaboration-services.org/ns">
+            <d:prop>
+              <d:getcontentlength />
+              <d:getcontenttype />
+              <d:getetag />
+              <d:getlastmodified />
+              <d:resourcetype />
+              <nc:face-detections />
+              <nc:file-metadata-size />
+              <nc:has-preview />
+              <nc:realpath />
+              <oc:favorite />
+              <oc:fileid />
+              <oc:permissions />
+              <nc:nbItems />
+            </d:prop>
+            </d:propfind>' > out.xml
+          cat out.xml
+
+      - name: Parse face assignments
+        run: |
+          cat out.xml | xq '.["d:multistatus"]["d:response"] | map(select(.["d:href"] | test("faces/.+?/.+?"))) | map({"href": .["d:href"], "realpath": .["d:propstat"][0]["d:prop"]["nc:realpath"], "face-detections": .["d:propstat"][0]["d:prop"]["nc:face-detections"] | fromjson | map({userId, x, y, height, width, clusterId}) })' > out.json
+          cat out.json
+
+      - name: Analyse face assignments
+        run: |
+          node -e "
+            const json = require(__dirname + '/out.json');
+            const data = json.reduce((acc, face) => {
+              const clusterId = parseInt(face.href.split('/')[6]);
+              acc[clusterId] = [...(acc[clusterId] ?? []), face.realpath.split('/')[4]];
+              return acc
+            }, {});
+            console.log(data);
+            const stats = Object.entries(data)
+              .map(([clusterId, names]) =>
+                [...new Set(names).values()]
+                  .map(name1 =>
+                    names.filter(name2 => name1 === name2).length
+                  ).sort().reverse()[0] / names.length
+              );
+            console.log(stats);
+            console.log(stats.reduce((acc, val) => acc+val, 0)/stats.length)
+          "
