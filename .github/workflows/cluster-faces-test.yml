@@ -96,9 +96,9 @@ jobs:
           make remove-binaries
           make remove-devdeps
           cd tests/res/
-          wget https://cloud.marcelklehr.de/s/6gxo7j2js9pZi4G/download/IMDb-Face.tar.xz
-          tar -xvf IMDb-Face.tar.xz
-          rm IMDb-Face.tar.xz
+          wget https://cloud.marcelklehr.de/s/PkNYbmKnwMiQMFD/download/IMDb-Face.zip
+          unzip IMDb-Face.zip
+          rm IMDb-Face.zip
 
       - name: Set up Nextcloud and install app
         if: ${{ matrix.databases != 'pgsql'}}
