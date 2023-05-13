@@ -156,7 +156,7 @@ jobs:
 
       - name: install python3 python3-pip jq curl
         if: env.ACT # Skip this on normal GitHub Actions
-        run: sudo apt update && sudo apt install -y python3 python3-pip jq curl
+        run: sudo apt update && sudo apt install -y python3 python3-pip jq curl sqlite3
 
       - name: Install xq
         run: |
@@ -213,10 +213,14 @@ jobs:
             const clusteredFaces = Object.entries(data)
                 .map(([clusterId, names]) => names.length)
                 .reduce((acc, val) => acc+val, 0)
-            const clusteredFacesRate = clusteredFaces / $(ls data/admin/files/IMDb-Face/* | wc -l)
+            const detectedFaces = $(sqlite3 data/nextcloud.db "select count(*) from oc_recognize_face_detections where user_id = 'admin';")
+            const totalPhotos = $(ls data/admin/files/IMDb-Face/* | wc -l)
+            const clusteredFacesRate = clusteredFaces / detectedFaces
             const averageClusterAccuracy = stats.reduce((acc, val) => acc+val, 0)/stats.length
             const shitClusterRate = stats.filter((val) => val < 0.5).length/stats.length
             console.log({ clusterAccuracies: stats });
+            console.log({ detectedFaces });
+            console.log({ detectedFacesRate: detectedFaces / totalPhotos });
             console.log({ clusteredFaces });
             console.log({ clusteredFacesRate })
             console.log({ shitClusterRate })
