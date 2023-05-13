@@ -49,30 +49,35 @@ class FaceClusterAnalyzer {
 			ini_set('memory_limit', -1);
 		}
 
-		$unclusteredDetections = $this->faceDetections->findUnclusteredByUserId($userId, $batchSize);
+		$freshDetections = $this->faceDetections->findUnclusteredByUserId($userId, $batchSize);
 
-		$unclusteredDetections = array_values(array_filter($unclusteredDetections, fn ($detection) =>
+		$freshDetections = array_values(array_filter($freshDetections, fn ($detection) =>
 			$detection->getHeight() > self::MIN_DETECTION_SIZE && $detection->getWidth() > self::MIN_DETECTION_SIZE
 		));
 
-		if (count($unclusteredDetections) < $this->minDatasetSize) {
+		if (count($freshDetections) < $this->minDatasetSize) {
 			$this->logger->debug('ClusterDebug: Not enough face detections found');
 			return;
 		}
-
-		$this->logger->debug('ClusterDebug: Found ' . count($unclusteredDetections) . " unclustered detections. Calculating clusters.");
 
 		$sampledDetections = [];
 
 		$existingClusters = $this->faceClusters->findByUserId($userId);
 		$maxVotesByCluster = [];
 		foreach ($existingClusters as $existingCluster) {
-			$sampled = $this->faceDetections->findClusterSample($existingCluster->getId(), $this->getReferenceSampleSize(count($unclusteredDetections));
+			$sampled = $this->faceDetections->findClusterSample($existingCluster->getId(), $this->getReferenceSampleSize(count($freshDetections)));
 			$sampledDetections = array_merge($sampledDetections, $sampled);
 			$maxVotesByCluster[$existingCluster->getId()] = count($sampled);
 		}
 
+		$rejectedDetections = $this->faceDetections->sampleRejectedDetectionsByUserId($userId, $this->getRejectSampleSize(count($freshDetections)));
+
+		$unclusteredDetections = array_merge($freshDetections, $rejectedDetections);
+
 		$detections = array_merge($unclusteredDetections, $sampledDetections);
+
+		$this->logger->debug('ClusterDebug: Found ' . count($freshDetections) . " fresh detections. Adding " . count($rejectedDetections). " old detections and " . count($sampledDetections). " sampled detections from already existing clusters. Calculating clusters on " . count($detections) . " detections.");
+
 
 		$dataset = new Labeled(array_map(static function (FaceDetection $detection): array {
 			return $detection->getVector();
@@ -156,6 +161,14 @@ class FaceClusterAnalyzer {
 
 		$this->logger->debug('ClusterDebug: Clustering complete. Total num of clustered detections: ' . $numberOfClusteredDetections);
 		$this->pruneClusters($userId);
+
+		foreach ($unclusteredDetections as $detection) {
+			if ($detection->getClusterId() === null) {
+				// This detection was run through clustering but wasn't assigned to any cluster
+				$detection->setClusterId(-1);
+				$this->faceDetections->update($detection);
+			}
+		}
 	}
 
 	/**
@@ -271,7 +284,11 @@ class FaceClusterAnalyzer {
 		return (int)round(max(2, min(3, $n ** (1 / 4))));
 	}
 
-    private function getReferenceSampleSize(int $n) : int {
-        return (int)round(12 * $n ** (1 / 4));
-    }
+	private function getReferenceSampleSize(int $n) : int {
+		return (int)round(12 * $n ** (1 / 4));
+	}
+
+	private function getRejectSampleSize(int $n): int {
+		return (int) min(($n / 4), 12 * $n ** (0.55)); // I love maths. Slap me.
+	}
 }

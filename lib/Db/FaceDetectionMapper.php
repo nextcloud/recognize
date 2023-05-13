@@ -180,11 +180,28 @@ class FaceDetectionMapper extends QBMapper {
 		return $this->findEntities($qb);
 	}
 
-	public function findClusterSample(int $clusterId, int $n) {
+	public function findClusterSample(int $clusterId, int $n): array {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select(FaceDetection::$columns)
 			->from('recognize_face_detections', 'd')
 			->where($qb->expr()->eq('cluster_id', $qb->createPositionalParameter($clusterId)))
+			->orderBy(
+				$qb->createFunction(
+					$this->config->getSystemValue('dbtype', 'sqlite') === 'mysql'
+						? 'RAND()'
+						: 'RANDOM()'
+				)
+			)
+			->setMaxResults($n);
+		return $this->findEntities($qb);
+	}
+
+	public function sampleRejectedDetectionsByUserId(string $userId, int $n): array {
+		$qb = $this->db->getQueryBuilder();
+		$qb->select(FaceDetection::$columns)
+			->from('recognize_face_detections', 'd')
+			->where($qb->expr()->eq('cluster_id', $qb->createPositionalParameter(-1)))
+			->andWhere($qb->expr()->eq('user_id', $qb->createPositionalParameter($userId)))
 			->orderBy(
 				$qb->createFunction(
 					$this->config->getSystemValue('dbtype', 'sqlite') === 'mysql'
