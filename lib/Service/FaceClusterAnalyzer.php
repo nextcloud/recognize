@@ -20,7 +20,6 @@ class FaceClusterAnalyzer {
 	public const MIN_CLUSTER_SEPARATION = 0.0;
 	public const MAX_CLUSTER_EDGE_LENGTH = 0.5;
 	public const DIMENSIONS = 128;
-	public const SAMPLE_SIZE_EXISTING_CLUSTERS = 80;
 	public const MAX_OVERLAP_NEW_CLUSTER = 0.1;
 	public const MIN_OVERLAP_EXISTING_CLUSTER = 0.5;
 
@@ -56,9 +55,6 @@ class FaceClusterAnalyzer {
 			$detection->getHeight() > self::MIN_DETECTION_SIZE && $detection->getWidth() > self::MIN_DETECTION_SIZE
 		));
 
-		#DEBUG:
-		#$unclusteredDetections = array_slice($unclusteredDetections, 0, 4000);
-
 		if (count($unclusteredDetections) < $this->minDatasetSize) {
 			$this->logger->debug('ClusterDebug: Not enough face detections found');
 			return;
@@ -71,7 +67,7 @@ class FaceClusterAnalyzer {
 		$existingClusters = $this->faceClusters->findByUserId($userId);
 		$maxVotesByCluster = [];
 		foreach ($existingClusters as $existingCluster) {
-			$sampled = $this->faceDetections->findClusterSample($existingCluster->getId(), self::SAMPLE_SIZE_EXISTING_CLUSTERS);
+			$sampled = $this->faceDetections->findClusterSample($existingCluster->getId(), $this->getReferenceSampleSize(count($unclusteredDetections));
 			$sampledDetections = array_merge($sampledDetections, $sampled);
 			$maxVotesByCluster[$existingCluster->getId()] = count($sampled);
 		}
@@ -274,4 +270,8 @@ class FaceClusterAnalyzer {
 	private function getMinSampleSize(int $n) : int {
 		return (int)round(max(2, min(3, $n ** (1 / 4))));
 	}
+
+    private function getReferenceSampleSize(int $n) : int {
+        return (int)round(12 * $n ** (1 / 4));
+    }
 }
