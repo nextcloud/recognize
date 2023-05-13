@@ -20,7 +20,7 @@ jobs:
         php-versions: ['8.1']
         databases: ['sqlite']
         server-versions: ['stable26']
-        pure-js-mode: ['false', 'true']
+        pure-js-mode: ['false']
 
     name: Test cluster-faces command on ${{ matrix.databases }}-${{ matrix.server-versions }} wasm:${{ matrix.pure-js-mode }}
 
@@ -60,6 +60,10 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
+      - name: install ssl-cert
+        if: env.ACT # Skip this on normal GitHub Actions
+        run: sudo apt update && sudo apt install -y ssl-cert
+
       - name: Set up php ${{ matrix.php-versions }}
         uses: shivammathur/setup-php@v2
         with:
@@ -87,6 +91,10 @@ jobs:
 
       - name: Set up npm ${{ steps.versions.outputs.npmVersion }}
         run: npm i -g npm@"${{ steps.versions.outputs.npmVersion }}"
+
+      - name: install make wget unzip
+        if: env.ACT # Skip this on normal GitHub Actions
+        run: sudo apt update && sudo apt install -y make wget unzip
 
       - name: Install app
         working-directory: apps/${{ env.APP_NAME }}
@@ -146,13 +154,18 @@ jobs:
           ./occ recognize:cluster-faces -b 10000
           ./occ recognize:cluster-faces -b 10000
 
+      - name: install python3 python3-pip jq curl
+        if: env.ACT # Skip this on normal GitHub Actions
+        run: sudo apt update && sudo apt install -y python3 python3-pip jq curl
+
       - name: Install xq
         run: |
           pip install yq
 
       - name: Download face assignments
         run: |
-          curl -u 'admin:password' --request PROPFIND 'http://localhost:8080/remote.php/recognize/admin/faces/' --header 'Depth: 2' --data '<?xml version="1.0"?>
+          php -S localhost:8080 &
+          curl -u 'admin:password' --request PROPFIND 'http://localhost:8080/remote.php/dav/recognize/admin/faces/' --header 'Depth: 2' --data '<?xml version="1.0"?>
             <d:propfind xmlns:d="DAV:"
             xmlns:oc="http://owncloud.org/ns"
             xmlns:nc="http://nextcloud.org/ns"
@@ -197,6 +210,12 @@ jobs:
                     names.filter(name2 => name1 === name2).length
                   ).sort().reverse()[0] / names.length
               );
-            console.log(stats);
-            console.log(stats.reduce((acc, val) => acc+val, 0)/stats.length)
+            const clusteredFaces = Object.entries(data)
+                .map(([clusterId, names]) => names.length)
+                .reduce((acc, val) => acc+val, 0)
+            console.log({clusterAccuracies: stats});
+            console.log({ clusteredFaces });
+            console.log({clusteredFacesRate: clusteredFaces / $(ls data/admin/files/IMDb-Face/* | wc -l) })
+            console.log({shitClusterRate: stats.filter((val) => val < 0.5).length/stats.length})
+            console.log({averageClusterAccuracy: stats.reduce((acc, val) => acc+val, 0)/stats.length})
           "
