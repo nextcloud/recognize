@@ -213,9 +213,13 @@ jobs:
             const clusteredFaces = Object.entries(data)
                 .map(([clusterId, names]) => names.length)
                 .reduce((acc, val) => acc+val, 0)
-            console.log({clusterAccuracies: stats});
+            const clusteredFacesRate = clusteredFaces / $(ls data/admin/files/IMDb-Face/* | wc -l)
+            const averageClusterAccuracy = stats.reduce((acc, val) => acc+val, 0)/stats.length
+            const shitClusterRate = stats.filter((val) => val < 0.5).length/stats.length
+            console.log({ clusterAccuracies: stats });
             console.log({ clusteredFaces });
-            console.log({clusteredFacesRate: clusteredFaces / $(ls data/admin/files/IMDb-Face/* | wc -l) })
-            console.log({shitClusterRate: stats.filter((val) => val < 0.5).length/stats.length})
-            console.log({averageClusterAccuracy: stats.reduce((acc, val) => acc+val, 0)/stats.length})
+            console.log({ clusteredFacesRate })
+            console.log({ shitClusterRate })
+            console.log({ averageClusterAccuracy })
+            console.log({ weightedAccuracy: averageClusterAccuracy * clusteredFacesRate })
           "
