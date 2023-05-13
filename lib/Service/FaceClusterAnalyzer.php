@@ -20,7 +20,9 @@ class FaceClusterAnalyzer {
 	public const MIN_CLUSTER_SEPARATION = 0.0;
 	public const MAX_CLUSTER_EDGE_LENGTH = 0.5;
 	public const DIMENSIONS = 128;
-	public const SAMPLE_SIZE_EXISTING_CLUSTERS = 42;
+	public const SAMPLE_SIZE_EXISTING_CLUSTERS = 80;
+	public const MAX_OVERLAP_NEW_CLUSTER = 0.1;
+	public const MIN_OVERLAP_EXISTING_CLUSTER = 0.5;
 
 	private FaceDetectionMapper $faceDetections;
 	private FaceClusterMapper $faceClusters;
@@ -54,6 +56,9 @@ class FaceClusterAnalyzer {
 			$detection->getHeight() > self::MIN_DETECTION_SIZE && $detection->getWidth() > self::MIN_DETECTION_SIZE
 		));
 
+		#DEBUG:
+		#$unclusteredDetections = array_slice($unclusteredDetections, 0, 4000);
+
 		if (count($unclusteredDetections) < $this->minDatasetSize) {
 			$this->logger->debug('ClusterDebug: Not enough face detections found');
 			return;
@@ -64,9 +69,11 @@ class FaceClusterAnalyzer {
 		$sampledDetections = [];
 
 		$existingClusters = $this->faceClusters->findByUserId($userId);
+		$maxVotesByCluster = [];
 		foreach ($existingClusters as $existingCluster) {
 			$sampled = $this->faceDetections->findClusterSample($existingCluster->getId(), self::SAMPLE_SIZE_EXISTING_CLUSTERS);
 			$sampledDetections = array_merge($sampledDetections, $sampled);
+			$maxVotesByCluster[$existingCluster->getId()] = count($sampled);
 		}
 
 		$detections = array_merge($unclusteredDetections, $sampledDetections);
@@ -83,21 +90,51 @@ class FaceClusterAnalyzer {
 
 		foreach ($clusters as $flatCluster) {
 			$detectionKeys = array_keys($flatCluster->getClusterVertices());
-			$clusterCentroid = self::calculateCentroidOfDetections(array_map(static fn ($key) => $detections[$key], $detectionKeys));
 
-			/**
-			 * @var int|false $detection
-			 */
-			$detection = current(array_filter($detectionKeys, static fn ($key) => $detections[$key]->getClusterId() !== null));
+			$clusterDetections = array_filter($detections, function ($key) use ($detectionKeys) {
+				return isset($detectionKeys[$key]);
+			}, ARRAY_FILTER_USE_KEY);
+			$clusterCentroid = self::calculateCentroidOfDetections($clusterDetections);
+			$votes = [];
 
-			if ($detection !== false) {
-				$clusterId = $detections[$detection]->getClusterId();
-				$cluster = $this->faceClusters->find($clusterId);
+			// Let already clustered detections vote which
+			// clusterId these newly clustered detections get
+			foreach ($detectionKeys as $detectionKey) {
+				if ($detectionKey < count($unclusteredDetections)) {
+					continue;
+				}
+
+				$vote = $detections[$detectionKey]->getClusterId();
+
+				if ($vote === null) {
+					$vote = -1;
+				}
+
+				$votes[] = $vote;
+			}
+
+			if (empty($votes)) {
+				$overlap = 0.0;
 			} else {
+				$votes = array_count_values($votes);
+				$oldClusterId = array_search(max($votes), $votes);
+				$overlap = max($votes) / $maxVotesByCluster[$oldClusterId];
+			}
+
+			// If more than X% of already clustered detections are for this, we keep it
+			if ($overlap > self::MIN_OVERLAP_EXISTING_CLUSTER) {
+				$clusterId = $oldClusterId;
+				$cluster = $this->faceClusters->find($clusterId);
+			} elseif ($overlap < self::MAX_OVERLAP_NEW_CLUSTER) {
+				// otherwise we create a new cluster
+
 				$cluster = new FaceCluster();
 				$cluster->setTitle('');
 				$cluster->setUserId($userId);
 				$this->faceClusters->insert($cluster);
+			} else {
+				// this is a shit cluster. Don't add to it.
+				continue;
 			}
 
 			foreach ($detectionKeys as $detectionKey) {
@@ -231,10 +268,10 @@ class FaceClusterAnalyzer {
 	}
 
 	private function getMinClusterSize(int $n) : int {
-		return (int)round(max(2, min(8, $n ** (1 / 4))));
+		return (int)round(max(6, min(10, $n ** (1 / 4))));
 	}
 
 	private function getMinSampleSize(int $n) : int {
-		return (int)round(max(2, min(7, $n ** (1 / 4))));
+		return (int)round(max(2, min(3, $n ** (1 / 4))));
 	}
 }
