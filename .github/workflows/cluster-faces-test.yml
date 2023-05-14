@@ -106,7 +106,9 @@ jobs:
           cd tests/res/
           wget https://cloud.marcelklehr.de/s/PkNYbmKnwMiQMFD/download/IMDb-Face.zip
           unzip IMDb-Face.zip
-          rm IMDb-Face.zip
+          wget https://cloud.marcelklehr.de/s/ZKe7MY7gZRRxBPq/download/IMDb-Face-csv.zip 
+          unzip IMDb-Face-csv.zip
+          rm IMDb-Face-csv.zip
 
       - name: Set up Nextcloud and install app
         if: ${{ matrix.databases != 'pgsql'}}
