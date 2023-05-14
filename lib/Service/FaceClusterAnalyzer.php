@@ -49,11 +49,7 @@ class FaceClusterAnalyzer {
 			ini_set('memory_limit', -1);
 		}
 
-		$freshDetections = $this->faceDetections->findUnclusteredByUserId($userId, $batchSize);
-
-		$freshDetections = array_values(array_filter($freshDetections, fn ($detection) =>
-			$detection->getHeight() > self::MIN_DETECTION_SIZE && $detection->getWidth() > self::MIN_DETECTION_SIZE
-		));
+		$freshDetections = $this->faceDetections->findUnclusteredByUserId($userId, $batchSize, self::MIN_DETECTION_SIZE, self::MIN_DETECTION_SIZE);
 
 		if (count($freshDetections) < $this->minDatasetSize) {
 			$this->logger->debug('ClusterDebug: Not enough face detections found');
@@ -61,7 +57,6 @@ class FaceClusterAnalyzer {
 		}
 
 		$sampledDetections = [];
-
 		$existingClusters = $this->faceClusters->findByUserId($userId);
 		$maxVotesByCluster = [];
 		foreach ($existingClusters as $existingCluster) {
@@ -70,7 +65,7 @@ class FaceClusterAnalyzer {
 			$maxVotesByCluster[$existingCluster->getId()] = count($sampled);
 		}
 
-		$rejectedDetections = $this->faceDetections->sampleRejectedDetectionsByUserId($userId, $this->getRejectSampleSize(count($freshDetections)));
+		$rejectedDetections = $this->faceDetections->sampleRejectedDetectionsByUserId($userId, $this->getRejectSampleSize(count($freshDetections)), self::MIN_DETECTION_SIZE, self::MIN_DETECTION_SIZE);
 
 		$unclusteredDetections = array_merge($freshDetections, $rejectedDetections);
 

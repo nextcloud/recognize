@@ -168,11 +168,13 @@ class FaceDetectionMapper extends QBMapper {
 	 * @return \OCA\Recognize\Db\FaceDetection[]
 	 * @throws \OCP\DB\Exception
 	 */
-	public function findUnclusteredByUserId(string $userId, int $limit = 0) : array {
+	public function findUnclusteredByUserId(string $userId, int $limit = 0, int $minHeight = 0, int $minWidth = 0) : array {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select(FaceDetection::$columns)
 			->from('recognize_face_detections')
 			->where($qb->expr()->eq('user_id', $qb->createPositionalParameter($userId)))
+			->andWhere($qb->expr()->gte('height', $qb->createPositionalParameter($minHeight)))
+			->andWhere($qb->expr()->gte('width', $qb->createPositionalParameter($minWidth)))
 			->andWhere($qb->expr()->isNull('cluster_id'));
 		if ($limit > 0) {
 			$qb->setMaxResults($limit);
@@ -180,11 +182,13 @@ class FaceDetectionMapper extends QBMapper {
 		return $this->findEntities($qb);
 	}
 
-	public function findClusterSample(int $clusterId, int $n): array {
+	public function findClusterSample(int $clusterId, int $n, int $minHeight = 0, int $minWidth = 0): array {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select(FaceDetection::$columns)
 			->from('recognize_face_detections', 'd')
 			->where($qb->expr()->eq('cluster_id', $qb->createPositionalParameter($clusterId)))
+			->andWhere($qb->expr()->gte('height', $qb->createPositionalParameter($minHeight)))
+			->andWhere($qb->expr()->gte('width', $qb->createPositionalParameter($minWidth)))
 			->orderBy(
 				$qb->createFunction(
 					$this->config->getSystemValue('dbtype', 'sqlite') === 'mysql'
@@ -196,12 +200,14 @@ class FaceDetectionMapper extends QBMapper {
 		return $this->findEntities($qb);
 	}
 
-	public function sampleRejectedDetectionsByUserId(string $userId, int $n): array {
+	public function sampleRejectedDetectionsByUserId(string $userId, int $n, int $minHeight = 0, int $minWidth = 0): array {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select(FaceDetection::$columns)
 			->from('recognize_face_detections', 'd')
 			->where($qb->expr()->eq('cluster_id', $qb->createPositionalParameter(-1)))
 			->andWhere($qb->expr()->eq('user_id', $qb->createPositionalParameter($userId)))
+			->andWhere($qb->expr()->gte('height', $qb->createPositionalParameter($minHeight)))
+			->andWhere($qb->expr()->gte('width', $qb->createPositionalParameter($minWidth)))
 			->orderBy(
 				$qb->createFunction(
 					$this->config->getSystemValue('dbtype', 'sqlite') === 'mysql'
