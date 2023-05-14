@@ -106,9 +106,6 @@ jobs:
           cd tests/res/
           wget https://cloud.marcelklehr.de/s/PkNYbmKnwMiQMFD/download/IMDb-Face.zip
           unzip IMDb-Face.zip
-          wget https://cloud.marcelklehr.de/s/ZKe7MY7gZRRxBPq/download/IMDb-Face-csv.zip 
-          unzip IMDb-Face-csv.zip
-          rm IMDb-Face-csv.zip
 
       - name: Set up Nextcloud and install app
         if: ${{ matrix.databases != 'pgsql'}}
@@ -151,10 +148,23 @@ jobs:
           GITHUB_REF: ${{ github.ref }}
         run: |
           ./occ recognize:classify
+
+      - name: Reduce space
+        run: |
+          for dirname in data/admin/files/IMDb-Face/*; do truncate -s 0 "${dirname}/*"; done
+
+      - name: Run clustering
+        run: |
           ./occ recognize:cluster-faces -b 10000
           ./occ recognize:cluster-faces -b 10000
           ./occ recognize:cluster-faces -b 10000
           ./occ recognize:cluster-faces -b 10000
+
+      - name: Download IMDb-Face.csv
+        run: |
+          wget https://cloud.marcelklehr.de/s/ZKe7MY7gZRRxBPq/download/IMDb-Face-csv.zip 
+          unzip IMDb-Face-csv.zip
+          rm IMDb-Face-csv.zip
 
       - name: install python3 python3-pip jq curl
         if: env.ACT # Skip this on normal GitHub Actions
