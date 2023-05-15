@@ -131,13 +131,22 @@ class MstClusterer {
 				[$childClusterEdges2, $childClusterVerticesToEdges2] = $this->getChildClusterComponents($vertexConnectedFrom);
 
 				if ($edgeLength < $this->minClusterSeparation) {
+					$prunedEdges = [];
 					if (count($childClusterEdges1) > count($childClusterEdges2)) {
 						$this->remainingEdges = $childClusterEdges1;
 						$this->mapVerticesToEdges = $childClusterVerticesToEdges1;
+						$prunedEdges = $childClusterEdges2;
 					} else {
 						$this->remainingEdges = $childClusterEdges2;
 						$this->mapVerticesToEdges = $childClusterVerticesToEdges2;
+						$prunedEdges = $childClusterEdges1;
 					}
+					
+					// Set the final lambda for the pruned edges:
+					foreach (array_keys($prunedEdges) as $edgeKey) {
+						$this->edges[$edgeKey]['finalLambda'] = $currentLambda;
+					}
+					
 					continue;
 				}
 
