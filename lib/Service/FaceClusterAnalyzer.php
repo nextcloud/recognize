@@ -271,12 +271,22 @@ class FaceClusterAnalyzer {
 		return self::$distance->compute($v1, $v2);
 	}
 
+	/**
+	 * Hypothesis is that photos per identity scale with ~ n^(1/5) in the total number of photos
+	 * @param int $n
+	 * @return int
+	 */
 	private function getMinClusterSize(int $n) : int {
-		return (int)round(max(6, min(10, $n ** (1 / 4))));
+		return (int)round(max(2, min(8, $n ** (1 / 4.7))));
 	}
 
+	/**
+	 * We use 4.6 here to have this slightly smaller than MinClusterSize but still scale similarly
+	 * @param int $n
+	 * @return int
+	 */
 	private function getMinSampleSize(int $n) : int {
-		return (int)round(max(2, min(3, $n ** (1 / 4))));
+		return (int)round(max(2, min(7, $n ** (1 / 5.6))));
 	}
 
 	private function getReferenceSampleSize(int $n) : int {
