@@ -277,7 +277,7 @@ class FaceClusterAnalyzer {
 	 * @return int
 	 */
 	private function getMinClusterSize(int $n) : int {
-		return (int)round(max(2, min(8, $n ** (1 / 4.7))));
+		return (int)round(max(3, min(6, $n ** (1 / 4.7))));
 	}
 
 	/**
@@ -286,7 +286,7 @@ class FaceClusterAnalyzer {
 	 * @return int
 	 */
 	private function getMinSampleSize(int $n) : int {
-		return (int)round(max(2, min(7, $n ** (1 / 5.6))));
+		return (int)round(max(2, min(5, $n ** (1 / 5.6))));
 	}
 
 	private function getReferenceSampleSize(int $n) : int {
