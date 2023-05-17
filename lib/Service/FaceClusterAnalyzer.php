@@ -60,7 +60,7 @@ class FaceClusterAnalyzer {
 		$existingClusters = $this->faceClusters->findByUserId($userId);
 		$maxVotesByCluster = [];
 		foreach ($existingClusters as $existingCluster) {
-			$sampled = $this->faceDetections->findClusterSample($existingCluster->getId(), $this->getReferenceSampleSize(count($freshDetections)));
+			$sampled = $this->faceDetections->findClusterSample($existingCluster->getId(), $this->getReferenceSampleSize(count($existingClusters)));
 			$sampledDetections = array_merge($sampledDetections, $sampled);
 			$maxVotesByCluster[$existingCluster->getId()] = count($sampled);
 		}
@@ -247,9 +247,15 @@ class FaceClusterAnalyzer {
 		return (int)round(max(2, min(5, $n ** (1 / 5.6))));
 	}
 
-	private function getReferenceSampleSize(int $n) : int {
-		return (int)round(12 * $n ** (1 / 4));
-	}
+    /**
+     * Grows to ~5000 detections for ~200-800 clusters (detections per cluster drop exponentially)
+     * and then grows linearly with 5 detections per cluster
+     * @param int
+     * @returns int
+     */
+	private function getReferenceSampleSize(int $numberClusters) : int {
+		return (int)round(75 * 2 ** (-0.007 * $numberClusters) + 5);
+    }
 
 	private function getRejectSampleSize(int $n): int {
 		return (int) min(($n / 4), 12 * $n ** (0.55)); // I love maths. Slap me.
