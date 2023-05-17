@@ -155,54 +155,12 @@ class FaceClusterAnalyzer {
 		}
 
 		$this->logger->debug('ClusterDebug: Clustering complete. Total num of clustered detections: ' . $numberOfClusteredDetections);
-		$this->pruneClusters($userId);
 
 		foreach ($unclusteredDetections as $detection) {
 			if ($detection->getClusterId() === null) {
 				// This detection was run through clustering but wasn't assigned to any cluster
 				$detection->setClusterId(-1);
 				$this->faceDetections->update($detection);
-			}
-		}
-	}
-
-	/**
-	 * @throws \OCP\DB\Exception
-	 */
-	public function pruneClusters(string $userId): void {
-		$clusters = $this->faceClusters->findByUserId($userId);
-
-		if (count($clusters) === 0) {
-			$this->logger->debug('No face clusters found');
-			return;
-		}
-
-		foreach ($clusters as $cluster) {
-			$detections = $this->faceDetections->findByClusterId($cluster->getId());
-
-			$filesWithDuplicateFaces = $this->findFilesWithDuplicateFaces($detections);
-			if (count($filesWithDuplicateFaces) === 0) {
-				continue;
-			}
-
-			$centroid = self::calculateCentroidOfDetections($detections);
-
-			foreach ($filesWithDuplicateFaces as $fileDetections) {
-				$detectionsByDistance = [];
-				foreach ($fileDetections as $detection) {
-					$distance = new Euclidean();
-					$detectionsByDistance[$detection->getId()] = $distance->compute($centroid, $detection->getVector());
-				}
-				asort($detectionsByDistance);
-				$bestMatchingDetectionId = array_keys($detectionsByDistance)[0];
-
-				foreach ($fileDetections as $detection) {
-					if ($detection->getId() === $bestMatchingDetectionId) {
-						continue;
-					}
-					$detection->setClusterId(null);
-					$this->faceDetections->update($detection);
-				}
 			}
 		}
 	}
