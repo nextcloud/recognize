@@ -19,7 +19,7 @@ jobs:
       matrix:
         php-versions: ['7.4']
         databases: ['sqlite']
-        server-versions: ['stable25']
+        server-versions: ['stable27']
         pure-js-mode: ['false']
         imagenet-enabled: ['true']
         faces-enabled: ['true']
