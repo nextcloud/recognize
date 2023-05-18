@@ -146,7 +146,7 @@ jobs:
         id: db-cache
         with:
           path: data/nextcloud.db
-          key: ${{ runner.os }}-${{ hashFiles('data/admin/files/**', 'apps/recognize/src/classifier_faces.js') }}
+          key: ${{ runner.os }}-${{ matrix.server-versions }}-${{ hashFiles('data/admin/files/**', 'apps/recognize/src/classifier_faces.js') }}-${{ matrix.pure-js-mode }}
 
       - name: Run classifier
         if: steps.db-cache.outputs.cache-hit != 'true'
@@ -159,7 +159,7 @@ jobs:
       - uses: actions/cache/save@v3
         with:
           path: data/nextcloud.db
-          key: ${{ runner.os }}-${{ hashFiles('data/admin/files/**', 'apps/recognize/src/classifier_faces.js') }}
+          key: ${{ steps.db-cache.outputs.cache-primary-key }}
 
       - name: Reduce space
         run: |
@@ -171,12 +171,12 @@ jobs:
 
       - name: Create detection summary
         run: |
-          sqlite3 data/nextcloud.db "select x, y, path from oc_recognize_face_detections d LEFT JOIN oc_filecache c ON c.fileid = d.file_id where user_id = 'admin';" > out.txt
+          sqlite3 data/nextcloud.db "select x, y, path from oc_recognize_face_detections d LEFT JOIN oc_filecache c ON c.fileid = d.file_id where user_id = 'admin' ORDER BY path;" > out.txt
 
       - uses: actions/cache/restore@v3
         id: clustering-cache
         with:
-          path: data/nextcloud.db
+          path: out.json
           key: ${{ runner.os }}-${{ hashFiles('out.txt', 'apps/recognize/src/classifier_faces.js', 'apps/recognize/lib/Clustering/**', 'apps/recognize/lib/Service/FaceClusterAnalyzer.php', 'apps/recognize/lib/Command/ClusterFaces.php') }}
 
       - name: Run clustering
@@ -189,27 +189,17 @@ jobs:
           ./occ recognize:cluster-faces -b 10000
           ./occ recognize:cluster-faces -b 10000
 
-      - uses: actions/cache/save@v3
-        with:
-          path: data/nextcloud.db
-          key: ${{ runner.os }}-${{ hashFiles('out.txt', 'apps/recognize/src/classifier_faces.js', 'apps/recognize/lib/Clustering/**', 'apps/recognize/lib/Service/FaceClusterAnalyzer.php', 'apps/recognize/lib/Command/ClusterFaces.php') }}
-
-      - name: Download IMDb-Face.csv
-        working-directory: apps/${{ env.APP_NAME }}/tests/res
-        run: |
-          wget https://cloud.marcelklehr.de/s/ZKe7MY7gZRRxBPq/download/IMDb-Face-csv.zip 
-          unzip IMDb-Face-csv.zip
-          rm IMDb-Face-csv.zip
-
       - name: install python3 python3-pip jq curl
-        if: env.ACT # Skip this on normal GitHub Actions
+        if: steps.clustering-cache.outputs.cache-hit != 'true' && env.ACT # Skip this on normal GitHub Actions
         run: sudo apt update && sudo apt install -y python3 python3-pip jq curl
 
       - name: Install xq
+        if: steps.clustering-cache.outputs.cache-hit != 'true'
         run: |
           pip install yq
 
       - name: Download face assignments
+        if: steps.clustering-cache.outputs.cache-hit != 'true'
         run: |
           php -S localhost:8080 &
           curl -u 'admin:password' --request PROPFIND 'http://localhost:8080/remote.php/dav/recognize/admin/faces/' --header 'Depth: 2' --data '<?xml version="1.0"?>
@@ -236,9 +226,23 @@ jobs:
           cat out.xml
 
       - name: Parse face assignments
+        if: steps.clustering-cache.outputs.cache-hit != 'true'
         run: |
           cat out.xml | xq '.["d:multistatus"]["d:response"] | map(select(.["d:href"] | test("faces/.+?/.+?"))) | map({"href": .["d:href"], "realpath": .["d:propstat"][0]["d:prop"]["nc:realpath"], "face-detections": .["d:propstat"][0]["d:prop"]["nc:face-detections"] | fromjson | map({userId, x, y, height, width, clusterId}) })' > out.json
           cat out.json
+
+      - uses: actions/cache/save@v3
+        with:
+          path: out.json
+          key: ${{ steps.clustering-cache.outputs.cache-primary-key }}
+
+      - name: Download IMDb-Face.csv
+        if: steps.clustering-cache.outputs.cache-hit != 'true'
+        working-directory: apps/${{ env.APP_NAME }}/tests/res
+        run: |
+          wget https://cloud.marcelklehr.de/s/ZKe7MY7gZRRxBPq/download/IMDb-Face-csv.zip 
+          unzip IMDb-Face-csv.zip
+          rm IMDb-Face-csv.zip
 
       - name: Analyse face assignments
         run: |
