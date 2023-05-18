@@ -132,6 +132,7 @@ jobs:
           cd data/admin/files
           wget https://cloud.marcelklehr.de/s/PkNYbmKnwMiQMFD/download/IMDb-Face.zip
           unzip IMDb-Face.zip
+          rm IMDb-Face.zip
 
       - name: Set pure-js mode
         run: |
