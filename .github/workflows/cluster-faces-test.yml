@@ -279,7 +279,7 @@ jobs:
               return acc
             }, {});
             
-            const targetFacesByCluster = json
+            const targetFaces = json
             .filter(face => {
               return limitedCsv
                 .some(entry => {
@@ -292,11 +292,21 @@ jobs:
                   return false
                 })
             })
+          
+            const targetFacesPerIdentity = targetFaces.reduce((acc, face) => {
+              const name = face.realpath.split('/')[4]
+              acc[name] = acc[name] ?? []
+              acc[name].push(face)
+              return acc  
+            },{})
+          
+            const targetFacesByCluster = targetFaces
             .reduce((acc, face) => {
               const clusterId = parseInt(face.href.split('/')[6]);
               acc[clusterId] = [...(acc[clusterId] ?? []), face.realpath.split('/')[4]];
               return acc
             }, {});
+          
             console.log(facesByCluster);
             console.log(targetFacesByCluster);
             const clusterTargetAccuracies = Object.entries(targetFacesByCluster)
@@ -320,6 +330,32 @@ jobs:
             const clusteredTargetFaces = Object.entries(targetFacesByCluster)
                 .map(([clusterId, names]) => names.length)
                 .reduce((acc, val) => acc+val, 0)
+            const clusteredTargetFacesByIdentity = Object.entries(targetFacesByCluster)
+              .map(([clusterId, names]) =>
+                [...new Set(names).values()]
+                  .map(name1 =>
+                    [name1, names.filter(name2 => name1 === name2).length]
+                  ).sort(([name1, size1], [name2, size2]) => size1 - size2).reverse()[0]
+              )
+              .filter(([name,size]) => size > 1)
+              .reduce((acc, [name, size]) => {
+                acc[name] = (acc[name] ?? 0) + size 
+                return acc
+              }, Object.fromEntries(Object.entries(targetFacesPerIdentity).map(([key]) => [key, 0])))
+          
+            console.log(targetFacesPerIdentity)
+            console.log(clusteredTargetFacesByIdentity)
+            const averageTargetFacesPerIdentity = Object.entries(targetFacesPerIdentity).reduce((acc, [name, detections]) => acc+detections.length, 0) / Object.entries(targetFacesPerIdentity).length
+            const averageClusteredTargetFacesByIdentity = Object.entries(clusteredTargetFacesByIdentity).reduce((acc, [name, size]) => acc+size, 0) / Object.entries(clusteredTargetFacesByIdentity).length
+          
+            const clusteredTargetFacesByIdentityRate = Object.entries(clusteredTargetFacesByIdentity)
+              .reduce((acc, [name, size]) => acc + size / targetFacesPerIdentity[name].length, 0) / Object.entries(clusteredTargetFacesByIdentity).length
+            const identitiesWithPhotos = $(find data/admin/files/IMDb-Face -type d ! -empty | wc -l)
+            const identitiesWithDetections = Object.entries(targetFacesPerIdentity).length
+            const identitiesWithEnoughDetections = Object.entries(targetFacesPerIdentity).filter(([name, detections]) => detections.length > 1).length
+            const identitiesWithClusters = Object.entries(clusteredTargetFacesByIdentity).filter(([name, size]) => size > 1).length
+            const identitiesWithClustersRate = identitiesWithClusters / identitiesWithEnoughDetections
+          
             const detectedFaces = $(sqlite3 data/nextcloud.db "select count(*) from oc_recognize_face_detections where user_id = 'admin';")
             const detectedTargetFaces = allDetections.filter(detection => {
               if(detection.length < 3) return false
@@ -355,6 +391,14 @@ jobs:
             console.log({ clusteredFacesRate })
             console.log({ clusteredTargetFaces })
             console.log({ clusteredTargetFacesRate })
+            console.log({ averageTargetFacesPerIdentity })
+            console.log({ averageClusteredTargetFacesByIdentity })
+            console.log({ clusteredTargetFacesByIdentityRate })
+            console.log({ identitiesWithPhotos })
+            console.log({ identitiesWithDetections })
+            console.log({ identitiesWithEnoughDetections })
+            console.log({ identitiesWithClusters })
+            console.log({ identitiesWithClustersRate })
             console.log({ shitClusterRate })
             console.log({ targettedShitClusterRate })
             console.log({ averageClusterAccuracy })
