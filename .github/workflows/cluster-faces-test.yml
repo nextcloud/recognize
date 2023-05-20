@@ -241,7 +241,6 @@ jobs:
           key: ${{ steps.clustering-cache.outputs.cache-primary-key }}
 
       - name: Download IMDb-Face.csv
-        if: steps.clustering-cache.outputs.cache-hit != 'true'
         working-directory: apps/${{ env.APP_NAME }}/tests/res
         run: |
           wget https://cloud.marcelklehr.de/s/ZKe7MY7gZRRxBPq/download/IMDb-Face-csv.zip 
