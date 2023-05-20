@@ -146,7 +146,7 @@ jobs:
         id: db-cache
         with:
           path: data/nextcloud.db
-          key: ${{ runner.os }}-${{ matrix.server-versions }}-${{ hashFiles('data/admin/files/**', 'apps/recognize/src/classifier_faces.js') }}-${{ matrix.pure-js-mode }}
+          key: ${{ runner.os }}-${{ matrix.server-versions }}-${{ hashFiles('data/admin/files/**', 'apps/recognize/src/classifier_faces.js', 'apps/recognize/lib/Classifiers/Classifier.php', 'apps/recognize/lib/Classifiers/Images/ClusteringFaceClassifier.php') }}-${{ matrix.pure-js-mode }}
 
       - name: Run classifier
         if: steps.db-cache.outputs.cache-hit != 'true'
@@ -177,7 +177,7 @@ jobs:
         id: clustering-cache
         with:
           path: out.json
-          key: ${{ runner.os }}-${{ hashFiles('out.txt', 'apps/recognize/src/classifier_faces.js', 'apps/recognize/lib/Clustering/**', 'apps/recognize/lib/Service/FaceClusterAnalyzer.php', 'apps/recognize/lib/Command/ClusterFaces.php') }}
+          key: ${{ runner.os }}-${{ hashFiles('out.txt', 'apps/recognize/src/classifier_faces.js', 'apps/recognize/lib/Classifiers/Classifier.php', 'apps/recognize/lib/Classifiers/Images/ClusteringFaceClassifier.php', 'apps/recognize/lib/Clustering/**', 'apps/recognize/lib/Service/FaceClusterAnalyzer.php', 'apps/recognize/lib/Command/ClusterFaces.php') }}-${{ matrix.pure-js-mode }}
 
       - name: Run clustering
         if: steps.clustering-cache.outputs.cache-hit != 'true'
@@ -201,7 +201,6 @@ jobs:
       - name: Download face assignments
         if: steps.clustering-cache.outputs.cache-hit != 'true'
         run: |
-          php -S localhost:8080 &
           curl -u 'admin:password' --request PROPFIND 'http://localhost:8080/remote.php/dav/recognize/admin/faces/' --header 'Depth: 2' --data '<?xml version="1.0"?>
             <d:propfind xmlns:d="DAV:"
             xmlns:oc="http://owncloud.org/ns"
