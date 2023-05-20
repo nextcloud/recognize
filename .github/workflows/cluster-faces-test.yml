@@ -2,14 +2,15 @@ name: Cluster-faces command test
 
 on:
   pull_request:
+    paths:
+      - 'lib/**'
+      - 'src/**'
   push:
     branches:
       - master
     paths:
       - 'lib/**'
       - 'src/**'
-      - 'package-lock.json'
-      - 'composer.lock'
 
 env:
   APP_NAME: recognize
