@@ -404,4 +404,12 @@ jobs:
             console.log({ averageClusterTargetAccuracy })
             console.log({ weightedAccuracy: averageClusterAccuracy * clusteredFacesRate })
             console.log({ weightedTargetAccuracy: averageClusterTargetAccuracy * clusteredTargetFacesRate })
+            const combinedScore = (averageClusterTargetAccuracy * identitiesWithClustersRate * clusteredTargetFacesByIdentityRate * clusteredTargetFacesRate ** (1/4)
+            console.log({ combinedScore, minCombinedScore: 0.6 })
+            if (combinedScore < 0.6 || combinedScore > 1.0) {
+              console.log('Benchmark result: Bad')
+              process.exit(1)
+            } else {
+              console.log('Benchmark result: Good')
+            }
           "
