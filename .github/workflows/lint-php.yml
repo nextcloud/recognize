@@ -7,11 +7,19 @@ name: Lint
 
 on:
   pull_request:
+    paths:
+      - '*.php'
+      - composer.lock
+      - 'vendor-bin'
   push:
     branches:
       - main
       - master
       - stable*
+    paths:
+      - '*.php'
+      - composer.lock
+      - 'vendor-bin'
 
 permissions:
   contents: read

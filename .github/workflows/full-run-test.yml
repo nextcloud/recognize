@@ -2,9 +2,20 @@ name: Classify command test
 
 on:
   pull_request:
+    paths:
+      - 'lib/**'
+      - 'src/**'
+      - 'package.json'
+      - 'composer.lock'
   push:
     branches:
-      - master
+      - main
+      - stable*
+    paths:
+      - 'lib/**'
+      - 'src/**'
+      - 'package.json'
+      - 'composer.lock'
 
 env:
   APP_NAME: recognize
