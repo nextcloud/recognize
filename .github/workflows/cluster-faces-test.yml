@@ -5,6 +5,11 @@ on:
   push:
     branches:
       - master
+    paths:
+      - 'lib/**'
+      - 'src/**'
+      - 'package-lock.json'
+      - 'composer.lock'
 
 env:
   APP_NAME: recognize
@@ -404,7 +409,7 @@ jobs:
             console.log({ averageClusterTargetAccuracy })
             console.log({ weightedAccuracy: averageClusterAccuracy * clusteredFacesRate })
             console.log({ weightedTargetAccuracy: averageClusterTargetAccuracy * clusteredTargetFacesRate })
-            const combinedScore = (averageClusterTargetAccuracy * identitiesWithClustersRate * clusteredTargetFacesByIdentityRate * clusteredTargetFacesRate ** (1/4)
+            const combinedScore = (averageClusterTargetAccuracy * identitiesWithClustersRate * clusteredTargetFacesByIdentityRate * clusteredTargetFacesRate) ** (1/4)
             console.log({ combinedScore, minCombinedScore: 0.6 })
             if (combinedScore < 0.6 || combinedScore > 1.0) {
               console.log('Benchmark result: Bad')
