@@ -1,0 +1,420 @@
+name: Cluster-faces command test
+
+on:
+  pull_request:
+    paths:
+      - 'lib/**'
+      - 'src/**'
+  push:
+    branches:
+      - master
+    paths:
+      - 'lib/**'
+      - 'src/**'
+
+env:
+  APP_NAME: recognize
+
+jobs:
+  php:
+    runs-on: ubuntu-latest
+
+    strategy:
+      # do not stop on another job's failure
+      fail-fast: false
+      matrix:
+        php-versions: ['8.1']
+        databases: ['sqlite']
+        server-versions: ['stable26']
+        pure-js-mode: ['false']
+
+    name: Test cluster-faces command on ${{ matrix.server-versions }} wasm:${{ matrix.pure-js-mode }}
+
+    env:
+      MYSQL_PORT: 4444
+      PGSQL_PORT: 4445
+
+    services:
+      mysql:
+        image: mariadb:10.5
+        ports:
+          - 4444:3306/tcp
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+        options: --health-cmd="mysqladmin ping" --health-interval 5s --health-timeout 2s --health-retries 5
+      postgres:
+        image: postgres
+        ports:
+          - 4445:5432/tcp
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: rootpassword
+          POSTGRES_DB: nextcloud
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 2s --health-retries 5
+
+    steps:
+      - name: Checkout server
+        uses: actions/checkout@v2
+        with:
+          repository: nextcloud/server
+          ref: ${{ matrix.server-versions }}
+
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
+      - name: install ssl-cert
+        if: env.ACT # Skip this on normal GitHub Actions
+        run: sudo apt update && sudo apt install -y ssl-cert
+
+      - name: Set up php ${{ matrix.php-versions }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          tools: phpunit
+          extensions: mbstring, iconv, fileinfo, intl, sqlite, pdo_mysql, pdo_sqlite, pgsql, pdo_pgsql, gd, zip
+
+      - name: Checkout app
+        uses: actions/checkout@v2
+        with:
+          path: apps/${{ env.APP_NAME }}
+
+      - name: Read package.json node and npm engines version
+        uses: skjnldsv/read-package-engines-version-actions@v1.1
+        id: versions
+        with:
+          path: apps/${{ env.APP_NAME }}
+          fallbackNode: '^12'
+          fallbackNpm: '^6'
+
+      - name: Set up node ${{ steps.versions.outputs.nodeVersion }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ steps.versions.outputs.nodeVersion }}
+
+      - name: Set up npm ${{ steps.versions.outputs.npmVersion }}
+        run: npm i -g npm@"${{ steps.versions.outputs.npmVersion }}"
+
+      - name: install make wget unzip
+        if: env.ACT # Skip this on normal GitHub Actions
+        run: sudo apt update && sudo apt install -y make wget unzip
+
+      - name: Install app
+        working-directory: apps/${{ env.APP_NAME }}
+        run: |
+          composer install --no-dev
+          make all
+          make remove-binaries
+          make remove-devdeps
+
+      - name: Set up Nextcloud and install app
+        if: ${{ matrix.databases != 'pgsql'}}
+        run: |
+          sleep 25
+          mkdir data
+          ./occ maintenance:install --verbose --database=${{ matrix.databases }} --database-name=nextcloud --database-host=127.0.0.1 --database-port=$MYSQL_PORT --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass password
+          ./occ app:enable -vvv -f ${{ env.APP_NAME }}
+          php -S localhost:8080 &
+
+      - name: Set up Nextcloud and install app
+        if: ${{ matrix.databases == 'pgsql'}}
+        run: |
+          sleep 25
+          mkdir data
+          ./occ maintenance:install --verbose --database=${{ matrix.databases }} --database-name=nextcloud --database-host=127.0.0.1 --database-port=$PGSQL_PORT --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass password
+          ./occ app:enable -vvv -f ${{ env.APP_NAME }}
+          php -S localhost:8080 &
+
+      - name: Install
+        run: |
+          ./occ app:enable -vvv ${{ env.APP_NAME }}
+
+      - name: Upload photos
+        run: |
+          mkdir -p data/admin/files/
+          cd data/admin/files
+          wget https://cloud.marcelklehr.de/s/PkNYbmKnwMiQMFD/download/IMDb-Face.zip
+          unzip IMDb-Face.zip
+          rm IMDb-Face.zip
+
+      - name: Set pure-js mode
+        run: |
+          ./occ config:app:set --value ${{ matrix.pure-js-mode }} recognize tensorflow.purejs
+
+      - name: Set faces.enabled
+        run: |
+          ./occ config:app:set --value true recognize faces.enabled
+
+      - uses: actions/cache/restore@v3
+        id: db-cache
+        with:
+          path: data/nextcloud.db
+          key: ${{ runner.os }}-${{ matrix.server-versions }}-${{ hashFiles('data/admin/files/**', 'apps/recognize/src/classifier_faces.js', 'apps/recognize/lib/Classifiers/Classifier.php', 'apps/recognize/lib/Classifiers/Images/ClusteringFaceClassifier.php') }}-${{ matrix.pure-js-mode }}
+
+      - name: Run classifier
+        if: steps.db-cache.outputs.cache-hit != 'true'
+        env:
+          GITHUB_REF: ${{ github.ref }}
+        run: |
+          ./occ files:scan admin
+          ./occ recognize:classify
+
+      - uses: actions/cache/save@v3
+        with:
+          path: data/nextcloud.db
+          key: ${{ steps.db-cache.outputs.cache-primary-key }}
+
+      - name: Reduce space
+        run: |
+          for dirname in data/admin/files/IMDb-Face/*; do truncate -s 0 "${dirname}/*"; done
+
+      - name: install sqlite3
+        if: env.ACT # Skip this on normal GitHub Actions
+        run: sudo apt update && sudo apt install -y sqlite3
+
+      - name: Create detection summary
+        run: |
+          sqlite3 data/nextcloud.db "select x, y, path from oc_recognize_face_detections d LEFT JOIN oc_filecache c ON c.fileid = d.file_id where user_id = 'admin' ORDER BY path;" > out.txt
+
+      - uses: actions/cache/restore@v3
+        id: clustering-cache
+        with:
+          path: out.json
+          key: ${{ runner.os }}-${{ hashFiles('out.txt', 'apps/recognize/src/classifier_faces.js', 'apps/recognize/lib/Classifiers/Classifier.php', 'apps/recognize/lib/Classifiers/Images/ClusteringFaceClassifier.php', 'apps/recognize/lib/Clustering/**', 'apps/recognize/lib/Service/FaceClusterAnalyzer.php', 'apps/recognize/lib/Command/ClusterFaces.php') }}-${{ matrix.pure-js-mode }}
+
+      - name: Run clustering
+        if: steps.clustering-cache.outputs.cache-hit != 'true'
+        run: |
+          ./occ recognize:cluster-faces -b 10000
+          ./occ recognize:cluster-faces -b 10000
+          ./occ recognize:cluster-faces -b 10000
+          ./occ recognize:cluster-faces -b 10000
+          ./occ recognize:cluster-faces -b 10000
+          ./occ recognize:cluster-faces -b 10000
+
+      - name: install python3 python3-pip jq curl
+        if: steps.clustering-cache.outputs.cache-hit != 'true' && env.ACT # Skip this on normal GitHub Actions
+        run: sudo apt update && sudo apt install -y python3 python3-pip jq curl
+
+      - name: Install xq
+        if: steps.clustering-cache.outputs.cache-hit != 'true'
+        run: |
+          pip install yq
+
+      - name: Download face assignments
+        if: steps.clustering-cache.outputs.cache-hit != 'true'
+        run: |
+          curl -u 'admin:password' --request PROPFIND 'http://localhost:8080/remote.php/dav/recognize/admin/faces/' --header 'Depth: 2' --data '<?xml version="1.0"?>
+            <d:propfind xmlns:d="DAV:"
+            xmlns:oc="http://owncloud.org/ns"
+            xmlns:nc="http://nextcloud.org/ns"
+            xmlns:ocs="http://open-collaboration-services.org/ns">
+            <d:prop>
+              <d:getcontentlength />
+              <d:getcontenttype />
+              <d:getetag />
+              <d:getlastmodified />
+              <d:resourcetype />
+              <nc:face-detections />
+              <nc:file-metadata-size />
+              <nc:has-preview />
+              <nc:realpath />
+              <oc:favorite />
+              <oc:fileid />
+              <oc:permissions />
+              <nc:nbItems />
+            </d:prop>
+            </d:propfind>' > out.xml
+          cat out.xml
+
+      - name: Parse face assignments
+        if: steps.clustering-cache.outputs.cache-hit != 'true'
+        run: |
+          cat out.xml | xq '.["d:multistatus"]["d:response"] | map(select(.["d:href"] | test("faces/.+?/.+?"))) | map({"href": .["d:href"], "realpath": .["d:propstat"][0]["d:prop"]["nc:realpath"], "face-detections": .["d:propstat"][0]["d:prop"]["nc:face-detections"] | fromjson | map({userId, x, y, height, width, clusterId}) })' > out.json
+          cat out.json
+
+      - uses: actions/cache/save@v3
+        with:
+          path: out.json
+          key: ${{ steps.clustering-cache.outputs.cache-primary-key }}
+
+      - name: Download IMDb-Face.csv
+        working-directory: apps/${{ env.APP_NAME }}/tests/res
+        run: |
+          wget https://cloud.marcelklehr.de/s/ZKe7MY7gZRRxBPq/download/IMDb-Face-csv.zip 
+          unzip IMDb-Face-csv.zip
+          rm IMDb-Face-csv.zip
+
+      - name: Analyse face assignments
+        run: |
+          node -e "
+            const COLUMN_NAME = 0
+            const COLUMN_URL = 5
+            const COLUMN_RECT = 3
+            const COLUMN_DIMS = 4
+          
+            const csv = fs.readFileSync(__dirname + '/apps/recognize/tests/res/IMDb-Face.csv')
+              .toString('utf8')
+              .split('\n')
+              .map(line => line.split(','))
+            
+            // remove csv header
+            csv.shift()
+          
+            const names = [...new Set(csv.map(image => image[COLUMN_NAME])).values()]
+              
+            const selectedNames = names.slice(0, 2000)
+              
+            const limitedCsv = selectedNames.flatMap(name => {
+              return csv.filter(line => line[COLUMN_NAME] === name)
+            })
+          
+            const allDetections = fs.readFileSync(__dirname + '/out.txt').toString('utf8').trim().split('\n').map(line => line.split('|'))
+            
+            const json = require(__dirname + '/out.json');
+            
+            const facesByCluster = json
+            .reduce((acc, face) => {
+              const clusterId = parseInt(face.href.split('/')[6]);
+              acc[clusterId] = [...(acc[clusterId] ?? []), face.realpath.split('/')[4]];
+              return acc
+            }, {});
+            
+            const targetFaces = json
+            .filter(face => {
+              return limitedCsv
+                .some(entry => {
+                  if (entry[COLUMN_NAME] === face.realpath.split('/')[4] && entry[COLUMN_URL].split('/').pop() === face.realpath.split('/').pop()) {
+                    let dims = entry[COLUMN_DIMS].split(' ').map(i => parseInt(i))
+                    dims = {x: dims[1], y: dims[0]}
+                    const rect = entry[COLUMN_RECT].split(' ').map(i => parseInt(i))
+                    return Math.abs(face['face-detections'][0].x - rect[0] / dims.x) < 0.05 && Math.abs(face['face-detections'][0].y - rect[1] / dims.y) < 0.05
+                  }
+                  return false
+                })
+            })
+          
+            const targetFacesPerIdentity = targetFaces.reduce((acc, face) => {
+              const name = face.realpath.split('/')[4]
+              acc[name] = acc[name] ?? []
+              acc[name].push(face)
+              return acc  
+            },{})
+          
+            const targetFacesByCluster = targetFaces
+            .reduce((acc, face) => {
+              const clusterId = parseInt(face.href.split('/')[6]);
+              acc[clusterId] = [...(acc[clusterId] ?? []), face.realpath.split('/')[4]];
+              return acc
+            }, {});
+          
+            console.log(facesByCluster);
+            console.log(targetFacesByCluster);
+            const clusterTargetAccuracies = Object.entries(targetFacesByCluster)
+              .filter(([clusterId, names]) => names.length > 1)
+              .map(([clusterId, names]) =>
+                [...new Set(names).values()]
+                  .map(name1 =>
+                    names.filter(name2 => name1 === name2).length
+                  ).sort().reverse()[0] / names.length
+              );
+            const clusterAccuracies = Object.entries(facesByCluster)
+              .map(([clusterId, names]) =>
+                [...new Set(names).values()]
+                  .map(name1 =>
+                    names.filter(name2 => name1 === name2).length
+                  ).sort().reverse()[0] / names.length
+              );
+            const clusteredFaces = Object.entries(facesByCluster)
+                .map(([clusterId, names]) => names.length)
+                .reduce((acc, val) => acc+val, 0)
+            const clusteredTargetFaces = Object.entries(targetFacesByCluster)
+                .map(([clusterId, names]) => names.length)
+                .reduce((acc, val) => acc+val, 0)
+            const clusteredTargetFacesByIdentity = Object.entries(targetFacesByCluster)
+              .map(([clusterId, names]) =>
+                [...new Set(names).values()]
+                  .map(name1 =>
+                    [name1, names.filter(name2 => name1 === name2).length]
+                  ).sort(([name1, size1], [name2, size2]) => size1 - size2).reverse()[0]
+              )
+              .filter(([name,size]) => size > 1)
+              .reduce((acc, [name, size]) => {
+                acc[name] = (acc[name] ?? 0) + size 
+                return acc
+              }, Object.fromEntries(Object.entries(targetFacesPerIdentity).map(([key]) => [key, 0])))
+          
+            console.log(targetFacesPerIdentity)
+            console.log(clusteredTargetFacesByIdentity)
+            const averageTargetFacesPerIdentity = Object.entries(targetFacesPerIdentity).reduce((acc, [name, detections]) => acc+detections.length, 0) / Object.entries(targetFacesPerIdentity).length
+            const averageClusteredTargetFacesByIdentity = Object.entries(clusteredTargetFacesByIdentity).reduce((acc, [name, size]) => acc+size, 0) / Object.entries(clusteredTargetFacesByIdentity).length
+          
+            const clusteredTargetFacesByIdentityRate = Object.entries(clusteredTargetFacesByIdentity)
+              .reduce((acc, [name, size]) => acc + size / targetFacesPerIdentity[name].length, 0) / Object.entries(clusteredTargetFacesByIdentity).length
+            const identitiesWithPhotos = $(find data/admin/files/IMDb-Face -type d ! -empty | wc -l)
+            const identitiesWithDetections = Object.entries(targetFacesPerIdentity).length
+            const identitiesWithEnoughDetections = Object.entries(targetFacesPerIdentity).filter(([name, detections]) => detections.length > 1).length
+            const identitiesWithClusters = Object.entries(clusteredTargetFacesByIdentity).filter(([name, size]) => size > 1).length
+            const identitiesWithClustersRate = identitiesWithClusters / identitiesWithEnoughDetections
+          
+            const detectedFaces = $(sqlite3 data/nextcloud.db "select count(*) from oc_recognize_face_detections where user_id = 'admin';")
+            const detectedTargetFaces = allDetections.filter(detection => {
+              if(detection.length < 3) return false
+              const x = Number(detection[0])
+              const y = Number(detection[1])
+              const path = detection[2]
+              return limitedCsv
+              .some(entry => {
+                if (entry[COLUMN_NAME] === path.split('/')[2] && entry[COLUMN_URL].split('/').pop().split('.jpg')[0] === path.split('/').pop().split('.jpg')[0]) {
+                  let dims = entry[COLUMN_DIMS].split(' ').map(i => parseInt(i))
+                  dims = {x: dims[1], y: dims[0]}
+                  const rect = entry[COLUMN_RECT].split(' ').map(i => parseInt(i))
+                  return Math.abs(x - rect[0] / dims.x) < 0.05 && Math.abs(y - rect[1] / dims.y) < 0.05
+                }
+                return false
+              })
+            }).length
+            const totalPhotos = $(ls data/admin/files/IMDb-Face/* | wc -l)
+            const detectedFacesRate = detectedFaces / totalPhotos
+            const clusteredTargetFacesRate = clusteredTargetFaces / detectedTargetFaces
+            const clusteredFacesRate = clusteredFaces / detectedFaces
+            const averageClusterAccuracy = clusterAccuracies.reduce((acc, val) => acc+val, 0)/clusterAccuracies.length
+            const averageClusterTargetAccuracy = clusterTargetAccuracies.reduce((acc, val) => acc+val, 0)/clusterTargetAccuracies.length
+            const targettedShitClusterRate = clusterTargetAccuracies.filter((val) => val < 0.5).length/clusterTargetAccuracies.length
+            const shitClusterRate = clusterAccuracies.filter((val) => val < 0.5).length/clusterAccuracies.length
+            console.log({ clusterAccuracies });
+            console.log({ clusterTargetAccuracies });
+            console.log({ totalPhotos });
+            console.log({ detectedFaces });
+            console.log({ detectedFacesRate });
+            console.log({ detectedTargetFaces });
+            console.log({ clusteredFaces });
+            console.log({ clusteredFacesRate })
+            console.log({ clusteredTargetFaces })
+            console.log({ clusteredTargetFacesRate })
+            console.log({ averageTargetFacesPerIdentity })
+            console.log({ averageClusteredTargetFacesByIdentity })
+            console.log({ clusteredTargetFacesByIdentityRate })
+            console.log({ identitiesWithPhotos })
+            console.log({ identitiesWithDetections })
+            console.log({ identitiesWithEnoughDetections })
+            console.log({ identitiesWithClusters })
+            console.log({ identitiesWithClustersRate })
+            console.log({ shitClusterRate })
+            console.log({ targettedShitClusterRate })
+            console.log({ averageClusterAccuracy })
+            console.log({ averageClusterTargetAccuracy })
+            console.log({ weightedAccuracy: averageClusterAccuracy * clusteredFacesRate })
+            console.log({ weightedTargetAccuracy: averageClusterTargetAccuracy * clusteredTargetFacesRate })
+            const combinedScore = (averageClusterTargetAccuracy * identitiesWithClustersRate * clusteredTargetFacesByIdentityRate * clusteredTargetFacesRate) ** (1/4)
+            console.log({ combinedScore, minCombinedScore: 0.6 })
+            if (combinedScore < 0.6 || combinedScore > 1.0) {
+              console.log('Benchmark result: Bad')
+              process.exit(1)
+            } else {
+              console.log('Benchmark result: Good')
+            }
+          "

@@ -20,7 +20,8 @@ class FaceClusterAnalyzer {
 	public const MIN_CLUSTER_SEPARATION = 0.0;
 	public const MAX_CLUSTER_EDGE_LENGTH = 0.5;
 	public const DIMENSIONS = 128;
-	public const SAMPLE_SIZE_EXISTING_CLUSTERS = 42;
+	public const MAX_OVERLAP_NEW_CLUSTER = 0.1;
+	public const MIN_OVERLAP_EXISTING_CLUSTER = 0.5;
 
 	private FaceDetectionMapper $faceDetections;
 	private FaceClusterMapper $faceClusters;
@@ -48,28 +49,35 @@ class FaceClusterAnalyzer {
 			ini_set('memory_limit', -1);
 		}
 
-		$unclusteredDetections = $this->faceDetections->findUnclusteredByUserId($userId, $batchSize);
+		$sampledDetections = [];
+		$existingClusters = $this->faceClusters->findByUserId($userId);
+		$maxVotesByCluster = [];
+		foreach ($existingClusters as $existingCluster) {
+			$sampled = $this->faceDetections->findClusterSample($existingCluster->getId(), $this->getReferenceSampleSize(count($existingClusters)));
+			$sampledDetections = array_merge($sampledDetections, $sampled);
+			$maxVotesByCluster[$existingCluster->getId()] = count($sampled);
+		}
 
-		$unclusteredDetections = array_values(array_filter($unclusteredDetections, fn ($detection) =>
-			$detection->getHeight() > self::MIN_DETECTION_SIZE && $detection->getWidth() > self::MIN_DETECTION_SIZE
-		));
+		if ($batchSize > 0) {
+			$rejectedDetections = $this->faceDetections->sampleRejectedDetectionsByUserId($userId, $this->getRejectSampleSize($batchSize), self::MIN_DETECTION_SIZE, self::MIN_DETECTION_SIZE);
+			$requestedFreshDetectionCount = max($batchSize - count($rejectedDetections) - count($sampledDetections), 500);
+			$freshDetections = $this->faceDetections->findUnclusteredByUserId($userId, $requestedFreshDetectionCount, self::MIN_DETECTION_SIZE, self::MIN_DETECTION_SIZE);
+		} else {
+			$freshDetections = $this->faceDetections->findUnclusteredByUserId($userId, 0, self::MIN_DETECTION_SIZE, self::MIN_DETECTION_SIZE);
+			$rejectedDetections = $this->faceDetections->sampleRejectedDetectionsByUserId($userId, $this->getRejectSampleSize(count($freshDetections)), self::MIN_DETECTION_SIZE, self::MIN_DETECTION_SIZE);
+		}
 
-		if (count($unclusteredDetections) < $this->minDatasetSize) {
+
+		$unclusteredDetections = array_merge($freshDetections, $rejectedDetections);
+		$detections = array_merge($unclusteredDetections, $sampledDetections);
+
+		if (count($detections) < $this->minDatasetSize) {
 			$this->logger->debug('ClusterDebug: Not enough face detections found');
 			return;
 		}
 
-		$this->logger->debug('ClusterDebug: Found ' . count($unclusteredDetections) . " unclustered detections. Calculating clusters.");
+		$this->logger->debug('ClusterDebug: Found ' . count($freshDetections) . " fresh detections. Adding " . count($rejectedDetections). " old detections and " . count($sampledDetections). " sampled detections from already existing clusters. Calculating clusters on " . count($detections) . " detections.");
 
-		$sampledDetections = [];
-
-		$existingClusters = $this->faceClusters->findByUserId($userId);
-		foreach ($existingClusters as $existingCluster) {
-			$sampled = $this->faceDetections->findClusterSample($existingCluster->getId(), self::SAMPLE_SIZE_EXISTING_CLUSTERS);
-			$sampledDetections = array_merge($sampledDetections, $sampled);
-		}
-
-		$detections = array_merge($unclusteredDetections, $sampledDetections);
 
 		$dataset = new Labeled(array_map(static function (FaceDetection $detection): array {
 			return $detection->getVector();
@@ -83,21 +91,51 @@ class FaceClusterAnalyzer {
 
 		foreach ($clusters as $flatCluster) {
 			$detectionKeys = array_keys($flatCluster->getClusterVertices());
-			$clusterCentroid = self::calculateCentroidOfDetections(array_map(static fn ($key) => $detections[$key], $detectionKeys));
 
-			/**
-			 * @var int|false $detection
-			 */
-			$detection = current(array_filter($detectionKeys, static fn ($key) => $detections[$key]->getClusterId() !== null));
+			$clusterDetections = array_filter($detections, function ($key) use ($detectionKeys) {
+				return isset($detectionKeys[$key]);
+			}, ARRAY_FILTER_USE_KEY);
+			$clusterCentroid = self::calculateCentroidOfDetections($clusterDetections);
+			$votes = [];
 
-			if ($detection !== false) {
-				$clusterId = $detections[$detection]->getClusterId();
-				$cluster = $this->faceClusters->find($clusterId);
+			// Let already clustered detections vote which
+			// clusterId these newly clustered detections get
+			foreach ($detectionKeys as $detectionKey) {
+				if ($detectionKey < count($unclusteredDetections)) {
+					continue;
+				}
+
+				$vote = $detections[$detectionKey]->getClusterId();
+
+				if ($vote === null) {
+					$vote = -1;
+				}
+
+				$votes[] = $vote;
+			}
+
+			if (empty($votes)) {
+				$overlap = 0.0;
 			} else {
+				$votes = array_count_values($votes);
+				$oldClusterId = array_search(max($votes), $votes);
+				$overlap = max($votes) / $maxVotesByCluster[$oldClusterId];
+			}
+
+			// If more than X% of already clustered detections are for this, we keep it
+			if ($overlap > self::MIN_OVERLAP_EXISTING_CLUSTER) {
+				$clusterId = $oldClusterId;
+				$cluster = $this->faceClusters->find($clusterId);
+			} elseif ($overlap < self::MAX_OVERLAP_NEW_CLUSTER) {
+				// otherwise we create a new cluster
+
 				$cluster = new FaceCluster();
 				$cluster->setTitle('');
 				$cluster->setUserId($userId);
 				$this->faceClusters->insert($cluster);
+			} else {
+				// this is a shit cluster. Don't add to it.
+				continue;
 			}
 
 			foreach ($detectionKeys as $detectionKey) {
@@ -122,46 +160,12 @@ class FaceClusterAnalyzer {
 		}
 
 		$this->logger->debug('ClusterDebug: Clustering complete. Total num of clustered detections: ' . $numberOfClusteredDetections);
-		$this->pruneClusters($userId);
-	}
 
-	/**
-	 * @throws \OCP\DB\Exception
-	 */
-	public function pruneClusters(string $userId): void {
-		$clusters = $this->faceClusters->findByUserId($userId);
-
-		if (count($clusters) === 0) {
-			$this->logger->debug('No face clusters found');
-			return;
-		}
-
-		foreach ($clusters as $cluster) {
-			$detections = $this->faceDetections->findByClusterId($cluster->getId());
-
-			$filesWithDuplicateFaces = $this->findFilesWithDuplicateFaces($detections);
-			if (count($filesWithDuplicateFaces) === 0) {
-				continue;
-			}
-
-			$centroid = self::calculateCentroidOfDetections($detections);
-
-			foreach ($filesWithDuplicateFaces as $fileDetections) {
-				$detectionsByDistance = [];
-				foreach ($fileDetections as $detection) {
-					$distance = new Euclidean();
-					$detectionsByDistance[$detection->getId()] = $distance->compute($centroid, $detection->getVector());
-				}
-				asort($detectionsByDistance);
-				$bestMatchingDetectionId = array_keys($detectionsByDistance)[0];
-
-				foreach ($fileDetections as $detection) {
-					if ($detection->getId() === $bestMatchingDetectionId) {
-						continue;
-					}
-					$detection->setClusterId(null);
-					$this->faceDetections->update($detection);
-				}
+		foreach ($unclusteredDetections as $detection) {
+			if ($detection->getClusterId() === null) {
+				// This detection was run through clustering but wasn't assigned to any cluster
+				$detection->setClusterId(-1);
+				$this->faceDetections->update($detection);
 			}
 		}
 	}
@@ -230,11 +234,35 @@ class FaceClusterAnalyzer {
 		return self::$distance->compute($v1, $v2);
 	}
 
-	private function getMinClusterSize(int $n) : int {
-		return (int)round(max(2, min(8, $n ** (1 / 4))));
+	/**
+	 * Hypothesis is that photos per identity scale with ~ n^(1/5) in the total number of photos
+	 * @param int $batchSize
+	 * @return int
+	 */
+	private function getMinClusterSize(int $batchSize) : int {
+		return (int)round(max(2, min(5, $batchSize ** (1 / 4.7))));
 	}
 
-	private function getMinSampleSize(int $n) : int {
-		return (int)round(max(2, min(7, $n ** (1 / 4))));
+	/**
+	 * We use 4.6 here to have this slightly smaller than MinClusterSize but still scale similarly
+	 * @param int $batchSize
+	 * @return int
+	 */
+	private function getMinSampleSize(int $batchSize) : int {
+		return (int)round(max(2, min(4, $batchSize ** (1 / 5.6))));
+	}
+
+	/**
+	 * Grows to ~5000 detections for ~200-800 clusters (detections per cluster drop exponentially)
+	 * and then grows linearly with 5 detections per cluster
+	 * @param int
+	 * @returns int
+	 */
+	private function getReferenceSampleSize(int $numberClusters) : int {
+		return (int)round(75 * 2 ** (-0.007 * $numberClusters) + 5);
+	}
+
+	private function getRejectSampleSize(int $batchSize): int {
+		return (int) min(($batchSize / 4), 12 * $batchSize ** (0.55)); // I love maths. Slap me.
 	}
 }
