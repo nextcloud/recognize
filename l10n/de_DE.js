@@ -249,7 +249,7 @@ OC.L10N.register(
     "Puzzle" : "Puzzle",
     "Heritage" : "Erbe",
     "Safe" : "Safe",
-    "Bucket" : "Bucket",
+    "Bucket" : "Eimer",
     "Baby" : "Baby",
     "Cradle" : "Wiege",
     "Patio" : "Terrasse",
