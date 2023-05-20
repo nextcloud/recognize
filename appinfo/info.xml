@@ -49,7 +49,7 @@ The app does not send any sensitive data to cloud providers or similar services.
 	<screenshot>https://raw.githubusercontent.com/marcelklehr/recognize/master/screenshots/imagenet_examples.jpg</screenshot>
 	<dependencies>
 		<php min-version="8.0" />
-		<nextcloud min-version="26" max-version="27" />
+		<nextcloud min-version="26" max-version="28" />
 	</dependencies>
 
 	<repair-steps>
