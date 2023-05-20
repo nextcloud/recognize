@@ -30,7 +30,7 @@ jobs:
           # test pure-js once
           - server-versions: stable27
             databases: sqlite
-            php-versions: 7.4
+            php-versions: 8.1
             pure-js-mode: true
             imagenet-enabled: true
             faces-enabled: true
