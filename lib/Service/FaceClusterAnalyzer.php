@@ -73,7 +73,7 @@ class FaceClusterAnalyzer {
 		$unclusteredDetections = array_merge($freshDetections, $rejectedDetections);
 		$detections = array_merge($unclusteredDetections, $sampledDetections);
 
-		if (count($detections) < $this->minDatasetSize) {
+		if (count($detections) < $this->minDatasetSize || count($freshDetections) === 0) {
 			$this->logger->debug('ClusterDebug: Not enough face detections found');
 			return;
 		}
