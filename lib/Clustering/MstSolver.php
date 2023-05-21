@@ -178,7 +178,7 @@ class MstSolver {
 	}
 
 	/**
-	 * @return list<array{vertexFrom:int|string,vertexTo:int|string,distance:float}>
+	 * @return array<int,array{vertexFrom:int|string,vertexTo:int|string,distance:float}>
 	 */
 	public function getMst(): array {
 		$edges = [];

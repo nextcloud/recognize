@@ -27,7 +27,7 @@ use OCP\AppFramework\Db\Entity;
  * @method setHeight(float $height)
  * @method setWidth(float $width)
  * @method setClusterId(int|null $clusterId)
- * @method int getClusterId()
+ * @method ?int getClusterId()
  * @method float getThreshold()
  *  @method setThreshold(float $threshold)
  */

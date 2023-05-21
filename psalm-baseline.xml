@@ -284,6 +284,9 @@
     </PossiblyInvalidArrayOffset>
   </file>
   <file src="lib/Clustering/HDBSCAN.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$edges</code>
+    </ArgumentTypeCoercion>
     <InternalClass occurrences="1">
       <code>EstimatorType::clusterer()</code>
     </InternalClass>
@@ -601,131 +604,33 @@
     </UnusedVariable>
   </file>
   <file src="lib/Clustering/MstClusterer.php">
-    <MixedArgument occurrences="18">
+    <MixedArgument occurrences="1">
       <code>$childCluster-&gt;getCoreEdges()</code>
-      <code>$childClusterEdges1</code>
-      <code>$childClusterEdges1</code>
-      <code>$childClusterEdges2</code>
-      <code>$childClusterEdges2</code>
-      <code>$childClusterVerticesToEdges1</code>
-      <code>$childClusterVerticesToEdges2</code>
-      <code>$currentLambda</code>
-      <code>$this-&gt;coreEdges</code>
-      <code>$this-&gt;mapVerticesToEdges[$currentVertex]</code>
-      <code>$this-&gt;mapVerticesToEdges[$currentVertex]</code>
-      <code>$this-&gt;remainingEdges</code>
-      <code>$this-&gt;remainingEdges</code>
-      <code>$this-&gt;remainingEdges</code>
-      <code>$this-&gt;remainingEdges</code>
-      <code>$this-&gt;remainingEdges</code>
-      <code>$vertexConnectedFrom</code>
-      <code>$vertexConnectedTo</code>
     </MixedArgument>
-    <MixedArrayAccess occurrences="26">
+    <MixedArrayAccess occurrences="4">
       <code>$a["distance"]</code>
       <code>$a["distance"]</code>
       <code>$b["distance"]</code>
       <code>$b["distance"]</code>
-      <code>$currentLongestEdge["distance"]</code>
-      <code>$currentLongestEdge["vertexFrom"]</code>
-      <code>$currentLongestEdge["vertexTo"]</code>
-      <code>$edge["finalLambda"]</code>
-      <code>$edge["finalLambda"]</code>
-      <code>$edge["finalLambda"]</code>
-      <code>$edge["finalLambda"]</code>
-      <code>$edge["vertexFrom"]</code>
-      <code>$edge["vertexFrom"]</code>
-      <code>$edge["vertexFrom"]</code>
-      <code>$edge["vertexFrom"]</code>
-      <code>$edge["vertexTo"]</code>
-      <code>$edge["vertexTo"]</code>
-      <code>$edge["vertexTo"]</code>
-      <code>$edge["vertexTo"]</code>
-      <code>$edge['vertexFrom']</code>
-      <code>$edge['vertexTo']</code>
-      <code>$this-&gt;edges[$currentLongestEdgeKey]</code>
-      <code>$this-&gt;edges[$edgeKey]</code>
-      <code>$this-&gt;edges[$edgeKey]</code>
-      <code>$this-&gt;mapVerticesToEdges[$vertexConnectedFrom]</code>
-      <code>$this-&gt;mapVerticesToEdges[$vertexConnectedTo]</code>
     </MixedArrayAccess>
-    <MixedArrayAssignment occurrences="5">
-      <code>$edge['finalLambda']</code>
-      <code>$this-&gt;edges[$currentLongestEdgeKey]</code>
-      <code>$this-&gt;edges[$edgeKey]</code>
-      <code>$this-&gt;edges[$edgeKey]</code>
-      <code>$this-&gt;edges[$edgeToPrune]['finalLambda']</code>
-    </MixedArrayAssignment>
-    <MixedArrayOffset occurrences="12">
-      <code>$mapVerticesToEdges[$edge['vertexFrom']]</code>
-      <code>$mapVerticesToEdges[$edge['vertexTo']]</code>
-      <code>$this-&gt;mapVerticesToEdges[$vertexConnectedFrom]</code>
-      <code>$this-&gt;mapVerticesToEdges[$vertexConnectedTo]</code>
-      <code>$vertices[$edge["vertexFrom"]]</code>
-      <code>$vertices[$edge["vertexFrom"]]</code>
-      <code>$vertices[$edge["vertexFrom"]]</code>
-      <code>$vertices[$edge["vertexFrom"]]</code>
-      <code>$vertices[$edge["vertexTo"]]</code>
-      <code>$vertices[$edge["vertexTo"]]</code>
-      <code>$vertices[$edge["vertexTo"]]</code>
-      <code>$vertices[$edge["vertexTo"]]</code>
-    </MixedArrayOffset>
-    <MixedArrayTypeCoercion occurrences="3">
-      <code>$this-&gt;remainingEdges[$edgeKey]</code>
-      <code>$this-&gt;remainingEdges[$edgeKey]</code>
-      <code>$this-&gt;remainingEdges[$edgeToPrune]</code>
-    </MixedArrayTypeCoercion>
-    <MixedAssignment occurrences="29">
+    <MixedAssignment occurrences="2">
       <code>$childCluster</code>
       <code>$childrenWeight</code>
-      <code>$currentLambda</code>
-      <code>$currentLambda</code>
-      <code>$currentLongestEdge</code>
-      <code>$edge</code>
-      <code>$edge</code>
-      <code>$edge</code>
-      <code>$edge</code>
-      <code>$edgeLength</code>
-      <code>$lastLambda</code>
-      <code>$lastLambda</code>
-      <code>$this-&gt;clusterWeight</code>
-      <code>$this-&gt;coreEdges</code>
-      <code>$this-&gt;edges</code>
-      <code>$this-&gt;edges</code>
-      <code>$this-&gt;edges</code>
-      <code>$this-&gt;edges</code>
-      <code>$this-&gt;mapVerticesToEdges</code>
-      <code>$this-&gt;mapVerticesToEdges</code>
-      <code>$this-&gt;remainingEdges</code>
-      <code>$this-&gt;remainingEdges</code>
-      <code>$vertexConnectedFrom</code>
-      <code>$vertexConnectedTo</code>
-      <code>$verticesInCluster[$currentVertex]</code>
-      <code>$vertices[$edge["vertexFrom"]]</code>
-      <code>$vertices[$edge["vertexFrom"]]</code>
-      <code>$vertices[$edge["vertexTo"]]</code>
-      <code>$vertices[$edge["vertexTo"]]</code>
     </MixedAssignment>
     <MixedMethodCall occurrences="2">
       <code>getClusterWeight</code>
       <code>getCoreEdges</code>
     </MixedMethodCall>
-    <MixedOperand occurrences="6">
+    <MixedOperand occurrences="1">
       <code>$childCluster-&gt;getClusterWeight()</code>
-      <code>$currentLambda - $lastLambda</code>
-      <code>$edgeLength</code>
-      <code>$edgeLength</code>
-      <code>$lastLambda</code>
-      <code>$this-&gt;clusterWeight</code>
     </MixedOperand>
     <MixedPropertyTypeCoercion occurrences="1">
-      <code>$this-&gt;edges</code>
+      <code>array_merge($this-&gt;coreEdges, $childCluster-&gt;getCoreEdges())</code>
     </MixedPropertyTypeCoercion>
-    <PossiblyNullArrayOffset occurrences="3">
-      <code>$this-&gt;edges</code>
-      <code>$this-&gt;mapVerticesToEdges[$vertexConnectedFrom]</code>
-      <code>$this-&gt;mapVerticesToEdges[$vertexConnectedTo]</code>
-    </PossiblyNullArrayOffset>
+    <PossiblyUndefinedArrayOffset occurrences="2">
+      <code>$edge["finalLambda"]</code>
+      <code>$edge["finalLambda"]</code>
+    </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Clustering/MstSolver.php">
     <ArgumentTypeCoercion occurrences="11">
@@ -860,7 +765,7 @@
       <code>min($longestLeft, $longestRight)</code>
     </MixedOperand>
     <MoreSpecificReturnType occurrences="1">
-      <code>list&lt;array{vertexFrom:int|string,vertexTo:int|string,distance:float}&gt;</code>
+      <code>array&lt;int,array{vertexFrom:int|string,vertexTo:int|string,distance:float}&gt;</code>
     </MoreSpecificReturnType>
     <PossiblyNullArgument occurrences="10">
       <code>$queryLeft</code>
@@ -999,7 +904,9 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Db/FaceDetectionMapper.php">
-    <LessSpecificReturnStatement occurrences="7">
+    <LessSpecificReturnStatement occurrences="9">
+      <code>$this-&gt;findEntities($qb)</code>
+      <code>$this-&gt;findEntities($qb)</code>
       <code>$this-&gt;findEntities($qb)</code>
       <code>$this-&gt;findEntities($qb)</code>
       <code>$this-&gt;findEntities($qb)</code>
@@ -1008,15 +915,14 @@
       <code>$this-&gt;findEntities($qb)</code>
       <code>$this-&gt;findEntity($qb)</code>
     </LessSpecificReturnStatement>
-    <MissingReturnType occurrences="1">
-      <code>findClusterSample</code>
-    </MissingReturnType>
     <MixedReturnTypeCoercion occurrences="2">
       <code>$qb-&gt;executeQuery()-&gt;fetchAll(\PDO::FETCH_COLUMN)</code>
       <code>list&lt;string&gt;</code>
     </MixedReturnTypeCoercion>
-    <MoreSpecificReturnType occurrences="7">
+    <MoreSpecificReturnType occurrences="9">
       <code>FaceDetection</code>
+      <code>FaceDetection[]</code>
+      <code>FaceDetection[]</code>
       <code>\OCA\Recognize\Db\FaceDetection[]</code>
       <code>\OCA\Recognize\Db\FaceDetection[]</code>
       <code>list&lt;\OCA\Recognize\Db\FaceDetection&gt;</code>
@@ -1225,33 +1131,18 @@
     </MixedReturnStatement>
   </file>
   <file src="lib/Service/FaceClusterAnalyzer.php">
-    <InternalMethod occurrences="2">
-      <code>compute</code>
+    <InternalMethod occurrences="1">
       <code>compute</code>
     </InternalMethod>
     <InvalidScalarArgument occurrences="1">
       <code>-1</code>
     </InvalidScalarArgument>
-    <MixedArgument occurrences="2">
-      <code>$clusterId</code>
-      <code>$sampled</code>
-    </MixedArgument>
-    <MixedArgumentTypeCoercion occurrences="3">
-      <code>$detection-&gt;getVector()</code>
+    <MixedArgumentTypeCoercion occurrences="1">
       <code>$unclusteredDetections[$detectionKey]-&gt;getVector()</code>
-      <code>array_map(static fn ($key) =&gt; $detections[$key], $detectionKeys)</code>
     </MixedArgumentTypeCoercion>
-    <MixedArrayTypeCoercion occurrences="1">
-      <code>$unclusteredDetections[$detectionKey]</code>
-    </MixedArrayTypeCoercion>
-    <MixedAssignment occurrences="2">
+    <PossiblyFalseArgument occurrences="1">
       <code>$clusterId</code>
-      <code>$sampled</code>
-    </MixedAssignment>
-    <MixedMethodCall occurrences="2">
-      <code>getClusterId</code>
-      <code>getClusterId</code>
-    </MixedMethodCall>
+    </PossiblyFalseArgument>
   </file>
   <file src="lib/Service/IgnoreService.php">
     <MixedInferredReturnType occurrences="1">

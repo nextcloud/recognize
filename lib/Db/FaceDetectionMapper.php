@@ -168,7 +168,7 @@ class FaceDetectionMapper extends QBMapper {
 	 * @return \OCA\Recognize\Db\FaceDetection[]
 	 * @throws \OCP\DB\Exception
 	 */
-	public function findUnclusteredByUserId(string $userId, int $limit = 0, int $minHeight = 0, int $minWidth = 0) : array {
+	public function findUnclusteredByUserId(string $userId, int $limit = 0, float $minHeight = 0, float $minWidth = 0) : array {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select(FaceDetection::$columns)
 			->from('recognize_face_detections')
@@ -182,6 +182,14 @@ class FaceDetectionMapper extends QBMapper {
 		return $this->findEntities($qb);
 	}
 
+	/**
+	 * @param int $clusterId
+	 * @param int $n
+	 * @param int $minHeight
+	 * @param int $minWidth
+	 * @return FaceDetection[]
+	 * @throws \OCP\DB\Exception
+	 */
 	public function findClusterSample(int $clusterId, int $n, int $minHeight = 0, int $minWidth = 0): array {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select(FaceDetection::$columns)
@@ -200,7 +208,15 @@ class FaceDetectionMapper extends QBMapper {
 		return $this->findEntities($qb);
 	}
 
-	public function sampleRejectedDetectionsByUserId(string $userId, int $n, int $minHeight = 0, int $minWidth = 0): array {
+	/**
+	 * @param string $userId
+	 * @param int $n
+	 * @param float $minHeight
+	 * @param float $minWidth
+	 * @return FaceDetection[]
+	 * @throws \OCP\DB\Exception
+	 */
+	public function sampleRejectedDetectionsByUserId(string $userId, int $n, float $minHeight = 0, float $minWidth = 0): array {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select(FaceDetection::$columns)
 			->from('recognize_face_detections', 'd')

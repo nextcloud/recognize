@@ -9,23 +9,35 @@ namespace OCA\Recognize\Clustering;
 // TODO: store vertex lambda length (relative to cluster lambda length) for all vertices for improved soft clustering (see https://hdbscan.readthedocs.io/en/latest/soft_clustering.html)
 class MstClusterer {
 	/**
-	 * @var array
+	 * @var array<int, array{vertexFrom: int, vertexTo:int, distance:float, finalLambda?: float}>
 	 */
 	private array $edges;
 
 	/**
-	 * @var list<array{vertexFrom: int, vertexTo:int, distance:float}>
+	 * @var array<int, array{vertexFrom: int, vertexTo:int, distance:float, finalLambda?: float}>
 	 */
 	private array $remainingEdges;
 	private float $startingLambda;
 	private float $clusterWeight;
 	private int $minimumClusterSize;
+	/**
+	 * @var array<int, array{vertexFrom: int, vertexTo:int, distance:float, finalLambda?: float}>
+	 */
 	private array $coreEdges;
 	private bool $isRoot;
+	/** @var array<int,array<int,true>>  */
 	private array $mapVerticesToEdges;
 	private float $minClusterSeparation;
 	private float $maxEdgeLength;
 
+	/**
+	 * @param array<int, array{vertexFrom: int, vertexTo:int, distance:float, finalLambda?: float}> $edges
+	 * @param array<int,array<int,true>>|null $mapVerticesToEdges
+	 * @param int $minimumClusterSize
+	 * @param float|null $startingLambda
+	 * @param float $minClusterSeparation
+	 * @param float $maxEdgeLength
+	 */
 	public function __construct(array $edges, ?array $mapVerticesToEdges, int $minimumClusterSize, ?float $startingLambda = null, float $minClusterSeparation = 0.1, float $maxEdgeLength = 0.5) {
 		//Ascending sort of edges while perserving original keys.
 		$this->edges = $edges;
@@ -77,7 +89,7 @@ class MstClusterer {
 		while (true) {
 			$edgeCount = count($this->remainingEdges);
 
-			if ($edgeCount < ($this->minimumClusterSize - 1)) {
+			if (empty($this->remainingEdges) || $edgeCount < ($this->minimumClusterSize - 1)) {
 				if ($edgeLength > $this->maxEdgeLength) {
 					// This cluster is too sparse and probably just noise
 					return [];
@@ -131,7 +143,6 @@ class MstClusterer {
 				[$childClusterEdges2, $childClusterVerticesToEdges2] = $this->getChildClusterComponents($vertexConnectedFrom);
 
 				if ($edgeLength < $this->minClusterSeparation) {
-					$prunedEdges = [];
 					if (count($childClusterEdges1) > count($childClusterEdges2)) {
 						$this->remainingEdges = $childClusterEdges1;
 						$this->mapVerticesToEdges = $childClusterVerticesToEdges1;
@@ -228,6 +239,10 @@ class MstClusterer {
 		return true;
 	}
 
+	/**
+	 * @param int $vertexId
+	 * @return array{array<int, array{vertexFrom: int, vertexTo:int, distance:float, finalLambda?: float}>, array<int,array<int,true>>}
+	 */
 	private function getChildClusterComponents(int $vertexId): array {
 		$vertexStack = [$vertexId];
 		$edgeIndicesInCluster = [];
@@ -279,6 +294,9 @@ class MstClusterer {
 		return $vertices;
 	}
 
+	/**
+	 * @return array<int, array{vertexFrom: int, vertexTo:int, distance:float, finalLambda?: float}>
+	 */
 	public function getCoreEdges(): array {
 		return $this->coreEdges;
 	}

@@ -49,8 +49,10 @@ class FaceClusterAnalyzer {
 			ini_set('memory_limit', -1);
 		}
 
+		
 		$sampledDetections = [];
 		$existingClusters = $this->faceClusters->findByUserId($userId);
+		/** @var array<int,int> $maxVotesByCluster */
 		$maxVotesByCluster = [];
 		foreach ($existingClusters as $existingCluster) {
 			$sampled = $this->faceDetections->findClusterSample($existingCluster->getId(), $this->getReferenceSampleSize(count($existingClusters)));
@@ -90,9 +92,10 @@ class FaceClusterAnalyzer {
 		$clusters = $hdbscan->predict(self::MIN_CLUSTER_SEPARATION, self::MAX_CLUSTER_EDGE_LENGTH);
 
 		foreach ($clusters as $flatCluster) {
+			/** @var int[] $detectionKeys */
 			$detectionKeys = array_keys($flatCluster->getClusterVertices());
 
-			$clusterDetections = array_filter($detections, function ($key) use ($detectionKeys) {
+			$clusterDetections = array_filter($detections, function (int $key) use ($detectionKeys) {
 				return isset($detectionKeys[$key]);
 			}, ARRAY_FILTER_USE_KEY);
 			$clusterCentroid = self::calculateCentroidOfDetections($clusterDetections);
@@ -114,6 +117,7 @@ class FaceClusterAnalyzer {
 				$votes[] = $vote;
 			}
 
+			$oldClusterId = -1;
 			if (empty($votes)) {
 				$overlap = 0.0;
 			} else {
@@ -255,8 +259,8 @@ class FaceClusterAnalyzer {
 	/**
 	 * Grows to ~5000 detections for ~200-800 clusters (detections per cluster drop exponentially)
 	 * and then grows linearly with 5 detections per cluster
-	 * @param int
-	 * @returns int
+	 * @param int $numberClusters
+	 * @return int
 	 */
 	private function getReferenceSampleSize(int $numberClusters) : int {
 		return (int)round(75 * 2 ** (-0.007 * $numberClusters) + 5);
