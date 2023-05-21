@@ -43,7 +43,7 @@ Recognize uses
 
 ### Requirements
 
-- php 7.4 and above
+- php 8.0 and above
 - App "collaborative tags" enabled
 - For native speed:
   - Processor: x86 64-bit (with support for AVX instructions)
@@ -64,7 +64,7 @@ that adding an additional volume for /tmp speeds things up and eases the burden 
 `docker compose`: Add the following to the volume section `docker-compose.yml`:
 ```yaml
   app:
-    image: nextcloud:25
+    image: nextcloud:26
     ...
     volumes:
       - type: tmpfs
@@ -94,7 +94,7 @@ If you want path/to/your/folder/* to be excluded from image recognition, add a f
 - make
 - [git](https://git-scm.org/)
 - [Node.js v16.x and npm](https://nodejs.org/)
-- [php 7.4 or later](https://php.net/)
+- [php 8.0 or later](https://php.net/)
 - [composer](https://getcomposer.org/)
 
 #### Setup
