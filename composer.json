@@ -4,9 +4,7 @@
         "ext-json": "*",
         "ext-pdo": "*",
         "bamarni/composer-bin-plugin": "^1.8",
-        "rubix/ml": "2.x",
-        "symfony/console": "^5.4",
-        "symfony/process": "^5.2"
+        "rubix/ml": "2.x"
     },
     "autoload": {
         "psr-4": {
@@ -14,7 +12,9 @@
         }
     },
     "require-dev": {
-        "nextcloud/ocp": "dev-master"
+        "nextcloud/ocp": "dev-master",
+        "symfony/console": "^5.4",
+        "symfony/process": "^5.2"
     },
     "scripts": {
         "lint": "find . -name \\*.php -not -path './vendor/*' -print0 | xargs -0 -n1 php -l",
