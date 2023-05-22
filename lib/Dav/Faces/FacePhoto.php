@@ -6,6 +6,7 @@
 
 namespace OCA\Recognize\Dav\Faces;
 
+use \Rubix\ML\Kernels\Distance\Euclidean;
 use OC\Metadata\IMetadataManager;
 use OCA\Recognize\Db\FaceCluster;
 use OCA\Recognize\Db\FaceDetection;
@@ -16,7 +17,6 @@ use OCP\Files\Folder;
 use OCP\IPreview;
 use OCP\ITagManager;
 use OCP\ITags;
-use \Rubix\ML\Kernels\Distance\Euclidean;
 use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAV\Exception\NotFound;
 use Sabre\DAV\IFile;

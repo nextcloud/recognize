@@ -6,6 +6,8 @@
 
 namespace OCA\Recognize\Dav;
 
+use \Sabre\DAVACL\AbstractPrincipalCollection;
+use \Sabre\DAVACL\PrincipalBackend\BackendInterface;
 use OC\Metadata\IMetadataManager;
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetectionMapper;
@@ -14,8 +16,6 @@ use OCP\IPreview;
 use OCP\ITagManager;
 use OCP\IUserSession;
 use Sabre\DAV\Exception\Forbidden;
-use \Sabre\DAVACL\AbstractPrincipalCollection;
-use \Sabre\DAVACL\PrincipalBackend\BackendInterface;
 
 class RootCollection extends AbstractPrincipalCollection {
 	private IUserSession $userSession;

@@ -6,13 +6,13 @@
 
 namespace OCA\Recognize\Service;
 
+use \Rubix\ML\Datasets\Labeled;
+use \Rubix\ML\Kernels\Distance\Euclidean;
 use OCA\Recognize\Clustering\HDBSCAN;
 use OCA\Recognize\Db\FaceCluster;
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
-use \Rubix\ML\Datasets\Labeled;
-use \Rubix\ML\Kernels\Distance\Euclidean;
 
 class FaceClusterAnalyzer {
 	public const MIN_DATASET_SIZE = 120;
