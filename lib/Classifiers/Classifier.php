@@ -233,9 +233,12 @@ class Classifier {
 	 * @throws \OCP\Files\NotFoundException
 	 */
 	private function getConvertedFilePath(Node $file): string {
+		if (!$file instanceof File) {
+			throw new NotFoundException();
+		}
 		$path = $file->getStorage()->getLocalFile($file->getInternalPath());
 
-		if ($path === false || !is_string($path) || !$file instanceof File) {
+		if ($path === false) {
 			throw new NotFoundException();
 		}
 
