@@ -9,6 +9,7 @@ OC.L10N.register(
     "Failed to save settings" : "Kon instellingen niet opslaan",
     "never" : "nooit",
     "{time} ago" : "{time} geleden",
+    "Animal" : "Dier",
     "Water" : "Water",
     "Plant" : "Plant",
     "Farm" : "Boerderij",
