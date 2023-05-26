@@ -50,6 +50,7 @@ OC.L10N.register(
     "Field" : "Campo",
     "Farm" : "Fattoria",
     "Landscape" : "Paesaggio",
+    "Portrait" : "Ritratto",
     "People" : "Persone",
     "Fashion" : "Fashion",
     "Ship" : "Nave",
