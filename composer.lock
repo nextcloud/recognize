@@ -671,16 +671,16 @@
         },
         {
             "name": "rubix/ml",
-            "version": "2.3.2",
+            "version": "2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/RubixML/ML.git",
-                "reference": "79100cb37aa0513e4c313d6568b29143a6766d7f"
+                "reference": "e804cdc318801545307ed4a0f3a835fcf22f5864"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/RubixML/ML/zipball/79100cb37aa0513e4c313d6568b29143a6766d7f",
-                "reference": "79100cb37aa0513e4c313d6568b29143a6766d7f",
+                "url": "https://api.github.com/repos/RubixML/ML/zipball/e804cdc318801545307ed4a0f3a835fcf22f5864",
+                "reference": "e804cdc318801545307ed4a0f3a835fcf22f5864",
                 "shasum": ""
             },
             "require": {
@@ -708,8 +708,7 @@
                 "ext-gd": "For image support",
                 "ext-mbstring": "For fast multibyte string manipulation",
                 "ext-svm": "For Support Vector Machine engine (libsvm)",
-                "ext-tensor": "For fast Matrix/Vector computing",
-                "rubix/extras": "For experimental features"
+                "ext-tensor": "For fast Matrix/Vector computing"
             },
             "type": "library",
             "autoload": {
@@ -829,7 +828,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-05-13T19:12:38+00:00"
+            "time": "2023-05-26T16:49:18+00:00"
         },
         {
             "name": "rubix/tensor",
