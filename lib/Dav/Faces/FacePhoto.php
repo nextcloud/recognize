@@ -8,7 +8,6 @@ namespace OCA\Recognize\Dav\Faces;
 
 use \Rubix\ML\Kernels\Distance\Euclidean;
 use OC\Metadata\IMetadataManager;
-use OCA\Recognize\Db\FaceCluster;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Service\FaceClusterAnalyzer;
@@ -24,16 +23,14 @@ use Sabre\DAV\IFile;
 class FacePhoto implements IFile {
 	private FaceDetectionMapper $detectionMapper;
 	private FaceDetection $faceDetection;
-	private FaceCluster $cluster;
 	private Folder $userFolder;
 	private ?File $file = null;
 	private ITagManager $tagManager;
 	private IMetadataManager $metadataManager;
 	private IPreview $preview;
 
-	public function __construct(FaceDetectionMapper $detectionMapper, FaceCluster $cluster, FaceDetection $faceDetection, Folder $userFolder, ITagManager $tagManager, IMetadataManager $metadataManager, IPreview $preview) {
+	public function __construct(FaceDetectionMapper $detectionMapper, FaceDetection $faceDetection, Folder $userFolder, ITagManager $tagManager, IMetadataManager $metadataManager, IPreview $preview) {
 		$this->detectionMapper = $detectionMapper;
-		$this->cluster = $cluster;
 		$this->faceDetection = $faceDetection;
 		$this->userFolder = $userFolder;
 		$this->tagManager = $tagManager;
@@ -80,11 +77,7 @@ class FacePhoto implements IFile {
 	public function put($data) {
 		throw new Forbidden('Can\'t write to photos trough the faces api');
 	}
-
-	public function getCluster() : FaceCluster {
-		return $this->cluster;
-	}
-
+	
 	public function getFile() : File {
 		if ($this->file === null) {
 			$nodes = $this->userFolder->getById($this->faceDetection->getFileId());

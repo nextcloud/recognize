@@ -8,6 +8,7 @@ namespace OCA\Recognize\Dav;
 
 use OC\Metadata\IMetadataManager;
 use OCA\Recognize\Dav\Faces\FacesHome;
+use OCA\Recognize\Dav\Faces\UnassignedFacesHome;
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCP\Files\IRootFolder;
@@ -64,9 +65,16 @@ class RecognizeHome implements ICollection {
 		return new FacesHome($this->faceClusterMapper, $this->user, $this->faceDetectionMapper, $this->rootFolder, $this->tagManager, $this->metadataManager, $this->previewManager);
 	}
 
+	private function getUnassignedFacesHome() {
+		return new UnassignedFacesHome($this->user, $this->faceDetectionMapper, $this->rootFolder, $this->tagManager, $this->metadataManager, $this->previewManager);
+	}
+
 	public function getChild($name) {
 		if ($name === 'faces') {
 			return $this->getFacesHome();
+		}
+		if ($name === 'unassigned-faces') {
+			return $this->getUnassignedFacesHome();
 		}
 
 		throw new NotFound();
@@ -76,11 +84,11 @@ class RecognizeHome implements ICollection {
 	 * @return FacesHome[]
 	 */
 	public function getChildren(): array {
-		return [$this->getFacesHome()];
+		return [$this->getFacesHome(), $this->getUnassignedFacesHome()];
 	}
 
 	public function childExists($name): bool {
-		return $name === 'faces';
+		return $name === 'faces' || $name === 'unassigned-faces';
 	}
 
 	public function getLastModified(): int {
