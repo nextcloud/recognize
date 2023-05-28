@@ -1,6 +1,7 @@
 OC.L10N.register(
     "recognize",
     {
+    "Recognize" : "Regocnize",
     "Smart media tagging for Nextcloud" : "Median älykästä merkitsemistä tunnisteilla Nextcloudille",
     "Status" : "Tila",
     "The app is installed and will automatically classify files in background processes." : "Sovellus on asennettu ja se luokittelee tiedostot automaattisesti taustaprosesseissa.",
