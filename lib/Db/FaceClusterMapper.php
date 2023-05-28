@@ -83,7 +83,9 @@ class FaceClusterMapper extends QBMapper {
 
 	public function delete(Entity $entity): Entity {
 		$qb = $this->db->getQueryBuilder();
-		$qb->delete('recognize_face_detections')->where($qb->expr()->eq('cluster_id', $qb->createPositionalParameter($entity->getId())));
+		$qb->update('recognize_face_detections')
+			->set('cluster_id', -1)
+			->where($qb->expr()->eq('cluster_id', $qb->createPositionalParameter($entity->getId())));
 		$qb->executeStatement();
 		return parent::delete($entity);
 	}

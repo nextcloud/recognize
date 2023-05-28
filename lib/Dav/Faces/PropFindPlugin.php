@@ -59,7 +59,7 @@ class PropFindPlugin extends ServerPlugin {
 			$propFind->handle(TagsPlugin::FAVORITE_PROPERTYNAME, fn () => $node->isFavorite() ? 1 : 0);
 		}
 
-		if ($node instanceof FaceRoot) {
+		if ($node instanceof FaceRoot || $node instanceof UnassignedFacesHome) {
 			$propFind->handle(self::NBITEMS_PROPERTYNAME, fn () => count($node->getChildren()));
 		}
 

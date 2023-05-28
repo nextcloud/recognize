@@ -183,6 +183,20 @@ class FaceDetectionMapper extends QBMapper {
 	}
 
 	/**
+	 * @param string $userId
+	 * @return \OCA\Recognize\Db\FaceDetection[]
+	 * @throws \OCP\DB\Exception
+	 */
+	public function findRejectedByUserId(string $userId) : array {
+		$qb = $this->db->getQueryBuilder();
+		$qb->select(FaceDetection::$columns)
+			->from('recognize_face_detections')
+			->where($qb->expr()->eq('user_id', $qb->createPositionalParameter($userId)))
+			->andWhere($qb->expr()->eq('cluster_id', $qb->createPositionalParameter(-1)));
+		return $this->findEntities($qb);
+	}
+
+	/**
 	 * @param int $clusterId
 	 * @param int $n
 	 * @param int $minHeight

@@ -89,7 +89,7 @@ class FaceRoot implements ICollection, IMoveTarget {
 	public function getChildren(): array {
 		if (count($this->children) === 0) {
 			$this->children = array_map(function (FaceDetection $detection) {
-				return new FacePhoto($this->detectionMapper, $this->cluster, $detection, $this->rootFolder->getUserFolder($this->user->getUID()), $this->tagManager, $this->metadataManager, $this->previewManager);
+				return new FacePhoto($this->detectionMapper, $detection, $this->rootFolder->getUserFolder($this->user->getUID()), $this->tagManager, $this->metadataManager, $this->previewManager);
 			}, $this->detectionMapper->findByClusterId($this->cluster->getId()));
 		}
 		return $this->children;
@@ -110,7 +110,7 @@ class FaceRoot implements ICollection, IMoveTarget {
 		} catch (DoesNotExistException $e) {
 			throw new NotFound();
 		}
-		return new FacePhoto($this->detectionMapper, $this->cluster, $detection, $this->rootFolder->getUserFolder($this->user->getUID()), $this->tagManager, $this->metadataManager, $this->previewManager);
+		return new FacePhoto($this->detectionMapper, $detection, $this->rootFolder->getUserFolder($this->user->getUID()), $this->tagManager, $this->metadataManager, $this->previewManager);
 	}
 
 	public function childExists($name): bool {
@@ -128,7 +128,7 @@ class FaceRoot implements ICollection, IMoveTarget {
 			$this->detectionMapper->update($sourceNode->getFaceDetection());
 			return true;
 		}
-		throw new Forbidden('Not a photo with a detected face, you can only move photos from the faces collection here');
+		throw new Forbidden('Not a photo with a detected face, you can only move photos from the faces collection or the unassigned-faces here');
 	}
 
 	/**
