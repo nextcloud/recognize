@@ -15,6 +15,7 @@ OC.L10N.register(
     "Dog" : "Hund",
     "Music" : "Musik",
     "Office" : "Kontor",
+    "Food" : "Mad",
     "Train" : "Tog",
     "Car" : "Bil",
     "Clock" : "Ur",
