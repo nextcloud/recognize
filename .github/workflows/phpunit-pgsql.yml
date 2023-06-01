@@ -3,7 +3,7 @@
 # https://github.com/nextcloud/.github
 # https://docs.github.com/en/actions/learn-github-actions/sharing-workflows-with-your-organization
 
-name: PHPUnit
+name: PHPUnit pgsql
 
 on:
   pull_request:
@@ -11,7 +11,6 @@ on:
       - '.github/workflows/**'
       - 'appinfo/**'
       - 'lib/**'
-      - 'src/**'
       - 'templates/**'
       - 'tests/**'
       - 'vendor/**'
@@ -38,14 +37,13 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
-      fail-fast: false
       matrix:
-        php-versions: ['8.1']
-        server-versions: ['stable26', 'stable27', 'master']
+        php-versions: ['8.0']
+        server-versions: ['master']
 
     services:
       postgres:
-        image: postgres:14
+        image: ghcr.io/nextcloud/continuous-integration-postgres-14:latest
         ports:
           - 4444:5432/tcp
         env:
@@ -59,24 +57,27 @@ jobs:
         run: |
           # Split and keep last
           echo "APP_NAME=${GITHUB_REPOSITORY##*/}" >> $GITHUB_ENV
+
       - name: Checkout server
-        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
         with:
           submodules: true
           repository: nextcloud/server
           ref: ${{ matrix.server-versions }}
 
       - name: Checkout app
-        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
         with:
           path: apps/${{ env.APP_NAME }}
 
       - name: Set up php ${{ matrix.php-versions }}
-        uses: shivammathur/setup-php@1a18b2267f80291a81ca1d33e7c851fe09e7dfc4 # v2
+        uses: shivammathur/setup-php@c5fc0d8281aba02c7fda07d3a70cc5371548067d # v2
         with:
           php-version: ${{ matrix.php-versions }}
-          extensions: mbstring, iconv, fileinfo, intl, pgsql, pdo_pgsql
+          # https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html#prerequisites-for-manual-installation
+          extensions: bz2, ctype, curl, dom, fileinfo, gd, iconv, intl, json, libxml, mbstring, openssl, pcntl, posix, session, simplexml, xmlreader, xmlwriter, zip, zlib, pgsql, pdo_pgsql
           coverage: none
+          ini-file: development
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -90,24 +91,14 @@ jobs:
         # Only run if phpunit config file exists
         if: steps.check_composer.outputs.files_exists == 'true'
         working-directory: apps/${{ env.APP_NAME }}
-        run: composer install --no-dev
-
-      - name: Set up repo
-        working-directory: apps/${{ env.APP_NAME }}
-        run: |
-          composer require phpunit/phpunit=^9.5
-          make all
-          make remove-binaries # Make it download tfjs from scratch
-          rm -rf models # Make it download from github
-          wget https://github.com/nextcloud/recognize/releases/download/v3.4.0/test-files.zip
-          unzip test-files.zip -d tests/res/
+        run: composer i
 
       - name: Set up Nextcloud
         env:
           DB_PORT: 4444
         run: |
           mkdir data
-          ./occ maintenance:install --verbose --database=pgsql --database-name=nextcloud --database-host=127.0.0.1 --database-port=$DB_PORT --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass password
+          ./occ maintenance:install --verbose --database=pgsql --database-name=nextcloud --database-host=127.0.0.1 --database-port=$DB_PORT --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass admin
           ./occ app:enable --force ${{ env.APP_NAME }}
 
       - name: Check PHPUnit script is defined
@@ -116,6 +107,7 @@ jobs:
         working-directory: apps/${{ env.APP_NAME }}
         run: |
           composer run --list | grep "^  test:unit " | wc -l | grep 1
+
       - name: PHPUnit
         # Only run if phpunit config file exists
         if: steps.check_phpunit.outcome == 'success'
@@ -128,6 +120,7 @@ jobs:
         working-directory: apps/${{ env.APP_NAME }}
         run: |
           composer run --list | grep "^  test:integration " | wc -l | grep 1
+
       - name: Run Nextcloud
         # Only run if phpunit integration config file exists
         if: steps.check_integration.outcome == 'success'
@@ -139,12 +132,18 @@ jobs:
         working-directory: apps/${{ env.APP_NAME }}
         run: composer run test:integration
 
+      - name: Print logs
+        if: always()
+        run: |
+          cat data/nextcloud.log
+
       - name: Skipped
         # Fail the action when neither unit nor integration tests ran
         if: steps.check_phpunit.outcome == 'failure' && steps.check_integration.outcome == 'failure'
         run: |
           echo 'Neither PHPUnit nor PHPUnit integration tests are specified in composer.json scripts'
           exit 1
+
   summary:
     permissions:
       contents: none
