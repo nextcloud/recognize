@@ -11,6 +11,7 @@ on:
       - '.github/workflows/**'
       - 'appinfo/**'
       - 'lib/**'
+      - 'src/**'
       - 'templates/**'
       - 'tests/**'
       - 'vendor/**'
@@ -39,7 +40,7 @@ jobs:
     strategy:
       matrix:
         php-versions: ['8.0', '8.1', '8.2']
-        server-versions: ['master']
+        server-versions: ['stable26', 'stable27', 'master']
 
     services:
       mysql:
@@ -94,14 +95,24 @@ jobs:
         # Only run if phpunit config file exists
         if: steps.check_composer.outputs.files_exists == 'true'
         working-directory: apps/${{ env.APP_NAME }}
-        run: composer i
+        run: composer install --no-dev
+
+      - name: Set up test resources
+        working-directory: apps/${{ env.APP_NAME }}
+        run: |
+          composer require phpunit/phpunit=^9.5
+          make all
+          make remove-binaries # Make it download tfjs from scratch
+          rm -rf models # Make it download from github
+          wget https://github.com/nextcloud/recognize/releases/download/v3.4.0/test-files.zip
+          unzip test-files.zip -d tests/res/
 
       - name: Set up Nextcloud
         env:
           DB_PORT: 4444
         run: |
           mkdir data
-          ./occ maintenance:install --verbose --database=mysql --database-name=nextcloud --database-host=127.0.0.1 --database-port=$DB_PORT --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass admin
+          ./occ maintenance:install --verbose --database=mysql --database-name=nextcloud --database-host=127.0.0.1 --database-port=$DB_PORT --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass password
           ./occ app:enable --force ${{ env.APP_NAME }}
 
       - name: Check PHPUnit script is defined

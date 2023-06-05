@@ -7,11 +7,15 @@ name: Lint info.xml
 
 on:
   pull_request:
+    paths:
+      - 'appinfo/info.xml'
   push:
     branches:
       - main
       - master
       - stable*
+    paths:
+      - 'appinfo/info.xml'
 
 permissions:
   contents: read
