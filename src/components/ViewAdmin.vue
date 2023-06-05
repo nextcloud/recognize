@@ -141,7 +141,7 @@
 			<p>
 				<NcCheckboxRadioSwitch :checked.sync="settings['movinet.enabled']"
 					type="switch"
-					:disabled="platform !== 'x86_64' || settings['tensorflow.purejs']"
+					:disabled="(platform !== 'x86_64' || settings['tensorflow.purejs']) && !settings['movinet.enabled']"
 					@update:checked="onChange">
 					{{ t('recognize', 'Enable human action recognition (e.g. arm wrestling, dribbling basketball, hula hooping)') }}
 				</NcCheckboxRadioSwitch>
