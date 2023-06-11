@@ -145,4 +145,12 @@ class FaceRoot implements ICollection, IMoveTarget {
 	public function getLastModified() : int {
 		return 0;
 	}
+
+	public function getPreviewImage() : string {
+		$detection = $this->detectionMapper->findDetectionForPreviewImageByClusterId($this->cluster->getId());
+		return json_encode([
+			'fileid' => $detection->getFileId(),
+			'detection' => $detection->toArray()
+		]);
+	}
 }

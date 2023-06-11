@@ -6,6 +6,7 @@
 
 namespace OCA\Recognize\Db;
 
+use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\Entity;
 use OCP\AppFramework\Db\QBMapper;
 use OCP\DB\QueryBuilder\IQueryBuilder;
@@ -255,6 +256,33 @@ class FaceDetectionMapper extends QBMapper {
 			->set('cluster_id', $qb->createPositionalParameter(null))
 			->where($qb->expr()->isNotNull('cluster_id'));
 		$qb->executeStatement();
+	}
+
+	public function findDetectionForPreviewImageByClusterId(int $clusterId) : FaceDetection {
+		$qb = $this->db->getQueryBuilder();
+		$qb->select(array_map(fn ($col) => 'd.'.$col, FaceDetection::$columns))
+			->from('recognize_face_detections', 'd')
+			->where($qb->expr()->eq('d.cluster_id', $qb->createPositionalParameter($clusterId)))
+			->andWhere($qb->expr()->gt($qb->createFunction('d.x - d.width * 0.5'), $qb->createFunction('0')))
+			->andWhere($qb->expr()->gt($qb->createFunction('d.y - d.height * 0.5'), $qb->createFunction('0')))
+			->andWhere($qb->expr()->gt($qb->createFunction('1 - (d.x + d.width) - d.width * 0.5'), $qb->createFunction('0')))
+			->andWhere($qb->expr()->gt($qb->createFunction('1 - (d.y + d.height) - d.height * 0.5'), $qb->createFunction('0')))
+			->groupBy('d.id')
+			->addOrderBy('d.height', 'DESC')
+			->addOrderBy('d.width', 'DESC')
+			->setMaxResults(1);
+		try {
+			return $this->findEntity($qb);
+		} catch (DoesNotExistException $e) {
+			$qb->select(array_map(fn ($col) => 'd.'.$col, FaceDetection::$columns))
+				->from('recognize_face_detections', 'd')
+				->where($qb->expr()->eq('d.cluster_id', $qb->createPositionalParameter($clusterId)))
+				->groupBy('d.id')
+				->addOrderBy('d.height', 'DESC')
+				->addOrderBy('d.width', 'DESC')
+				->setMaxResults(1);
+			return $this->findEntity($qb);
+		}
 	}
 
 	protected function mapRowToEntity(array $row): Entity {

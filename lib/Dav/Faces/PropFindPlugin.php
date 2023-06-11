@@ -11,6 +11,7 @@ use \OCA\DAV\Connector\Sabre\TagsPlugin;
 use OCA\DAV\Connector\Sabre\File;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Db\FaceDetectionWithTitle;
+use OCP\Files\DavUtil;
 use Sabre\DAV\INode;
 use Sabre\DAV\PropFind;
 use Sabre\DAV\Server;
@@ -21,6 +22,7 @@ class PropFindPlugin extends ServerPlugin {
 	public const FILE_NAME_PROPERTYNAME = '{http://nextcloud.org/ns}file-name';
 	public const REALPATH_PROPERTYNAME = '{http://nextcloud.org/ns}realpath';
 	public const NBITEMS_PROPERTYNAME = '{http://nextcloud.org/ns}nbItems';
+	public const FACE_PREVIEW_IMAGE_PROPERTYNAME = '{http://nextcloud.org/ns}face-preview-image';
 
 	private Server $server;
 	private FaceDetectionMapper $faceDetectionMapper;
@@ -57,10 +59,15 @@ class PropFindPlugin extends ServerPlugin {
 			$propFind->handle(FilesPlugin::FILE_METADATA_SIZE, fn () => $node->getMetadata());
 			$propFind->handle(FilesPlugin::HAS_PREVIEW_PROPERTYNAME, fn () => json_encode($node->hasPreview()));
 			$propFind->handle(TagsPlugin::FAVORITE_PROPERTYNAME, fn () => $node->isFavorite() ? 1 : 0);
+			$propFind->handle(FilesPlugin::PERMISSIONS_PROPERTYNAME, fn () => str_replace('G', '', DavUtil::getDavPermissions($node->getFile()->getFileInfo())));
 		}
 
 		if ($node instanceof FaceRoot || $node instanceof UnassignedFacesHome) {
 			$propFind->handle(self::NBITEMS_PROPERTYNAME, fn () => count($node->getChildren()));
+		}
+
+		if ($node instanceof FaceRoot) {
+			$propFind->handle(self::FACE_PREVIEW_IMAGE_PROPERTYNAME, fn () => $node->getPreviewImage());
 		}
 
 		if ($node instanceof File) {
