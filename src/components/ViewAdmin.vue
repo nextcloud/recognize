@@ -173,37 +173,6 @@
 				{{ t('recognize', 'Clear queues and background jobs') }}
 			</button>
 		</NcSettingsSection>
-		<NcSettingsSection :title="t('recognize', 'Terminal commands') ">
-			<p>{{ t('recognize', 'To trigger a full classification run, run the following command on the server terminal. (The classification will run in multiple background jobs which can run in parallel.)') }}</p>
-			<pre><code>occ recognize:recrawl</code></pre>
-			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'To run a full classification run on the terminal, run the following. (The classification will run in sequence inside your terminal.)') }}</p>
-			<pre><code>occ recognize:classify</code></pre>
-			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'Before running a full initial classification run on the terminal, you should stop all background processing that recognize scheduled upon installation to avoid interference.') }}</p>
-			<pre><code>occ recognize:clear-background-jobs</code></pre>
-			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'To run a face clustering run on for each user in the terminal, run the following. (The clustering will run in sequence inside your terminal.)') }}</p>
-			<pre><code>occ recognize:cluster-faces</code></pre>
-			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'To download all models preliminary to executing the classification jobs, run the following command on the server terminal.') }}</p>
-			<pre><code>occ recognize:download-models</code></pre>
-			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'You can reset the tags of all files that have been previously classified by Recognize with the following command:') }}</p>
-			<pre><code>occ recognize:reset-tags</code></pre>
-			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'You can delete all tags that no longer have any files associated with them with the following command:') }}</p>
-			<pre><code>occ recognize:cleanup-tags</code></pre>
-			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'To remove all detected faces and face clusters run the following on the terminal:') }}</p>
-			<pre><code>occ recognize:reset-faces</code></pre>
-			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'To remove all face clusters but keep the raw detected faces run the following on the terminal:') }}</p>
-			<pre><code>occ recognize:reset-face-clusters</code></pre>
-			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'To remove tags that were created by recognize version 2 from all files run the following on the terminal:') }}</p>
-			<pre><code>occ recognize:remove-legacy-tags</code></pre>
-		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'CPU cores') ">
 			<p>{{ t('recognize', 'By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used. (Note: In WASM mode, currently only 1 core can be used at all times.)') }}</p>
 			<p>
@@ -223,7 +192,7 @@
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking CPU') }}
 			</p>
 			<NcNoteCard v-else-if="avx === null || platform === null || musl === null">
-				{{ t('recognize', 'Could not check whether your machine supports native TensorFlow operation.') }}
+				{{ t('recognize', 'Could not check whether your machine supports native TensorFlow operation. Make sure your OS has GNU lib C, your CPU supports AVX instructions and you are running on x86. If one of these things is not the case, you will need to run in WASM mode.') }}
 			</NcNoteCard>
 			<NcNoteCard v-else-if="avx && platform === 'x86_64' && !musl" type="success">
 				{{ t('recognize', 'Your machine supports native TensorFlow operation, you do not need WASM mode.') }}
@@ -243,6 +212,9 @@
 					{{ t('recognize', 'Enable WASM mode') }}
 				</NcCheckboxRadioSwitch>
 			</p>
+      <p>
+        {{ t('recognize', 'Recognize uses Tensorflow for running the machine learning models. Not all installations support Tensorflow, either because the CPU does not support AVX instructions, or because the platform is not x86 (ie. on a Raspberry Pi, which is ARM), or because the Operating System that your nextcloud runs on (when using docker, then that is the OS within the docker image) does not come with GNU lib C (for example Alpine Linux, which is also used by Nextcloud AIO). In most cases, even if you installation does not support native Tensorflow operation, you can still run Tensorflow using WebAssembly (WASM) in Node.js. This is somewhat slower but still works.') }}
+      </p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Tensorflow GPU mode')">
 			<p>
@@ -250,6 +222,12 @@
 					{{ t('recognize', 'Enable GPU mode') }}
 				</NcCheckboxRadioSwitch>
 			</p>
+      <p>
+        {{ t('recognize', 'Like most machine learning models, recognize will run even faster when using a GPU. Setting this up is non-trivial but works well when everything is setup correctly.')}}
+      </p>
+      <p>
+        <a href="https://github.com/nextcloud/recognize/wiki/GPU-mode">{{ t('recognize', 'Learn how to setup GPU mode with recognize')}}</a>
+      </p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Node.js')">
 			<p v-if="nodejs === undefined">
@@ -293,6 +271,37 @@
 				<input v-model="settings['node_binary']" type="text" @change="onChange">
 			</p>
 		</NcSettingsSection>
+    <NcSettingsSection :title="t('recognize', 'Terminal commands') ">
+      <p>{{ t('recognize', 'To download all models preliminary to executing the classification jobs, run the following command on the server terminal.') }}</p>
+      <pre><code>occ recognize:download-models</code></pre>
+      <p>&nbsp;</p>
+      <p>{{ t('recognize', 'To trigger a full classification run, run the following command on the server terminal. (The classification will run in multiple background jobs which can run in parallel.)') }}</p>
+      <pre><code>occ recognize:recrawl</code></pre>
+      <p>&nbsp;</p>
+      <p>{{ t('recognize', 'To run a full classification run on the terminal, run the following. (The classification will run in sequence inside your terminal.)') }}</p>
+      <pre><code>occ recognize:classify</code></pre>
+      <p>&nbsp;</p>
+      <p>{{ t('recognize', 'Before running a full initial classification run on the terminal, you should stop all background processing that recognize scheduled upon installation to avoid interference.') }}</p>
+      <pre><code>occ recognize:clear-background-jobs</code></pre>
+      <p>&nbsp;</p>
+      <p>{{ t('recognize', 'To run a face clustering run on for each user in the terminal, run the following. (The clustering will run in sequence inside your terminal.)') }}</p>
+      <pre><code>occ recognize:cluster-faces</code></pre>
+      <p>&nbsp;</p>
+      <p>{{ t('recognize', 'To remove all face clusters but keep the raw detected faces run the following on the terminal:') }}</p>
+      <pre><code>occ recognize:reset-face-clusters</code></pre>
+      <p>&nbsp;</p>
+      <p>{{ t('recognize', 'To remove all detected faces and face clusters run the following on the terminal:') }}</p>
+      <pre><code>occ recognize:reset-faces</code></pre>
+      <p>&nbsp;</p>
+      <p>{{ t('recognize', 'You can reset the tags of all files that have been previously classified by Recognize with the following command:') }}</p>
+      <pre><code>occ recognize:reset-tags</code></pre>
+      <p>&nbsp;</p>
+      <p>{{ t('recognize', 'You can delete all tags that no longer have any files associated with them with the following command:') }}</p>
+      <pre><code>occ recognize:cleanup-tags</code></pre>
+      <p>&nbsp;</p>
+      <p>{{ t('recognize', 'To remove tags that were created by recognize version 2 from all files run the following on the terminal:') }}</p>
+      <pre><code>occ recognize:remove-legacy-tags</code></pre>
+    </NcSettingsSection>
 	</div>
 </template>
 
