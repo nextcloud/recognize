@@ -63,7 +63,7 @@
 			</template>
 			<p>
 				<NcCheckboxRadioSwitch :checked.sync="settings['faces.enabled']" type="switch" @update:checked="onChange">
-					{{ t('recognize', 'Enable face recognition (groups pictures by people that appear in them in the photos app)') }}
+					{{ t('recognize', 'Enable face recognition (groups photos by faces that appear in them; UI is in the photos app; minimum of 120 faces per user necessary for clustering to kick in)') }}
 				</NcCheckboxRadioSwitch>
 				<NcTextField :disabled="!settings['faces.enabled']"
 					:value.sync="settings['faces.batchSize']"
