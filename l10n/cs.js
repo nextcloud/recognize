@@ -58,6 +58,7 @@ OC.L10N.register(
     "Enable WASM mode" : "Zapnout režim WASM",
     "Tensorflow GPU mode" : "Režim Tensorflow na GPU",
     "Enable GPU mode" : "Zapnout GPU režim",
+    "Learn how to setup GPU mode with recognize" : "Zjistit jak nastavit GPU režim pro rozpoznávání",
     "Node.js" : "Node.js",
     "Checking Node.js" : "Kontrola Node.js",
     "Node.js {version} binary was installed successfully." : "Spustitelný soubor s Node.js {version} byl úspěšně nainstalován.",
