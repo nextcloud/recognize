@@ -34,6 +34,7 @@ OC.L10N.register(
     "Info" : "資訊",
     "Bucket" : "Bucket",
     "Festival" : "節日",
+    "Event" : "事件",
     "Gas station" : "加油站",
     "Parking" : "停車場",
     "Sign" : "簽署",
