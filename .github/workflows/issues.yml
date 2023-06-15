@@ -9,7 +9,7 @@ env:
 
 jobs:
   assign_one_project:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: Assign to One Project
     steps:
       - name: Assign new issues and pull requests to project 1 Backlog
@@ -19,7 +19,7 @@ jobs:
           column_name: 'Backlog'
 
   first_comment:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: Add first comment
     steps:
       - uses: ben-z/actions-comment-on-issue@1.0.2
