@@ -98,7 +98,6 @@ jobs:
       - name: Set up repo
         working-directory: apps/${{ env.APP_NAME }}
         run: |
-          composer require phpunit/phpunit=^9.5
           make all
           make remove-binaries # Make it download tfjs from scratch
           rm -rf models # Make it download from github
