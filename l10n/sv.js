@@ -34,6 +34,7 @@ OC.L10N.register(
     "Document" : "Dokument",
     "Bucket" : "Bucket",
     "Festival" : "Festival",
+    "Event" : "Händelse",
     "Gas station" : "Bensinstation",
     "Parking" : "Parkering",
     "Gallery" : "Galleri",
