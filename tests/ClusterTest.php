@@ -290,7 +290,7 @@ class ClusterTest extends TestCase {
 	 */
 	public function testClusterTemptClusterMerging() {
 		$numOfDetections = self::INITIAL_DETECTIONS_PER_CLUSTER;
-		$clusterValue = 1.5; // Above threshold for merging
+		$clusterValue = 1.8; // Above threshold for merging
 		for ($i = 0; $i < $numOfDetections; $i++) {
 			$detection = new FaceDetection();
 			$detection->setUserId(self::TEST_USER1);
@@ -319,7 +319,7 @@ class ClusterTest extends TestCase {
 		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER, $detections);
 
 		$numOfDetections = self::INITIAL_DETECTIONS_PER_CLUSTER;
-		$clusterValue = 1.2; // Within threshold for merging with both left and right
+		$clusterValue = 1.4; // Within threshold for merging with both left and right
 		for ($i = 0; $i < $numOfDetections; $i++) {
 			$detection = new FaceDetection();
 			$detection->setUserId(self::TEST_USER1);
