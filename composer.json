@@ -40,7 +40,6 @@
             "composer/package-versions-deprecated": true
         },
         "autoloader-suffix": "Recognize",
-        "classmap-authoritative": true,
         "optimize-autoloader": true,
         "sort-packages": true
     }
