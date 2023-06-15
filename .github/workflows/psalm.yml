@@ -25,6 +25,11 @@ jobs:
   static-analysis:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        php-versions: [ '8.0', '8.1', '8.2' ]
+        server-versions: [ '26.x', '27.x', 'master' ]
+
     name: Nextcloud
     steps:
       - name: Checkout
@@ -33,14 +38,16 @@ jobs:
       - name: Set up php
         uses: shivammathur/setup-php@c5fc0d8281aba02c7fda07d3a70cc5371548067d # v2
         with:
-          php-version: 8.1
+          php-version: ${{ matrix.php-versions }}
           coverage: none
           ini-file: development
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
-        run: composer i
+        run: |
+          composer i
+          composer install nextcloud/ocp:${{ matrix.server-versions }}
 
       - name: Run coding standards check
         run: composer run psalm

@@ -113,9 +113,6 @@
     </InvalidScalarArgument>
   </file>
   <file src="lib/Classifiers/Classifier.php">
-    <DocblockTypeContradiction occurrences="1">
-      <code>$preview === false</code>
-    </DocblockTypeContradiction>
     <MixedAssignment occurrences="1">
       <code>$results</code>
     </MixedAssignment>
@@ -850,6 +847,16 @@
       <code>ServerPlugin</code>
     </UndefinedClass>
   </file>
+  <file src="lib/Dav/Faces/UnassignedFacePhoto.php">
+    <MissingDependency occurrences="1">
+      <code>FacePhoto</code>
+    </MissingDependency>
+  </file>
+  <file src="lib/Dav/Faces/UnassignedFacesHome.php">
+    <UndefinedClass occurrences="1">
+      <code>ICollection</code>
+    </UndefinedClass>
+  </file>
   <file src="lib/Dav/RecognizeHome.php">
     <UndefinedClass occurrences="1">
       <code>ICollection</code>
@@ -904,7 +911,8 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Db/FaceDetectionMapper.php">
-    <LessSpecificReturnStatement occurrences="9">
+    <LessSpecificReturnStatement occurrences="12">
+      <code>$this-&gt;findEntities($qb)</code>
       <code>$this-&gt;findEntities($qb)</code>
       <code>$this-&gt;findEntities($qb)</code>
       <code>$this-&gt;findEntities($qb)</code>
@@ -914,15 +922,19 @@
       <code>$this-&gt;findEntities($qb)</code>
       <code>$this-&gt;findEntities($qb)</code>
       <code>$this-&gt;findEntity($qb)</code>
+      <code>$this-&gt;findEntity($qb)</code>
+      <code>$this-&gt;findEntity($qb)</code>
     </LessSpecificReturnStatement>
     <MixedReturnTypeCoercion occurrences="2">
       <code>$qb-&gt;executeQuery()-&gt;fetchAll(\PDO::FETCH_COLUMN)</code>
       <code>list&lt;string&gt;</code>
     </MixedReturnTypeCoercion>
-    <MoreSpecificReturnType occurrences="9">
+    <MoreSpecificReturnType occurrences="11">
+      <code>FaceDetection</code>
       <code>FaceDetection</code>
       <code>FaceDetection[]</code>
       <code>FaceDetection[]</code>
+      <code>\OCA\Recognize\Db\FaceDetection[]</code>
       <code>\OCA\Recognize\Db\FaceDetection[]</code>
       <code>\OCA\Recognize\Db\FaceDetection[]</code>
       <code>list&lt;\OCA\Recognize\Db\FaceDetection&gt;</code>
