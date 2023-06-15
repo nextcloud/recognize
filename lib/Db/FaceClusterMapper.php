@@ -6,6 +6,7 @@
 
 namespace OCA\Recognize\Db;
 
+use OC\DB\QueryBuilder\QueryBuilder;
 use OCP\AppFramework\Db\Entity;
 use OCP\AppFramework\Db\QBMapper;
 use OCP\DB\QueryBuilder\IQueryBuilder;
@@ -84,7 +85,7 @@ class FaceClusterMapper extends QBMapper {
 	public function delete(Entity $entity): Entity {
 		$qb = $this->db->getQueryBuilder();
 		$qb->update('recognize_face_detections')
-			->set('cluster_id', -1)
+			->set('cluster_id', $qb->createPositionalParameter(-1, QueryBuilder::PARAM_INT))
 			->where($qb->expr()->eq('cluster_id', $qb->createPositionalParameter($entity->getId())));
 		$qb->executeStatement();
 		return parent::delete($entity);
