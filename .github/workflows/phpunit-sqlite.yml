@@ -41,8 +41,8 @@ jobs:
       # do not stop on another job's failure
       fail-fast: false
       matrix:
-        php-versions: ['8.0']
-        server-versions: ['stable26', 'stable27', 'master']
+        php-versions: ['8.2']
+        server-versions: ['master']
 
     steps:
       - name: Set app env

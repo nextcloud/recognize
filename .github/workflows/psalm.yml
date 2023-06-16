@@ -8,9 +8,12 @@ name: Static analysis
 on:
   pull_request:
     paths:
-      - '*.php'
+      - 'lib/**'
+      - 'templates/**'
+      - 'tests/**'
+      - 'vendor/**'
+      - 'vendor-bin/**'
       - composer.lock
-      - 'vendor-bin'
   push:
     branches:
       - master

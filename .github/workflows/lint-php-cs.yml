@@ -8,9 +8,13 @@ name: Lint php-cs
 on:
   pull_request:
     paths:
-      - '*.php'
+      - 'lib/**'
+      - 'templates/**'
+      - 'tests/**'
+      - 'vendor/**'
+      - 'vendor-bin/**'
       - composer.lock
-      - 'vendor-bin'
+      - composer.json
 
 permissions:
   contents: read
