@@ -288,7 +288,7 @@ class ClassifierTest extends TestCase {
 				'files',
 				$tagManager->getTag('Alpine', true, true)->getId()
 			),
-			'Correct tag should have been set on image file. Actual tags: '.var_export($tagManager->getTagsByIds($objectMapper->getTagIdsForObjects([$this->testFile->getId()], 'files')), true)
+			'Correct tag should have been set on image file.'
 		);
 	}
 
