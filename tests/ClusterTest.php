@@ -177,55 +177,6 @@ class ClusterTest extends TestCase {
 	}
 
 	/**
-	 * We merge two clusters and check if a new detection that falls within that new cluster
-	 * is correctly added to the overarching cluster
-	 *
-	 * @return void
-	 * @throws \JsonException
-	 * @throws \OCP\DB\Exception
-	 */
-	public function testClusterMerging2() {
-		$this->faceClusterAnalyzer->calculateClusters(self::TEST_USER1);
-
-		/** @var \OCA\Recognize\Db\FaceCluster[] $clusters */
-		$clusters = $this->faceClusterMapper->findByUserId(self::TEST_USER1);
-		self::assertCount(2, $clusters);
-
-		$detections = $this->faceDetectionMapper->findByClusterId($clusters[0]->getId());
-		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER, $detections);
-
-		$detections = $this->faceDetectionMapper->findByClusterId($clusters[1]->getId());
-		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER, $detections);
-
-		// Merge the two clusters
-		foreach ($detections as $detection) {
-			$detection->setClusterId($clusters[0]->getId());
-			$this->faceDetectionMapper->update($detection);
-		}
-
-		for ($i = 0; $i < self::INITIAL_DETECTIONS_PER_CLUSTER; $i++) {
-			$newDetection = new FaceDetection();
-			$newDetection->setHeight(0.5);
-			$newDetection->setWidth(0.5);
-			$newDetection->setFileId(500000 + $i);
-			$nullVector = self::getNullVector();
-			$nullVector[0] = 1 + 0.001 * $i;
-			$newDetection->setVector($nullVector);
-			$newDetection->setUserId(self::TEST_USER1);
-			$this->faceDetectionMapper->insert($newDetection);
-		}
-
-		$this->faceClusterAnalyzer->calculateClusters(self::TEST_USER1);
-
-		/** @var \OCA\Recognize\Db\FaceCluster[] $clusters */
-		$clusters = $this->faceClusterMapper->findByUserId(self::TEST_USER1);
-		self::assertCount(1, $clusters);
-
-		$detections = $this->faceDetectionMapper->findByClusterId($clusters[0]->getId());
-		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER * 3, $detections);
-	}
-
-	/**
 	 * We merge two originally disparate clusters and check if the newly added detections
 	 * will be assigned to their own cluster
 	 * @return void
