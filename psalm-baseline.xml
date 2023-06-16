@@ -113,6 +113,9 @@
     </InvalidScalarArgument>
   </file>
   <file src="lib/Classifiers/Classifier.php">
+    <DocblockTypeContradiction occurrences="1">
+      <code>$preview === false</code>
+    </DocblockTypeContradiction>
     <MixedAssignment occurrences="1">
       <code>$results</code>
     </MixedAssignment>

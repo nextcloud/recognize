@@ -233,7 +233,7 @@ class Classifier {
 		}
 		$path = $file->getStorage()->getLocalFile($file->getInternalPath());
 
-		if ($path === false) {
+		if (!is_string($path)) {
 			throw new NotFoundException();
 		}
 
