@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.2.0] - 2023-06-16
+
+### New
+- Expose face-preview-image prop
+- Add an unassigned-faces DAV collection
+- Increase min cluster separation to 0.35
+- Admin settings: Reorder terminal commands
+
+### Fixed
+- FaceClusterMapper: Use parameter for int argument to db delete query
+- composer.json: Disable authoritative classmap
+- Classifier: Correctly clean up temp files
+- Admin settings: Mention minimum face count for clustering
+- l10n: Update translations from Transifex
+
 ## [4.1.0] - 2023-05-21
 
 ### New
