@@ -49,7 +49,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          composer i
           composer require --with-all-dependencies nextcloud/ocp:${{ matrix.server-versions }}
 
       - name: Run coding standards check
