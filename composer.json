@@ -14,7 +14,7 @@
     "require-dev": {
         "nextcloud/ocp": "dev-master",
         "symfony/console": "^5.4",
-        "symfony/process": "^5.2"
+        "symfony/process": "^6.0"
     },
     "scripts": {
         "lint": "find . -name \\*.php -not -path './vendor/*' -print0 | xargs -0 -n1 php -l",
