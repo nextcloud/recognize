@@ -31,7 +31,6 @@ OC.L10N.register(
     "Theater" : "Teatro",
     "Pizza" : "Pizza",
     "Info" : "Información",
-    "Bucket" : "Bucket",
     "Festival" : "Festival",
     "Gas station" : "Gasolineira",
     "Parking" : "Aparcadoiro",
