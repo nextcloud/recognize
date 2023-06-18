@@ -31,6 +31,7 @@ OC.L10N.register(
     "Document" : "Документ",
     "Bucket" : "Кошик",
     "Festival" : "Фестиваль",
+    "Event" : "Подія",
     "Gas station" : "АЗС",
     "Parking" : "Паркінг",
     "Gallery" : "Галерея",
