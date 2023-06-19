@@ -17,6 +17,40 @@ This app goes through your media collection and adds fitting tags, automatically
   * 👂 listen to your tagged music with the audioplayer app
   * 📷 view your tagged photos with the photos app
 
+## Ethical AI Rating
+### Rating for Photo object detection: 🟢
+
+Positive:
+* the software for training and inference of this model is open source
+* the trained model is freely available, and thus can be run on-premises
+* the training data is freely available, making it possible to check or correct for bias or optimise the performance and CO2 usage.
+
+### Rating for Photo face recognition: 🟢
+
+Positive:
+* the software for training and inference of this model is open source
+* the trained model is freely available, and thus can be run on-premises
+* the training data is freely available, making it possible to check or correct for bias or optimise the performance and CO2 usage.
+
+### Rating for Video action recognition: 🟢
+
+Positive:
+* the software for training and inferencing of this model is open source
+* the trained model is freely available, and thus can be ran on-premises
+* the training data is freely available, making it possible to check or correct for bias or optimise the performance and CO2 usage.
+
+## Ethical AI Rating
+### Rating Music genre recognition: 🟡
+
+Positive:
+* the software for training and inference of this model is open source
+* the trained model is freely available, and thus can be run on-premises
+
+Negative:
+* the training data is not freely available, limiting the ability of external parties to check and correct for bias or optimise the model’s performance and CO2 usage.
+
+Learn more about the Nextcloud Ethical AI Rating [in our blog](https://nextcloud.com/blog/nextcloud-ethical-ai-rating/).
+
 ### Examples
 
 ![](https://github.com/marcelklehr/recognize/raw/master/screenshots/imagenet_examples.jpg)
