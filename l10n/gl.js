@@ -32,6 +32,7 @@ OC.L10N.register(
     "Pizza" : "Pizza",
     "Info" : "Información",
     "Festival" : "Festival",
+    "Event" : "Evento",
     "Gas station" : "Gasolineira",
     "Parking" : "Aparcadoiro",
     "Sign" : "Asinar",
