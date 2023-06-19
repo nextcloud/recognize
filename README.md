@@ -39,7 +39,6 @@ Positive:
 * the trained model is freely available, and thus can be ran on-premises
 * the training data is freely available, making it possible to check or correct for bias or optimise the performance and CO2 usage.
 
-## Ethical AI Rating
 ### Rating Music genre recognition: 🟡
 
 Positive:
