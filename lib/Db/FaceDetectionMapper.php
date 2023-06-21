@@ -6,6 +6,7 @@
 
 namespace OCA\Recognize\Db;
 
+use OCA\Recognize\Service\FaceClusterAnalyzer;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\Entity;
 use OCP\AppFramework\Db\QBMapper;
@@ -289,7 +290,9 @@ class FaceDetectionMapper extends QBMapper {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select($qb->func()->count('id'))
 			->from('recognize_face_detections')
-			->where($qb->expr()->isNull('cluster_id'));
+			->where($qb->expr()->isNull('cluster_id'))
+			->andWhere($qb->expr()->gte('height', $qb->createPositionalParameter(FaceClusterAnalyzer::MIN_DETECTION_SIZE)))
+			->andWhere($qb->expr()->gte('width', $qb->createPositionalParameter(FaceClusterAnalyzer::MIN_DETECTION_SIZE)));
 		$result = $qb->executeQuery();
 		$count = $result->fetch(\PDO::FETCH_COLUMN);
 		$result->closeCursor();
