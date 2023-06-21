@@ -11,6 +11,7 @@ use OCA\Recognize\BackgroundJobs\ClassifyImagenetJob;
 use OCA\Recognize\BackgroundJobs\ClassifyLandmarksJob;
 use OCA\Recognize\BackgroundJobs\ClassifyMovinetJob;
 use OCA\Recognize\BackgroundJobs\ClassifyMusicnnJob;
+use OCA\Recognize\BackgroundJobs\ClusterFacesJob;
 use OCA\Recognize\BackgroundJobs\SchedulerJob;
 use OCA\Recognize\BackgroundJobs\StorageCrawlJob;
 use OCA\Recognize\Db\FaceClusterMapper;
@@ -62,12 +63,14 @@ class AdminController extends Controller {
 		$this->jobList->remove(ClassifyLandmarksJob::class);
 		$this->jobList->remove(ClassifyMusicnnJob::class);
 		$this->jobList->remove(ClassifyMovinetJob::class);
+		$this->jobList->remove(ClusterFacesJob::class);
 		$this->jobList->remove(SchedulerJob::class);
 		$this->jobList->remove(StorageCrawlJob::class);
 		return new JSONResponse([]);
 	}
 
 	public function recrawl(): JSONResponse {
+		$this->clearAllJobs();
 		$this->jobList->add(SchedulerJob::class);
 		return new JSONResponse([]);
 	}
