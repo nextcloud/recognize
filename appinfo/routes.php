@@ -36,6 +36,7 @@ return [
 		['name' => 'admin#wasmtensorflow', 'url' => '/admin/wasmtensorflow', 'verb' => 'GET'],
 		['name' => 'admin#gputensorflow', 'url' => '/admin/gputensorflow', 'verb' => 'GET'],
 		['name' => 'admin#cron', 'url' => '/admin/cron', 'verb' => 'GET'],
+		['name' => 'admin#hasJobs', 'url' => '/admin/jobs/{task}', 'verb' => 'GET'],
 		['name' => 'admin#get_setting', 'url' => '/admin/settings/{setting}', 'verb' => 'GET'],
 		['name' => 'admin#set_setting', 'url' => '/admin/settings/{setting}', 'verb' => 'PUT'],
 	],

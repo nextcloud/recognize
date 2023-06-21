@@ -18,7 +18,7 @@
 			<NcNoteCard v-if="nodejs === false">
 				{{ t('recognize', 'Could not execute the Node.js binary. You may need to set the path to a working binary manually.') }}
 			</NcNoteCard>
-			<NcNoteCard v-if="cron !== undefined && cron !== 'cron'">
+			<NcNoteCard v-if="cron !== undefined && cron !== 'cron'" type="error">
 				{{ t('recognize', 'Background Jobs are not executed via cron. Recognize requires background jobs to be executed via cron.') }}
 			</NcNoteCard>
 			<template v-if="nodejs && (libtensorflow || wasmtensorflow) && cron === 'cron'">
@@ -32,7 +32,7 @@
 				</p>
 			</template>
 		</NcSettingsSection>
-		<NcSettingsSection :title="t('recognize', 'Image tagging')">
+		<NcSettingsSection :title="t('recognize', 'Face recognition')">
 			<template v-if="settings['faces.enabled']">
 				<NcNoteCard v-if="settings['faces.status'] === true" show-alert type="success">
 					{{ t('recognize', 'Face recognition is working. ') }}
@@ -44,9 +44,25 @@
 					{{ t('recognize', 'Waiting for status reports on face recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs.') }}
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued">
-					{{ t('recognize', 'Face recognition:') }} {{ countQueued.faces }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['faces.lastFile']) }}
+					{{ t('recognize', 'Face recognition:') }} {{ countQueued.faces }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['faces.lastFile']) }}<span v-if="facesJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ facesJobs.scheduled }}, {{ t('recognize', 'Last background job execution: ') }} {{ showDate(facesJobs.lastRun) }}</span>
+				</NcNoteCard>
+				<NcNoteCard v-if="countQueued">
+					{{ t('recognize', 'Face clustering:') }} {{ countQueued.clusterFaces }} {{ t('recognize', 'faces left to cluster') }}, {{ t('recognize', 'Last clustering run: ') }} {{ showDate(settings['clusterFaces.lastRun']) }}<span v-if="clusterFacesJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ clusterFacesJobs.scheduled }}, {{ t('recognize', 'Last background job execution: ') }} {{ showDate(clusterFacesJobs.lastRun) }}</span><br>
+					<small>{{ t('recognize', 'A minimum of 120 faces per user is necessary for clustering to kick in') }}</small>
 				</NcNoteCard>
 			</template>
+			<p>
+				<NcCheckboxRadioSwitch :checked.sync="settings['faces.enabled']" type="switch" @update:checked="onChange">
+					{{ t('recognize', 'Enable face recognition (groups photos by faces that appear in them; UI is in the photos app)') }}
+				</NcCheckboxRadioSwitch>
+				<NcTextField :disabled="!settings['faces.enabled']"
+					:value.sync="settings['faces.batchSize']"
+					:label-visible="true"
+					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~500 or more, in WASM mode ~50 is recommended)')"
+					@update:value="onChange" />
+			</p>
+		</NcSettingsSection>
+		<NcSettingsSection :title="t('recognize', 'Object detection & landmark recognition')">
 			<template v-if="settings['imagenet.enabled']">
 				<NcNoteCard v-if="settings['imagenet.status'] === true" show-alert type="success">
 					{{ t('recognize', 'Object recognition is working.') }}
@@ -58,20 +74,24 @@
 					{{ t('recognize', 'Waiting for status reports on object recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs.') }}
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued">
-					{{ t('recognize', 'Object recognition:') }} {{ countQueued.imagenet }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['imagenet.lastFile']) }}
+					{{ t('recognize', 'Object recognition:') }} {{ countQueued.imagenet }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['imagenet.lastFile']) }}<span v-if="imagenetJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ imagenetJobs.scheduled }}, {{ t('recognize', 'Last background job execution: ') }} {{ showDate(imagenetJobs.lastRun) }}</span>
 				</NcNoteCard>
 			</template>
-			<p>
-				<NcCheckboxRadioSwitch :checked.sync="settings['faces.enabled']" type="switch" @update:checked="onChange">
-					{{ t('recognize', 'Enable face recognition (groups photos by faces that appear in them; UI is in the photos app; minimum of 120 faces per user necessary for clustering to kick in)') }}
-				</NcCheckboxRadioSwitch>
-				<NcTextField :disabled="!settings['faces.enabled']"
-					:value.sync="settings['faces.batchSize']"
-					:label-visible="true"
-					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~500 or more, in WASM mode ~50 is recommended)')"
-					@update:value="onChange" />
-			</p>
-			<p>&nbsp;</p>
+			<template v-if="settings['landmarks.enabled']">
+				<NcNoteCard v-if="settings['landmarks.status'] === true" show-alert type="success">
+					{{ t('recognize', 'Landmark recognition is working.') }}
+				</NcNoteCard>
+				<NcNoteCard v-else-if="settings['landmarks.status'] === false" show-alert type="error">
+					{{ t('recognize', 'An error occurred during landmark recognition, please check the Nextcloud logs.') }}
+				</NcNoteCard>
+				<NcNoteCard v-else>
+					{{ t('recognize', 'Waiting for status reports on landmark recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs.') }}
+				</NcNoteCard>
+				<NcNoteCard v-if="countQueued">
+					{{ t('recognize', 'Landmark recognition:') }} {{ countQueued.landmarks }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['landmarks.lastFile']) }}<span v-if="landmarksJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ landmarksJobs.scheduled }}, {{ t('recognize', 'Last background job execution: ') }} {{ showDate(landmarksJobs.lastRun) }}</span>
+				</NcNoteCard>
+			</template>
+
 			<p>
 				<NcCheckboxRadioSwitch :checked.sync="settings['imagenet.enabled']" type="switch" @update:checked="onChange">
 					{{ t('recognize', 'Enable object recognition (e.g. food, vehicles, landscapes)') }}
@@ -109,7 +129,7 @@
 					{{ t('recognize', 'Waiting for status reports on audio recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs.') }}
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued">
-					{{ t('recognize', 'Music genre recognition:') }} {{ countQueued.musicnn }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['musicnn.lastFile']) }}
+					{{ t('recognize', 'Music genre recognition:') }} {{ countQueued.musicnn }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['musicnn.lastFile']) }}<span v-if="musicnnJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ muscinnJobs.scheduled }}, {{ t('recognize', 'Last background job execution: ') }} {{ showDate(musicnnJobs.lastRun) }}</span>
 				</NcNoteCard>
 			</template>
 			<p>
@@ -135,7 +155,7 @@
 					{{ t('recognize', 'Waiting for status reports on video recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs.') }}
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued">
-					{{ t('recognize', 'Video recognition:') }} {{ countQueued.movinet }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['movinet.lastFile']) }}
+					{{ t('recognize', 'Video recognition:') }} {{ countQueued.movinet }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['movinet.lastFile']) }}<span v-if="movinetJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ movinetJobs.scheduled }}, {{ t('recognize', 'Last background job execution: ') }} {{ showDate(movinetJobs.lastRun) }}</span>
 				</NcNoteCard>
 			</template>
 			<p>
@@ -212,9 +232,9 @@
 					{{ t('recognize', 'Enable WASM mode') }}
 				</NcCheckboxRadioSwitch>
 			</p>
-      <p>
-        {{ t('recognize', 'Recognize uses Tensorflow for running the machine learning models. Not all installations support Tensorflow, either because the CPU does not support AVX instructions, or because the platform is not x86 (ie. on a Raspberry Pi, which is ARM), or because the Operating System that your nextcloud runs on (when using docker, then that is the OS within the docker image) does not come with GNU lib C (for example Alpine Linux, which is also used by Nextcloud AIO). In most cases, even if you installation does not support native Tensorflow operation, you can still run Tensorflow using WebAssembly (WASM) in Node.js. This is somewhat slower but still works.') }}
-      </p>
+			<p>
+				{{ t('recognize', 'Recognize uses Tensorflow for running the machine learning models. Not all installations support Tensorflow, either because the CPU does not support AVX instructions, or because the platform is not x86 (ie. on a Raspberry Pi, which is ARM), or because the Operating System that your nextcloud runs on (when using docker, then that is the OS within the docker image) does not come with GNU lib C (for example Alpine Linux, which is also used by Nextcloud AIO). In most cases, even if you installation does not support native Tensorflow operation, you can still run Tensorflow using WebAssembly (WASM) in Node.js. This is somewhat slower but still works.') }}
+			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Tensorflow GPU mode')">
 			<p>
@@ -222,12 +242,12 @@
 					{{ t('recognize', 'Enable GPU mode') }}
 				</NcCheckboxRadioSwitch>
 			</p>
-      <p>
-        {{ t('recognize', 'Like most machine learning models, recognize will run even faster when using a GPU. Setting this up is non-trivial but works well when everything is setup correctly.')}}
-      </p>
-      <p>
-        <a href="https://github.com/nextcloud/recognize/wiki/GPU-mode">{{ t('recognize', 'Learn how to setup GPU mode with recognize')}}</a>
-      </p>
+			<p>
+				{{ t('recognize', 'Like most machine learning models, recognize will run even faster when using a GPU. Setting this up is non-trivial but works well when everything is setup correctly.') }}
+			</p>
+			<p>
+				<a href="https://github.com/nextcloud/recognize/wiki/GPU-mode">{{ t('recognize', 'Learn how to setup GPU mode with recognize') }}</a>
+			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Node.js')">
 			<p v-if="nodejs === undefined">
@@ -271,37 +291,37 @@
 				<input v-model="settings['node_binary']" type="text" @change="onChange">
 			</p>
 		</NcSettingsSection>
-    <NcSettingsSection :title="t('recognize', 'Terminal commands') ">
-      <p>{{ t('recognize', 'To download all models preliminary to executing the classification jobs, run the following command on the server terminal.') }}</p>
-      <pre><code>occ recognize:download-models</code></pre>
-      <p>&nbsp;</p>
-      <p>{{ t('recognize', 'To trigger a full classification run, run the following command on the server terminal. (The classification will run in multiple background jobs which can run in parallel.)') }}</p>
-      <pre><code>occ recognize:recrawl</code></pre>
-      <p>&nbsp;</p>
-      <p>{{ t('recognize', 'To run a full classification run on the terminal, run the following. (The classification will run in sequence inside your terminal.)') }}</p>
-      <pre><code>occ recognize:classify</code></pre>
-      <p>&nbsp;</p>
-      <p>{{ t('recognize', 'Before running a full initial classification run on the terminal, you should stop all background processing that recognize scheduled upon installation to avoid interference.') }}</p>
-      <pre><code>occ recognize:clear-background-jobs</code></pre>
-      <p>&nbsp;</p>
-      <p>{{ t('recognize', 'To run a face clustering run on for each user in the terminal, run the following. (The clustering will run in sequence inside your terminal.)') }}</p>
-      <pre><code>occ recognize:cluster-faces</code></pre>
-      <p>&nbsp;</p>
-      <p>{{ t('recognize', 'To remove all face clusters but keep the raw detected faces run the following on the terminal:') }}</p>
-      <pre><code>occ recognize:reset-face-clusters</code></pre>
-      <p>&nbsp;</p>
-      <p>{{ t('recognize', 'To remove all detected faces and face clusters run the following on the terminal:') }}</p>
-      <pre><code>occ recognize:reset-faces</code></pre>
-      <p>&nbsp;</p>
-      <p>{{ t('recognize', 'You can reset the tags of all files that have been previously classified by Recognize with the following command:') }}</p>
-      <pre><code>occ recognize:reset-tags</code></pre>
-      <p>&nbsp;</p>
-      <p>{{ t('recognize', 'You can delete all tags that no longer have any files associated with them with the following command:') }}</p>
-      <pre><code>occ recognize:cleanup-tags</code></pre>
-      <p>&nbsp;</p>
-      <p>{{ t('recognize', 'To remove tags that were created by recognize version 2 from all files run the following on the terminal:') }}</p>
-      <pre><code>occ recognize:remove-legacy-tags</code></pre>
-    </NcSettingsSection>
+		<NcSettingsSection :title="t('recognize', 'Terminal commands') ">
+			<p>{{ t('recognize', 'To download all models preliminary to executing the classification jobs, run the following command on the server terminal.') }}</p>
+			<pre><code>occ recognize:download-models</code></pre>
+			<p>&nbsp;</p>
+			<p>{{ t('recognize', 'To trigger a full classification run, run the following command on the server terminal. (The classification will run in multiple background jobs which can run in parallel.)') }}</p>
+			<pre><code>occ recognize:recrawl</code></pre>
+			<p>&nbsp;</p>
+			<p>{{ t('recognize', 'To run a full classification run on the terminal, run the following. (The classification will run in sequence inside your terminal.)') }}</p>
+			<pre><code>occ recognize:classify</code></pre>
+			<p>&nbsp;</p>
+			<p>{{ t('recognize', 'Before running a full initial classification run on the terminal, you should stop all background processing that recognize scheduled upon installation to avoid interference.') }}</p>
+			<pre><code>occ recognize:clear-background-jobs</code></pre>
+			<p>&nbsp;</p>
+			<p>{{ t('recognize', 'To run a face clustering run on for each user in the terminal, run the following. (The clustering will run in sequence inside your terminal.)') }}</p>
+			<pre><code>occ recognize:cluster-faces</code></pre>
+			<p>&nbsp;</p>
+			<p>{{ t('recognize', 'To remove all face clusters but keep the raw detected faces run the following on the terminal:') }}</p>
+			<pre><code>occ recognize:reset-face-clusters</code></pre>
+			<p>&nbsp;</p>
+			<p>{{ t('recognize', 'To remove all detected faces and face clusters run the following on the terminal:') }}</p>
+			<pre><code>occ recognize:reset-faces</code></pre>
+			<p>&nbsp;</p>
+			<p>{{ t('recognize', 'You can reset the tags of all files that have been previously classified by Recognize with the following command:') }}</p>
+			<pre><code>occ recognize:reset-tags</code></pre>
+			<p>&nbsp;</p>
+			<p>{{ t('recognize', 'You can delete all tags that no longer have any files associated with them with the following command:') }}</p>
+			<pre><code>occ recognize:cleanup-tags</code></pre>
+			<p>&nbsp;</p>
+			<p>{{ t('recognize', 'To remove tags that were created by recognize version 2 from all files run the following on the terminal:') }}</p>
+			<pre><code>occ recognize:remove-legacy-tags</code></pre>
+		</NcSettingsSection>
 	</div>
 </template>
 
@@ -312,9 +332,9 @@ import { generateUrl } from '@nextcloud/router'
 import { loadState } from '@nextcloud/initial-state'
 import humanizeDuration from 'humanize-duration'
 
-const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'faces.batchSize', 'imagenet.batchSize', 'landmarks.batchSize', 'movinet.batchSize', 'musicnn.batchSize']
+const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'faces.batchSize', 'imagenet.batchSize', 'landmarks.batchSize', 'movinet.batchSize', 'musicnn.batchSize', 'clusterFaces.status', 'clusterFaces.lastRun']
 
-const BOOLEAN_SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile']
+const BOOLEAN_SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'clusterFaces.status']
 
 const MAX_RELATIVE_DATE = 1000 * 60 * 60 * 24 * 7 // one week
 
@@ -340,6 +360,12 @@ export default {
 			gputensorflow: undefined,
 			cron: undefined,
 			modelsDownloaded: null,
+			imagenetJobs: null,
+			facesJobs: null,
+			landmarksJobs: null,
+			movinetJobs: null,
+			musicnnJobs: null,
+			clusterFacesJobs: null,
 		}
 	},
 
@@ -376,6 +402,12 @@ export default {
 		this.getWasmtensorflowStatus()
 		this.getGputensorflowStatus()
 		this.getCronStatus()
+		this.getJobsStatus('imagenet')
+		this.getJobsStatus('faces')
+		this.getJobsStatus('landmarks')
+		this.getJobsStatus('movinet')
+		this.getJobsStatus('musicnn')
+		this.getJobsStatus('clusterFaces')
 
 		setInterval(async () => {
 			this.getCount()
@@ -384,6 +416,13 @@ export default {
 			this.loadValue('landmarks.status')
 			this.loadValue('movinet.status')
 			this.loadValue('musicnn.status')
+			this.loadValue('clusterFaces.status')
+			this.getJobsStatus('imagenet')
+			this.getJobsStatus('faces')
+			this.getJobsStatus('landmarks')
+			this.getJobsStatus('movinet')
+			this.getJobsStatus('musicnn')
+			this.getJobsStatus('clusterFaces')
 		}, 5 * 60 * 1000)
 
 		try {
@@ -489,6 +528,11 @@ export default {
 			const { cron } = resp.data
 			this.cron = cron
 		},
+		async getJobsStatus(task) {
+			const resp = await axios.get(generateUrl(`/apps/recognize/admin/jobs/${task}`))
+			const { scheduled, lastRun } = resp.data
+			this[task + 'Jobs'] = { scheduled, lastRun }
+		},
 		onChange() {
 			if (this.timeout) {
 				clearTimeout(this.timeout)
@@ -549,7 +593,7 @@ export default {
 		},
 
 		showDate(timestamp) {
-			if (timestamp === null) {
+			if (!timestamp) {
 				return this.t('recognize', 'never')
 			}
 			const date = new Date(Number(timestamp) * 1000)

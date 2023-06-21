@@ -27,11 +27,13 @@ class FaceClusterAnalyzer {
 	private FaceClusterMapper $faceClusters;
 	private Logger $logger;
 	private int $minDatasetSize = self::MIN_DATASET_SIZE;
+	private SettingsService $settingsService;
 
-	public function __construct(FaceDetectionMapper $faceDetections, FaceClusterMapper $faceClusters, Logger $logger) {
+	public function __construct(FaceDetectionMapper $faceDetections, FaceClusterMapper $faceClusters, Logger $logger, SettingsService $settingsService) {
 		$this->faceDetections = $faceDetections;
 		$this->faceClusters = $faceClusters;
 		$this->logger = $logger;
+		$this->settingsService = $settingsService;
 	}
 
 	public function setMinDatasetSize(int $minSize) : void {
@@ -172,6 +174,9 @@ class FaceClusterAnalyzer {
 				$this->faceDetections->update($detection);
 			}
 		}
+
+		$this->settingsService->setSetting('clusterFaces.status', 'true');
+		$this->settingsService->setSetting('clusterFaces.lastRun', time());
 	}
 
 	/**

@@ -35,8 +35,9 @@ class AdminController extends Controller {
 	private FaceClusterMapper $clusterMapper;
 	private FaceDetectionMapper $detectionMapper;
 	private IConfig $config;
+	private FaceDetectionMapper $faceDetections;
 
-	public function __construct(string $appName, IRequest $request, TagManager $tagManager, IJobList $jobList, SettingsService $settingsService, QueueService $queue, FaceClusterMapper $clusterMapper, FaceDetectionMapper $detectionMapper, IConfig $config) {
+	public function __construct(string $appName, IRequest $request, TagManager $tagManager, IJobList $jobList, SettingsService $settingsService, QueueService $queue, FaceClusterMapper $clusterMapper, FaceDetectionMapper $detectionMapper, IConfig $config, FaceDetectionMapper $faceDetections) {
 		parent::__construct($appName, $request);
 		$this->tagManager = $tagManager;
 		$this->jobList = $jobList;
@@ -45,6 +46,7 @@ class AdminController extends Controller {
 		$this->clusterMapper = $clusterMapper;
 		$this->detectionMapper = $detectionMapper;
 		$this->config = $config;
+		$this->faceDetections = $faceDetections;
 	}
 
 	public function reset(): JSONResponse {
@@ -101,12 +103,39 @@ class AdminController extends Controller {
 		$landmarksCount = $this->queue->count('landmarks');
 		$movinetCount = $this->queue->count('movinet');
 		$musicnnCount = $this->queue->count('musicnn');
+		$clusterFacesCount = $this->faceDetections->countUnclustered();
 		return new JSONResponse([
 			'imagenet' => $imagenetCount,
 			'faces' => $facesCount,
 			'landmarks' => $landmarksCount,
 			'movinet' => $movinetCount,
-			'musicnn' => $musicnnCount
+			'musicnn' => $musicnnCount,
+			'clusterFaces' => $clusterFacesCount,
+		]);
+	}
+
+	public function hasJobs($task): JSONResponse {
+		$tasks = [
+			'faces' => ClassifyFacesJob::class,
+			'imagenet' => ClassifyImagenetJob::class,
+			'landmarks' => ClassifyLandmarksJob::class,
+			'musicnn' => ClassifyMusicnnJob::class,
+			'movinet' => ClassifyMovinetJob::class,
+			'clusterFaces' => ClusterFacesJob::class,
+		];
+		if (!isset($tasks[$task])) {
+			return new JSONResponse([], Http::STATUS_BAD_REQUEST);
+		}
+		$iterator = $this->jobList->getJobsIterator($tasks[$task], null, 0);
+		$lastRun = [];
+		foreach($iterator as $job) {
+			$lastRun[] = $job->getLastRun();
+		}
+		$count = count($lastRun);
+		$lastRun = max($lastRun);
+		return new JSONResponse([
+			'scheduled' => $count,
+			'lastRun' => $lastRun,
 		]);
 	}
 

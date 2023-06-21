@@ -285,6 +285,17 @@ class FaceDetectionMapper extends QBMapper {
 		}
 	}
 
+	public function countUnclustered(): int {
+		$qb = $this->db->getQueryBuilder();
+		$qb->select($qb->func()->count('id'))
+			->from('recognize_face_detections')
+			->where($qb->expr()->isNull('cluster_id'));
+		$result = $qb->executeQuery();
+		$count = $result->fetch(\PDO::FETCH_COLUMN);
+		$result->closeCursor();
+		return (int) $count;
+	}
+
 	protected function mapRowToEntity(array $row): Entity {
 		try {
 			return parent::mapRowToEntity($row);

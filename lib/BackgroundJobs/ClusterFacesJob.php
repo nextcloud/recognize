@@ -8,6 +8,7 @@ namespace OCA\Recognize\BackgroundJobs;
 
 use OCA\Recognize\Service\FaceClusterAnalyzer;
 use OCA\Recognize\Service\Logger;
+use OCA\Recognize\Service\SettingsService;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\IJobList;
 use OCP\BackgroundJob\QueuedJob;
@@ -20,11 +21,14 @@ class ClusterFacesJob extends QueuedJob {
 	private LoggerInterface $logger;
 
 	public const BATCH_SIZE = 10000;
-	public function __construct(ITimeFactory $time, Logger $logger, IJobList $jobList, FaceClusterAnalyzer $clusterAnalyzer) {
+	private SettingsService $settingsService;
+
+	public function __construct(ITimeFactory $time, Logger $logger, IJobList $jobList, FaceClusterAnalyzer $clusterAnalyzer, SettingsService $settingsService) {
 		parent::__construct($time);
 		$this->logger = $logger;
 		$this->jobList = $jobList;
 		$this->clusterAnalyzer = $clusterAnalyzer;
+		$this->settingsService = $settingsService;
 	}
 
 	/**
@@ -38,6 +42,7 @@ class ClusterFacesJob extends QueuedJob {
 		try {
 			$this->clusterAnalyzer->calculateClusters($userId, self::BATCH_SIZE);
 		} catch (\JsonException|Exception $e) {
+			$this->settingsService->setSetting('clusterFaces.status', 'false');
 			$this->logger->error('Failed to calculate face clusters', ['exception' => $e]);
 		}
 		$this->jobList->remove(self::class, $argument);

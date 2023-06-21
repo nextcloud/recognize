@@ -10,7 +10,6 @@ use OCA\Recognize\Service\QueueService;
 use OCA\Recognize\Service\SettingsService;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\IJobList;
-use OCP\BackgroundJob\Job;
 use OCP\BackgroundJob\TimedJob;
 use OCP\DB\Exception;
 use OCP\Files\Config\ICachedMountInfo;

@@ -9,6 +9,7 @@ namespace OCA\Recognize\Command;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Service\FaceClusterAnalyzer;
 use OCA\Recognize\Service\Logger;
+use OCA\Recognize\Service\SettingsService;
 use OCP\DB\Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,12 +22,14 @@ class ClusterFaces extends Command {
 	private FaceDetectionMapper $detectionMapper;
 
 	private FaceClusterAnalyzer $clusterAnalyzer;
+	private SettingsService $settingsService;
 
-	public function __construct(Logger $logger, FaceDetectionMapper $detectionMapper, FaceClusterAnalyzer $clusterAnalyzer) {
+	public function __construct(Logger $logger, FaceDetectionMapper $detectionMapper, FaceClusterAnalyzer $clusterAnalyzer, SettingsService $settingsService) {
 		parent::__construct();
 		$this->logger = $logger;
 		$this->detectionMapper = $detectionMapper;
 		$this->clusterAnalyzer = $clusterAnalyzer;
+		$this->settingsService = $settingsService;
 	}
 
 	/**
@@ -63,6 +66,7 @@ class ClusterFaces extends Command {
 			try {
 				$this->clusterAnalyzer->calculateClusters($userId, (int)$input->getOption('batch-size'));
 			} catch (\JsonException|Exception $e) {
+				$this->settingsService->setSetting('clusterFaces.status', 'false');
 				$this->logger->error($e->getMessage(), ['exception' => $e]);
 			}
 		}

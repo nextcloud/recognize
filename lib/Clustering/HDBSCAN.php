@@ -7,7 +7,6 @@
 namespace OCA\Recognize\Clustering;
 
 use \Rubix\ML\Datasets\Labeled;
-use \Rubix\ML\Estimator;
 use \Rubix\ML\EstimatorType;
 use \Rubix\ML\Helpers\Params;
 use \Rubix\ML\Kernels\Distance\Distance;
