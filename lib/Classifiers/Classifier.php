@@ -253,7 +253,8 @@ class Classifier {
 		try {
 			$this->logger->debug('generating preview of ' . $file->getId() . ' with dimension '.self::TEMP_FILE_DIMENSION);
 			$image = $this->previewProvider->getPreview($file, self::TEMP_FILE_DIMENSION, self::TEMP_FILE_DIMENSION);
-		} catch(NotFoundException|\InvalidArgumentException $e) {
+		} catch(\Throwable $e) {
+			$this->logger->info('Failed to generate preview of ' . $file->getId() . ' with dimension '.self::TEMP_FILE_DIMENSION . ': ' . $e->getMessage());
 			return $path;
 		}
 
