@@ -294,6 +294,7 @@ class FaceDetectionMapper extends QBMapper {
 			->andWhere($qb->expr()->gte('height', $qb->createPositionalParameter(FaceClusterAnalyzer::MIN_DETECTION_SIZE)))
 			->andWhere($qb->expr()->gte('width', $qb->createPositionalParameter(FaceClusterAnalyzer::MIN_DETECTION_SIZE)));
 		$result = $qb->executeQuery();
+		/** @var int|string $count */
 		$count = $result->fetch(\PDO::FETCH_COLUMN);
 		$result->closeCursor();
 		return (int) $count;

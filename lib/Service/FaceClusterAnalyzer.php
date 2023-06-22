@@ -176,7 +176,7 @@ class FaceClusterAnalyzer {
 		}
 
 		$this->settingsService->setSetting('clusterFaces.status', 'true');
-		$this->settingsService->setSetting('clusterFaces.lastRun', time());
+		$this->settingsService->setSetting('clusterFaces.lastRun', (string)time());
 	}
 
 	/**

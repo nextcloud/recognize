@@ -114,7 +114,7 @@ class AdminController extends Controller {
 		]);
 	}
 
-	public function hasJobs($task): JSONResponse {
+	public function hasJobs(string $task): JSONResponse {
 		$tasks = [
 			'faces' => ClassifyFacesJob::class,
 			'imagenet' => ClassifyImagenetJob::class,
@@ -132,7 +132,7 @@ class AdminController extends Controller {
 			$lastRun[] = $job->getLastRun();
 		}
 		$count = count($lastRun);
-		$lastRun = max($lastRun);
+		$lastRun = $lastRun? max($lastRun) : 0;
 		return new JSONResponse([
 			'scheduled' => $count,
 			'lastRun' => $lastRun,
