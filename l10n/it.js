@@ -9,6 +9,7 @@ OC.L10N.register(
     "Object recognition is working." : "Il riconoscimento degli oggetti è funzionante.",
     "An error occurred during object recognition, please check the Nextcloud logs." : "Si è verificato un errore durante il riconoscimento degli oggetti. Controlla i log di Nextcloud per ulteriori informazioni.",
     "Object recognition:" : "Riconoscimento degli oggetti:",
+    "Landmark recognition:" : "Riconoscimento dei punti di riferimento:",
     "Enable object recognition (e.g. food, vehicles, landscapes)" : "Abilita il riconoscimento degli oggetti (es. cibo, veicoli, paesaggi)",
     "Enable landmark recognition (e.g. Eiffel Tower, Golden Gate Bridge)" : "Abilita il riconoscimento dei punti di riferimento (es. Torre Eiffel, Golden Gate Bridge)",
     "Audio tagging" : "Tagging audio",

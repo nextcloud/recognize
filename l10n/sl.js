@@ -4,7 +4,7 @@ OC.L10N.register(
     "Recognize" : "Prepoznava",
     "Smart media tagging for Nextcloud" : "Pametno označevanje predstavnih virov za Nextcloud",
     "Status" : "Stanje",
-    "Image tagging" : "Označevanje slik in fotografij",
+    "Face recognition" : "Prepoznavanje obraza",
     "Audio tagging" : "Označevanje zvočnih virov",
     "Video tagging" : "Označevanje videoposnetkov",
     "Reset" : "Ponastavi",

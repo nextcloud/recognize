@@ -4,7 +4,6 @@ OC.L10N.register(
     "Recognize" : "Reconéisser",
     "Smart media tagging for Nextcloud" : "Etiquetatge intelligent dels mèdias per Nextcloud",
     "Status" : "Estat",
-    "Image tagging" : "Etiquetatge d’imatges",
     "Audio tagging" : "Etiquetatge d’àudio",
     "Video tagging" : "Etiquetatge de vidèos",
     "Reset" : "Reïnicializar",

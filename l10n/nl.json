@@ -8,7 +8,6 @@
     "Background Jobs are not executed via cron. Recognize requires background jobs to be executed via cron." : "Achtergrondtaken worden niet uitgevoerd via cron. Recognize vereist om achtergrondtaken uit te voeren via cron.",
     "The app is installed and will automatically classify files in background processes." : "De app is geïnstalleerd en classificeert bestanden automatisch in achtergrondprocessen.",
     "None of the tagging options below are currently selected. The app will currently do nothing." : "Geen van de labelopties hieronder zijn momenteel geselecteerd. De app doet momenteel niks.",
-    "Image tagging" : "Afbeelding labelen",
     "Face recognition is working. " : "Gezichtsherkenning is functioneel.",
     "An error occurred during face recognition, please check the Nextcloud logs." : "Er is een fout opgetreden bij de gezichtsherkenning, controleer alstublieft de Nextcloud logboekbestanden.",
     "Reset" : "Herstellen",
