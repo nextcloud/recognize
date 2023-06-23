@@ -10,6 +10,7 @@ OC.L10N.register(
     "Background Jobs are not executed via cron. Recognize requires background jobs to be executed via cron." : "Les feines de fons no s'executen mitjançant cron. Recognize requereix que les tasques de fons s'executin mitjançant cron.",
     "The app is installed and will automatically classify files in background processes." : "L'aplicació està instal·lada i classificarà automàticament els fitxers en processos en segon pla.",
     "None of the tagging options below are currently selected. The app will currently do nothing." : "Cap de les opcions d'etiquetatge següents no està seleccionada actualment. Actualment l'aplicació no farà res.",
+    "Face recognition" : "Reconeixement facial",
     "Face recognition is working. " : "El reconeixement facial funciona. ",
     "An error occurred during face recognition, please check the Nextcloud logs." : "S'ha produït un error durant el reconeixement facial; comproveu els registres de Nextcloud.",
     "Waiting for status reports on face recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs." : "Esperant els informes d'estat del reconeixement facial. Si aquest missatge persisteix més enllà de 15 minuts, consulteu els registres de Nextcloud.",

@@ -8,6 +8,7 @@
     "Background Jobs are not executed via cron. Recognize requires background jobs to be executed via cron." : "Hintergrundjobs werden nicht über Cron ausgeführt. Recognize erfordert die Ausführung von Hintergrundaufträgen über Cron.",
     "The app is installed and will automatically classify files in background processes." : "Die App ist installiert und klassifiziert Dateien automatisch in Hintergrundprozessen.",
     "None of the tagging options below are currently selected. The app will currently do nothing." : "Keine der folgenden Tagging-Optionen ist derzeit ausgewählt. Die App wird derzeit nichts tun.",
+    "Face recognition" : "Gesichtserkennung",
     "Face recognition is working. " : "Gesichtserkennung funktionsfähig.",
     "An error occurred during face recognition, please check the Nextcloud logs." : "Es ist ein Fehler bei der Gesichtserkennung aufgetreten, bitte überprüfe die Nextcloud-Protokolle.",
     "Waiting for status reports on face recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs." : "Warten auf Statusberichte zur Gesichtserkennung. Wenn diese Meldung länger als 15 Minuten anhält, überprüfe bitte die Nextcloud-Protokolle.",
