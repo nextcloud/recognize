@@ -7,6 +7,8 @@ OC.L10N.register(
     "Failed to save settings" : "שמירת ההגדרות נכשלה",
     "never" : "מעולם לא",
     "{time} ago" : "לפני {time}",
+    "Cat" : "חתול",
+    "Dog" : "כלב",
     "Music" : "מוזיקה",
     "Office" : "משרד",
     "Train" : "רכבת",

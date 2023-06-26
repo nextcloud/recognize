@@ -2,6 +2,7 @@ OC.L10N.register(
     "recognize",
     {
     "Status" : "الحاله",
+    "There are queued files but no background job is scheduled to process them." : "توجد ملفات في قائمة الانتظار ولكن لم تتم جدولة أي مهام في الخلفية لمعالجتها.",
     "Reset" : "إعادة الضبط",
     "Failed to load settings" : "إخفاق في تحميل الإعدادات",
     "Failed to save settings" : "فشل حفظ الإعدادات",
