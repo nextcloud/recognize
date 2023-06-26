@@ -92,7 +92,7 @@ This app temporarily stores files to be recognized in /tmp. If you're using dock
 that adding an additional volume for /tmp speeds things up and eases the burden on your disk:
 
 
-`docker run`: Add `--mount type=tmpfs,destination=/tmp` to command line.
+`docker run`: Add `--mount type=tmpfs,destination=/tmp:exec` to command line.
 
 `docker compose`: Add the following to the volume section `docker-compose.yml`:
 ```yaml
@@ -101,7 +101,7 @@ that adding an additional volume for /tmp speeds things up and eases the burden 
     ...
     volumes:
       - type: tmpfs
-        target: /tmp
+        target: /tmp:exec
       ...
     ...
 ```
