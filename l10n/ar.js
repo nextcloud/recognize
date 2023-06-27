@@ -21,6 +21,7 @@ OC.L10N.register(
     "Pizza" : "بيتزا",
     "Info" : "معلومات",
     "Bucket" : "الحزمة",
+    "Event" : "حدث",
     "Gallery" : "معرض الصور",
     "Park" : "حديقة"
 },
