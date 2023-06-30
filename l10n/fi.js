@@ -185,6 +185,7 @@ OC.L10N.register(
     "Radio telescope" : "Radioteleskooppi",
     "Theme park" : "Huvipuisto",
     "Festival" : "Festivaali",
+    "Event" : "Tapahtuma",
     "Monument" : "Monumentti",
     "Balloon" : "Ilmapallo",
     "Gas station" : "Huoltoasema",
