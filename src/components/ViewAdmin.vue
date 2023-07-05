@@ -306,6 +306,36 @@
 				<input v-model="settings['node_binary']" type="text" @change="onChange">
 			</p>
 		</NcSettingsSection>
+		<NcSettingsSection :title="t('recognize', 'Nice value')">
+			<p v-if="nice === undefined">
+				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking Nice binary') }}
+			</p>
+			<NcNoteCard v-else-if="nice === false">
+				{{ t('recognize', 'Could not find the Nice binary. You may need to set the path to a working binary manually.') }}
+			</NcNoteCard>
+			<p>
+				{{ t('recognize', 'Nice binary path') }}
+			</p>
+			<p>
+				<input v-model="settings['nice_binary']"
+					type="text"
+					:placeholder="t('recognize', 'Nice binary path')"
+					@change="onChange">
+			</p>
+			<p>&nbsp;</p>
+			<p>
+				{{ t('recognize', 'Nice value to set the priority of the Node.js processes. The value can only be from 0 to 19 since the Node.js process runs without superuser privileges.') }}
+			</p>
+			<p>
+				<input v-model="settings['nice_value']"
+					type="number"
+					:min="0"
+					:max="19"
+					:step="1"
+					:disabled="nice === false"
+					@change="onChange">
+			</p>
+		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Terminal commands') ">
 			<p>{{ t('recognize', 'To download all models preliminary to executing the classification jobs, run the following command on the server terminal.') }}</p>
 			<pre><code>occ recognize:download-models</code></pre>
@@ -347,7 +377,7 @@ import { generateUrl } from '@nextcloud/router'
 import { loadState } from '@nextcloud/initial-state'
 import humanizeDuration from 'humanize-duration'
 
-const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'faces.batchSize', 'imagenet.batchSize', 'landmarks.batchSize', 'movinet.batchSize', 'musicnn.batchSize', 'clusterFaces.status', 'clusterFaces.lastRun']
+const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'faces.batchSize', 'imagenet.batchSize', 'landmarks.batchSize', 'movinet.batchSize', 'musicnn.batchSize', 'clusterFaces.status', 'clusterFaces.lastRun', 'nice_binary', 'nice_value']
 
 const BOOLEAN_SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'clusterFaces.status']
 
@@ -369,6 +399,7 @@ export default {
 			avx: undefined,
 			platform: undefined,
 			musl: undefined,
+			nice: undefined,
 			nodejs: undefined,
 			libtensorflow: undefined,
 			wasmtensorflow: undefined,
@@ -412,6 +443,7 @@ export default {
 		this.getAVX()
 		this.getPlatform()
 		this.getMusl()
+		this.getNice()
 		this.getNodejsStatus()
 		this.getLibtensorflowStatus()
 		this.getWasmtensorflowStatus()
@@ -512,6 +544,11 @@ export default {
 			const resp = await axios.get(generateUrl('/apps/recognize/admin/platform'))
 			const { platform } = resp.data
 			this.platform = platform
+		},
+		async getNice() {
+			const resp = await axios.get(generateUrl('/apps/recognize/admin/nice'))
+			const { nice } = resp.data
+			this.nice = nice
 		},
 		async getMusl() {
 			const resp = await axios.get(generateUrl('/apps/recognize/admin/musl'))

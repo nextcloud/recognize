@@ -24,6 +24,7 @@ use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\BackgroundJob\IJobList;
 use OCP\DB\Exception;
+use OCP\IBinaryFinder;
 use OCP\IConfig;
 use OCP\IRequest;
 
@@ -36,8 +37,9 @@ class AdminController extends Controller {
 	private FaceDetectionMapper $detectionMapper;
 	private IConfig $config;
 	private FaceDetectionMapper $faceDetections;
+	private IBinaryFinder $binaryFinder;
 
-	public function __construct(string $appName, IRequest $request, TagManager $tagManager, IJobList $jobList, SettingsService $settingsService, QueueService $queue, FaceClusterMapper $clusterMapper, FaceDetectionMapper $detectionMapper, IConfig $config, FaceDetectionMapper $faceDetections) {
+	public function __construct(string $appName, IRequest $request, TagManager $tagManager, IJobList $jobList, SettingsService $settingsService, QueueService $queue, FaceClusterMapper $clusterMapper, FaceDetectionMapper $detectionMapper, IConfig $config, FaceDetectionMapper $faceDetections, IBinaryFinder $binaryFinder) {
 		parent::__construct($appName, $request);
 		$this->tagManager = $tagManager;
 		$this->jobList = $jobList;
@@ -47,6 +49,7 @@ class AdminController extends Controller {
 		$this->detectionMapper = $detectionMapper;
 		$this->config = $config;
 		$this->faceDetections = $faceDetections;
+		$this->binaryFinder = $binaryFinder;
 	}
 
 	public function reset(): JSONResponse {
@@ -176,6 +179,19 @@ class AdminController extends Controller {
 
 		$ldd = trim(implode("\n", $output));
 		return new JSONResponse(['musl' => strpos($ldd, 'musl') !== false]);
+	}
+
+	public function nice(): JSONResponse {
+		/* returns the path to the nice binary or false if not found */
+		$nice_path = $this->binaryFinder->findBinaryPath('nice');
+
+		if ($nice_path !== false) {
+			$this->settingsService->setSetting('nice_binary', $nice_path);
+		} else {
+			$this->settingsService->setSetting('nice_binary', '');
+		}
+
+		return new JSONResponse(['nice' => $nice_path]);
 	}
 
 	public function nodejs(): JSONResponse {

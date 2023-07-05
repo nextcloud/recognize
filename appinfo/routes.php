@@ -31,6 +31,7 @@ return [
 		['name' => 'admin#avx', 'url' => '/admin/avx', 'verb' => 'GET'],
 		['name' => 'admin#platform', 'url' => '/admin/platform', 'verb' => 'GET'],
 		['name' => 'admin#musl', 'url' => '/admin/musl', 'verb' => 'GET'],
+		['name' => 'admin#nice', 'url' => '/admin/nice', 'verb' => 'GET'],
 		['name' => 'admin#nodejs', 'url' => '/admin/nodejs', 'verb' => 'GET'],
 		['name' => 'admin#libtensorflow', 'url' => '/admin/libtensorflow', 'verb' => 'GET'],
 		['name' => 'admin#wasmtensorflow', 'url' => '/admin/wasmtensorflow', 'verb' => 'GET'],

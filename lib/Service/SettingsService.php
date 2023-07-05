@@ -45,6 +45,8 @@ class SettingsService {
 		'landmarks.batchSize' => 100,
 		'movinet.batchSize' => 20,
 		'musicnn.batchSize' => 100,
+		'nice_binary' => '',
+		'nice_value' => 0,
 	];
 
 	private const PUREJS_DEFAULTS = [
