@@ -29,6 +29,8 @@ OC.L10N.register(
     "Failed to save settings" : "فشل حفظ الإعدادات",
     "never" : "بتاتاً",
     "Farm" : "مزرعة",
+    "Landscape" : "وضع أُفُقي",
+    "Portrait" : "وضع رأسي",
     "People" : "الناس",
     "Dog" : "كلب",
     "Music" : "الموسيقى",
