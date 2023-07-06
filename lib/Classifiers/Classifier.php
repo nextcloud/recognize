@@ -125,12 +125,18 @@ class Classifier {
 		$this->logger->debug('Classifying '.var_export($paths, true));
 
 		$command = [
-			$this->config->getAppValue('recognize', 'nice_binary'),
-			"-" . $this->config->getAppValue('recognize', 'nice_value'),
 			$this->config->getAppValue('recognize', 'node_binary'),
 			dirname(__DIR__, 2) . '/src/classifier_'.$model.'.js',
 			'-'
 		];
+
+		if (trim($this->config->getAppValue('recognize', 'nice_binary', '')) !== '') {
+			$command = [
+				$this->config->getAppValue('recognize', 'nice_binary'),
+				"-" . $this->config->getAppValue('recognize', 'nice_value', '0'),
+				...$command,
+			];
+		}
 
 		$this->logger->debug('Running '.var_export($command, true));
 

@@ -306,7 +306,7 @@
 				<input v-model="settings['node_binary']" type="text" @change="onChange">
 			</p>
 		</NcSettingsSection>
-		<NcSettingsSection :title="t('recognize', 'Nice value')">
+		<NcSettingsSection :title="t('recognize', 'Classifier process priority')">
 			<p v-if="nice === undefined">
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking Nice binary') }}
 			</p>
@@ -324,7 +324,7 @@
 			</p>
 			<p>&nbsp;</p>
 			<p>
-				{{ t('recognize', 'Nice value to set the priority of the Node.js processes. The value can only be from 0 to 19 since the Node.js process runs without superuser privileges.') }}
+				{{ t('recognize', 'Nice value to set the priority of the Node.js processes. The value can only be from 0 to 19 since the Node.js process runs without superuser privileges. The higher the nice value, the lower the priority of the process.') }}
 			</p>
 			<p>
 				<input v-model="settings['nice_value']"

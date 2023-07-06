@@ -32,6 +32,7 @@ namespace OCA\Recognize\Migration;
 
 use OCA\Recognize\Helper\TAR;
 use OCP\Http\Client\IClientService;
+use OCP\IBinaryFinder;
 use OCP\IConfig;
 use OCP\Migration\IOutput;
 use OCP\Migration\IRepairStep;
@@ -53,8 +54,9 @@ class InstallDeps implements IRepairStep {
 	private string $tfjsGpuInstallScript;
 	private string $ffmpegInstallScript;
 	private string $tfjsGPUPath;
+	private IBinaryFinder $binaryFinder;
 
-	public function __construct(IConfig $config, IClientService $clientService, LoggerInterface $logger) {
+	public function __construct(IConfig $config, IClientService $clientService, LoggerInterface $logger, IBinaryFinder $binaryFinder) {
 		$this->config = $config;
 		$this->binaryDir = dirname(__DIR__, 2) . '/bin/';
 		$this->preGypBinaryDir = dirname(__DIR__, 2) . '/node_modules/@mapbox/node-pre-gyp/bin/';
@@ -66,6 +68,7 @@ class InstallDeps implements IRepairStep {
 		$this->tfjsGPUPath = dirname(__DIR__, 2) . '/node_modules/@tensorflow/tfjs-node-gpu/';
 		$this->clientService = $clientService;
 		$this->logger = $logger;
+		$this->binaryFinder = $binaryFinder;
 	}
 
 	public function getName(): string {
@@ -90,6 +93,23 @@ class InstallDeps implements IRepairStep {
 		$this->runTfjsInstall($binaryPath);
 		$this->runFfmpegInstall($binaryPath);
 		$this->runTfjsGpuInstall($binaryPath);
+		$this->setNiceBinaryPath();
+	}
+
+	protected function setNiceBinaryPath() : void {
+		/* use nice binary from settings if available */
+		if ($this->config->getAppValue('recognize', 'nice_binary', '') !== '') {
+			$nice_path = $this->config->getAppValue('recognize', 'nice_binary');
+		} else {
+			/* returns the path to the nice binary or false if not found */
+			$nice_path = $this->binaryFinder->findBinaryPath('nice');
+		}
+
+		if ($nice_path !== false) {
+			$this->config->setAppValue('recognize', 'nice_binary', $nice_path);
+		} else {
+			$this->config->setAppValue('recognize', 'nice_binary', '');
+		}
 	}
 
 	protected function installNodeBinary(IOutput $output) : void {
