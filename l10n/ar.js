@@ -51,6 +51,8 @@ OC.L10N.register(
     "Bucket" : "الحزمة",
     "Festival" : "مهرجان",
     "Event" : "حدث",
+    "Gas station" : "محطة غاز",
+    "Parking" : "موقف سيارات",
     "Gallery" : "معرض الصور",
     "Park" : "حديقة"
 },

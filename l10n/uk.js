@@ -1,7 +1,7 @@
 OC.L10N.register(
     "recognize",
     {
-    "Smart media tagging for Nextcloud" : "Інтелектуальне тегування медіа для Nextcloud",
+    "Smart media tagging for Nextcloud" : "Інтелектуальне позначення мультимедійного контенту для Nextcloud",
     "Status" : "Статус",
     "Reset" : "Скидання",
     "Failed to load settings" : "Не вдалося завантажити налаштування",
