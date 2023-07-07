@@ -130,6 +130,14 @@ class Classifier {
 			'-'
 		];
 
+		if (trim($this->config->getAppValue('recognize', 'nice_binary', '')) !== '') {
+			$command = [
+				$this->config->getAppValue('recognize', 'nice_binary'),
+				"-" . $this->config->getAppValue('recognize', 'nice_value', '0'),
+				...$command,
+			];
+		}
+
 		$this->logger->debug('Running '.var_export($command, true));
 
 		$proc = new Process($command, __DIR__);
