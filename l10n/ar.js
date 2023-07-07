@@ -36,6 +36,7 @@ OC.L10N.register(
     "Music" : "الموسيقى",
     "Office" : "مكتب",
     "Food" : "طعام",
+    "Train" : "القطار",
     "Computer" : "كمبيوتر",
     "Clock" : "الساعة",
     "Screen" : "شاشة",
