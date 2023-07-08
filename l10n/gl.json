@@ -78,7 +78,7 @@
     "Learn how to setup GPU mode with recognize" : "Aprenda a estabelecer o modo GPU con Recognize",
     "Node.js" : "Node.js",
     "Checking Node.js" : "Comprobando Node.js",
-    "Node.js {version} binary was installed successfully." : "O binario Node.js {versión} instalouse correctamente.",
+    "Node.js {version} binary was installed successfully." : "O binario Node.js {version} foi instalado correctamente.",
     "Checking libtensorflow" : "Comprobando libtensorflow",
     "Could not load libtensorflow in Node.js. You can try to manually install libtensorflow or run in WASM mode." : "Non foi posíbel cargar libtensorflow en Node.js. Pode tentar instalar manualmente libtensorflow ou executalo en modo WASM.",
     "Successfully loaded libtensorflow in Node.js, but couldn't load GPU. Make sure CUDA Toolkit and cuDNN are installed and accessible, or turn off GPU mode." : "libtensorflow foi cargado correctamente en Node.js, mais non foi posíbel cargar a GPU. Asegúrese de que CUDA Toolkit e cuDNN estean instalados e accesíbeis, ou desactive o modo GPU.",
