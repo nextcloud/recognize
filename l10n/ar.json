@@ -21,6 +21,7 @@
     "There are queued files but no background job is scheduled to process them." : "توجد ملفات في قائمة الانتظار ولكن لم تتم جدولة أي مهام في الخلفية لمعالجتها.",
     "Reset" : "إعادة الضبط",
     "Could not check whether your machine supports native TensorFlow operation. Make sure your OS has GNU lib C, your CPU supports AVX instructions and you are running on x86. If one of these things is not the case, you will need to run in WASM mode." : "تعذر التحقق مما إذا كان جهازك يدعم المكتبة البرمجية تنسرفلو \"Tensorflow\" محليا. تأكد من أن نظام التشغيل لديك مزود ببرمجية مكتبة جنو سي، وأن وحدة المعالجة المركزية لديك تدعم تعليمات أيه فى إكس \"AVX\" وأنك تعمل على x86. إذا لم يكن الأمر كذلك، فسوف تحتاج إلى التشغيل في وضع ويب أسمبلي \"WASM\".",
+    "Recognize uses Tensorflow for running the machine learning models. Not all installations support Tensorflow, either because the CPU does not support AVX instructions, or because the platform is not x86 (ie. on a Raspberry Pi, which is ARM), or because the Operating System that your nextcloud runs on (when using docker, then that is the OS within the docker image) does not come with GNU lib C (for example Alpine Linux, which is also used by Nextcloud AIO). In most cases, even if your installation does not support native Tensorflow operation, you can still run Tensorflow using WebAssembly (WASM) in Node.js. This is somewhat slower but still works." : "التعرف باستخدام المكتبة البرمجية تنسرفلو \"Tensorflow\" لتشغيل نماذج التعلم الآلة. ليست جميع عمليات التثبيت تدعم تنسرفلو، إما لأن وحدة المعالجة المركزية لا تدعم تعليمات أيه فى إكس \"AVX\" أو لأن النظام الأساسي ليس x86 (على سبيل المثال حاسوب راسبيري باي \"Raspberry Pi\"، حيث يحتوي علي معالج آرم \"ARM\")، أو لأن نظام التشغيل الذي يعمل عليه نكست كلود الخاص بك (عند استخدام برمجية دوكر \"docker\"، فإن نظام التشغيل ضمن صورة دوكر) لا يأتي مزود ببرمجية مكتبة جنو سي (على سبيل المثال آلبين لينوكس \"Alpine Linux \"، والذي يتم استخدامه أيضا من قبل نكست كلود أيه آي أو\"Nextcloud AIO\"). في معظم الحالات، حتى إذا كان التثبيت لا يدعم التشغيل المحلي لبرمجية تنسرفلو، فلا يزال بإمكانك تشغيل لبرمجية تنسرفلو باستخدام ويب أسمبلي (WASM) علي نود.جيه اس \"Node.js\". وهذا أبطأ إلى حد ما لكنه لا يزال يعمل.",
     "Like most machine learning models, recognize will run even faster when using a GPU. Setting this up is non-trivial but works well when everything is setup correctly." : "مثل معظم نماذج التعلم الآلي، سيعمل التعرف بشكل أسرع عند استخدام وحدة معالجة الرسومات. عملية التنصيب ليست بالأمر السهل ولكنها تعمل بشكل جيد عندما يتم تنصيب كل شيء بشكل صحيح.",
     "Learn how to setup GPU mode with recognize" : "تعلم كيفية تهيئة وضع وحدة معالجة الرسومات مع التعرف",
     "Failed to load settings" : "إخفاق في تحميل الإعدادات",
@@ -52,6 +53,7 @@
     "Event" : "حدث",
     "Gas station" : "محطة غاز",
     "Parking" : "موقف سيارات",
+    "Sign" : "وقع",
     "Gallery" : "معرض الصور",
     "Park" : "حديقة"
 },"pluralForm" :"nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;"
