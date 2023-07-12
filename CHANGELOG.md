@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.3.0] - 2023-07-12
+
+### New
+ - Add option to change nice value for all classifiers
+
+### Fixed
+ - l10n: Update translations from Transifex
+ - DAV: Don't list photos that have been deleted
+ - Classifier#getConvertedFilePath: Catch all errors from getPreview()
+ - ViewAdmin: Fix typo
+ - FaceDetectionMapper: Correct countUnclustered
+ - ViewAdmin: Add warning if countQueued > 0 but scheduledJobs == 0
+ - ViewAdmin: Add background jobs count and last execution time for all tasks
+ - recrawl: Clear all background jobs
+
 ## [4.2.0] - 2023-06-16
 
 ### New
