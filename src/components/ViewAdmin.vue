@@ -258,10 +258,10 @@
 				</NcCheckboxRadioSwitch>
 			</p>
 			<p>
-				{{ t('recognize', 'Like most machine learning models, recognize will run even faster when using a GPU. Setting this up is non-trivial but works well when everything is setup correctly.') }}
+				{{ t('recognize', 'Like most machine learning models, Recognize will run even faster when using a GPU. Setting this up is non-trivial but works well when everything is setup correctly.') }}
 			</p>
 			<p>
-				<a href="https://github.com/nextcloud/recognize/wiki/GPU-mode">{{ t('recognize', 'Learn how to setup GPU mode with recognize') }}</a>
+				<a href="https://github.com/nextcloud/recognize/wiki/GPU-mode">{{ t('recognize', 'Learn how to setup GPU mode with Recognize') }}</a>
 			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Node.js')">
@@ -346,7 +346,7 @@
 			<p>{{ t('recognize', 'To run a full classification run on the terminal, run the following. (The classification will run in sequence inside your terminal.)') }}</p>
 			<pre><code>occ recognize:classify</code></pre>
 			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'Before running a full initial classification run on the terminal, you should stop all background processing that recognize scheduled upon installation to avoid interference.') }}</p>
+			<p>{{ t('recognize', 'Before running a full initial classification run on the terminal, you should stop all background processing that Recognize scheduled upon installation to avoid interference.') }}</p>
 			<pre><code>occ recognize:clear-background-jobs</code></pre>
 			<p>&nbsp;</p>
 			<p>{{ t('recognize', 'To run a face clustering run on for each user in the terminal, run the following. (The clustering will run in sequence inside your terminal.)') }}</p>
@@ -364,7 +364,7 @@
 			<p>{{ t('recognize', 'You can delete all tags that no longer have any files associated with them with the following command:') }}</p>
 			<pre><code>occ recognize:cleanup-tags</code></pre>
 			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'To remove tags that were created by recognize version 2 from all files run the following on the terminal:') }}</p>
+			<p>{{ t('recognize', 'To remove tags that were created by Recognize version 2 from all files run the following on the terminal:') }}</p>
 			<pre><code>occ recognize:remove-legacy-tags</code></pre>
 		</NcSettingsSection>
 	</div>
