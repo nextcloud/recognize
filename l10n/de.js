@@ -74,7 +74,6 @@ OC.L10N.register(
     "To remove all detected faces and face clusters run the following on the terminal:" : "Um alle erkannten Gesichter und Gesichtscluster zu entfernen, führe Folgendes im Terminal aus:",
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "Mit dem folgenden Befehl kannst du die Tags aller Dateien zurücksetzen, die zuvor von der App Recognize klassifiziert wurden:",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "Mit dem folgenden Befehl kannst du alle Tags löschen, denen keine Dateien mehr zugeordnet sind:",
-    "To remove tags that were created by recognize version 2 from all files run the following on the terminal:" : "Führe Folgendes im Terminal aus, um Schlagwörter zu entfernen, die von der Erkennungsversion 2 für alle Dateien erstellt wurden:",
     "Your server does not support AVX instructions" : "Dein Server unterstützt keine AVX-Anweisungen",
     "Your server does not have an x86 64-bit CPU" : "Dein Server hat keine x86 64-Bit-CPU",
     "Your server uses musl libc" : "Dein Server verwendet musl-libc",

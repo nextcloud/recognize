@@ -73,7 +73,6 @@ OC.L10N.register(
     "To remove all detected faces and face clusters run the following on the terminal:" : "要删除所有检测到的人脸和人脸聚类，请在终端上运行以下命令：",
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "你可以用下面的命令重置所有以前被 \"识别 \"分类的文件的标签。",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "你可以用以下命令删除所有不再有任何文件与之相关联的标签。",
-    "To remove tags that were created by recognize version 2 from all files run the following on the terminal:" : "在终端上运行以下命令以删除所有文件中由 Recognize 版本 2 创建的标签：",
     "Your server does not support AVX instructions" : "你的服务器不支持 AVX 指令",
     "Your server does not have an x86 64-bit CPU" : "你的服务器没有 x86 64 位 CPU",
     "Your server uses musl libc" : "你的服务器使用 musl libc",
