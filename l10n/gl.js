@@ -8,7 +8,7 @@ OC.L10N.register(
     "The machine learning models have been downloaded successfully." : "Os modelos de aprendizaxe automática descargáronse correctamente.",
     "The machine learning models still need to be downloaded." : "Aínda hai que descargar os modelos de aprendizaxe automática.",
     "Could not execute the Node.js binary. You may need to set the path to a working binary manually." : "Non foi posíbel executar o binario Node.js. Quizais necesite estabelecer manualmente a ruta a un binario que funcione.",
-    "Background Jobs are not executed via cron. Recognize requires background jobs to be executed via cron." : "Os traballos en segundo plano non se executan mediante cron. Recognize necesita que se executen traballos en segundo plano mediante cron.",
+    "Background Jobs are not executed via cron. Recognize requires background jobs to be executed via cron." : "Os traballos en segundo plano non se executan mediante cron. Recognize precisa que se executen traballos en segundo plano mediante cron.",
     "The app is installed and will automatically classify files in background processes." : "A aplicación está instalada e clasificará automaticamente os ficheiros en procesos en segundo plano.",
     "None of the tagging options below are currently selected. The app will currently do nothing." : "Ningunha das opcións de etiquetado a continuación está seleccionada. A aplicación non fará nada neste momento.",
     "Face recognition" : "Recoñecemento facial",
