@@ -20,7 +20,7 @@ namespace OCA\Recognize\AppInfo;
  */
 return [
 	'routes' => [
-		//internal ADMIN API
+		// internal ADMIN API
 		['name' => 'admin#reset', 'url' => '/admin/reset', 'verb' => 'GET'],
 		['name' => 'admin#clearALlJobs', 'url' => '/admin/clearJobs', 'verb' => 'GET'],
 		['name' => 'admin#recrawl', 'url' => '/admin/recrawl', 'verb' => 'GET'],
@@ -40,5 +40,11 @@ return [
 		['name' => 'admin#hasJobs', 'url' => '/admin/jobs/{task}', 'verb' => 'GET'],
 		['name' => 'admin#get_setting', 'url' => '/admin/settings/{setting}', 'verb' => 'GET'],
 		['name' => 'admin#set_setting', 'url' => '/admin/settings/{setting}', 'verb' => 'PUT'],
+
+		// internal USER API
+		['name' => 'user#platform', 'url' => '/user/platform', 'verb' => 'GET'],
+		['name' => 'user#tensorflow_purejs', 'url' => '/user/tensorflow_purejs', 'verb' => 'GET'],
+		['name' => 'user#get_setting', 'url' => '/user/settings/{setting}', 'verb' => 'GET'],
+		['name' => 'user#set_setting', 'url' => '/user/settings/{setting}', 'verb' => 'PUT'],
 	],
 ];

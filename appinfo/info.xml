@@ -111,6 +111,8 @@ The app does not send any sensitive data to cloud providers or similar services.
 	<settings>
 		<admin>OCA\Recognize\Settings\AdminSettings</admin>
 		<admin-section>OCA\Recognize\Settings\AdminSection</admin-section>
+		<personal>OCA\Recognize\Settings\UserSettings</personal>
+		<personal-section>OCA\Recognize\Settings\UserSection</personal-section>
 	</settings>
 
 	<sabre>

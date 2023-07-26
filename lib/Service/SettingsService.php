@@ -49,6 +49,15 @@ class SettingsService {
 		'nice_value' => 0,
 	];
 
+	private const USER_DEFAULTS = [
+		'geo.enabled' => false,
+		'imagenet.enabled' => false,
+		'landmarks.enabled' => false,
+		'faces.enabled' => false,
+		'musicnn.enabled' => false,
+		'movinet.enabled' => false,
+	];
+
 	private const PUREJS_DEFAULTS = [
 		'faces.batchSize' => 50,
 		'imagenet.batchSize' => 20,
@@ -59,10 +68,39 @@ class SettingsService {
 
 	private IConfig $config;
 	private IJobList $jobList;
+	private ?string $userId;
 
-	public function __construct(IConfig $config, IJobList $jobList) {
+	public function __construct(IConfig $config, IJobList $jobList, ?string $userId) {
 		$this->config = $config;
 		$this->jobList = $jobList;
+		$this->userId = $userId;
+	}
+
+	/**
+	 * @param string $model
+	 * @return void
+	 */
+	public function scheduleModel(string $model) {
+		// Additional model enabled: Schedule new crawl run for the affected mime types
+		switch ($model) {
+			case ClusteringFaceClassifier::MODEL_NAME . '.enabled':
+				$this->jobList->add(SchedulerJob::class, ['models' => [ClusteringFaceClassifier::MODEL_NAME]]);
+				break;
+			case ImagenetClassifier::MODEL_NAME . '.enabled':
+				$this->jobList->add(SchedulerJob::class, ['models' => [ImagenetClassifier::MODEL_NAME]]);
+				break;
+			case LandmarksClassifier::MODEL_NAME . '.enabled':
+				$this->jobList->add(SchedulerJob::class, ['models' => [LandmarksClassifier::MODEL_NAME]]);
+				break;
+			case MovinetClassifier::MODEL_NAME . '.enabled':
+				$this->jobList->add(SchedulerJob::class, ['models' => [MovinetClassifier::MODEL_NAME]]);
+				break;
+			case MusicnnClassifier::MODEL_NAME . '.enabled':
+				$this->jobList->add(SchedulerJob::class, ['models' => [MusicnnClassifier::MODEL_NAME]]);
+				break;
+			default:
+				break;
+		}
 	}
 
 	/**
@@ -78,37 +116,59 @@ class SettingsService {
 
 	/**
 	 * @param string $key
+	 * @return string
+	 */
+	public function getUserSetting(string $key): string {
+		if (is_null($this->userId)) {
+			return '';
+		}
+
+		return $this->config->getUserValue($this->userId, 'recognize', $key, json_encode(self::USER_DEFAULTS[$key]));
+	}
+
+	/**
+	 * @param string $key
 	 * @param string $value
 	 * @return void
 	 * @throws \OCA\Recognize\Exception\Exception
 	 */
 	public function setSetting(string $key, string $value): void {
+		if (is_null($this->userId)) {
+			return;
+		}
 		if (!array_key_exists($key, self::DEFAULTS)) {
 			throw new Exception('Unknown settings key '.$key);
 		}
-		if ($value === 'true' && $this->config->getAppValue('recognize', $key, 'false') === 'false') {
-			// Additional model enabled: Schedule new crawl run for the affected mime types
-			switch ($key) {
-				case ClusteringFaceClassifier::MODEL_NAME . '.enabled':
-					$this->jobList->add(SchedulerJob::class, ['models' => [ClusteringFaceClassifier::MODEL_NAME]]);
-					break;
-				case ImagenetClassifier::MODEL_NAME . '.enabled':
-					$this->jobList->add(SchedulerJob::class, ['models' => [ImagenetClassifier::MODEL_NAME]]);
-					break;
-				case LandmarksClassifier::MODEL_NAME . '.enabled':
-					$this->jobList->add(SchedulerJob::class, ['models' => [LandmarksClassifier::MODEL_NAME]]);
-					break;
-				case MovinetClassifier::MODEL_NAME . '.enabled':
-					$this->jobList->add(SchedulerJob::class, ['models' => [MovinetClassifier::MODEL_NAME]]);
-					break;
-				case MusicnnClassifier::MODEL_NAME . '.enabled':
-					$this->jobList->add(SchedulerJob::class, ['models' => [MusicnnClassifier::MODEL_NAME]]);
-					break;
-				default:
-					break;
-			}
+
+		// user preferences override admin preferences, so we need to check if
+		// the user has set this setting to true
+		if ($value === 'true'
+				&& $this->config->getAppValue('recognize', $key, 'false') === 'false'
+				&& $this->config->getUserValue($this->userId, 'recognize', $key, 'false') === 'true') {
+			$this->scheduleModel($key);
 		}
 		$this->config->setAppValue('recognize', $key, $value);
+	}
+
+	/**
+	 * @param string $key
+	 * @param string $value
+	 * @return void
+	 * @throws \OCA\Recognize\Exception\Exception
+	 */
+	public function setUserSetting(string $key, string $value): void {
+		if (is_null($this->userId)) {
+			return;
+		}
+		if (!array_key_exists($key, self::USER_DEFAULTS)) {
+			throw new Exception('Unknown user settings key '.$key);
+		}
+
+		// if user says yes, we schedule a job regardless of the admin settings
+		if ($value === 'true' && $this->config->getUserValue($this->userId, 'recognize', $key, 'false') === 'false') {
+			$this->scheduleModel($key);
+		}
+		$this->config->setUserValue($this->userId, 'recognize', $key, $value);
 	}
 
 	/**
@@ -118,6 +178,22 @@ class SettingsService {
 		$settings = [];
 		foreach (array_keys(self::DEFAULTS) as $key) {
 			$settings[$key] = $this->getSetting($key);
+		}
+		return $settings;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getUserAll(): array {
+		$settings = [];
+
+		if (is_null($this->userId)) {
+			return [];
+		}
+
+		foreach (array_keys(self::USER_DEFAULTS) as $key) {
+			$settings[$key] = $this->getUserSetting($key);
 		}
 		return $settings;
 	}

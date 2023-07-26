@@ -589,7 +589,7 @@ export default {
 			if (this.timeout) {
 				clearTimeout(this.timeout)
 			}
-			setTimeout(() => {
+			this.timeout = setTimeout(() => {
 				this.submit()
 			}, 1000)
 		},
