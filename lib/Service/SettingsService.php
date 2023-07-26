@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * Copyright (c) 2022 The Recognize contributors.
  * This file is licensed under the Affero General Public License version 3 or later. See the COPYING file.
@@ -17,44 +20,46 @@ use OCP\BackgroundJob\IJobList;
 use OCP\IConfig;
 
 class SettingsService {
+	/** @var array<string,string>  */
 	private const DEFAULTS = [
-		'tensorflow.cores' => 0,
-		'tensorflow.gpu' => false,
-		'tensorflow.purejs' => false,
-		'geo.enabled' => false,
-		'imagenet.enabled' => false,
-		'landmarks.enabled' => false,
-		'faces.enabled' => false,
-		'musicnn.enabled' => false,
-		'movinet.enabled' => false,
+		'tensorflow.cores' => '0',
+		'tensorflow.gpu' => 'false',
+		'tensorflow.purejs' => 'false',
+		'geo.enabled' => 'false',
+		'imagenet.enabled' => 'false',
+		'landmarks.enabled' => 'false',
+		'faces.enabled' => 'false',
+		'musicnn.enabled' => 'false',
+		'movinet.enabled' => 'false',
 		'node_binary' => '',
-		'clusterFaces.status' => null,
-		'faces.status' => null,
-		'imagenet.status' => null,
-		'landmarks.status' => null,
-		'movinet.status' => null,
-		'musicnn.status' => null,
-		'clusterFaces.lastRun' => 0,
-		'faces.lastFile' => 0,
-		'imagenet.lastFile' => 0,
-		'landmarks.lastFile' => 0,
-		'movinet.lastFile' => 0,
-		'musicnn.lastFile' => 0,
-		'faces.batchSize' => 500,
-		'imagenet.batchSize' => 100,
-		'landmarks.batchSize' => 100,
-		'movinet.batchSize' => 20,
-		'musicnn.batchSize' => 100,
+		'clusterFaces.status' => 'null',
+		'faces.status' => 'null',
+		'imagenet.status' => 'null',
+		'landmarks.status' => 'null',
+		'movinet.status' => 'null',
+		'musicnn.status' => 'null',
+		'clusterFaces.lastRun' => '0',
+		'faces.lastFile' => '0',
+		'imagenet.lastFile' => '0',
+		'landmarks.lastFile' => '0',
+		'movinet.lastFile' => '0',
+		'musicnn.lastFile' => '0',
+		'faces.batchSize' => '500',
+		'imagenet.batchSize' => '100',
+		'landmarks.batchSize' => '100',
+		'movinet.batchSize' => '20',
+		'musicnn.batchSize' => '100',
 		'nice_binary' => '',
-		'nice_value' => 0,
+		'nice_value' => '0',
 	];
 
+	/** @var array<string,string>  */
 	private const PUREJS_DEFAULTS = [
-		'faces.batchSize' => 50,
-		'imagenet.batchSize' => 20,
-		'landmarks.batchSize' => 20,
-		'movinet.batchSize' => 5,
-		'musicnn.batchSize' => 20,
+		'faces.batchSize' => '50',
+		'imagenet.batchSize' => '20',
+		'landmarks.batchSize' => '20',
+		'movinet.batchSize' => '5',
+		'musicnn.batchSize' => '20',
 	];
 
 	private IConfig $config;
@@ -71,9 +76,9 @@ class SettingsService {
 	 */
 	public function getSetting(string $key): string {
 		if (strpos($key, 'batchSize') !== false) {
-			return $this->config->getAppValue('recognize', $key, $this->getSetting('tensorflow.purejs') === 'false' ? json_encode(self::DEFAULTS[$key]) : json_encode(self::PUREJS_DEFAULTS[$key]));
+			return $this->config->getAppValue('recognize', $key, $this->getSetting('tensorflow.purejs') === 'false' ? self::DEFAULTS[$key] : self::PUREJS_DEFAULTS[$key]);
 		}
-		return $this->config->getAppValue('recognize', $key, json_encode(self::DEFAULTS[$key]));
+		return $this->config->getAppValue('recognize', $key, self::DEFAULTS[$key]);
 	}
 
 	/**

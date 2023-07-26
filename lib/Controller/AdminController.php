@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * Copyright (c) 2022 The Recognize contributors.
  * This file is licensed under the Affero General Public License version 3 or later. See the COPYING file.
@@ -272,7 +275,7 @@ class AdminController extends Controller {
 		return new JSONResponse(['cron' => $cron]);
 	}
 
-	public function setSetting(string $setting, $value): JSONResponse {
+	public function setSetting(string $setting, string $value): JSONResponse {
 		try {
 			$this->settingsService->setSetting($setting, $value);
 			return new JSONResponse([], Http::STATUS_OK);
@@ -281,7 +284,7 @@ class AdminController extends Controller {
 		}
 	}
 
-	public function getSetting(string $setting):JSONResponse {
+	public function getSetting(string $setting): JSONResponse {
 		return new JSONResponse(['value' => $this->settingsService->getSetting($setting)]);
 	}
 }
