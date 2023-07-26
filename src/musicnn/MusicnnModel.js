@@ -1,6 +1,7 @@
-let tf
+let tf, pureJs
 if (process.env.RECOGNIZE_PUREJS === 'true') {
 	tf = require('@tensorflow/tfjs')
+	pureJs = true
 } else {
 	try {
 		if (process.env.RECOGNIZE_GPU === 'true') {
@@ -12,6 +13,7 @@ if (process.env.RECOGNIZE_PUREJS === 'true') {
 		console.error(e)
 		console.error('Trying js-only mode')
 		tf = require('@tensorflow/tfjs')
+		pureJs = true
 	}
 }
 
@@ -50,7 +52,7 @@ class MusicnnModel {
 			'-ac', '1',
 			'-ar', '8000',
 			'-acodec', 'pcm_s16le',
-			'-t', '120',
+			'-t', pureJs ? '12' : '120',
 			...(process.env.RECOGNIZE_CORES
 				? ['-threads', process.env.RECOGNIZE_CORES]
 				: []),
@@ -65,7 +67,8 @@ class MusicnnModel {
 
 		const values = tf.tidy(() => {
 			const melMatrix = tf.cast(MEL_MATRIX, 'float32')
-			const song = tf.cast(audioData.channelData[0]/* .slice(0, 960000) */, 'float32')
+			const data = audioData.channelData[0]
+			const song = tf.cast(data, 'float32')
 			const spectrogram = tf.abs(tf.signal.stft(song, 512, 256, 512))
 			let melSpectrogram = tf.log(tf.clipByValue(tf.matMul(spectrogram, melMatrix), 0.000001, Number.MAX_SAFE_INTEGER))
 			melSpectrogram = tf.expandDims(melSpectrogram, -1)
