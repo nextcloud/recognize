@@ -17,7 +17,7 @@ OC.L10N.register(
     "Face recognition:" : "Gesichtserkennung:",
     "Queued files" : "Dateien in der Warteschlange:",
     "Last classification: " : "Letzte Klassifikation:",
-    "Scheduled background jobs: " : "Geplante Hintergrundaufgaben:",
+    "Scheduled background jobs: " : "Geplante Hintergrundjobs:",
     "Last background job execution: " : "Letzte Hintergrundjobs-Ausführung:",
     "There are queued files in the face recognition queue but no background job is scheduled to process them." : "In der Warteschlange der Gesichtserkennung befinden sich Dateien, für deren Verarbeitung kein Hintergrundjob geplant ist.",
     "Face clustering:" : "Gesichtsclusterung:",
