@@ -12,7 +12,7 @@ OC.L10N.register(
     "The app is installed and will automatically classify files in background processes." : "A aplicación está instalada e clasificará automaticamente os ficheiros en procesos en segundo plano.",
     "None of the tagging options below are currently selected. The app will currently do nothing." : "Ningunha das opcións de etiquetado a continuación está seleccionada. A aplicación non fará nada neste momento.",
     "Face recognition" : "Recoñecemento facial",
-    "Face recognition is working. " : "O recoñecemento facial está funcionando.",
+    "Face recognition is working. " : "Recoñecemento facial está funcionando.",
     "An error occurred during face recognition, please check the Nextcloud logs." : "Produciuse un erro durante o recoñecemento facial. Comprobe os rexistros de Nextcloud.",
     "Waiting for status reports on face recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs." : "Agardando os informes de estado do recoñecemento facial. Se esta mensaxe persiste máis de 15 minutos, consulte os rexistros de Nextcloud.",
     "Face recognition:" : "Recoñecemento facial:",
