@@ -53,7 +53,7 @@ class StorageService {
 	 */
 	public function getMounts(): \Generator {
 		$qb = $this->db->getQueryBuilder();
-		$qb->select('root_id', 'storage_id', 'mount_provider_class')
+		$qb->selectDistinct(['root_id', 'storage_id', 'mount_provider_class']) // to avoid scanning each occurrence of a groupfolder
 			->from('mounts')
 			->where($qb->expr()->in('mount_provider_class', $qb->createPositionalParameter(self::ALLOWED_MOUNT_TYPES, IQueryBuilder::PARAM_STR_ARRAY)));
 		$result = $qb->executeQuery();
