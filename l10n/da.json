@@ -29,6 +29,7 @@
     "Document" : "Dokument",
     "Bucket" : "Bucket",
     "Festival" : "Festival",
+    "Event" : "Begivenhed",
     "Gallery" : "Galleri",
     "Park" : "Park"
 },"pluralForm" :"nplurals=2; plural=(n != 1);"

@@ -31,6 +31,7 @@ OC.L10N.register(
     "Document" : "Dokument",
     "Bucket" : "Bucket",
     "Festival" : "Festival",
+    "Event" : "Begivenhed",
     "Gallery" : "Galleri",
     "Park" : "Park"
 },
