@@ -7,13 +7,22 @@
 
 This app goes through your media collection and adds fitting tags, automatically categorizing your photos and music.
 
-* 📷 👪 Recognizes faces and groups photos by face
+* 📷 👪 Recognizes faces from contact photos
 * 📷 🏔 Recognizes animals, landscapes, food, vehicles, buildings and other objects
 * 📷 🗼 Recognizes landmarks and monuments
 * 👂 🎵 Recognizes music genres
-* ⚡ Tagging works via Nextcloud's Collaborative Tags, allowing access by any of your apps
-  * 👂 listen to your tagged music with the audioplayer app
-  * 📷 view your tagged photos with the photos app
+* 🎥 🤸 Recognizes human actions on video
+
+⚡ Tagging works via Nextcloud's Collaborative Tags
+* 👂 listen to your tagged music with the audioplayer app
+* 📷 view your tagged photos and videos with the photos app
+
+Model sizes:
+
+* Object recognition: 1GB
+* Landmark recognition: 300MB
+* Video action recognition: 50MB
+* Music genre recognition: 50MB
 
 ## Ethical AI Rating
 ### Rating for Photo object detection: 🟢
