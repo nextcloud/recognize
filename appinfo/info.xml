@@ -3,17 +3,27 @@
 	  xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
 	<id>recognize</id>
 	<name>Recognize</name>
-	<summary>Smart media tagging for Nextcloud</summary>
+	<summary>Smart media tagging and face recognition with on-premises machine learning models</summary>
 	<description><![CDATA[
+Smart media tagging and face recognition with on-premises machine learning models.
 This app goes through your media collection and adds fitting tags, automatically categorizing your photos and music.
 
 * 📷 👪 Recognizes faces from contact photos
 * 📷 🏔 Recognizes animals, landscapes, food, vehicles, buildings and other objects
 * 📷 🗼 Recognizes landmarks and monuments
 * 👂 🎵 Recognizes music genres
-* ⚡ Tagging works via Nextcloud's Collaborative Tags, allowing access by any of your apps
+* 🎥 🤸 Recognizes human actions on video
+
+⚡ Tagging works via Nextcloud's Collaborative Tags
   * 👂 listen to your tagged music with the audioplayer app
-  * 📷 view your tagged photos with the photos app
+  * 📷 view your tagged photos and videos with the photos app
+
+Model sizes:
+
+ * Object recognition: 1GB
+ * Landmark recognition: 300MB
+ * Video action recognition: 50MB
+ * Music genre recognition: 50MB
 
 ## Ethical AI Rating
 ### Rating for Photo object detection: 🟢
@@ -76,11 +86,11 @@ The app does not send any sensitive data to cloud providers or similar services.
 	<category>organization</category>
 	<category>search</category>
 	<category>multimedia</category>
-	<website>https://github.com/marcelklehr/recognize</website>
-	<bugs>https://github.com/marcelklehr/recognize/issues</bugs>
-	<repository type="git">https://github.com/marcelklehr/recognize.git</repository>
-	<screenshot>https://raw.githubusercontent.com/marcelklehr/recognize/master/screenshots/recognize.png</screenshot>
-	<screenshot>https://raw.githubusercontent.com/marcelklehr/recognize/master/screenshots/imagenet_examples.jpg</screenshot>
+	<website>https://github.com/nextcloud/recognize</website>
+	<bugs>https://github.com/nextcloud/recognize/issues</bugs>
+	<repository type="git">https://github.com/nextcloud/recognize.git</repository>
+	<screenshot>https://raw.githubusercontent.com/nextcloud/recognize/main/screenshots/Logo.png</screenshot>
+	<screenshot>https://raw.githubusercontent.com/nextcloud/recognize/main/screenshots/imagenet_examples.jpg</screenshot>
 	<dependencies>
 		<php min-version="8.0" />
 		<nextcloud min-version="26" max-version="28" />
