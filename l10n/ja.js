@@ -1,7 +1,6 @@
 OC.L10N.register(
     "recognize",
     {
-    "Smart media tagging for Nextcloud" : "Nextcloud向けのスマートメディアへのタグ付け",
     "Status" : "ステータス",
     "Reset" : "リセット",
     "Failed to load settings" : "設定の読込に失敗しました",

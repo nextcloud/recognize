@@ -1,6 +1,5 @@
 { "translations": {
     "Recognize" : "Rozpoznání",
-    "Smart media tagging for Nextcloud" : "Inteligentní označování médií štítky pro Nextcloud",
     "Status" : "Stav",
     "The machine learning models have been downloaded successfully." : "Modely strojového učení byly úspěšně staženy.",
     "The machine learning models still need to be downloaded." : "Pořád ještě je třeba stáhnout si modely strojového učení.",

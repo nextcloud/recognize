@@ -2,7 +2,6 @@ OC.L10N.register(
     "recognize",
     {
     "Recognize" : "Felismerés",
-    "Smart media tagging for Nextcloud" : "Okos médiacímkézés a Nextcloudhoz",
     "Status" : "Állapot",
     "The machine learning models have been downloaded successfully." : "A gép tanulási modellek sikeresen le lettek töltve.",
     "The machine learning models still need to be downloaded." : "A gépi tanulási modelleket még le kell tölteni.",

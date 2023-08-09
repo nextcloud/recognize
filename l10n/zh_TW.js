@@ -2,7 +2,6 @@ OC.L10N.register(
     "recognize",
     {
     "Recognize" : "識別",
-    "Smart media tagging for Nextcloud" : "Nextcloud 的智慧型媒體標記",
     "Status" : "狀態",
     "Reset" : "重設",
     "Failed to load settings" : "設定載入失敗",

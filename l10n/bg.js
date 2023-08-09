@@ -2,7 +2,6 @@ OC.L10N.register(
     "recognize",
     {
     "Recognize" : "Разпознаване",
-    "Smart media tagging for Nextcloud" : "Интелигентно медийно етикетиране/маркиране/ за приложението Nextcloud",
     "Status" : "Състояние",
     "The machine learning models have been downloaded successfully." : "Моделите за машинно обучение са изтеглени успешно.",
     "The machine learning models still need to be downloaded." : "Моделите за машинно обучение трябва да бъдат изтеглени.",

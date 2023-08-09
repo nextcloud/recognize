@@ -2,7 +2,6 @@ OC.L10N.register(
     "recognize",
     {
     "Recognize" : "Recognize",
-    "Smart media tagging for Nextcloud" : "Multimedia etiketatze adimentsua Nextcloudentzako",
     "Status" : "Egoera",
     "The app is installed and will automatically classify files in background processes." : "Aplikazioa instalatuta dago eta automatikoki sailkatuko ditu fitxategiak atzeko planoetan.",
     "None of the tagging options below are currently selected. The app will currently do nothing." : "Beheko etiketatze aukeretako bat ere ez dago une honetan hautatuta. Une honetan aplikazioak ez du ezer egingo.",

@@ -2,7 +2,6 @@ OC.L10N.register(
     "recognize",
     {
     "Recognize" : "Распознавание",
-    "Smart media tagging for Nextcloud" : "Приложение для назначения меток медиафайлам в Nextcloud",
     "Status" : "Состояние",
     "The machine learning models have been downloaded successfully." : "Модели машинного обучения загружены успешно.",
     "The machine learning models still need to be downloaded." : "Необходима загрузка моделей машинного обучения.",

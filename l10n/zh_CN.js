@@ -2,7 +2,6 @@ OC.L10N.register(
     "recognize",
     {
     "Recognize" : "识别",
-    "Smart media tagging for Nextcloud" : "智能的媒体文件标签分类",
     "Status" : "状态",
     "The machine learning models have been downloaded successfully." : "机器学习模型已被成功下载。",
     "The machine learning models still need to be downloaded." : "机器学习模型仍然需要下载。",

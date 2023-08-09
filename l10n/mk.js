@@ -2,7 +2,6 @@ OC.L10N.register(
     "recognize",
     {
     "Recognize" : "Препознавање",
-    "Smart media tagging for Nextcloud" : "Паметно означување на медиа датотеките",
     "Status" : "Статус",
     "Face recognition" : "Препознавање на ликови",
     "Audio tagging" : "Означување на звуци",
