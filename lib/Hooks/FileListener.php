@@ -194,50 +194,38 @@ class FileListener implements IEventListener {
 			}
 		}
 		if ($event instanceof NodeAddedToCache) {
-			var_dump('NodeAddedToCache: ' . $event->getPath());
 			$cacheEntry = $event->getStorage()->getCache()->get($event->getPath());
 			if ($cacheEntry === false) {
-				var_dump('could not find cache');
 				return;
 			}
 			$node = current($this->rootFolder->getById($cacheEntry->getId()));
 			if ($node === false) {
-				var_dump('could not find node');
 				return;
 			}
 			if ($node instanceof Folder) {
-				var_dump('node is a folder. bah');
 				return;
 			}
-			var_dump('found node: ' . $node->getPath());
 			if (in_array($node->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
 				$this->resetIgnoreCache($node);
-				var_dump('firing postDelete');
 				$this->postDelete($node->getParent());
 				return;
 			}
-			var_dump('firing postInsert');
 			$this->postInsert($node);
 		}
 		if ($event instanceof NodeRemovedFromCache) {
-			var_dump('NodeRemovedFromCache: ' . $event->getPath());
 			$cacheEntry = $event->getStorage()->getCache()->get($event->getPath());
 			if ($cacheEntry === false) {
-				var_dump('could not find cache');
 				return;
 			}
 			$node = current($this->rootFolder->getById($cacheEntry->getId()));
 			if ($node === false) {
-				var_dump('could not find node');
 				return;
 			}
 			if (in_array($node->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
 				$this->resetIgnoreCache($node);
-				var_dump('firing postInsert');
 				$this->postInsert($node->getParent());
 				return;
 			}
-			var_dump('firing postDelete');
 			$this->postDelete($node);
 		}
 	}
