@@ -14,11 +14,14 @@ use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\EventDispatcher\IEventDispatcher;
+use OCP\Files\Events\BeforeFileScannedEvent;
 use OCP\Files\Events\Node\BeforeNodeDeletedEvent;
 use OCP\Files\Events\Node\BeforeNodeRenamedEvent;
 use OCP\Files\Events\Node\NodeCreatedEvent;
 use OCP\Files\Events\Node\NodeDeletedEvent;
 use OCP\Files\Events\Node\NodeRenamedEvent;
+use OCP\Files\Events\NodeAddedToCache;
+use OCP\Files\Events\NodeRemovedFromCache;
 use OCP\Share\Events\ShareCreatedEvent;
 use OCP\Share\Events\ShareDeletedEvent;
 
@@ -38,6 +41,9 @@ class Application extends App implements IBootstrap {
 		$dispatcher->addServiceListener(BeforeNodeRenamedEvent::class, FileListener::class);
 		$dispatcher->addServiceListener(ShareCreatedEvent::class, FileListener::class);
 		$dispatcher->addServiceListener(ShareDeletedEvent::class, FileListener::class);
+		$dispatcher->addServiceListener(NodeAddedToCache::class, FileListener::class);
+		$dispatcher->addServiceListener(NodeRemovedFromCache::class, FileListener::class);
+		$dispatcher->addServiceListener(BeforeFileScannedEvent::class, FileListener::class);
 	}
 
 	public function register(IRegistrationContext $context): void {
