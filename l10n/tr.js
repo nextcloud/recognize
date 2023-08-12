@@ -2,6 +2,7 @@ OC.L10N.register(
     "recognize",
     {
     "Recognize" : "Tanıma",
+    "Smart media tagging and face recognition with on-premises machine learning models" : "Özel kurulumda makine öğrenmesi modelleriyle akıllı ortam etiketleme ve yüz tanıma",
     "Status" : "Durum",
     "The machine learning models have been downloaded successfully." : "Makine öğrenmesi modelleri indirildi.",
     "The machine learning models still need to be downloaded." : "Makine öğrenmesi modellerinin indirilmesi gerekiyor.",
