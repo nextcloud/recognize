@@ -4,7 +4,10 @@
     <DeprecatedClass occurrences="1">
       <code>$this-&gt;getContainer()</code>
     </DeprecatedClass>
-    <InvalidArgument occurrences="7">
+    <InvalidArgument occurrences="10">
+      <code>addServiceListener</code>
+      <code>addServiceListener</code>
+      <code>addServiceListener</code>
       <code>addServiceListener</code>
       <code>addServiceListener</code>
       <code>addServiceListener</code>
@@ -113,9 +116,6 @@
     </InvalidScalarArgument>
   </file>
   <file src="lib/Classifiers/Classifier.php">
-    <DocblockTypeContradiction occurrences="1">
-      <code>$preview === false</code>
-    </DocblockTypeContradiction>
     <MixedAssignment occurrences="1">
       <code>$results</code>
     </MixedAssignment>
@@ -812,12 +812,6 @@
     </MoreSpecificImplementedParamType>
   </file>
   <file src="lib/Controller/AdminController.php">
-    <MissingParamType occurrences="1">
-      <code>$value</code>
-    </MissingParamType>
-    <MixedArgument occurrences="1">
-      <code>$value</code>
-    </MixedArgument>
     <MixedArgumentTypeCoercion occurrences="3">
       <code>$output</code>
       <code>$output</code>

@@ -19,16 +19,21 @@ use OCA\Recognize\Service\StorageService;
 use OCP\DB\Exception;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
+use OCP\Files\Config\IUserMountCache;
+use OCP\Files\Events\BeforeFileScannedEvent;
 use OCP\Files\Events\Node\BeforeNodeDeletedEvent;
 use OCP\Files\Events\Node\BeforeNodeRenamedEvent;
 use OCP\Files\Events\Node\NodeCreatedEvent;
 use OCP\Files\Events\Node\NodeDeletedEvent;
 use OCP\Files\Events\Node\NodeRenamedEvent;
+use OCP\Files\Events\NodeAddedToCache;
+use OCP\Files\Events\NodeRemovedFromCache;
 use OCP\Files\FileInfo;
+use OCP\Files\Folder;
 use OCP\Files\InvalidPathException;
+use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
-use OCP\ICacheFactory;
 use OCP\Share\Events\ShareCreatedEvent;
 use OCP\Share\Events\ShareDeletedEvent;
 use OCP\Share\IManager;
@@ -40,12 +45,13 @@ class FileListener implements IEventListener {
 	private QueueService $queue;
 	private IgnoreService $ignoreService;
 	private ?bool $movingFromIgnoredTerritory;
-
 	private StorageService $storageService;
-
 	private IManager $shareManager;
+	private IUserMountCache $userMountCache;
+	private IRootFolder $rootFolder;
+	private array $nodeCache;
 
-	public function __construct(FaceDetectionMapper $faceDetectionMapper, LoggerInterface $logger, QueueService $queue, IgnoreService $ignoreService, StorageService $storageService, IManager $shareManager, ICacheFactory $cacheFactory) {
+	public function __construct(FaceDetectionMapper $faceDetectionMapper, LoggerInterface $logger, QueueService $queue, IgnoreService $ignoreService, StorageService $storageService, IManager $shareManager, IUserMountCache $userMountCache, IRootFolder $rootFolder) {
 		$this->faceDetectionMapper = $faceDetectionMapper;
 		$this->logger = $logger;
 		$this->queue = $queue;
@@ -53,6 +59,9 @@ class FileListener implements IEventListener {
 		$this->movingFromIgnoredTerritory = null;
 		$this->storageService = $storageService;
 		$this->shareManager = $shareManager;
+		$this->userMountCache = $userMountCache;
+		$this->rootFolder = $rootFolder;
+		$this->nodeCache = [];
 	}
 
 	public function handle(Event $event): void {
@@ -155,15 +164,16 @@ class FileListener implements IEventListener {
 			}
 			return;
 		}
+		if ($event instanceof BeforeNodeDeletedEvent) {
+			$this->postDelete($event->getNode(), false);
+			return;
+		}
 		if ($event instanceof NodeDeletedEvent) {
 			if (in_array($event->getNode()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
 				$this->resetIgnoreCache($event->getNode());
 				$this->postInsert($event->getNode()->getParent());
 				return;
 			}
-		}
-		if ($event instanceof BeforeNodeDeletedEvent) {
-			$this->postDelete($event->getNode(), false);
 		}
 		if ($event instanceof NodeCreatedEvent) {
 			if (in_array($event->getNode()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
@@ -172,6 +182,51 @@ class FileListener implements IEventListener {
 				return;
 			}
 			$this->postInsert($event->getNode(), false);
+			return;
+		}
+		if ($event instanceof BeforeFileScannedEvent) {
+			try {
+				// Huhuu. This is a bold hack to scan the file before it's actually scanned by the main scanner.
+				// This will put it in the cache for when we want to access it later in the NodeAddedToCache clause.
+				$this->rootFolder->get($event->getAbsolutePath());
+			} catch (NotFoundException $e) {
+				return;
+			}
+		}
+		if ($event instanceof NodeAddedToCache) {
+			$cacheEntry = $event->getStorage()->getCache()->get($event->getPath());
+			if ($cacheEntry === false) {
+				return;
+			}
+			$node = current($this->rootFolder->getById($cacheEntry->getId()));
+			if ($node === false) {
+				return;
+			}
+			if ($node instanceof Folder) {
+				return;
+			}
+			if (in_array($node->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
+				$this->resetIgnoreCache($node);
+				$this->postDelete($node->getParent());
+				return;
+			}
+			$this->postInsert($node);
+		}
+		if ($event instanceof NodeRemovedFromCache) {
+			$cacheEntry = $event->getStorage()->getCache()->get($event->getPath());
+			if ($cacheEntry === false) {
+				return;
+			}
+			$node = current($this->rootFolder->getById($cacheEntry->getId()));
+			if ($node === false) {
+				return;
+			}
+			if (in_array($node->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
+				$this->resetIgnoreCache($node);
+				$this->postInsert($node->getParent());
+				return;
+			}
+			$this->postDelete($node);
 		}
 	}
 
@@ -181,7 +236,7 @@ class FileListener implements IEventListener {
 				return;
 			}
 			try {
-				/** @var \OCP\Files\Folder $node */
+				/** @var Folder $node */
 				foreach ($node->getDirectoryListing() as $child) {
 					$this->postDelete($child);
 				}
@@ -228,7 +283,7 @@ class FileListener implements IEventListener {
 			// For normal inserts we probably get one event per node, but, when removing an ignore file,
 			// we only get the folder passed here, so we recurse.
 			try {
-				/** @var \OCP\Files\Folder $node */
+				/** @var Folder $node */
 				foreach ($node->getDirectoryListing() as $child) {
 					$this->postInsert($child);
 				}
