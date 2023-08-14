@@ -10,6 +10,7 @@ use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
 use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
 use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
 use OCA\Recognize\Constants;
+use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Service\QueueService;
 use OCP\DB\Exception;
 use OCP\Files\File;
@@ -25,7 +26,7 @@ use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Process\Process;
 
-class Classifier {
+abstract class Classifier {
 	public const TEMP_FILE_DIMENSION = 1024;
 	public const MAX_EXECUTION_TIME = 60 * 5;
 
@@ -51,11 +52,18 @@ class Classifier {
 	}
 
 	/**
+	 * @param QueueFile[] $queueFiles
+	 * @return void
+	 * @throws \ErrorException|\RuntimeException
+	 */
+	abstract public function classify(array $queueFiles): void;
+
+	/**
 	 * @param string $model
-	 * @param \OCA\Recognize\Db\QueueFile[] $queueFiles
+	 * @param QueueFile[] $queueFiles
 	 * @param int $timeout
 	 * @return \Generator
-	 * @psalm-return \Generator<\OCA\Recognize\Db\QueueFile, array>
+	 * @psalm-return \Generator<QueueFile, mixed, mixed, void>
 	 * @throws \ErrorException|\RuntimeException
 	 */
 	public function classifyFiles(string $model, array $queueFiles, int $timeout): \Generator {

@@ -41,7 +41,6 @@ class MusicnnClassifier extends Classifier {
 		$classifierProcess = $this->classifyFiles(self::MODEL_NAME, $queueFiles, $timeout);
 
 		/**
-		 * @var \OCA\Recognize\Db\QueueFile $queueFile
 		 * @var list<string> $results
 		 */
 		foreach ($classifierProcess as $queueFile => $results) {

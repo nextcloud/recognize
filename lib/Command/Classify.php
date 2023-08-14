@@ -26,7 +26,7 @@ class Classify extends Command {
 	private StorageService $storageService;
 	private Logger $logger;
 	/** @var array<string, Classifier>  */
-	private array $classifiers;
+	private array $classifiers = [];
 	private IUserMountCache $userMountCache;
 	private SettingsService $settings;
 
@@ -130,8 +130,8 @@ class Classify extends Command {
 
 				foreach ($this->classifiers as $modelName => $classifier) {
 					try {
-						$this->classifiers[$modelName]->setMaxExecutionTime(0);
-						$this->classifiers[$modelName]->classify($queues[$modelName]);
+						$classifier->setMaxExecutionTime(0);
+						$classifier->classify($queues[$modelName]);
 					} catch (Exception $e) {
 						$this->logger->warning($e->getMessage(), ['exception' => $e]);
 					} catch (\RuntimeException $e) {
