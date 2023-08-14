@@ -30,6 +30,7 @@ class MovinetClassifier extends Classifier {
 	/**
 	 * @param \OCA\Recognize\Db\QueueFile[] $queueFiles
 	 * @return void
+	 * @throws \ErrorException|\RuntimeException|Exception
 	 */
 	public function classify(array $queueFiles): void {
 		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {

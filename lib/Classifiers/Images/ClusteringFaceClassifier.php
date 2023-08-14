@@ -45,6 +45,7 @@ class ClusteringFaceClassifier extends Classifier {
 	/**
 	 * @param string $user
 	 * @param \OCA\Recognize\Db\QueueFile[] $queueFiles
+	 * @throws \ErrorException|\RuntimeException
 	 * @return void
 	 */
 	public function classify(array $queueFiles): void {

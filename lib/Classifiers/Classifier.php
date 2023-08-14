@@ -55,6 +55,8 @@ class Classifier {
 	 * @param \OCA\Recognize\Db\QueueFile[] $queueFiles
 	 * @param int $timeout
 	 * @return \Generator
+	 * @psalm-return \Generator<\OCA\Recognize\Db\QueueFile, array>
+	 * @throws \ErrorException|\RuntimeException
 	 */
 	public function classifyFiles(string $model, array $queueFiles, int $timeout): \Generator {
 		$paths = [];
@@ -213,7 +215,7 @@ class Classifier {
 			$this->cleanUpTmpFiles();
 			if ($i !== count($paths)) {
 				$this->logger->warning('Classifier process output: '.$errOut);
-				throw new \RuntimeException('Classifier process error');
+				throw new \ErrorException('Classifier process error');
 			}
 		} catch (ProcessTimedOutException $e) {
 			$this->cleanUpTmpFiles();
@@ -222,7 +224,7 @@ class Classifier {
 		} catch (RuntimeException $e) {
 			$this->cleanUpTmpFiles();
 			$this->logger->warning($proc->getErrorOutput());
-			throw new \RuntimeException('Classifier process could not be started');
+			throw new \ErrorException('Classifier process could not be started');
 		}
 	}
 

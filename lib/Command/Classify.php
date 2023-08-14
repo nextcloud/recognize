@@ -7,9 +7,9 @@
 namespace OCA\Recognize\Command;
 
 use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
+use OCA\Recognize\Classifiers\Classifier;
 use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
 use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
-use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
 use OCA\Recognize\Classifiers\Video\MovinetClassifier;
 use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Exception\Exception;
@@ -25,21 +25,29 @@ use Symfony\Component\Console\Output\OutputInterface;
 class Classify extends Command {
 	private StorageService $storageService;
 	private Logger $logger;
-	private ImagenetClassifier $imagenet;
-	private ClusteringFaceClassifier $faces;
-	private MovinetClassifier $movinet;
-	private MusicnnClassifier $musicnn;
+	/** @var array<string, Classifier>  */
+	private array $classifiers;
 	private IUserMountCache $userMountCache;
 	private SettingsService $settings;
 
-	public function __construct(StorageService $storageService, Logger $logger, ImagenetClassifier $imagenet, ClusteringFaceClassifier $faces, MovinetClassifier $movinet, MusicnnClassifier $musicnn, IUserMountCache $userMountCache, SettingsService $settings) {
+	public function __construct(
+		StorageService $storageService,
+		Logger $logger,
+		ImagenetClassifier $imagenet,
+		ClusteringFaceClassifier $faces,
+		MovinetClassifier $movinet,
+		MusicnnClassifier $musicnn,
+		IUserMountCache $userMountCache,
+		SettingsService $settings
+	) {
 		parent::__construct();
 		$this->storageService = $storageService;
 		$this->logger = $logger;
-		$this->imagenet = $imagenet;
-		$this->faces = $faces;
-		$this->movinet = $movinet;
-		$this->musicnn = $musicnn;
+		$this->classifiers[ImagenetClassifier::MODEL_NAME] = $imagenet;
+		$this->classifiers[ClusteringFaceClassifier::MODEL_NAME] = $faces;
+		$this->classifiers[MusicnnClassifier::MODEL_NAME] = $musicnn;
+		$this->classifiers[MovinetClassifier::MODEL_NAME] = $movinet;
+		// Landmarks are currently processed out of band in a background job, because imagenet schedules it directly
 		$this->userMountCache = $userMountCache;
 		$this->settings = $settings;
 	}
@@ -67,7 +75,6 @@ class Classify extends Command {
 		$models = array_values(array_filter([
 			ClusteringFaceClassifier::MODEL_NAME,
 			ImagenetClassifier::MODEL_NAME,
-			LandmarksClassifier::MODEL_NAME,
 			MovinetClassifier::MODEL_NAME,
 			MusicnnClassifier::MODEL_NAME,
 		], fn ($modelName) => $this->settings->getSetting($modelName . '.enabled') === 'true'));
@@ -88,7 +95,6 @@ class Classify extends Command {
 				$i = 0;
 				$queues = [
 					ImagenetClassifier::MODEL_NAME => [],
-					LandmarksClassifier::MODEL_NAME => [],
 					ClusteringFaceClassifier::MODEL_NAME => [],
 					MovinetClassifier::MODEL_NAME => [],
 					MusicnnClassifier::MODEL_NAME => [],
@@ -122,28 +128,17 @@ class Classify extends Command {
 					}
 				}
 
-				if (count($queues[ImagenetClassifier::MODEL_NAME]) > 0) {
-					$this->imagenet->setMaxExecutionTime(0);
-					$this->imagenet->classify($queues[ImagenetClassifier::MODEL_NAME]);
-				}
-
-				if (count($queues[ClusteringFaceClassifier::MODEL_NAME]) > 0) {
-					$this->faces->setMaxExecutionTime(0);
-					$this->faces->classify($queues[ClusteringFaceClassifier::MODEL_NAME]);
-				}
-
-				if (count($queues[MovinetClassifier::MODEL_NAME]) > 0) {
+				foreach ($this->classifiers as $modelName => $classifier) {
 					try {
-						$this->movinet->setMaxExecutionTime(0);
-						$this->movinet->classify($queues[MovinetClassifier::MODEL_NAME]);
+						$this->classifiers[$modelName]->setMaxExecutionTime(0);
+						$this->classifiers[$modelName]->classify($queues[$modelName]);
 					} catch (Exception $e) {
 						$this->logger->warning($e->getMessage(), ['exception' => $e]);
+					} catch (\RuntimeException $e) {
+						$this->logger->info('Temporary error while running ' . $modelName . 'classifier', ['exception' => $e]);
+					} catch (\ErrorException $e) {
+						$this->logger->info('Error while running ' . $modelName . 'classifier', ['exception' => $e]);
 					}
-				}
-
-				if (count($queues[MusicnnClassifier::MODEL_NAME]) > 0) {
-					$this->musicnn->setMaxExecutionTime(0);
-					$this->musicnn->classify($queues[MusicnnClassifier::MODEL_NAME]);
 				}
 			} while ($i > 0);
 		}
