@@ -1,2 +1,1173 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.x-dev@"/>
+<files psalm-version="4.x-dev@">
+  <file src="lib/AppInfo/Application.php">
+    <DeprecatedClass occurrences="1">
+      <code>$this-&gt;getContainer()</code>
+    </DeprecatedClass>
+    <InvalidArgument occurrences="10">
+      <code>addServiceListener</code>
+      <code>addServiceListener</code>
+      <code>addServiceListener</code>
+      <code>addServiceListener</code>
+      <code>addServiceListener</code>
+      <code>addServiceListener</code>
+      <code>addServiceListener</code>
+      <code>addServiceListener</code>
+      <code>addServiceListener</code>
+      <code>addServiceListener</code>
+    </InvalidArgument>
+    <MixedArgument occurrences="1">
+      <code>Principal::class</code>
+    </MixedArgument>
+    <UndefinedClass occurrences="1">
+      <code>Principal</code>
+    </UndefinedClass>
+  </file>
+  <file src="lib/BackgroundJobs/ClassifierJob.php">
+    <MixedArgument occurrences="1">
+      <code>$rootId</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="1">
+      <code>$rootId</code>
+    </MixedAssignment>
+  </file>
+  <file src="lib/BackgroundJobs/ClassifyFacesJob.php">
+    <MissingParamType occurrences="1">
+      <code>$argument</code>
+    </MissingParamType>
+    <MixedArgument occurrences="1">
+      <code>$argument</code>
+    </MixedArgument>
+    <MoreSpecificImplementedParamType occurrences="1">
+      <code>$files</code>
+    </MoreSpecificImplementedParamType>
+  </file>
+  <file src="lib/BackgroundJobs/ClassifyImagenetJob.php">
+    <MissingParamType occurrences="1">
+      <code>$argument</code>
+    </MissingParamType>
+    <MixedArgument occurrences="1">
+      <code>$argument</code>
+    </MixedArgument>
+    <MoreSpecificImplementedParamType occurrences="1">
+      <code>$files</code>
+    </MoreSpecificImplementedParamType>
+  </file>
+  <file src="lib/BackgroundJobs/ClassifyLandmarksJob.php">
+    <MissingParamType occurrences="1">
+      <code>$argument</code>
+    </MissingParamType>
+    <MixedArgument occurrences="1">
+      <code>$argument</code>
+    </MixedArgument>
+    <MoreSpecificImplementedParamType occurrences="1">
+      <code>$files</code>
+    </MoreSpecificImplementedParamType>
+  </file>
+  <file src="lib/BackgroundJobs/ClassifyMovinetJob.php">
+    <MissingParamType occurrences="1">
+      <code>$argument</code>
+    </MissingParamType>
+    <MixedArgument occurrences="1">
+      <code>$argument</code>
+    </MixedArgument>
+    <MoreSpecificImplementedParamType occurrences="1">
+      <code>$files</code>
+    </MoreSpecificImplementedParamType>
+  </file>
+  <file src="lib/BackgroundJobs/ClassifyMusicnnJob.php">
+    <MissingParamType occurrences="1">
+      <code>$argument</code>
+    </MissingParamType>
+    <MixedArgument occurrences="1">
+      <code>$argument</code>
+    </MixedArgument>
+    <MoreSpecificImplementedParamType occurrences="1">
+      <code>$files</code>
+    </MoreSpecificImplementedParamType>
+  </file>
+  <file src="lib/BackgroundJobs/ClusterFacesJob.php">
+    <MissingParamType occurrences="1">
+      <code>$argument</code>
+    </MissingParamType>
+    <MixedArrayAccess occurrences="1">
+      <code>$argument['userId']</code>
+    </MixedArrayAccess>
+  </file>
+  <file src="lib/BackgroundJobs/SchedulerJob.php">
+    <MissingParamType occurrences="1">
+      <code>$argument</code>
+    </MissingParamType>
+    <MixedArrayAccess occurrences="1">
+      <code>$argument['models']</code>
+    </MixedArrayAccess>
+  </file>
+  <file src="lib/BackgroundJobs/StorageCrawlJob.php">
+    <MixedMethodCall occurrences="1">
+      <code>getFileId</code>
+    </MixedMethodCall>
+    <PossiblyUndefinedVariable occurrences="1">
+      <code>$queueFile</code>
+    </PossiblyUndefinedVariable>
+  </file>
+  <file src="lib/Classifiers/Audio/MusicnnClassifier.php">
+    <InvalidScalarArgument occurrences="1">
+      <code>time()</code>
+    </InvalidScalarArgument>
+  </file>
+  <file src="lib/Classifiers/Classifier.php">
+    <MixedAssignment occurrences="1">
+      <code>$results</code>
+    </MixedAssignment>
+    <PossiblyNullOperand occurrences="1">
+      <code>$proc-&gt;getPid()</code>
+    </PossiblyNullOperand>
+    <RedundantCondition occurrences="1">
+      <code>isset($dimensions)</code>
+    </RedundantCondition>
+    <UnusedFunctionCall occurrences="1">
+      <code>json_decode</code>
+    </UnusedFunctionCall>
+  </file>
+  <file src="lib/Classifiers/Images/ClusteringFaceClassifier.php">
+    <InvalidScalarArgument occurrences="1">
+      <code>time()</code>
+    </InvalidScalarArgument>
+    <MixedArgument occurrences="7">
+      <code>$face['angle']['roll']</code>
+      <code>$face['angle']['yaw']</code>
+      <code>$face['height']</code>
+      <code>$face['vector']</code>
+      <code>$face['width']</code>
+      <code>$face['x']</code>
+      <code>$face['y']</code>
+    </MixedArgument>
+    <MixedArrayAccess occurrences="2">
+      <code>$face['angle']['roll']</code>
+      <code>$face['angle']['yaw']</code>
+    </MixedArrayAccess>
+  </file>
+  <file src="lib/Classifiers/Images/ImagenetClassifier.php">
+    <InvalidScalarArgument occurrences="1">
+      <code>time()</code>
+    </InvalidScalarArgument>
+    <MixedArgument occurrences="2">
+      <code>$queueFile</code>
+      <code>$queueFile-&gt;getFileId()</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="1">
+      <code>$queueFile</code>
+    </MixedAssignment>
+    <MixedMethodCall occurrences="1">
+      <code>getFileId</code>
+    </MixedMethodCall>
+  </file>
+  <file src="lib/Classifiers/Images/LandmarksClassifier.php">
+    <InvalidScalarArgument occurrences="1">
+      <code>time()</code>
+    </InvalidScalarArgument>
+    <MixedArgument occurrences="1">
+      <code>$queueFile-&gt;getFileId()</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="1">
+      <code>$queueFile</code>
+    </MixedAssignment>
+    <MixedMethodCall occurrences="1">
+      <code>getFileId</code>
+    </MixedMethodCall>
+  </file>
+  <file src="lib/Classifiers/Video/MovinetClassifier.php">
+    <InvalidScalarArgument occurrences="1">
+      <code>time()</code>
+    </InvalidScalarArgument>
+    <MixedArgument occurrences="1">
+      <code>$queueFile-&gt;getFileId()</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="1">
+      <code>$queueFile</code>
+    </MixedAssignment>
+    <MixedMethodCall occurrences="1">
+      <code>getFileId</code>
+    </MixedMethodCall>
+  </file>
+  <file src="lib/Clustering/DualTreeBall.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$distances</code>
+    </ArgumentTypeCoercion>
+    <InternalClass occurrences="2">
+      <code>Ball</code>
+      <code>Stats::mean($values)</code>
+    </InternalClass>
+    <InternalMethod occurrences="6">
+      <code>Stats::mean($values)</code>
+      <code>compute</code>
+      <code>compute</code>
+      <code>isContinuous</code>
+      <code>new self($center, $radius, $subsets)</code>
+      <code>spatialSplit</code>
+    </InternalMethod>
+    <MissingParamType occurrences="1">
+      <code>$longestDistance</code>
+    </MissingParamType>
+    <MissingPropertyType occurrences="1">
+      <code>$setId</code>
+    </MissingPropertyType>
+    <MixedArgument occurrences="2">
+      <code>$values</code>
+      <code>$values</code>
+    </MixedArgument>
+    <MixedArgumentTypeCoercion occurrences="6">
+      <code>$column</code>
+      <code>$leftCentroid</code>
+      <code>$leftCentroid</code>
+      <code>$rightCentroid</code>
+      <code>$sample</code>
+      <code>$sample</code>
+    </MixedArgumentTypeCoercion>
+    <MixedAssignment occurrences="4">
+      <code>$retVal</code>
+      <code>$setId</code>
+      <code>$this-&gt;longestDistanceInNode</code>
+      <code>$values</code>
+    </MixedAssignment>
+    <MixedInferredReturnType occurrences="2">
+      <code>null|int|string</code>
+      <code>null|int|string</code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement occurrences="3">
+      <code>$this-&gt;setId</code>
+      <code>$this-&gt;setId</code>
+      <code>$this-&gt;setId</code>
+    </MixedReturnStatement>
+    <UndefinedInterfaceMethod occurrences="4">
+      <code>propagateSetChanges</code>
+      <code>propagateSetChanges</code>
+      <code>resetFullyConnectedStatus</code>
+      <code>resetLongestEdge</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="lib/Clustering/DualTreeClique.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$distances</code>
+    </ArgumentTypeCoercion>
+    <InternalClass occurrences="2">
+      <code>Clique</code>
+      <code>Stats::mean($values)</code>
+    </InternalClass>
+    <InternalMethod occurrences="4">
+      <code>Stats::mean($values)</code>
+      <code>compute</code>
+      <code>isContinuous</code>
+      <code>new self($dataset, $center, $radius)</code>
+    </InternalMethod>
+    <MixedArgument occurrences="2">
+      <code>$values</code>
+      <code>$values</code>
+    </MixedArgument>
+    <MixedArgumentTypeCoercion occurrences="2">
+      <code>$column</code>
+      <code>$sample</code>
+    </MixedArgumentTypeCoercion>
+    <MixedArrayOffset occurrences="2">
+      <code>$labelToSetId[$label]</code>
+      <code>$labelToSetId[array_pop($labels)]</code>
+    </MixedArrayOffset>
+    <MixedArrayTypeCoercion occurrences="1">
+      <code>$labelToSetId[array_pop($labels)]</code>
+    </MixedArrayTypeCoercion>
+    <MixedAssignment occurrences="2">
+      <code>$label</code>
+      <code>$values</code>
+    </MixedAssignment>
+    <PossiblyInvalidArrayOffset occurrences="1">
+      <code>$labelToSetId[$this-&gt;dataset-&gt;label(0)]</code>
+    </PossiblyInvalidArrayOffset>
+  </file>
+  <file src="lib/Clustering/HDBSCAN.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$edges</code>
+    </ArgumentTypeCoercion>
+    <InternalClass occurrences="1">
+      <code>EstimatorType::clusterer()</code>
+    </InternalClass>
+    <InternalMethod occurrences="3">
+      <code>EstimatorType::clusterer()</code>
+      <code>Params::stringify($this-&gt;params())</code>
+      <code>compatibility</code>
+    </InternalMethod>
+    <MixedReturnTypeCoercion occurrences="2">
+      <code>$flatClusters</code>
+      <code>list&lt;MstClusterer&gt;</code>
+    </MixedReturnTypeCoercion>
+    <PropertyNotSetInConstructor occurrences="1">
+      <code>$dataset</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="lib/Clustering/MrdBallTree.php">
+    <InternalMethod occurrences="30">
+      <code>center</code>
+      <code>center</code>
+      <code>center</code>
+      <code>center</code>
+      <code>cleanup</code>
+      <code>compute</code>
+      <code>compute</code>
+      <code>compute</code>
+      <code>compute</code>
+      <code>dataset</code>
+      <code>dataset</code>
+      <code>dataset</code>
+      <code>dataset</code>
+      <code>dataset</code>
+      <code>dataset</code>
+      <code>isPoint</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>subsets</code>
+      <code>subsets</code>
+      <code>subsets</code>
+    </InternalMethod>
+    <InvalidNullableReturnType occurrences="1">
+      <code>Labeled</code>
+    </InvalidNullableReturnType>
+    <LessSpecificReturnStatement occurrences="4">
+      <code>$this-&gt;root</code>
+      <code>[$labels, $distances]</code>
+      <code>[$labels, $distances]</code>
+      <code>[array_keys($this-&gt;coreNeighborDistances[$sampleLabel]), array_values($this-&gt;coreNeighborDistances[$sampleLabel])]</code>
+    </LessSpecificReturnStatement>
+    <MissingParamType occurrences="9">
+      <code>$a</code>
+      <code>$b</code>
+      <code>$bestDistances</code>
+      <code>$k</code>
+      <code>$k</code>
+      <code>$label</code>
+      <code>$maxRange</code>
+      <code>$queryNode</code>
+      <code>$referenceNode</code>
+    </MissingParamType>
+    <MixedArgument occurrences="38">
+      <code>$bestDistances</code>
+      <code>$coreNeighborDistances</code>
+      <code>$coreNeighborDistances</code>
+      <code>$k</code>
+      <code>$label</code>
+      <code>$label</code>
+      <code>$largestOldCoreDistance</code>
+      <code>$longestDistance</code>
+      <code>$longestLeft</code>
+      <code>$longestRight</code>
+      <code>$maxRange</code>
+      <code>$oldDistances</code>
+      <code>$queryLeft-&gt;radius()</code>
+      <code>$queryNode</code>
+      <code>$queryNode-&gt;radius()</code>
+      <code>$queryNode-&gt;radius()</code>
+      <code>$queryNode-&gt;radius()</code>
+      <code>$queryRight-&gt;radius()</code>
+      <code>$querySample</code>
+      <code>$referenceNode</code>
+      <code>$referenceSample</code>
+      <code>$shortestDistance</code>
+      <code>$this-&gt;coreNeighborDistances[$label]</code>
+      <code>$this-&gt;coreNeighborDistances[$label]</code>
+      <code>$this-&gt;coreNeighborDistances[$label]</code>
+      <code>$this-&gt;coreNeighborDistances[$queryLabel]</code>
+      <code>$this-&gt;coreNeighborDistances[$queryLabel]</code>
+      <code>$this-&gt;coreNeighborDistances[$queryLabel]</code>
+      <code>$this-&gt;coreNeighborDistances[$queryLabel]</code>
+      <code>$this-&gt;coreNeighborDistances[$queryLabel]</code>
+      <code>$this-&gt;coreNeighborDistances[$referenceLabel]</code>
+      <code>$this-&gt;coreNeighborDistances[$referenceLabel]</code>
+      <code>$this-&gt;coreNeighborDistances[$referenceLabel]</code>
+      <code>$this-&gt;coreNeighborDistances[$referenceLabel]</code>
+      <code>$this-&gt;coreNeighborDistances[$referenceLabel]</code>
+      <code>$this-&gt;coreNeighborDistances[$sampleLabel]</code>
+      <code>$this-&gt;coreNeighborDistances[$sampleLabel]</code>
+      <code>reset($oldCoreNeighbors)</code>
+    </MixedArgument>
+    <MixedArgumentTypeCoercion occurrences="7">
+      <code>$a_vector</code>
+      <code>$b_vector</code>
+      <code>$sample</code>
+      <code>$sample</code>
+      <code>$sampleKey</code>
+      <code>$sampleKey</code>
+      <code>array_slice($neighborLabels, 0, $this-&gt;sampleSize)</code>
+    </MixedArgumentTypeCoercion>
+    <MixedArrayAccess occurrences="2">
+      <code>$queryLabels[$queryKey]</code>
+      <code>$referenceLabels[$referenceKey]</code>
+    </MixedArrayAccess>
+    <MixedArrayAssignment occurrences="8">
+      <code>$coreNeighborDistances[$referenceLabel]</code>
+      <code>$this-&gt;coreNeighborDistances[$neighborLabel][$label]</code>
+      <code>$this-&gt;coreNeighborDistances[$queryLabel][$referenceLabel]</code>
+      <code>$this-&gt;coreNeighborDistances[$queryLabel][$referenceLabel]</code>
+      <code>$this-&gt;coreNeighborDistances[$referenceLabel][$queryLabel]</code>
+      <code>$this-&gt;coreNeighborDistances[$referenceLabel][$queryLabel]</code>
+      <code>$this-&gt;nativeInterpointCache[$smallIndex][$largeIndex]</code>
+      <code>$this-&gt;nodeDistances[$smallIndex][$largeIndex]</code>
+    </MixedArrayAssignment>
+    <MixedArrayOffset occurrences="39">
+      <code>$bestDistances[$label]</code>
+      <code>$bestDistances[$queryLabel]</code>
+      <code>$bestDistances[$queryLabel]</code>
+      <code>$coreNeighborDistances[$referenceLabel]</code>
+      <code>$oldCoreNeighbors[$label]</code>
+      <code>$oldCoreNeighbors[$neighborLabel]</code>
+      <code>$queryLabels[$queryKey]</code>
+      <code>$referenceLabels[$referenceKey]</code>
+      <code>$this-&gt;coreDistances[$label]</code>
+      <code>$this-&gt;coreDistances[$label]</code>
+      <code>$this-&gt;coreDistances[$label]</code>
+      <code>$this-&gt;coreDistances[$label]</code>
+      <code>$this-&gt;coreDistances[$neighborLabel]</code>
+      <code>$this-&gt;coreDistances[$queryLabel]</code>
+      <code>$this-&gt;coreDistances[$queryLabel]</code>
+      <code>$this-&gt;coreDistances[$queryLabel]</code>
+      <code>$this-&gt;coreDistances[$queryLabel]</code>
+      <code>$this-&gt;coreDistances[$referenceLabel]</code>
+      <code>$this-&gt;coreDistances[$referenceLabel]</code>
+      <code>$this-&gt;coreDistances[$referenceLabel]</code>
+      <code>$this-&gt;coreNeighborDistances[$a]</code>
+      <code>$this-&gt;coreNeighborDistances[$b]</code>
+      <code>$this-&gt;coreNeighborDistances[$label]</code>
+      <code>$this-&gt;coreNeighborDistances[$label]</code>
+      <code>$this-&gt;coreNeighborDistances[$neighborLabel]</code>
+      <code>$this-&gt;coreNeighborDistances[$queryLabel]</code>
+      <code>$this-&gt;coreNeighborDistances[$queryLabel]</code>
+      <code>$this-&gt;coreNeighborDistances[$queryLabel]</code>
+      <code>$this-&gt;coreNeighborDistances[$queryLabel]</code>
+      <code>$this-&gt;coreNeighborDistances[$queryLabel]</code>
+      <code>$this-&gt;coreNeighborDistances[$referenceLabel]</code>
+      <code>$this-&gt;coreNeighborDistances[$referenceLabel]</code>
+      <code>$this-&gt;coreNeighborDistances[$referenceLabel]</code>
+      <code>$this-&gt;coreNeighborDistances[$referenceLabel]</code>
+      <code>$this-&gt;nativeInterpointCache[$smallIndex]</code>
+      <code>$this-&gt;nativeInterpointCache[$smallIndex]</code>
+      <code>$this-&gt;nodeDistances[$smallIndex]</code>
+      <code>$this-&gt;nodeDistances[$smallIndex]</code>
+      <code>$updatedOldCoreLabels[$neighborLabel]</code>
+    </MixedArrayOffset>
+    <MixedArrayTypeCoercion occurrences="1">
+      <code>$this-&gt;nodeDistances[$smallIndex]</code>
+    </MixedArrayTypeCoercion>
+    <MixedAssignment occurrences="55">
+      <code>$bestDistance</code>
+      <code>$bestDistances[$queryLabel]</code>
+      <code>$child</code>
+      <code>$coreDistance</code>
+      <code>$coreNeighborDistances</code>
+      <code>$currentBound</code>
+      <code>$currentDistance</code>
+      <code>$label</code>
+      <code>$label</code>
+      <code>$label</code>
+      <code>$labels[]</code>
+      <code>$labels[]</code>
+      <code>$largeIndex</code>
+      <code>$largeIndex</code>
+      <code>$largeIndex</code>
+      <code>$largestOldCoreDistance</code>
+      <code>$longestDistance</code>
+      <code>$longestDistance</code>
+      <code>$longestDistance</code>
+      <code>$longestDistance</code>
+      <code>$longestDistance</code>
+      <code>$longestDistance</code>
+      <code>$longestDistance</code>
+      <code>$longestLeft</code>
+      <code>$longestLeft</code>
+      <code>$longestRight</code>
+      <code>$longestRight</code>
+      <code>$neighborLabel</code>
+      <code>$nodeDistance</code>
+      <code>$oldDistances</code>
+      <code>$queryKey</code>
+      <code>$queryLabel</code>
+      <code>$queryLabels</code>
+      <code>$queryLeft</code>
+      <code>$queryLeft</code>
+      <code>$queryNodeId</code>
+      <code>$queryRight</code>
+      <code>$queryRight</code>
+      <code>$querySample</code>
+      <code>$querySamples</code>
+      <code>$radius</code>
+      <code>$referenceKey</code>
+      <code>$referenceLabel</code>
+      <code>$referenceLabels</code>
+      <code>$referenceLeft</code>
+      <code>$referenceNodeId</code>
+      <code>$referenceRight</code>
+      <code>$referenceSample</code>
+      <code>$referenceSamples</code>
+      <code>$shortestDistance</code>
+      <code>$smallIndex</code>
+      <code>$smallIndex</code>
+      <code>$smallIndex</code>
+      <code>$subChild</code>
+      <code>$subStack[]</code>
+    </MixedAssignment>
+    <MixedInferredReturnType occurrences="4">
+      <code>float</code>
+      <code>float</code>
+      <code>float</code>
+      <code>float</code>
+    </MixedInferredReturnType>
+    <MixedMethodCall occurrences="25">
+      <code>children</code>
+      <code>getLongestDistance</code>
+      <code>getLongestDistance</code>
+      <code>getLongestDistance</code>
+      <code>labels</code>
+      <code>labels</code>
+      <code>left</code>
+      <code>left</code>
+      <code>left</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>right</code>
+      <code>right</code>
+      <code>right</code>
+      <code>samples</code>
+      <code>samples</code>
+      <code>setLongestDistance</code>
+    </MixedMethodCall>
+    <MixedOperand occurrences="7">
+      <code>$longestLeft</code>
+      <code>$longestRight</code>
+      <code>$queryNode-&gt;radius()</code>
+      <code>$queryNode-&gt;radius()</code>
+      <code>$queryNode-&gt;radius()</code>
+      <code>$shortestDistance</code>
+      <code>min($longestLeft, $longestRight)</code>
+    </MixedOperand>
+    <MixedReturnStatement occurrences="6">
+      <code>$nodeDistance</code>
+      <code>$this-&gt;coreDistances[$label]</code>
+      <code>$this-&gt;coreDistances[$queryLabel] ?? INF</code>
+      <code>$this-&gt;coreNeighborDistances[$a][$b]</code>
+      <code>$this-&gt;coreNeighborDistances[$b][$a]</code>
+      <code>$this-&gt;nativeInterpointCache[$smallIndex][$largeIndex]</code>
+    </MixedReturnStatement>
+    <MoreSpecificReturnType occurrences="3">
+      <code>DualTreeBall</code>
+      <code>array{list&lt;mixed&gt;,list&lt;float&gt;}</code>
+      <code>array{list&lt;mixed&gt;,list&lt;float&gt;}</code>
+    </MoreSpecificReturnType>
+    <NullableReturnStatement occurrences="2">
+      <code>$this-&gt;dataset</code>
+      <code>$this-&gt;root</code>
+    </NullableReturnStatement>
+    <PossiblyFalseArgument occurrences="2">
+      <code>$sampleKey</code>
+      <code>$sampleKey</code>
+    </PossiblyFalseArgument>
+    <PossiblyNullReference occurrences="3">
+      <code>labels</code>
+      <code>labels</code>
+      <code>labels</code>
+    </PossiblyNullReference>
+    <PossiblyUndefinedMethod occurrences="5">
+      <code>children</code>
+      <code>dataset</code>
+      <code>dataset</code>
+      <code>dataset</code>
+      <code>dataset</code>
+    </PossiblyUndefinedMethod>
+    <UndefinedMethod occurrences="2">
+      <code>resetFullyConnectedStatus</code>
+      <code>resetLongestEdge</code>
+    </UndefinedMethod>
+    <UnusedVariable occurrences="1">
+      <code>$labels</code>
+    </UnusedVariable>
+  </file>
+  <file src="lib/Clustering/MstClusterer.php">
+    <MixedArgument occurrences="1">
+      <code>$childCluster-&gt;getCoreEdges()</code>
+    </MixedArgument>
+    <MixedArrayAccess occurrences="4">
+      <code>$a["distance"]</code>
+      <code>$a["distance"]</code>
+      <code>$b["distance"]</code>
+      <code>$b["distance"]</code>
+    </MixedArrayAccess>
+    <MixedAssignment occurrences="2">
+      <code>$childCluster</code>
+      <code>$childrenWeight</code>
+    </MixedAssignment>
+    <MixedMethodCall occurrences="2">
+      <code>getClusterWeight</code>
+      <code>getCoreEdges</code>
+    </MixedMethodCall>
+    <MixedOperand occurrences="1">
+      <code>$childCluster-&gt;getClusterWeight()</code>
+    </MixedOperand>
+    <MixedPropertyTypeCoercion occurrences="1">
+      <code>array_merge($this-&gt;coreEdges, $childCluster-&gt;getCoreEdges())</code>
+    </MixedPropertyTypeCoercion>
+    <PossiblyUndefinedArrayOffset occurrences="2">
+      <code>$edge["finalLambda"]</code>
+      <code>$edge["finalLambda"]</code>
+    </PossiblyUndefinedArrayOffset>
+  </file>
+  <file src="lib/Clustering/MstSolver.php">
+    <ArgumentTypeCoercion occurrences="11">
+      <code>$child</code>
+      <code>$queryLeft</code>
+      <code>$queryLeft</code>
+      <code>$queryLeft</code>
+      <code>$queryRight</code>
+      <code>$queryRight</code>
+      <code>$queryRight</code>
+      <code>$referenceLeft</code>
+      <code>$referenceLeft</code>
+      <code>$referenceRight</code>
+      <code>$referenceRight</code>
+    </ArgumentTypeCoercion>
+    <InternalMethod occurrences="6">
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+    </InternalMethod>
+    <LessSpecificReturnStatement occurrences="1">
+      <code>$edges</code>
+    </LessSpecificReturnStatement>
+    <MissingParamType occurrences="2">
+      <code>$queryNode</code>
+      <code>$referenceNode</code>
+    </MissingParamType>
+    <MixedArgument occurrences="11">
+      <code>$label</code>
+      <code>$longestLeft</code>
+      <code>$longestRight</code>
+      <code>$queryLabel</code>
+      <code>$queryLeft-&gt;radius()</code>
+      <code>$queryNode-&gt;radius()</code>
+      <code>$queryRight-&gt;radius()</code>
+      <code>$querySample</code>
+      <code>$referenceLabel</code>
+      <code>$referenceSample</code>
+      <code>$shortestDistance</code>
+    </MixedArgument>
+    <MixedArgumentTypeCoercion occurrences="1">
+      <code>$allLabels</code>
+    </MixedArgumentTypeCoercion>
+    <MixedArrayAccess occurrences="5">
+      <code>$connectingEdge["vertexFrom"]</code>
+      <code>$connectingEdge["vertexTo"]</code>
+      <code>$newEdges[$queryNode-&gt;getSetId()]["distance"]</code>
+      <code>$queryLabels[$queryKey]</code>
+      <code>$referenceLabels[$referenceKey]</code>
+    </MixedArrayAccess>
+    <MixedArrayOffset occurrences="16">
+      <code>$newEdges[$querySetId]</code>
+      <code>$newEdges[$querySetId]</code>
+      <code>$newEdges[$querySetId]</code>
+      <code>$newEdges[$querySetId]</code>
+      <code>$queryLabels[$queryKey]</code>
+      <code>$referenceLabels[$referenceKey]</code>
+      <code>$vertexSets[$setId1]</code>
+      <code>$vertexSets[$setId1]</code>
+      <code>$vertexSets[$setId1]</code>
+      <code>$vertexSets[$setId2]</code>
+      <code>$vertexSets[$setId2]</code>
+      <code>$vertexToSetId[$connectingEdge["vertexFrom"]]</code>
+      <code>$vertexToSetId[$connectingEdge["vertexTo"]]</code>
+      <code>$vertexToSetId[$queryLabel]</code>
+      <code>$vertexToSetId[$referenceLabel]</code>
+      <code>$vertexToSetId[$vertexLabel]</code>
+    </MixedArrayOffset>
+    <MixedArrayTypeCoercion occurrences="4">
+      <code>$vertexSets[$setId1]</code>
+      <code>$vertexSets[$setId1]</code>
+      <code>$vertexSets[$setId2]</code>
+      <code>$vertexSets[$setId2]</code>
+    </MixedArrayTypeCoercion>
+    <MixedAssignment occurrences="36">
+      <code>$candidateDist</code>
+      <code>$connectingEdge</code>
+      <code>$currentBound</code>
+      <code>$edges[]</code>
+      <code>$label</code>
+      <code>$longestDistance</code>
+      <code>$longestDistance</code>
+      <code>$longestDistance</code>
+      <code>$longestDistance</code>
+      <code>$longestDistance</code>
+      <code>$longestDistance</code>
+      <code>$longestDistance</code>
+      <code>$longestLeft</code>
+      <code>$longestLeft</code>
+      <code>$longestRight</code>
+      <code>$longestRight</code>
+      <code>$neighborLabel</code>
+      <code>$queryKey</code>
+      <code>$queryLabel</code>
+      <code>$queryLabels</code>
+      <code>$querySample</code>
+      <code>$querySamples</code>
+      <code>$querySetId</code>
+      <code>$referenceKey</code>
+      <code>$referenceLabel</code>
+      <code>$referenceLabels</code>
+      <code>$referenceSample</code>
+      <code>$referenceSamples</code>
+      <code>$referenceSetId</code>
+      <code>$setId1</code>
+      <code>$setId1</code>
+      <code>$setId2</code>
+      <code>$setId2</code>
+      <code>$shortestDistance</code>
+      <code>$vertexLabel</code>
+      <code>$vertexToSetId[$vertexLabel]</code>
+    </MixedAssignment>
+    <MixedMethodCall occurrences="11">
+      <code>dataset</code>
+      <code>dataset</code>
+      <code>dataset</code>
+      <code>dataset</code>
+      <code>labels</code>
+      <code>labels</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>samples</code>
+      <code>samples</code>
+      <code>setLongestDistance</code>
+    </MixedMethodCall>
+    <MixedOperand occurrences="3">
+      <code>$queryNode-&gt;radius()</code>
+      <code>2 * $queryNode-&gt;radius()</code>
+      <code>min($longestLeft, $longestRight)</code>
+    </MixedOperand>
+    <MoreSpecificReturnType occurrences="1">
+      <code>array&lt;int,array{vertexFrom:int|string,vertexTo:int|string,distance:float}&gt;</code>
+    </MoreSpecificReturnType>
+    <PossiblyNullArgument occurrences="10">
+      <code>$queryLeft</code>
+      <code>$queryLeft</code>
+      <code>$queryLeft</code>
+      <code>$queryRight</code>
+      <code>$queryRight</code>
+      <code>$queryRight</code>
+      <code>$referenceLeft</code>
+      <code>$referenceLeft</code>
+      <code>$referenceRight</code>
+      <code>$referenceRight</code>
+    </PossiblyNullArgument>
+    <PossiblyNullArrayOffset occurrences="1">
+      <code>$newEdges</code>
+    </PossiblyNullArrayOffset>
+    <PossiblyNullReference occurrences="6">
+      <code>getLongestDistance</code>
+      <code>getLongestDistance</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+    </PossiblyNullReference>
+    <UndefinedInterfaceMethod occurrences="6">
+      <code>getLongestDistance</code>
+      <code>getLongestDistance</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+      <code>radius</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="lib/Clustering/SquaredDistance.php">
+    <InternalClass occurrences="1">
+      <code>DataType::continuous()</code>
+    </InternalClass>
+    <InternalMethod occurrences="1">
+      <code>DataType::continuous()</code>
+    </InternalMethod>
+    <MoreSpecificImplementedParamType occurrences="2">
+      <code>$a</code>
+      <code>$b</code>
+    </MoreSpecificImplementedParamType>
+  </file>
+  <file src="lib/Controller/AdminController.php">
+    <MixedArgumentTypeCoercion occurrences="3">
+      <code>$output</code>
+      <code>$output</code>
+      <code>$output</code>
+    </MixedArgumentTypeCoercion>
+    <MixedArrayAccess occurrences="1">
+      <code>$lscpu['lscpu']</code>
+    </MixedArrayAccess>
+    <MixedAssignment occurrences="1">
+      <code>$lscpu</code>
+    </MixedAssignment>
+  </file>
+  <file src="lib/Dav/Faces/FacePhoto.php">
+    <UndefinedClass occurrences="1">
+      <code>IFile</code>
+    </UndefinedClass>
+  </file>
+  <file src="lib/Dav/Faces/FaceRoot.php">
+    <UndefinedClass occurrences="1">
+      <code>ICollection</code>
+    </UndefinedClass>
+  </file>
+  <file src="lib/Dav/Faces/FacesHome.php">
+    <UndefinedClass occurrences="1">
+      <code>ICollection</code>
+    </UndefinedClass>
+  </file>
+  <file src="lib/Dav/Faces/PropFindPlugin.php">
+    <UndefinedClass occurrences="1">
+      <code>ServerPlugin</code>
+    </UndefinedClass>
+  </file>
+  <file src="lib/Dav/Faces/UnassignedFacePhoto.php">
+    <MissingDependency occurrences="1">
+      <code>FacePhoto</code>
+    </MissingDependency>
+  </file>
+  <file src="lib/Dav/Faces/UnassignedFacesHome.php">
+    <UndefinedClass occurrences="1">
+      <code>ICollection</code>
+    </UndefinedClass>
+  </file>
+  <file src="lib/Dav/RecognizeHome.php">
+    <UndefinedClass occurrences="1">
+      <code>ICollection</code>
+    </UndefinedClass>
+  </file>
+  <file src="lib/Dav/RootCollection.php">
+    <UndefinedClass occurrences="1">
+      <code>AbstractPrincipalCollection</code>
+    </UndefinedClass>
+  </file>
+  <file src="lib/Db/FaceCluster.php">
+    <MissingPropertyType occurrences="2">
+      <code>$title</code>
+      <code>$userId</code>
+    </MissingPropertyType>
+    <MixedAssignment occurrences="1">
+      <code>$array[$field]</code>
+    </MixedAssignment>
+    <PropertyNotSetInConstructor occurrences="1">
+      <code>FaceCluster</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="lib/Db/FaceClusterMapper.php">
+    <LessSpecificReturnStatement occurrences="3">
+      <code>$this-&gt;findEntities($qb)</code>
+      <code>$this-&gt;findEntities($qb)</code>
+      <code>$this-&gt;findEntity($qb)</code>
+    </LessSpecificReturnStatement>
+    <MoreSpecificReturnType occurrences="3">
+      <code>FaceCluster</code>
+      <code>list&lt;\OCA\Recognize\Db\FaceCluster&gt;</code>
+      <code>list&lt;\OCA\Recognize\Db\FaceCluster&gt;</code>
+    </MoreSpecificReturnType>
+  </file>
+  <file src="lib/Db/FaceDetection.php">
+    <MissingPropertyType occurrences="9">
+      <code>$clusterId</code>
+      <code>$fileId</code>
+      <code>$height</code>
+      <code>$threshold</code>
+      <code>$userId</code>
+      <code>$vector</code>
+      <code>$width</code>
+      <code>$x</code>
+      <code>$y</code>
+    </MissingPropertyType>
+    <MixedAssignment occurrences="1">
+      <code>$array[$field]</code>
+    </MixedAssignment>
+    <PropertyNotSetInConstructor occurrences="1">
+      <code>FaceDetection</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="lib/Db/FaceDetectionMapper.php">
+    <LessSpecificReturnStatement occurrences="12">
+      <code>$this-&gt;findEntities($qb)</code>
+      <code>$this-&gt;findEntities($qb)</code>
+      <code>$this-&gt;findEntities($qb)</code>
+      <code>$this-&gt;findEntities($qb)</code>
+      <code>$this-&gt;findEntities($qb)</code>
+      <code>$this-&gt;findEntities($qb)</code>
+      <code>$this-&gt;findEntities($qb)</code>
+      <code>$this-&gt;findEntities($qb)</code>
+      <code>$this-&gt;findEntities($qb)</code>
+      <code>$this-&gt;findEntity($qb)</code>
+      <code>$this-&gt;findEntity($qb)</code>
+      <code>$this-&gt;findEntity($qb)</code>
+    </LessSpecificReturnStatement>
+    <MixedReturnTypeCoercion occurrences="2">
+      <code>$qb-&gt;executeQuery()-&gt;fetchAll(\PDO::FETCH_COLUMN)</code>
+      <code>list&lt;string&gt;</code>
+    </MixedReturnTypeCoercion>
+    <MoreSpecificReturnType occurrences="11">
+      <code>FaceDetection</code>
+      <code>FaceDetection</code>
+      <code>FaceDetection[]</code>
+      <code>FaceDetection[]</code>
+      <code>\OCA\Recognize\Db\FaceDetection[]</code>
+      <code>\OCA\Recognize\Db\FaceDetection[]</code>
+      <code>\OCA\Recognize\Db\FaceDetection[]</code>
+      <code>list&lt;\OCA\Recognize\Db\FaceDetection&gt;</code>
+      <code>list&lt;\OCA\Recognize\Db\FaceDetection&gt;</code>
+      <code>list&lt;\OCA\Recognize\Db\FaceDetection&gt;</code>
+      <code>list&lt;\OCA\Recognize\Db\FaceDetectionWithTitle&gt;</code>
+    </MoreSpecificReturnType>
+  </file>
+  <file src="lib/Db/FaceDetectionWithTitle.php">
+    <LessSpecificImplementedReturnType occurrences="1">
+      <code>self</code>
+    </LessSpecificImplementedReturnType>
+    <MissingPropertyType occurrences="1">
+      <code>$title</code>
+    </MissingPropertyType>
+    <PropertyNotSetInConstructor occurrences="1">
+      <code>FaceDetectionWithTitle</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="lib/Db/QueueFile.php">
+    <MissingPropertyType occurrences="4">
+      <code>$fileId</code>
+      <code>$rootId</code>
+      <code>$storageId</code>
+      <code>$update</code>
+    </MissingPropertyType>
+    <MixedAssignment occurrences="1">
+      <code>$array[$field]</code>
+    </MixedAssignment>
+  </file>
+  <file src="lib/Db/QueueMapper.php">
+    <FalsableReturnStatement occurrences="1">
+      <code>$result-&gt;fetchOne()</code>
+    </FalsableReturnStatement>
+    <LessSpecificReturnStatement occurrences="1">
+      <code>$this-&gt;findEntities($qb)</code>
+    </LessSpecificReturnStatement>
+    <MixedInferredReturnType occurrences="1">
+      <code>int</code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement occurrences="1">
+      <code>$result-&gt;fetchOne()</code>
+    </MixedReturnStatement>
+    <MoreSpecificReturnType occurrences="1">
+      <code>list&lt;\OCA\Recognize\Db\QueueFile&gt;</code>
+    </MoreSpecificReturnType>
+  </file>
+  <file src="lib/Helper/Archive.php">
+    <MissingParamType occurrences="1">
+      <code>$source</code>
+    </MissingParamType>
+  </file>
+  <file src="lib/Helper/TAR.php">
+    <MissingParamType occurrences="2">
+      <code>$path</code>
+      <code>$tmpFile</code>
+    </MissingParamType>
+    <MissingPropertyType occurrences="3">
+      <code>$cachedHeaders</code>
+      <code>$fileList</code>
+      <code>$path</code>
+    </MissingPropertyType>
+    <MissingReturnType occurrences="1">
+      <code>getHeader</code>
+    </MissingReturnType>
+    <MixedArgument occurrences="4">
+      <code>$path</code>
+      <code>$this-&gt;path</code>
+      <code>$tmpFile</code>
+      <code>$tmpFile</code>
+    </MixedArgument>
+    <MixedArrayAccess occurrences="7">
+      <code>$header['filename']</code>
+      <code>$header['filename']</code>
+      <code>$header['filename']</code>
+      <code>$header['filename']</code>
+      <code>$header['filename']</code>
+      <code>$stat['mtime']</code>
+      <code>$stat['size']</code>
+    </MixedArrayAccess>
+    <MixedAssignment occurrences="8">
+      <code>$files[]</code>
+      <code>$header</code>
+      <code>$header</code>
+      <code>$result</code>
+      <code>$stat</code>
+      <code>$stat</code>
+      <code>$this-&gt;tar</code>
+      <code>$this-&gt;tar</code>
+    </MixedAssignment>
+    <MixedInferredReturnType occurrences="11">
+      <code>?\PEAR_Error</code>
+      <code>bool</code>
+      <code>bool</code>
+      <code>bool</code>
+      <code>bool</code>
+      <code>bool</code>
+      <code>bool|resource</code>
+      <code>int</code>
+      <code>int</code>
+      <code>list&lt;string&gt;</code>
+      <code>string</code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement occurrences="7">
+      <code>$result</code>
+      <code>$stat['mtime']</code>
+      <code>$stat['size']</code>
+      <code>$this-&gt;fileList</code>
+      <code>$this-&gt;tar-&gt;extract($dest)</code>
+      <code>$this-&gt;tar-&gt;extractInString($path)</code>
+      <code>$this-&gt;tar-&gt;extractList($list, $path, $removePath, $symlinks)</code>
+    </MixedReturnStatement>
+    <MixedReturnTypeCoercion occurrences="1">
+      <code>$files</code>
+    </MixedReturnTypeCoercion>
+    <PossiblyFalseArgument occurrences="2">
+      <code>strrpos($file, '.')</code>
+      <code>strrpos($path, '.')</code>
+    </PossiblyFalseArgument>
+    <PossiblyNullPropertyAssignmentValue occurrences="2">
+      <code>null</code>
+      <code>null</code>
+    </PossiblyNullPropertyAssignmentValue>
+    <RedundantConditionGivenDocblockType occurrences="2">
+      <code>$this-&gt;tar</code>
+      <code>$this-&gt;tar</code>
+    </RedundantConditionGivenDocblockType>
+    <UndefinedClass occurrences="4">
+      <code>?\PEAR_Error</code>
+      <code>\Archive_Tar</code>
+      <code>\Archive_Tar</code>
+      <code>\Archive_Tar</code>
+    </UndefinedClass>
+    <UndefinedDocblockClass occurrences="9">
+      <code>$this-&gt;tar</code>
+      <code>$this-&gt;tar</code>
+      <code>$this-&gt;tar</code>
+      <code>$this-&gt;tar</code>
+      <code>$this-&gt;tar</code>
+      <code>$this-&gt;tar</code>
+      <code>$this-&gt;tar</code>
+      <code>\Archive_Tar</code>
+      <code>private $tar = null;</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="lib/Hooks/FileListener.php">
+    <MixedArgument occurrences="2">
+      <code>$accessList['users']</code>
+      <code>$accessList['users']</code>
+    </MixedArgument>
+    <PossiblyNullArgument occurrences="3">
+      <code>$mount-&gt;getNumericStorageId()</code>
+      <code>$mount-&gt;getNumericStorageId()</code>
+      <code>$node-&gt;getMountPoint()-&gt;getNumericStorageId()</code>
+    </PossiblyNullArgument>
+  </file>
+  <file src="lib/Migration/InstallDeps.php">
+    <MixedArgument occurrences="2">
+      <code>$item-&gt;getPathname()</code>
+      <code>$item-&gt;getPathname()</code>
+    </MixedArgument>
+    <MixedArgumentTypeCoercion occurrences="7">
+      <code>$output</code>
+      <code>$output</code>
+      <code>$output</code>
+      <code>$output</code>
+      <code>$output</code>
+      <code>$output</code>
+      <code>$output</code>
+    </MixedArgumentTypeCoercion>
+    <MixedAssignment occurrences="2">
+      <code>$item</code>
+      <code>$item</code>
+    </MixedAssignment>
+    <MixedMethodCall occurrences="2">
+      <code>getPathname</code>
+      <code>getPathname</code>
+    </MixedMethodCall>
+    <PossiblyUndefinedVariable occurrences="2">
+      <code>$output</code>
+      <code>$returnCode</code>
+    </PossiblyUndefinedVariable>
+  </file>
+  <file src="lib/Service/DownloadModelsService.php">
+    <MixedArgument occurrences="2">
+      <code>$file-&gt;getRealPath()</code>
+      <code>$file-&gt;getRealPath()</code>
+    </MixedArgument>
+    <MixedArrayAccess occurrences="1">
+      <code>$packageJson['version']</code>
+    </MixedArrayAccess>
+    <MixedAssignment occurrences="2">
+      <code>$file</code>
+      <code>$packageJson</code>
+    </MixedAssignment>
+    <MixedInferredReturnType occurrences="1">
+      <code>string</code>
+    </MixedInferredReturnType>
+    <MixedMethodCall occurrences="3">
+      <code>getRealPath</code>
+      <code>getRealPath</code>
+      <code>isDir</code>
+    </MixedMethodCall>
+    <MixedReturnStatement occurrences="1">
+      <code>$packageJson['version']</code>
+    </MixedReturnStatement>
+  </file>
+  <file src="lib/Service/FaceClusterAnalyzer.php">
+    <InternalMethod occurrences="1">
+      <code>compute</code>
+    </InternalMethod>
+    <InvalidScalarArgument occurrences="1">
+      <code>-1</code>
+    </InvalidScalarArgument>
+    <MixedArgumentTypeCoercion occurrences="1">
+      <code>$unclusteredDetections[$detectionKey]-&gt;getVector()</code>
+    </MixedArgumentTypeCoercion>
+    <PossiblyFalseArgument occurrences="1">
+      <code>$clusterId</code>
+    </PossiblyFalseArgument>
+  </file>
+  <file src="lib/Service/IgnoreService.php">
+    <MixedInferredReturnType occurrences="1">
+      <code>list&lt;string&gt;</code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement occurrences="1">
+      <code>$this-&gt;inMemoryCache[$cacheKey]</code>
+    </MixedReturnStatement>
+    <RedundantConditionGivenDocblockType occurrences="1">
+      <code>$directories !== null</code>
+    </RedundantConditionGivenDocblockType>
+  </file>
+  <file src="lib/Service/StorageService.php">
+    <RedundantCastGivenDocblockType occurrences="2">
+      <code>(int)$row['root_id']</code>
+      <code>(int)$row['storage_id']</code>
+    </RedundantCastGivenDocblockType>
+  </file>
+</files>
