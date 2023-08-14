@@ -6,7 +6,6 @@
 
 namespace OCA\Recognize\Hooks;
 
-use OC\Files\Node\Folder;
 use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
 use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
 use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
@@ -30,6 +29,7 @@ use OCP\Files\Events\Node\NodeRenamedEvent;
 use OCP\Files\Events\NodeAddedToCache;
 use OCP\Files\Events\NodeRemovedFromCache;
 use OCP\Files\FileInfo;
+use OCP\Files\Folder;
 use OCP\Files\InvalidPathException;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
@@ -188,7 +188,7 @@ class FileListener implements IEventListener {
 			try {
 				// Huhuu. This is a bold hack to scan the file before it's actually scanned by the main scanner.
 				// This will put it in the cache for when we want to access it later in the NodeAddedToCache clause.
-				$node = $this->rootFolder->get($event->getAbsolutePath());
+				$this->rootFolder->get($event->getAbsolutePath());
 			} catch (NotFoundException $e) {
 				return;
 			}
@@ -236,7 +236,7 @@ class FileListener implements IEventListener {
 				return;
 			}
 			try {
-				/** @var \OCP\Files\Folder $node */
+				/** @var Folder $node */
 				foreach ($node->getDirectoryListing() as $child) {
 					$this->postDelete($child);
 				}
@@ -283,7 +283,7 @@ class FileListener implements IEventListener {
 			// For normal inserts we probably get one event per node, but, when removing an ignore file,
 			// we only get the folder passed here, so we recurse.
 			try {
-				/** @var \OCP\Files\Folder $node */
+				/** @var Folder $node */
 				foreach ($node->getDirectoryListing() as $child) {
 					$this->postInsert($child);
 				}
