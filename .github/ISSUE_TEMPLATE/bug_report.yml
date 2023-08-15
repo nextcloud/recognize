@@ -37,6 +37,18 @@ body:
         - GPU mode
     validations:
       required: true
+  - type: dropdown
+    attributes:
+      label: Downstream App
+      description: 'How are you viewing the classification results?'
+      options:
+        - Files App
+        - Photos App
+        - Memories App
+        - Audioplayer App
+        - other, please specify below
+    validations:
+      required: true
   - type: input
     attributes:
       label: Which Nextcloud version do you have installed?
@@ -51,10 +63,14 @@ body:
       required: true
   - type: input
     attributes:
-      label: Which Docker container are you using to run Nextcloud? (if applicable)
-      description: 'For example: v23.0.1'
+      label: Which database are you running Nextcloud on?
+      description: 'For example: MariaDB 10.5'
     validations:
       required: true
+  - type: input
+    attributes:
+      label: Which Docker container are you using to run Nextcloud? (if applicable)
+      description: 'For example: v23.0.1'
   - type: input
     attributes:
       label: How much RAM does your server have?
