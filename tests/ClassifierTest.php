@@ -42,6 +42,14 @@ class ClassifierTest extends TestCase {
 		MusicnnClassifier::MODEL_NAME,
 	];
 
+	public const CLASSIFIERS = [
+		ClusteringFaceClassifier::MODEL_NAME => ClusteringFaceClassifier::class,
+		ImagenetClassifier::MODEL_NAME => ImagenetClassifier::class,
+		LandmarksClassifier::MODEL_NAME => LandmarksClassifier::class,
+		MovinetClassifier::MODEL_NAME => MovinetClassifier::class,
+		MusicnnClassifier::MODEL_NAME => MusicnnClassifier::class,
+	];
+
 	private Classifier $classifier;
 	private OCP\Files\File $testFile;
 	private IRootFolder $rootFolder;
@@ -60,7 +68,6 @@ class ClassifierTest extends TestCase {
 
 	public function setUp(): void {
 		parent::setUp();
-		$this->classifier = \OC::$server->get(Classifier::class);
 		$this->rootFolder = \OC::$server->getRootFolder();
 		$this->userFolder = $this->loginAndGetUserFolder(self::TEST_USER1);
 		$this->faceDetectionMapper = \OC::$server->get(FaceDetectionMapper::class);
@@ -629,6 +636,7 @@ class ClassifierTest extends TestCase {
 			// Cannot run musicnn/movinet with purejs/WASM mode
 			self::markTestSkipped();
 		}
+		$this->classifier = \OC::$server->get(self::CLASSIFIERS[$model]);
 		$this->testFile = $this->userFolder->newFile('/'.$file, file_get_contents(__DIR__.'/res/'.$file));
 		$queueFile = new QueueFile();
 		$queueFile->setFileId($this->testFile->getId());
