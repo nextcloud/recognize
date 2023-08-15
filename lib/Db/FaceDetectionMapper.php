@@ -275,6 +275,7 @@ class FaceDetectionMapper extends QBMapper {
 		try {
 			return $this->findEntity($qb);
 		} catch (DoesNotExistException $e) {
+			$qb = $this->db->getQueryBuilder();
 			$qb->select(array_map(fn ($col) => 'd.'.$col, FaceDetection::$columns))
 				->from('recognize_face_detections', 'd')
 				->where($qb->expr()->eq('d.cluster_id', $qb->createPositionalParameter($clusterId)))
