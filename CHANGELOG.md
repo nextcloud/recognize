@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.3.1] - 2023-08-15
+
+### Fixed
+ - Fix face detection mapper
+ - Improve classifier error handling
+ - Fix for external storage: Listen to scanner events
+ - Fix Duplicates in Groupfolders: Only scan each groupfolder once
+ - SettingsService: remove confusing JSON encoding step. All settings are strings, period.
+ - Musicnn: Cut off shorter audio clip in wasm mode
+ - Fix(l10n): Update translations from Transifex
+
 ## [4.3.0] - 2023-07-12
 
 ### New
