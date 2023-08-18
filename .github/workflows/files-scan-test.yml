@@ -141,4 +141,5 @@ jobs:
           ./occ files:scan admin -vvv
           php cron.php
           php cron.php
-          [ ! -z $(sudo -u www-data php occ tag:list) ]# make sure there are some tags now
+          cat data/nextcloud.log
+          [ ! -z $(sudo -u www-data php occ tag:list) ]
