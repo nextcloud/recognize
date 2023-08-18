@@ -142,4 +142,4 @@ jobs:
           php cron.php
           php cron.php
           cat data/nextcloud.log
-          [ ! -z $(sudo -u www-data php occ tag:list) ]
+          [ ! -z $(php occ tag:list) ]
