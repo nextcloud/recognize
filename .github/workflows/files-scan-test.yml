@@ -139,6 +139,8 @@ jobs:
           GITHUB_REF: ${{ github.ref }}
         run: |
           ./occ files:scan admin -vvv
+          rm -rf data/admin/files/res
+          ./occ files:scan admin -vvv
           php cron.php
           php cron.php
           cat data/nextcloud.log
