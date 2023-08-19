@@ -139,7 +139,7 @@ jobs:
           GITHUB_REF: ${{ github.ref }}
         run: |
           ./occ files:scan admin -vvv
-          rm -rf data/admin/files/res
+          rm data/admin/files/res/alpine.JPG
           ./occ files:scan admin -vvv
           php cron.php
           php cron.php
