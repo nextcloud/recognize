@@ -19,14 +19,13 @@ use OCA\Recognize\Service\StorageService;
 use OCP\DB\Exception;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
+use OCP\Files\Cache\CacheEntryInsertedEvent;
 use OCP\Files\Config\IUserMountCache;
-use OCP\Files\Events\BeforeFileScannedEvent;
 use OCP\Files\Events\Node\BeforeNodeDeletedEvent;
 use OCP\Files\Events\Node\BeforeNodeRenamedEvent;
 use OCP\Files\Events\Node\NodeCreatedEvent;
 use OCP\Files\Events\Node\NodeDeletedEvent;
 use OCP\Files\Events\Node\NodeRenamedEvent;
-use OCP\Files\Events\NodeAddedToCache;
 use OCP\Files\Events\NodeRemovedFromCache;
 use OCP\Files\FileInfo;
 use OCP\Files\Folder;
@@ -184,21 +183,8 @@ class FileListener implements IEventListener {
 			$this->postInsert($event->getNode(), false);
 			return;
 		}
-		if ($event instanceof BeforeFileScannedEvent) {
-			try {
-				// Huhuu. This is a bold hack to scan the file before it's actually scanned by the main scanner.
-				// This will put it in the cache for when we want to access it later in the NodeAddedToCache clause.
-				$this->rootFolder->get($event->getAbsolutePath());
-			} catch (NotFoundException $e) {
-				return;
-			}
-		}
-		if ($event instanceof NodeAddedToCache) {
-			$cacheEntry = $event->getStorage()->getCache()->get($event->getPath());
-			if ($cacheEntry === false) {
-				return;
-			}
-			$node = current($this->rootFolder->getById($cacheEntry->getId()));
+		if ($event instanceof CacheEntryInsertedEvent) {
+			$node = current($this->rootFolder->getById($event->getFileId()));
 			if ($node === false) {
 				return;
 			}
