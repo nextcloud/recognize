@@ -2,6 +2,7 @@ OC.L10N.register(
     "recognize",
     {
     "Recognize" : "Rozpoznání",
+    "Smart media tagging and face recognition with on-premises machine learning models" : "Inteligentní opatřování médií štítky a rozpoznávání obličejů pomocí modelů strojového učení, provozovaných přímo na serveru",
     "Status" : "Stav",
     "The machine learning models have been downloaded successfully." : "Modely strojového učení byly úspěšně staženy.",
     "The machine learning models still need to be downloaded." : "Pořád ještě je třeba stáhnout si modely strojového učení.",
