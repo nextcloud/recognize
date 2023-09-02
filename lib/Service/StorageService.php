@@ -179,7 +179,7 @@ class StorageService {
 			$file = $files->fetch()
 		) {
 			yield [
-				'fileid' => $file['fileid'],
+				'fileid' => (int) $file['fileid'],
 				'image' => in_array($file['mimetype'], $imageTypes),
 				'video' => in_array($file['mimetype'], $videoTypes),
 				'audio' => in_array($file['mimetype'], $audioTypes),
