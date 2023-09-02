@@ -174,15 +174,12 @@ class StorageService {
 			return;
 		}
 
-		while (
-			/** @var array{fileid:int,mimetype:int} $file */
-			$file = $files->fetch()
-		) {
+		while ($file = $files->fetch()) {
 			yield [
 				'fileid' => (int) $file['fileid'],
-				'image' => in_array($file['mimetype'], $imageTypes),
-				'video' => in_array($file['mimetype'], $videoTypes),
-				'audio' => in_array($file['mimetype'], $audioTypes),
+				'image' => in_array((int) $file['mimetype'], $imageTypes),
+				'video' => in_array((int) $file['mimetype'], $videoTypes),
+				'audio' => in_array((int) $file['mimetype'], $audioTypes),
 			];
 		}
 
