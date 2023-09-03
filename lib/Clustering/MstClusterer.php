@@ -3,7 +3,7 @@
  * Copyright (c) 2023 The Recognize contributors.
  * This file is licensed under the Affero General Public License version 3 or later. See the COPYING file.
  */
-
+declare(strict_types=1);
 namespace OCA\Recognize\Clustering;
 
 // TODO: store vertex lambda length (relative to cluster lambda length) for all vertices for improved soft clustering (see https://hdbscan.readthedocs.io/en/latest/soft_clustering.html)

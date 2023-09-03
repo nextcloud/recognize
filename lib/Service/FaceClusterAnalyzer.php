@@ -3,7 +3,7 @@
  * Copyright (c) 2022 The Recognize contributors.
  * This file is licensed under the Affero General Public License version 3 or later. See the COPYING file.
  */
-
+declare(strict_types=1);
 namespace OCA\Recognize\Service;
 
 use \Rubix\ML\Datasets\Labeled;
@@ -48,7 +48,7 @@ class FaceClusterAnalyzer {
 		$this->logger->debug('ClusterDebug: Retrieving face detections for user ' . $userId);
 
 		if ($batchSize === 0) {
-			ini_set('memory_limit', -1);
+			ini_set('memory_limit', '-1');
 		}
 
 		

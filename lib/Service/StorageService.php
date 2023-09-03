@@ -3,7 +3,7 @@
  * Copyright (c) 2022 The Recognize contributors.
  * This file is licensed under the Affero General Public License version 3 or later. See the COPYING file.
  */
-
+declare(strict_types=1);
 namespace OCA\Recognize\Service;
 
 use OC\Files\Cache\CacheQueryBuilder;
@@ -175,14 +175,14 @@ class StorageService {
 		}
 
 		while (
-			/** @var array{fileid:int,mimetype:int} $file */
+			/** @var array */
 			$file = $files->fetch()
 		) {
 			yield [
-				'fileid' => $file['fileid'],
-				'image' => in_array($file['mimetype'], $imageTypes),
-				'video' => in_array($file['mimetype'], $videoTypes),
-				'audio' => in_array($file['mimetype'], $audioTypes),
+				'fileid' => (int) $file['fileid'],
+				'image' => in_array((int) $file['mimetype'], $imageTypes),
+				'video' => in_array((int) $file['mimetype'], $videoTypes),
+				'audio' => in_array((int) $file['mimetype'], $audioTypes),
 			];
 		}
 
