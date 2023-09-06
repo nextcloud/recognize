@@ -72,28 +72,33 @@ class InstallDeps implements IRepairStep {
 	}
 
 	public function getName(): string {
-		return 'Install dependencies';
+		return 'Install recognize dependencies';
 	}
 
 	public function run(IOutput $output): void {
-		$existingBinary = $this->config->getAppValue('recognize', 'node_binary', '');
-		if ($existingBinary !== '') {
-			$version = $this->testBinary($existingBinary);
-			if ($version === null) {
+		try {
+			$existingBinary = $this->config->getAppValue('recognize', 'node_binary', '');
+			if ($existingBinary !== '') {
+				$version = $this->testBinary($existingBinary);
+				if ($version === null) {
+					$this->installNodeBinary($output);
+				}
+			} else {
 				$this->installNodeBinary($output);
 			}
-		} else {
-			$this->installNodeBinary($output);
+
+			$this->setBinariesPermissions();
+
+			$binaryPath = $this->config->getAppValue('recognize', 'node_binary', '');
+
+			$this->runTfjsInstall($binaryPath);
+			$this->runFfmpegInstall($binaryPath);
+			$this->runTfjsGpuInstall($binaryPath);
+			$this->setNiceBinaryPath();
+		} catch(\Throwable $e) {
+			$output->warning('Failed to automatically install dependencies for recognize. Check the recognize admin panel for potential problems.');
+			$this->logger->error('Failed to automatically install dependencies for recognize. Check the recognize admin panel for potential problems.', ['exception' => $e]);
 		}
-
-		$this->setBinariesPermissions();
-
-		$binaryPath = $this->config->getAppValue('recognize', 'node_binary', '');
-
-		$this->runTfjsInstall($binaryPath);
-		$this->runFfmpegInstall($binaryPath);
-		$this->runTfjsGpuInstall($binaryPath);
-		$this->setNiceBinaryPath();
 	}
 
 	protected function setNiceBinaryPath() : void {

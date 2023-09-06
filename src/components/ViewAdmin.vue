@@ -305,6 +305,7 @@
 			<p>
 				<input v-model="settings['node_binary']" type="text" @change="onChange">
 			</p>
+			<p>{{ t('recognize', 'For Nextcloud Snap users, you need to adjust this path to point to the snap\'s "current" directory as the pre-configured path will change with each update. For example, set it to "/var/snap/nextcloud/current/nextcloud/extra-apps/recognize/bin/node" instead of "/var/snap/nextcloud/9337974/nextcloud/extra-apps/recognize/bin/node"') }}</p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Classifier process priority')">
 			<p v-if="nice === undefined">
