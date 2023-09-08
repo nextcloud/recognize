@@ -88,6 +88,7 @@ OC.L10N.register(
     "Could not load Tensorflow WASM in Node.js. Something is wrong with your setup." : "無法在 Node.js 中加載 TensorFlow WASM。您的設置有問題。",
     "Tensorflow WASM was loaded successfully into Node.js." : "TensorFlow WASM 已成功加載到 Node.js 中。",
     "If the shipped Node.js binary doesn't work on your system for some reason you can set the path to a custom node.js binary. Currently supported is Node v14.17 and newer v14 releases." : "如果隨附的 Node.js 二進製文件由於某種原因無法在您的系統上運行，您可以將路徑設置為自定義 node.js 二進製文件。當前支持的是 Node v14.17 和更新的 v14 版本。",
+    "For Nextcloud Snap users, you need to adjust this path to point to the snap's \"current\" directory as the pre-configured path will change with each update. For example, set it to \"/var/snap/nextcloud/current/nextcloud/extra-apps/recognize/bin/node\" instead of \"/var/snap/nextcloud/9337974/nextcloud/extra-apps/recognize/bin/node\"" : "對於 Nextcloud Snap 用戶，您需要調整此路徑以指向快照的“當前”目錄，因為預配置的路徑會隨著每次更新而更改。例如，將其設置為“/var/snap/nextcloud/current/nextcloud/extra-apps/recognize/bin/node”而不是“/var/snap/nextcloud/9337974/nextcloud/extra-apps/recognize/bin/node”",
     "Classifier process priority" : "分類器進程優先級",
     "Checking Nice binary" : "檢查 Nice 二進製檔案",
     "Could not find the Nice binary. You may need to set the path to a working binary manually." : "找不到 Nice 二進製檔案。您可能需要手動設置正常運行二進製檔案的路徑。",
