@@ -98,6 +98,7 @@ Recognize uses
 This app temporarily stores files to be recognized in /tmp. If you're using docker, you might find
 that adding an additional volume for /tmp speeds things up and eases the burden on your disk:
 
+⚠️⚠️⚠️ Make sure that your RAM is big enough to store big files. Otherwise public uploads will fail.
 
 `docker run`: Add `--mount type=tmpfs,destination=/tmp:exec` to command line.
 
