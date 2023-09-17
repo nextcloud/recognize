@@ -28,7 +28,7 @@ use Symfony\Component\Process\Process;
 
 abstract class Classifier {
 	public const TEMP_FILE_DIMENSION = 1024;
-	public const MAX_EXECUTION_TIME = 60 * 5;
+	public const MAX_EXECUTION_TIME = 0;
 
 	protected LoggerInterface $logger;
 	protected IConfig $config;

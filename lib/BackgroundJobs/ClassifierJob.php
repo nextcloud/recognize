@@ -17,21 +17,19 @@ use OCP\Files\Config\IUserMountCache;
 use Psr\Log\LoggerInterface;
 
 abstract class ClassifierJob extends TimedJob {
-	private LoggerInterface $logger;
-	private QueueService $queue;
-	private IUserMountCache $userMountCache;
-	private IJobList $jobList;
-	private SettingsService $settingsService;
-
-	public function __construct(ITimeFactory $time, LoggerInterface $logger, QueueService $queue, IUserMountCache $userMountCache, IJobList $jobList, SettingsService $settingsService) {
+	
+	public function __construct(
+		ITimeFactory $time,
+		private LoggerInterface $logger,
+		private QueueService $queue,
+		private IUserMountCache $userMountCache,
+		private IJobList $jobList,
+		private SettingsService $settingsService
+	) {
 		parent::__construct($time);
-		$this->logger = $logger;
-		$this->queue = $queue;
-		$this->userMountCache = $userMountCache;
-		$this->jobList = $jobList;
-		$this->settingsService = $settingsService;
 		$this->setInterval(60 * 5);
 		$this->setTimeSensitivity(self::TIME_INSENSITIVE);
+		$this->setAllowParallelRuns(false);
 	}
 
 	protected function runClassifier(string $model, array $argument): void {
