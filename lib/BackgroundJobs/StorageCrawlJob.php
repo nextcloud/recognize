@@ -23,6 +23,7 @@ use OCP\DB\Exception;
 use Psr\Log\LoggerInterface;
 
 class StorageCrawlJob extends QueuedJob {
+	public const BATCH_SIZE = 2000;
 	private LoggerInterface $logger;
 	private QueueService $queue;
 	private IJobList $jobList;
@@ -62,7 +63,7 @@ class StorageCrawlJob extends QueuedJob {
 		$this->jobList->remove(self::class, $argument);
 
 		$i = 0;
-		foreach ($this->storageService->getFilesInMount($storageId, $overrideRoot, $models, $lastFileId) as $file) {
+		foreach ($this->storageService->getFilesInMount($storageId, $overrideRoot, $models, $lastFileId, self::BATCH_SIZE) as $file) {
 			$i++;
 			$queueFile = new QueueFile();
 			$queueFile->setStorageId($storageId);
