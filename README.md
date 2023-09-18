@@ -65,6 +65,9 @@ Learn more about the Nextcloud Ethical AI Rating [in our blog](https://nextcloud
 ### Privacy
 This app does not send any sensitive data to cloud providers or similar services. All image processing is done on your nextcloud machine, using Tensorflow.js running in Node.js, which comes bundled with this app.
 
+### Encryption
+Note that end-to-end encrypted files are not possible to be processed by recognize, because the server by design cannot read them.
+
 ### Categories
 This is the [list of recognized things and which categories they are currently mapped to](https://github.com/marcelklehr/recognize/blob/master/src/rules.yml). I'm happy to accept pull requests for this file to fine tune predictions.
 
