@@ -275,9 +275,9 @@ class AdminController extends Controller {
 		return new JSONResponse(['cron' => $cron]);
 	}
 
-	public function setSetting(string $setting, string $value): JSONResponse {
+	public function setSetting(string $setting, $value): JSONResponse {
 		try {
-			$this->settingsService->setSetting($setting, $value);
+			$this->settingsService->setSetting($setting, (string) $value);
 			return new JSONResponse([], Http::STATUS_OK);
 		} catch (\OCA\Recognize\Exception\Exception $e) {
 			return new JSONResponse([], Http::STATUS_BAD_REQUEST);
