@@ -28,6 +28,7 @@ OC.L10N.register(
     "Document" : "ドキュメント",
     "Bucket" : "バケット名",
     "Festival" : "祭",
+    "Event" : "イベント",
     "Gas station" : "ガソリンスタンド",
     "Parking" : "駐車場",
     "Gallery" : "ギャラリー",
