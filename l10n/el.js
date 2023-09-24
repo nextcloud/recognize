@@ -1,6 +1,7 @@
 OC.L10N.register(
     "recognize",
     {
+    "Recognize" : "Αναγνώριση",
     "Status" : "Κατάσταση",
     "Reset" : "Επαναφορά",
     "Failed to load settings" : "Αποτυχία φόρτωσης ρυθμίσεων",
@@ -8,6 +9,8 @@ OC.L10N.register(
     "never" : "ποτέ",
     "{time} ago" : "{time} πριν",
     "Farm" : "Φάρμα",
+    "Landscape" : "Οριζόντια",
+    "Portrait" : "Κάθετα",
     "People" : "Άτομα",
     "Dog" : "Σκύλος",
     "Music" : "Μουσική",

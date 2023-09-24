@@ -1,4 +1,5 @@
 { "translations": {
+    "Recognize" : "Αναγνώριση",
     "Status" : "Κατάσταση",
     "Reset" : "Επαναφορά",
     "Failed to load settings" : "Αποτυχία φόρτωσης ρυθμίσεων",
@@ -6,6 +7,8 @@
     "never" : "ποτέ",
     "{time} ago" : "{time} πριν",
     "Farm" : "Φάρμα",
+    "Landscape" : "Οριζόντια",
+    "Portrait" : "Κάθετα",
     "People" : "Άτομα",
     "Dog" : "Σκύλος",
     "Music" : "Μουσική",
