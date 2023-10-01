@@ -12,6 +12,7 @@ OC.L10N.register(
     "Face recognition:" : "Rozpoznávanie tváre:",
     "Queued files" : "Súbory vo fronte",
     "Last classification: " : "Posledná klasifikácia:",
+    "Last background job execution: " : "Posledné spustenie úloh na pozadí:",
     "Object recognition is working." : "Rozpoznávanie objektov je funkčné.",
     "An error occurred during object recognition, please check the Nextcloud logs." : "Počas rozpoznávania objektu sa vyskytla chyba, skontrolujte záznam o chybách Nextcloud.",
     "Object recognition:" : "Rozpoznávanie objektov:",
