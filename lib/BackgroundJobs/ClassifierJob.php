@@ -29,10 +29,16 @@ abstract class ClassifierJob extends TimedJob {
 		parent::__construct($time);
 		$this->setInterval(60 * 5);
 		$this->setTimeSensitivity(self::TIME_INSENSITIVE);
-		$this->setAllowParallelRuns(false);
+		$this->setAllowParallelRuns($this->settingsService->getSetting('concurrency.enabled') === 'true');
 	}
 
 	protected function runClassifier(string $model, array $argument): void {
+		sleep(10);
+		if ($this->settingsService->getSetting('concurrency.enabled') !== 'true' && $this->anyClassifierJobsRunning()) {
+			$this->logger->debug('Stalling job '.static::class.' with argument ' . var_export($argument, true) . ' because other classifiers are already reserved');
+			return;
+		}
+
 		/**
 		 * @var int $storageId
 		 */
@@ -104,4 +110,22 @@ abstract class ClassifierJob extends TimedJob {
 	 * @throws \RuntimeException|\ErrorException
 	 */
 	abstract protected function classify(array $files) : void;
+
+	/**
+	 * @return bool
+	 */
+	private function anyClassifierJobsRunning() {
+		foreach ([
+			ClassifyFacesJob::class,
+			ClassifyImagenetJob::class,
+			ClassifyLandmarksJob::class,
+			ClassifyMovinetJob::class,
+			ClassifyMusicnnJob::class,
+		] as $jobClass) {
+			if ($this->jobList->hasReservedJob($jobClass)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

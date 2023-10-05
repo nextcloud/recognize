@@ -208,7 +208,7 @@
 				{{ t('recognize', 'Clear queues and background jobs') }}
 			</button>
 		</NcSettingsSection>
-		<NcSettingsSection :title="t('recognize', 'CPU cores') ">
+		<NcSettingsSection :title="t('recognize', 'Resource usage') ">
 			<p>{{ t('recognize', 'By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used. (Note: In WASM mode, currently only 1 core can be used at all times.)') }}</p>
 			<p>
 				<label>
@@ -221,6 +221,15 @@
 					<span>{{ t('recognize', 'Number of CPU Cores (0 for no limit)') }}</span>
 				</label>
 			</p>
+      <p>&nbsp;</p>
+      <p>{{ t('recognize', 'By default, recognize will only ever run one classifier process at a time. If you have a lot of resources available and want to run as many processes in parallel as possible, you can turn on concurrency here.') }}</p>
+      <p>
+        <NcCheckboxRadioSwitch :checked.sync="settings['concurrency.enabled']"
+                               type="switch"
+                               @update:checked="onChange">
+          {{ t('recognize', 'Enable unlimited concurrency of classifier processes') }}
+        </NcCheckboxRadioSwitch>
+      </p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Tensorflow WASM mode')">
 			<p v-if="avx === undefined || platform === undefined || musl === undefined">
@@ -378,9 +387,9 @@ import { generateUrl } from '@nextcloud/router'
 import { loadState } from '@nextcloud/initial-state'
 import humanizeDuration from 'humanize-duration'
 
-const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'faces.batchSize', 'imagenet.batchSize', 'landmarks.batchSize', 'movinet.batchSize', 'musicnn.batchSize', 'clusterFaces.status', 'clusterFaces.lastRun', 'nice_binary', 'nice_value']
+const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'faces.batchSize', 'imagenet.batchSize', 'landmarks.batchSize', 'movinet.batchSize', 'musicnn.batchSize', 'clusterFaces.status', 'clusterFaces.lastRun', 'nice_binary', 'nice_value', 'concurrency.enabled']
 
-const BOOLEAN_SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'clusterFaces.status']
+const BOOLEAN_SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'clusterFaces.status', 'concurrency.enabled']
 
 const MAX_RELATIVE_DATE = 1000 * 60 * 60 * 24 * 7 // one week
 

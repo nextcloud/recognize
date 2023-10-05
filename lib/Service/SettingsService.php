@@ -51,6 +51,7 @@ class SettingsService {
 		'musicnn.batchSize' => '100',
 		'nice_binary' => '',
 		'nice_value' => '0',
+		'concurrency.enabled' => 'false',
 	];
 
 	/** @var array<string,string>  */
