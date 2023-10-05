@@ -143,5 +143,9 @@ jobs:
           ./occ files:scan admin -vvv
           php cron.php
           php cron.php
-          cat data/nextcloud.log
           [ ! -z "$(./occ tag:list)" ]
+
+      - name: Print logs
+        if: always()
+        run: |
+          cat data/nextcloud.log
