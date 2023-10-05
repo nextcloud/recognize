@@ -29,7 +29,7 @@ abstract class ClassifierJob extends TimedJob {
 		parent::__construct($time);
 		$this->setInterval(60 * 5);
 		$this->setTimeSensitivity(self::TIME_INSENSITIVE);
-		$this->setAllowParallelRuns($this->settingsService->getSetting('concurrency.enabled') === 'true');
+		$this->setAllowParallelRuns($settingsService->getSetting('concurrency.enabled') === 'true');
 	}
 
 	protected function runClassifier(string $model, array $argument): void {

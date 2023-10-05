@@ -275,7 +275,12 @@ class AdminController extends Controller {
 		return new JSONResponse(['cron' => $cron]);
 	}
 
-	public function setSetting(string $setting, $value): JSONResponse {
+	/**
+	 * @param string $setting
+	 * @param scalar $value
+	 * @return JSONResponse
+	 */
+	public function setSetting(string $setting, float|bool|int|string $value): JSONResponse {
 		try {
 			$this->settingsService->setSetting($setting, (string) $value);
 			return new JSONResponse([], Http::STATUS_OK);
