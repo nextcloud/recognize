@@ -62,7 +62,6 @@
     "Rescan all files" : "إعادة فحص كل الملفات",
     "Click the button below to clear the classifier queues and clear all background jobs. This is useful when you want to do the initial classification using the terminal command." : "انقر فوق الزر أدناه لمحو قوائم انتظار المُصنِّف classifier ومحو جميع وظائفه في الخلفية. يكون هذا مفيدًا عندما تريد إجراء التصنيف الأولي باستخدام سطر الأوامر على الطرفية.",
     "Clear queues and background jobs" : "محو قوائم الانتظار و وظائف الخلفية",
-    "CPU cores" : "أنوية وحدة المعالجة المركزية",
     "By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used. (Note: In WASM mode, currently only 1 core can be used at all times.)" : "بشكل افتراضي، سيتم استخدام جميع نُوَى وحدة المعالجة المركزية CPU cores المتاحة والتي قد تضع نظامك تحت عبء كبير. لتجنب ذلك، يمكنك تحديد عدد النُّوَى المستعملة. (ملاحظة: في وضع WASM، يمكن حاليًا استخدام نواة واحدة فقط في جميع الأوقات.)",
     "Number of CPU Cores (0 for no limit)" : "عدد أنوية وحدة المعالجة المركزية CPU cores ـ (0 تعني غير عدد محدود)",
     "Tensorflow WASM mode" : "وضع Tensorflow WASM",

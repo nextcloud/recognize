@@ -7,7 +7,6 @@ OC.L10N.register(
     "Audio tagging" : "Означување на звуци",
     "Video tagging" : "Означување на видеа",
     "Reset" : "Ресетирање",
-    "CPU cores" : "CPU јадра",
     "Failed to load settings" : "Неуспешно вчитување на параметрите",
     "Failed to save settings" : "Неуспешно зачувување на параметрите",
     "never" : "никогаш",

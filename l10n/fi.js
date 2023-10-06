@@ -17,7 +17,6 @@ OC.L10N.register(
     "Video recognition:" : "Videotunnistus:",
     "Reset" : "Palauta",
     "Rescan all files" : "Käy läpi kaikki tiedostot uudelleen",
-    "CPU cores" : "Suorittimen ytimet",
     "Number of CPU Cores (0 for no limit)" : "Suoritinydinten määrä (0 tarkoittaa rajoittamatonta)",
     "Checking CPU" : "Tarkistetaan suoritinta",
     "Enable WASM mode" : "Käytä WASM-tilaa",

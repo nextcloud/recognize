@@ -18,7 +18,6 @@
     "Video recognition:" : "Riconoscimento dei video:",
     "Reset" : "Ripristina",
     "Rescan all files" : "Ri-analizza tutti i file",
-    "CPU cores" : "Core della CPU",
     "Number of CPU Cores (0 for no limit)" : "Numero dei core della CPU (0 per illimitato)",
     "Checking CPU" : "Analisi CPU in corso",
     "Enable WASM mode" : "Abilita modalità WASM",

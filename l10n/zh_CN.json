@@ -41,7 +41,6 @@
     "Reset faces for classified files" : "重置分类文件的面孔",
     "Click the button below to rescan all files in this instance and add them to the classifier queues." : "点击下面的按钮，重新扫描这个实例中的所有文件，并将它们添加到分类器队列中。",
     "Rescan all files" : "重新扫描所有文件",
-    "CPU cores" : "CPU 核心",
     "By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used. (Note: In WASM mode, currently only 1 core can be used at all times.)" : "默认情况下，所有可用的 CPU 核心都将被使用，这可能会对您的系统造成相当大的负载。为了避免这种情况，您可以限制所使用的 CPU 核心数量。（注意：在 WASM 模式下，目前只能始终使用 1 个核心。）",
     "Number of CPU Cores (0 for no limit)" : "CPU 核心数（0 表示无限制）。",
     "Tensorflow WASM mode" : "Tensorflow 的 WASM 模式",

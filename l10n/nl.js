@@ -12,7 +12,6 @@ OC.L10N.register(
     "Face recognition is working. " : "Gezichtsherkenning is functioneel.",
     "An error occurred during face recognition, please check the Nextcloud logs." : "Er is een fout opgetreden bij de gezichtsherkenning, controleer alstublieft de Nextcloud logboekbestanden.",
     "Reset" : "Herstellen",
-    "CPU cores" : "CPU cores",
     "Failed to load settings" : "Kon instellingen niet laden",
     "Failed to save settings" : "Kon instellingen niet opslaan",
     "never" : "nooit",

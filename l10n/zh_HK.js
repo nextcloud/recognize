@@ -64,7 +64,6 @@ OC.L10N.register(
     "Rescan all files" : "重新掃描所有檔案",
     "Click the button below to clear the classifier queues and clear all background jobs. This is useful when you want to do the initial classification using the terminal command." : "單擊下面的按鈕可清除分類器隊列並清除所有後台作業。當您想使用終端命令進行初始分類時，這很有用。",
     "Clear queues and background jobs" : "清除隊列和後台作業",
-    "CPU cores" : "CPU核心",
     "By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used. (Note: In WASM mode, currently only 1 core can be used at all times.)" : "默認情況下，將使用所有可用的 CPU 內核，這可能會使您的系統承受相當大的負載。 為避免這種情況，您可以限制使用的 CPU 內核數量。（注意：在 WASM 模式下，目前只能一直使用 1 個核心。）",
     "Number of CPU Cores (0 for no limit)" : "CPU 核心數（0 表示無限制）",
     "Tensorflow WASM mode" : "Tensorflow WASM mode",

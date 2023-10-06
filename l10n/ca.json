@@ -42,7 +42,6 @@
     "Reset faces for classified files" : "Restableix les cares dels fitxers classificats",
     "Click the button below to rescan all files in this instance and add them to the classifier queues." : "Feu clic al botó següent per tornar a analitzar tots els fitxers en aquesta instància i afegir-los a les cues de classificadors.",
     "Rescan all files" : "Torna a escanejar tots els fitxers",
-    "CPU cores" : "Nuclis de CPU",
     "Number of CPU Cores (0 for no limit)" : "Nombre de nuclis de CPU (0 sense límit)",
     "Tensorflow WASM mode" : "Mode WASM Tensorflow",
     "Checking CPU" : "Comprovació de la CPU",

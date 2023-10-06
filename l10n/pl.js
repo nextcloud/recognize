@@ -32,7 +32,6 @@ OC.L10N.register(
     "Reset" : "Resetuj",
     "Reset tags for classified files" : "Zresetuj etykiety dla sklasyfikowanych plików",
     "Rescan all files" : "Ponownie przeskanuj wszystkie pliki",
-    "CPU cores" : "Rdzenie procesora",
     "Number of CPU Cores (0 for no limit)" : "Liczba rdzeni procesora (0 bez limitu)",
     "Checking CPU" : "Sprawdzanie procesora",
     "Your machine supports native TensorFlow operation, you do not need WASM mode." : "Twoja maszyna obsługuje natywne działanie TensorFlow, nie potrzebujesz trybu WASM.",

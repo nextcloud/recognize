@@ -7,7 +7,6 @@ OC.L10N.register(
     "Audio tagging" : "Označevanje zvočnih virov",
     "Video tagging" : "Označevanje videoposnetkov",
     "Reset" : "Ponastavi",
-    "CPU cores" : "Jedra CPE",
     "Failed to load settings" : "Nalaganje nastavitev je spodletelo.",
     "Failed to save settings" : "Shranjevanje nastavitev je spodletelo",
     "never" : "nikoli",

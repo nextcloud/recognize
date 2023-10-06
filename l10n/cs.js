@@ -63,7 +63,6 @@ OC.L10N.register(
     "Rescan all files" : "Znovu naskenovat veškeré soubory",
     "Click the button below to clear the classifier queues and clear all background jobs. This is useful when you want to do the initial classification using the terminal command." : "Pokud chcete vyčistit fronty rozřazování a úlohy na pozadí, klikněte na níže uvedené tlačítko. Toto se hodí pokud chcete provést počáteční rozřazování pomocí příkazu v terminálu.",
     "Clear queues and background jobs" : "Vyčistit fronty a úlohy na pozadí",
-    "CPU cores" : "Jader procesoru",
     "By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used. (Note: In WASM mode, currently only 1 core can be used at all times.)" : "Ve výchozím stavu budou použita veškerá dostupná jádra procesoru, což může vámi využívaný systém podstatně vytížit. Pokud se tomu chcete vyhnout, je možné množství využívaných jader procesoru omezit. (Pozn. v režimu WASM je v tuto chvíli možné využívat pouze jedno jádro.)",
     "Number of CPU Cores (0 for no limit)" : "Počet jader procesoru (0 znamená bez omezení)",
     "Tensorflow WASM mode" : "WASM režim Tensorflow",

@@ -30,7 +30,6 @@
     "Reset tags for classified files" : "Berrezarri etiketak sailkatutako fitxategietarako",
     "Click the button below to rescan all files in this instance and add them to the classifier queues." : "Egin klik beheko botoian instantzia honetako fitxategi guztiak berriro eskaneatzeko eta sailkatzaile-ilaretan gehitzeko.",
     "Rescan all files" : "Eskaneatu fitxategi guztiak berriro",
-    "CPU cores" : "PUZ nukleoak",
     "Number of CPU Cores (0 for no limit)" : "PUZ nukleo kopurua (0 mugarik gabe ezartzeko)",
     "Checking CPU" : "PUZa egiaztatzen",
     "Your machine supports native TensorFlow operation, you do not need WASM mode." : "Zure makinak TensorFlow jatorrizko eragiketa onartzen du, ez duzu WASM modua behar.",

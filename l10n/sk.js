@@ -32,7 +32,6 @@ OC.L10N.register(
     "Reset" : "Resetovať",
     "Reset tags for classified files" : "Obnoviť značky pre klasifikované súbory",
     "Rescan all files" : "Znova skenovať všetky súbory",
-    "CPU cores" : "CPU jadrá",
     "Number of CPU Cores (0 for no limit)" : "Počet CPU jadier (0 pre žiadny limit)",
     "Checking CPU" : "Kontrolujem CPU",
     "Your machine supports native TensorFlow operation, you do not need WASM mode." : "Váš systém podporuje natívne operácie TensorFlow, nepotrebujete WASM mód.",

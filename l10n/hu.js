@@ -46,7 +46,6 @@ OC.L10N.register(
     "Rescan all files" : "Összes fájl újraolvasása",
     "Click the button below to clear the classifier queues and clear all background jobs. This is useful when you want to do the initial classification using the terminal command." : "Kattintson a lenti gombra, hogy kiürítse az osztályozó sorokat és az összes háttérfeladatot. Ez akkor hasznos, ha a kezdeti osztályozást a terminálparanccsal szeretné elvégezni.",
     "Clear queues and background jobs" : "Sorok és háttérfeladatok kiürítése",
-    "CPU cores" : "CPU-magok",
     "By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used. (Note: In WASM mode, currently only 1 core can be used at all times.)" : "Alapértelmezetten az összes CPU-mag használva lesz, amely jelentős terhelés alá helyezi a rendszert. Ennek elkerüléséhez korlátozhatja a használt CPU-magok számát. (Megjegyzés: WASM módban jelenleg egyszerre csak 1 mag használható.",
     "Number of CPU Cores (0 for no limit)" : "CPU-magok száma (0, ha nincs korlát)",
     "Tensorflow WASM mode" : "Tensorflow WASM mód",

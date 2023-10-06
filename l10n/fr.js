@@ -54,7 +54,6 @@ OC.L10N.register(
     "Rescan all files" : "Rescanner tous les fichiers",
     "Click the button below to clear the classifier queues and clear all background jobs. This is useful when you want to do the initial classification using the terminal command." : "Cliquez sur le bouton ci-dessous pour vider les files d'attente des classificateurs et toutes les tâches d'arrière-plan. Cette fonction est utile lorsque vous souhaitez effectuer la classification initiale à l'aide de la commande du terminal.",
     "Clear queues and background jobs" : "Vider les files d'attente et les tâches d'arrière-plan",
-    "CPU cores" : "Cœurs de processeur",
     "By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used. (Note: In WASM mode, currently only 1 core can be used at all times.)" : "Par défaut, tous les cœurs de processeurs seront utilisés, ce qui peut soumettre votre système à une charge considérable. Pour éviter cela, vous pouvez limiter le nombre de cœurs de processeur utilisés. (Note : actuellement, en mode WASM, seul un cœur peut fonctionner à un instant donné.)",
     "Number of CPU Cores (0 for no limit)" : "Nombre de cœurs du processeur (0 pour aucune limite)",
     "Tensorflow WASM mode" : "Mode WASM de Tensorflow",

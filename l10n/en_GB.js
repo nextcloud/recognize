@@ -64,7 +64,6 @@ OC.L10N.register(
     "Rescan all files" : "Rescan all files",
     "Click the button below to clear the classifier queues and clear all background jobs. This is useful when you want to do the initial classification using the terminal command." : "Click the button below to clear the classifier queues and clear all background jobs. This is useful when you want to do the initial classification using the terminal command.",
     "Clear queues and background jobs" : "Clear queues and background jobs",
-    "CPU cores" : "CPU cores",
     "By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used. (Note: In WASM mode, currently only 1 core can be used at all times.)" : "By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used. (Note: In WASM mode, currently only 1 core can be used at all times.)",
     "Number of CPU Cores (0 for no limit)" : "Number of CPU Cores (0 for no limit)",
     "Tensorflow WASM mode" : "Tensorflow WASM mode",
