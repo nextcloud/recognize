@@ -54,7 +54,7 @@ class IgnoreService {
 		 * @var list<array{path: string}> $ignoreFiles
 		 */
 		$ignoreFiles = $result->fetchAll();
-		$directories = array_map(static fn ($file): string => dirname($file['path']), $ignoreFiles);
+		$directories = array_map(static fn ($file): string => dirname($file['path']) === '.' ? '' : dirname($file['path']), $ignoreFiles);
 		$this->inMemoryCache[$cacheKey] = $directories;
 		$this->localCache->set($cacheKey, $directories);
 		return $directories;
