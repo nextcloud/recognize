@@ -297,6 +297,15 @@ class ClassifierTest extends TestCase {
 			),
 			'Correct tag should have been set on image file.'
 		);
+
+		self::assertFalse(
+			$objectMapper->haveTag(
+				(string)$this->ignoredFile->getId(),
+				'files',
+				$tagManager->getTag('Alpine', true, true)->getId()
+			),
+			'Correct tag should not have been set on ignored image file'
+		);
 	}
 
 	public function testLandmarksPipeline() : void {
@@ -546,6 +555,15 @@ class ClassifierTest extends TestCase {
 				$tagManager->getTag('jumping jacks', true, true)->getId()
 			),
 			'Correct tag should have been set on gif file'
+		);
+
+		self::assertFalse(
+			$objectMapper->haveTag(
+				(string)$this->ignoredFile->getId(),
+				'files',
+				$tagManager->getTag('jumping jacks', true, true)->getId()
+			),
+			'Correct tag should not have been set on ignored file'
 		);
 	}
 
