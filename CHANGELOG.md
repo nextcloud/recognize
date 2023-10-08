@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.0] - 2023-10-08
+
+### Breaking changes
+ - Drop support for Nextcloud 26
+
+### New
+- storage crawl job: Increase batch size to 2000
+- Allow enabling/disabling classifier concurrency
+
+### Fixed
+ - fix(IgnoreService): Always return paths matching filecache format (fixes ignore files in external storage)
+ - Remove max execution time limitation and disable parallel classifier job execution (fixes stuck classification)
+ - Fix(ViewAdmin): Don't display last bg job execution if it's 0
+ - Fix(snap): Improve interoperability with nc snap
+ - fix(AdminController): Catch failed cpuinfo readfile
+ - Fix(l10n): Update translations from Transifex
+
 ## [4.3.2] - 2023-08-19
 
 ### Fixed
