@@ -17,14 +17,14 @@ use OCP\Files\Config\IUserMountCache;
 use Psr\Log\LoggerInterface;
 
 abstract class ClassifierJob extends TimedJob {
-	
+
 	public function __construct(
 		ITimeFactory $time,
 		private LoggerInterface $logger,
 		private QueueService $queue,
 		private IUserMountCache $userMountCache,
 		private IJobList $jobList,
-		private SettingsService $settingsService
+		private SettingsService $settingsService,
 	) {
 		parent::__construct($time);
 		$this->setInterval(60 * 5);
@@ -34,7 +34,7 @@ abstract class ClassifierJob extends TimedJob {
 
 	protected function runClassifier(string $model, array $argument): void {
 		sleep(10);
-		if ($this->settingsService->getSetting('concurrency.enabled') !== 'true' && $this->anyClassifierJobsRunning()) {
+		if ($this->settingsService->getSetting('concurrency.enabled') !== 'true' && $this->anyOtherClassifierJobsRunning()) {
 			$this->logger->debug('Stalling job '.static::class.' with argument ' . var_export($argument, true) . ' because other classifiers are already reserved');
 			return;
 		}
@@ -114,7 +114,7 @@ abstract class ClassifierJob extends TimedJob {
 	/**
 	 * @return bool
 	 */
-	private function anyClassifierJobsRunning() {
+	private function anyOtherClassifierJobsRunning() {
 		foreach ([
 			ClassifyFacesJob::class,
 			ClassifyImagenetJob::class,
@@ -122,8 +122,12 @@ abstract class ClassifierJob extends TimedJob {
 			ClassifyMovinetJob::class,
 			ClassifyMusicnnJob::class,
 		] as $jobClass) {
-			if ($this->jobList->hasReservedJob($jobClass)) {
-				return true;
+			if ($jobClass === self::class) {
+				continue;
+			} else {
+				if ($this->jobList->hasReservedJob($jobClass)) {
+					return true;
+				}
 			}
 		}
 		return false;
