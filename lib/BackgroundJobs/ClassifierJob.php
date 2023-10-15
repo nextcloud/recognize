@@ -122,7 +122,7 @@ abstract class ClassifierJob extends TimedJob {
 			ClassifyMovinetJob::class,
 			ClassifyMusicnnJob::class,
 		] as $jobClass) {
-			if ($jobClass === self::class) {
+			if ($jobClass === static::class) {
 				continue;
 			} else {
 				if ($this->jobList->hasReservedJob($jobClass)) {
