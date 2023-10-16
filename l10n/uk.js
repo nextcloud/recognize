@@ -7,6 +7,7 @@ OC.L10N.register(
     "Failed to save settings" : "Неможливо зберегти налаштування",
     "never" : "ніколи",
     "{time} ago" : "{time} тому",
+    "Cat" : "Кіт",
     "Farm" : "Ферма",
     "Landscape" : "Пейзаж",
     "Portrait" : "Портрет",
