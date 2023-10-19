@@ -28,7 +28,7 @@
     "Video recognition:" : "Rozpoznávanie videa:",
     "Enable human action recognition (e.g. arm wrestling, dribbling basketball, hula hooping)" : "Povoliť rozpoznávanie ľudskej činnosti (napr. pretláčanie rukou, driblovanie v basketbale, hula hooping)",
     "Reset" : "Resetovať",
-    "Reset tags for classified files" : "Obnoviť značky pre klasifikované súbory",
+    "Reset tags for classified files" : "Obnoviť štítky pre klasifikované súbory",
     "Rescan all files" : "Znova skenovať všetky súbory",
     "Number of CPU Cores (0 for no limit)" : "Počet CPU jadier (0 pre žiadny limit)",
     "Checking CPU" : "Kontrolujem CPU",
