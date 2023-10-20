@@ -63,6 +63,7 @@ OC.L10N.register(
     "Enable WASM mode" : "WASM mód engedélyezése",
     "Tensorflow GPU mode" : "Tensorflow GPU mód",
     "Enable GPU mode" : "GPU mód engedélyezése",
+    "Learn how to setup GPU mode with Recognize" : "Tudja meg, hogyan állítsa be a GPU módot a felismeréshez",
     "Node.js" : "Node.js",
     "Checking Node.js" : "A Node.js ellenőrzése",
     "Node.js {version} binary was installed successfully." : "A Node.js {version} bináris sikeresen telepítve lett.",
