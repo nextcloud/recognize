@@ -25,6 +25,7 @@ OC.L10N.register(
     "Waiting for status reports on object recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs." : "Várakozás a tárgyfelismeréssel kapcsolatos állapotjelentésre. Ha ez az üzenet 15 perc múlva is itt van, ellenőrizze a Nextcloud naplóit.",
     "Object recognition:" : "Tárgyfelismerés:",
     "Landmark recognition is working." : "A tereptárgyfelismerés működik.",
+    "An error occurred during landmark recognition, please check the Nextcloud logs." : "Hiba történt a tereptárgy felismerés során, ellenőrizze a Nextcloud naplófájljait.",
     "Landmark recognition:" : "Tereptárgy felismerés:",
     "Enable object recognition (e.g. food, vehicles, landscapes)" : "Tárgyfelismerés engedélyezése (például ételek, járművek, műemlékek)",
     "The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)" : "A feldolgozandó fájlok száma feladatfuttatásonként (A feladatok 5 percenként lesznek beütemezve; normál működés esetén ~100 vagy több ajánlott, WASM módban ~20 a javasolt)",
