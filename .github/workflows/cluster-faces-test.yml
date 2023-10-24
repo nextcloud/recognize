@@ -25,7 +25,7 @@ jobs:
       matrix:
         php-versions: ['8.1']
         databases: ['sqlite']
-        server-versions: ['stable26']
+        server-versions: ['stable27', 'master']
         pure-js-mode: ['false']
 
     name: Test cluster-faces command on ${{ matrix.server-versions }} wasm:${{ matrix.pure-js-mode }}

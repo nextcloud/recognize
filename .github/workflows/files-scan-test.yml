@@ -25,7 +25,7 @@ jobs:
       matrix:
         php-versions: ['8.1']
         databases: ['sqlite', 'mysql', 'pgsql']
-        server-versions: ['stable27']
+        server-versions: ['stable27', 'master']
 
     name: Test files:scan command on ${{ matrix.databases }}-${{ matrix.server-versions }}
 

@@ -30,7 +30,7 @@ jobs:
       matrix:
         php-versions: ['8.1']
         databases: ['sqlite']
-        server-versions: ['stable27']
+        server-versions: ['stable27', 'master']
         pure-js-mode: ['false']
         imagenet-enabled: ['true']
         faces-enabled: ['true']
