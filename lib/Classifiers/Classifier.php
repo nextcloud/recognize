@@ -268,9 +268,69 @@ abstract class Classifier {
 			return $path;
 		}
 
+		$use_gd = $this->config->getSystemValueString('recognize.preview.gd', 'true');
+		$use_gd_quality = (int)$this->config->getSystemValue('recognize.preview.quality', '100');
 		try {
 			$this->logger->debug('generating preview of ' . $file->getId() . ' with dimension '.self::TEMP_FILE_DIMENSION);
-			$image = $this->previewProvider->getPreview($file, self::TEMP_FILE_DIMENSION, self::TEMP_FILE_DIMENSION);
+
+			$imagetype = exif_imagetype($path); //To troubleshoot console errors, GD does not support all formats.
+			if (0 < $imagetype && $use_gd == 'true') {
+				$image = imagecreatefromstring(file_get_contents($path));
+				$width = imagesx($image);
+				$height = imagesy($image);
+
+				$maxWidth = self::TEMP_FILE_DIMENSION;
+				$maxHeight = self::TEMP_FILE_DIMENSION;
+
+				if ($width > $maxWidth || $height > $maxHeight) {
+					$aspectRatio = $width / $height;
+					if ($width > $height) {
+							$newWidth = $maxWidth;
+							$newHeight = $maxWidth / $aspectRatio;
+					} else {
+							$newHeight = $maxHeight;
+							$newWidth = $maxHeight * $aspectRatio;
+					}
+						$preview = imagescale($image, (int)$newWidth, (int)$newHeight);
+				}
+			} else {
+				$image = $this->previewProvider->getPreview($file, self::TEMP_FILE_DIMENSION, self::TEMP_FILE_DIMENSION);
+
+				try {
+					$preview = $image->read();
+				} catch (NotPermittedException $e) {
+					$this->logger->warning('Could not read preview file', ['exception' => $e]);
+				}
+
+				if ($preview === false) {
+					$this->logger->warning('Could not open preview file');
+					return $path;
+				}
+
+				$tmpfile = fopen($tmpname, 'wb');
+
+				if ($tmpfile === false) {
+					$this->logger->warning('Could not open tmpfile');
+					return $path;
+				}
+
+				if (stream_copy_to_stream($preview, $tmpfile) === false) {
+					$this->logger->info('Could not copy preview file to temp folder');
+					fclose($preview);
+					fclose($tmpfile);
+				}
+				fclose($preview);
+				fclose($tmpfile);
+
+				$imagetype = exif_imagetype($tmpname);
+
+				if (in_array($imagetype, [IMAGETYPE_WEBP, IMAGETYPE_AVIF, false])) { // To troubleshoot if it is a webp or avif.
+						$preview = imagecreatefromstring(file_get_contents($tmpname));
+						unlink($tmpname);
+			  	} else {
+						return $tmpname;
+				}
+			}
 		} catch(\Throwable $e) {
 			$this->logger->info('Failed to generate preview of ' . $file->getId() . ' with dimension '.self::TEMP_FILE_DIMENSION . ': ' . $e->getMessage());
 			return $path;
@@ -283,26 +343,18 @@ abstract class Classifier {
 			return $path;
 		}
 
-		try {
-			$preview = $image->read();
-		} catch (NotPermittedException $e) {
-			$this->logger->warning('Could not read preview file', ['exception' => $e]);
-			return $path;
-		}
-
 		if ($preview === false) {
 			$this->logger->warning('Could not open preview file');
 			return $path;
 		}
 
 		$this->logger->debug('Copying ' . $file->getId() . ' preview to tempfolder');
-		if (stream_copy_to_stream($preview, $tmpfile) === false) {
+
+		if (imagejpeg($preview, $tmpfile, $use_gd_quality) === false) {
 			$this->logger->warning('Could not copy preview file to temp folder');
-			fclose($preview);
 			fclose($tmpfile);
 			return $path;
 		}
-		fclose($preview);
 		fclose($tmpfile);
 
 		return $tmpname;
