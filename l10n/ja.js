@@ -21,6 +21,7 @@ OC.L10N.register(
     "{time} ago" : "{time} 前",
     "Landscape" : "ランドスケープ",
     "Portrait" : "ポートレート",
+    "People" : "人間",
     "Dog" : "犬",
     "Music" : "音楽",
     "Office" : "オフィス",
