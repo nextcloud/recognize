@@ -22,6 +22,7 @@ OC.L10N.register(
     "Music" : "音樂",
     "Office" : "Office",
     "Food" : "食物",
+    "Book" : "書",
     "Train" : "火車",
     "Car" : "車子",
     "Computer" : "桌上電腦",
