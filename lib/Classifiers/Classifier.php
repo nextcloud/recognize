@@ -14,6 +14,7 @@ use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Service\QueueService;
 use OCP\DB\Exception;
 use OCP\Files\File;
+use OCP\Files\InvalidPathException;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
@@ -86,6 +87,16 @@ abstract class Classifier {
 				continue;
 			}
 			try {
+				if ($files[0]->getSize() == 0) {
+					$this->logger->debug('File is empty: ' . $files[0]->getPath());
+					try {
+						$this->logger->debug('removing ' . $queueFile->getFileId() . ' from ' . $model . ' queue');
+						$this->queue->removeFromQueue($model, $queueFile);
+					} catch (Exception $e) {
+						$this->logger->warning($e->getMessage(), ['exception' => $e]);
+					}
+					continue;
+				}
 				$path = $this->getConvertedFilePath($files[0]);
 				if (in_array($model, [ImagenetClassifier::MODEL_NAME, LandmarksClassifier::MODEL_NAME, ClusteringFaceClassifier::MODEL_NAME], true)) {
 					// Check file data size
@@ -116,7 +127,7 @@ abstract class Classifier {
 				$paths[] = $path;
 				$processedFiles[] = $queueFile;
 				$fileNames[] = $files[0]->getPath();
-			} catch (NotFoundException $e) {
+			} catch (NotFoundException|InvalidPathException $e) {
 				$this->logger->warning('Could not find file', ['exception' => $e]);
 				try {
 					$this->queue->removeFromQueue($model, $queueFile);
