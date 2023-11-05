@@ -261,106 +261,111 @@ abstract class Classifier {
 			return $path;
 		}
 
-		// Create a temporary file *with the correct extension*
-		$tmpname = $this->tempManager->getTemporaryFile('.jpg');
-
-		if (!$this->previewProvider->isAvailable($file) && !($file instanceof File)) {
-			return $path;
-		}
-
-		$use_gd = $this->config->getSystemValueString('recognize.preview.gd', 'true');
-		$use_gd_quality = (int)$this->config->getSystemValue('recognize.preview.quality', '100');
 		try {
 			$this->logger->debug('generating preview of ' . $file->getId() . ' with dimension '.self::TEMP_FILE_DIMENSION);
 
-			$imagetype = exif_imagetype($path); //To troubleshoot console errors, GD does not support all formats.
-			if (0 < $imagetype && $use_gd == 'true') {
-				$image = imagecreatefromstring(file_get_contents($path));
-				$width = imagesx($image);
-				$height = imagesy($image);
-
-				$maxWidth = self::TEMP_FILE_DIMENSION;
-				$maxHeight = self::TEMP_FILE_DIMENSION;
-
-				if ($width > $maxWidth || $height > $maxHeight) {
-					$aspectRatio = $width / $height;
-					if ($width > $height) {
-							$newWidth = $maxWidth;
-							$newHeight = $maxWidth / $aspectRatio;
-					} else {
-							$newHeight = $maxHeight;
-							$newWidth = $maxHeight * $aspectRatio;
-					}
-						$preview = imagescale($image, (int)$newWidth, (int)$newHeight);
-				}
+			$imageType = exif_imagetype($path); //To troubleshoot console errors, GD does not support all formats.
+			if (0 < $imageType && $this->config->getSystemValueString('recognize.preview.gd', 'true') === 'true') {
+				return $this->generatePrevieWithGD($path);
 			} else {
-				$image = $this->previewProvider->getPreview($file, self::TEMP_FILE_DIMENSION, self::TEMP_FILE_DIMENSION);
-
-				try {
-					$preview = $image->read();
-				} catch (NotPermittedException $e) {
-					$this->logger->warning('Could not read preview file', ['exception' => $e]);
-				}
-
-				if ($preview === false) {
-					$this->logger->warning('Could not open preview file');
+				if (!$this->previewProvider->isAvailable($file)) {
 					return $path;
 				}
-
-				$tmpfile = fopen($tmpname, 'wb');
-
-				if ($tmpfile === false) {
-					$this->logger->warning('Could not open tmpfile');
-					return $path;
-				}
-
-				if (stream_copy_to_stream($preview, $tmpfile) === false) {
-					$this->logger->info('Could not copy preview file to temp folder');
-					fclose($preview);
-					fclose($tmpfile);
-				}
-				fclose($preview);
-				fclose($tmpfile);
-
-				$imagetype = exif_imagetype($tmpname);
-
-				if (in_array($imagetype, [IMAGETYPE_WEBP, IMAGETYPE_AVIF, false])) { // To troubleshoot if it is a webp or avif.
-						$preview = imagecreatefromstring(file_get_contents($tmpname));
-						unlink($tmpname);
-			  	} else {
-						return $tmpname;
-				}
+				return $this->generatePreviewWithProvider($file);
 			}
 		} catch(\Throwable $e) {
-			$this->logger->info('Failed to generate preview of ' . $file->getId() . ' with dimension '.self::TEMP_FILE_DIMENSION . ': ' . $e->getMessage());
+			$this->logger->warning('Failed to generate preview of ' . $file->getId() . ' with dimension '.self::TEMP_FILE_DIMENSION . ': ' . $e->getMessage());
 			return $path;
 		}
-
-		$tmpfile = fopen($tmpname, 'wb');
-
-		if ($tmpfile === false) {
-			$this->logger->warning('Could not open tmpfile');
-			return $path;
-		}
-
-		if ($preview === false) {
-			$this->logger->warning('Could not open preview file');
-			return $path;
-		}
-
-		$this->logger->debug('Copying ' . $file->getId() . ' preview to tempfolder');
-
-		if (imagejpeg($preview, $tmpfile, $use_gd_quality) === false) {
-			$this->logger->warning('Could not copy preview file to temp folder');
-			fclose($tmpfile);
-			return $path;
-		}
-		fclose($tmpfile);
-
-		return $tmpname;
 	}
 
 	public function cleanUpTmpFiles():void {
 		$this->tempManager->clean();
+	}
+
+	/**
+	 * @param File $file
+	 * @return string
+	 * @throws \OCA\Recognize\Exception\Exception|NotFoundException
+	 */
+	public function generatePreviewWithProvider(File $file): string {
+		$image = $this->previewProvider->getPreview($file, self::TEMP_FILE_DIMENSION, self::TEMP_FILE_DIMENSION);
+
+		try {
+			$preview = $image->read();
+		} catch (NotPermittedException $e) {
+			throw new \OCA\Recognize\Exception\Exception('Could not read preview file', 0, $e);
+		}
+
+		if ($preview === false) {
+			throw new \OCA\Recognize\Exception\Exception('Could not open preview file');
+		}
+
+		// Create a temporary file *with the correct extension*
+		$tmpname = $this->tempManager->getTemporaryFile('.jpg');
+
+		$tmpfile = fopen($tmpname, 'wb');
+
+		if ($tmpfile === false) {
+			throw new \OCA\Recognize\Exception\Exception('Could not open tmpfile');
+		}
+
+		$copyResult = stream_copy_to_stream($preview, $tmpfile);
+		fclose($preview);
+		fclose($tmpfile);
+
+		if ($copyResult === false) {
+			throw new \OCA\Recognize\Exception\Exception('Could not copy preview file to temp folder');
+		}
+
+		$imagetype = exif_imagetype($tmpname);
+
+		if (in_array($imagetype, [IMAGETYPE_WEBP, IMAGETYPE_AVIF, false])) { // To troubleshoot if it is a webp or avif.
+			$previewImage = imagecreatefromstring(file_get_contents($tmpname));
+			$use_gd_quality = (int)$this->config->getSystemValue('recognize.preview.quality', '100');
+			if (imagejpeg($previewImage, $tmpname, $use_gd_quality) === false) {
+				throw new \OCA\Recognize\Exception\Exception('Could not copy preview file to temp folder');
+			}
+		}
+
+		return $tmpname;
+	}
+
+	/**
+	 * @param string $path
+	 * @return string
+	 * @throws \OCA\Recognize\Exception\Exception
+	 */
+	public function generatePrevieWithGD(string $path): string {
+		$image = imagecreatefromstring(file_get_contents($path));
+		$width = imagesx($image);
+		$height = imagesy($image);
+
+		$maxWidth = self::TEMP_FILE_DIMENSION;
+		$maxHeight = self::TEMP_FILE_DIMENSION;
+
+		if ($width > $maxWidth || $height > $maxHeight) {
+			$aspectRatio = $width / $height;
+			if ($width > $height) {
+				$newWidth = $maxWidth;
+				$newHeight = $maxWidth / $aspectRatio;
+			} else {
+				$newHeight = $maxHeight;
+				$newWidth = $maxHeight * $aspectRatio;
+			}
+			$previewImage = imagescale($image, (int)$newWidth, (int)$newHeight);
+		} else {
+			return $path;
+		}
+
+		// Create a temporary file *with the correct extension*
+		$tmpname = $this->tempManager->getTemporaryFile('.jpg');
+
+		$use_gd_quality = (int)$this->config->getSystemValue('recognize.preview.quality', '100');
+		if (imagejpeg($previewImage, $tmpname, $use_gd_quality) === false) {
+			throw new \OCA\Recognize\Exception\Exception('Could not copy preview file to temp folder');
+		}
+
+		return $tmpname;
 	}
 }
