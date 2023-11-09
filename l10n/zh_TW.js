@@ -14,6 +14,7 @@ OC.L10N.register(
     "never" : "永不",
     "{time} ago" : "{time}以前",
     "Cat" : "貓",
+    "Architecture" : "架構",
     "Farm" : "農場",
     "Landscape" : "風景",
     "Portrait" : "人像",
