@@ -8,6 +8,7 @@ OC.L10N.register(
     "never" : "ніколи",
     "{time} ago" : "{time} тому",
     "Cat" : "Кіт",
+    "Architecture" : "Архітектура",
     "Farm" : "Ферма",
     "Landscape" : "Пейзаж",
     "Portrait" : "Портрет",
