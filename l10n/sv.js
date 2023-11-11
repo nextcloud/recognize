@@ -8,6 +8,7 @@ OC.L10N.register(
     "never" : "aldrig",
     "{time} ago" : "{time} sedan",
     "Cat" : "Katt",
+    "Architecture" : "Arkitektur",
     "Farm" : "Gård",
     "Landscape" : "Landskap",
     "Portrait" : "Porträtt",
