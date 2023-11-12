@@ -8,6 +8,7 @@ OC.L10N.register(
     "Failed to save settings" : "Αποτυχία αποθήκευσης ρυθμίσεων",
     "never" : "ποτέ",
     "{time} ago" : "{time} πριν",
+    "Cat" : "Γάτα",
     "Farm" : "Φάρμα",
     "Landscape" : "Οριζόντια",
     "Portrait" : "Κάθετα",
