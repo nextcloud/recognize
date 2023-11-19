@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.0.0] - 2023-11-19
+
+### Breaking
+
+- Drop support for Nextcloud 27
+
+### New
+
+ - CacheQueryBuilder API changed in 28
+ - Add compatibility to new FilesMetadata OCP API
+
+### Fixed
+
+ - Fix(l10n): Update translations from Transifex
+ - fix(Classifier): Don't hang because of empty file Marcel Klehr 05.11.23, 13:16
+ - Refactor classifier preview generation to allow handling WebP and AVIF and fall back to gdlib when nc preview providers don't work
+
 ## [5.0.3] - 2023-10-15
 
 ### Fixed
