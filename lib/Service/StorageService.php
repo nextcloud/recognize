@@ -17,8 +17,8 @@ use OCA\Recognize\Constants;
 use OCP\DB\Exception;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\Files\IMimeTypeLoader;
+use OCP\FilesMetadata\IFilesMetadataManager;
 use OCP\IDBConnection;
-use Psr\Log\LoggerInterface;
 
 class StorageService {
 	public const ALLOWED_MOUNT_TYPES = [
@@ -33,18 +33,14 @@ class StorageService {
 		'OC\Files\Mount\ObjectHomeMountProvider',
 	];
 
-	private IDBConnection $db;
-	private LoggerInterface $logger;
-	private SystemConfig $systemConfig;
-	private IgnoreService $ignoreService;
-	private IMimeTypeLoader $mimeTypes;
-
-	public function __construct(IDBConnection $db, Logger $logger, SystemConfig $systemConfig, IgnoreService $ignoreService, IMimeTypeLoader $mimeTypes) {
-		$this->db = $db;
-		$this->logger = $logger;
-		$this->systemConfig = $systemConfig;
-		$this->ignoreService = $ignoreService;
-		$this->mimeTypes = $mimeTypes;
+	public function __construct(
+		private IDBConnection $db,
+		private Logger $logger,
+		private SystemConfig $systemConfig,
+		private IgnoreService $ignoreService,
+		private IMimeTypeLoader $mimeTypes,
+		private IFilesMetadataManager $metadataManager,
+	) {
 	}
 
 	/**
@@ -68,7 +64,7 @@ class StorageService {
 			$overrideRoot = $rootId;
 			if (in_array($row['mount_provider_class'], self::HOME_MOUNT_TYPES)) {
 				// Only crawl files, not cache or trashbin
-				$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
+				$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger, $this->metadataManager);
 				try {
 					/** @var array|false $root */
 					$root = $qb->selectFileCache()
@@ -101,7 +97,7 @@ class StorageService {
 	 * @return \Generator<int,array{fileid:int, image:bool, video:bool, audio:bool},mixed,void>
 	 */
 	public function getFilesInMount(int $storageId, int $rootId, array $models, int $lastFileId = 0, int $maxResults = 100) : \Generator {
-		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
+		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger, $this->metadataManager);
 		try {
 			$result = $qb->selectFileCache()
 				->andWhere($qb->expr()->eq('filecache.fileid', $qb->createNamedParameter($rootId, IQueryBuilder::PARAM_INT)))
@@ -133,7 +129,7 @@ class StorageService {
 		$videoTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::VIDEO_FORMATS);
 		$audioTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::AUDIO_FORMATS);
 
-		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
+		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger, $this->metadataManager);
 		$ignoreFileidsExpr = [];
 		if (count(array_intersect([ClusteringFaceClassifier::MODEL_NAME, ImagenetClassifier::MODEL_NAME, LandmarksClassifier::MODEL_NAME], $models)) > 0) {
 			$expr = array_map(fn (string $path): string => $qb->expr()->notLike('path', $qb->createNamedParameter($path ? $path . '/%' : '%')), $ignorePathsImage);

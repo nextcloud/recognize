@@ -9,22 +9,22 @@ namespace OCA\Recognize\Service;
 use OC\Files\Cache\CacheQueryBuilder;
 use OC\SystemConfig;
 use OCP\DB\QueryBuilder\IQueryBuilder;
+use OCP\FilesMetadata\IFilesMetadataManager;
 use OCP\ICache;
 use OCP\ICacheFactory;
 use OCP\IDBConnection;
 use Psr\Log\LoggerInterface;
 
 class IgnoreService {
-	private IDBConnection $db;
-	private SystemConfig $systemConfig;
-	private LoggerInterface $logger;
 	private array $inMemoryCache = [];
 	private ICache $localCache;
 
-	public function __construct(IDBConnection $db, SystemConfig $systemConfig, LoggerInterface $logger, ICacheFactory $cacheFactory) {
-		$this->db = $db;
-		$this->systemConfig = $systemConfig;
-		$this->logger = $logger;
+	public function __construct(
+		private IDBConnection $db,
+		private SystemConfig $systemConfig,
+		private LoggerInterface $logger,
+		ICacheFactory $cacheFactory,
+		private IFilesMetadataManager $metadataManager) {
 		$this->localCache = $cacheFactory->createLocal('recognize-ignored-directories');
 	}
 
@@ -45,7 +45,7 @@ class IgnoreService {
 			return $directories;
 		}
 
-		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger);
+		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger, $this->metadataManager);
 		$result = $qb->selectFileCache()
 			->andWhere($qb->expr()->in('name', $qb->createNamedParameter($ignoreMarkers, IQueryBuilder::PARAM_STR_ARRAY)))
 			->andWhere($qb->expr()->eq('storage', $qb->createNamedParameter($storageId, IQueryBuilder::PARAM_INT)))
