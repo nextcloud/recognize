@@ -6,7 +6,6 @@
 declare(strict_types=1);
 namespace OCA\Recognize\Dav\Faces;
 
-use OC\Metadata\IMetadataManager;
 use OCA\Recognize\Db\FaceCluster;
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetectionMapper;
@@ -26,16 +25,14 @@ class FacesHome implements ICollection {
 	private IRootFolder $rootFolder;
 	private array $children = [];
 	private ITagManager $tagManager;
-	private IMetadataManager $metadataManager;
 	private IPreview $previewManager;
 
-	public function __construct(FaceClusterMapper $faceClusterMapper, IUser $user, FaceDetectionMapper $faceDetectionMapper, IRootFolder $rootFolder, ITagManager $tagManager, IMetadataManager $metadataManager, IPreview $previewManager) {
+	public function __construct(FaceClusterMapper $faceClusterMapper, IUser $user, FaceDetectionMapper $faceDetectionMapper, IRootFolder $rootFolder, ITagManager $tagManager, IPreview $previewManager) {
 		$this->faceClusterMapper = $faceClusterMapper;
 		$this->user = $user;
 		$this->faceDetectionMapper = $faceDetectionMapper;
 		$this->rootFolder = $rootFolder;
 		$this->tagManager = $tagManager;
-		$this->metadataManager = $metadataManager;
 		$this->previewManager = $previewManager;
 	}
 
@@ -84,7 +81,7 @@ class FacesHome implements ICollection {
 			}
 		}
 
-		return new FaceRoot($this->faceClusterMapper, $cluster, $this->user, $this->faceDetectionMapper, $this->rootFolder, $this->metadataManager, $this->tagManager, $this->previewManager);
+		return new FaceRoot($this->faceClusterMapper, $cluster, $this->user, $this->faceDetectionMapper, $this->rootFolder, $this->tagManager, $this->previewManager);
 	}
 
 	/**
@@ -95,7 +92,7 @@ class FacesHome implements ICollection {
 		$clusters = $this->faceClusterMapper->findByUserId($this->user->getUID());
 		if (count($this->children) === 0) {
 			$this->children = array_map(function (FaceCluster $cluster) {
-				return new FaceRoot($this->faceClusterMapper, $cluster, $this->user, $this->faceDetectionMapper, $this->rootFolder, $this->metadataManager, $this->tagManager, $this->previewManager);
+				return new FaceRoot($this->faceClusterMapper, $cluster, $this->user, $this->faceDetectionMapper, $this->rootFolder, $this->tagManager, $this->previewManager);
 			}, $clusters);
 		}
 		return $this->children;

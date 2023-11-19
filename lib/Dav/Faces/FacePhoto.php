@@ -7,7 +7,6 @@ declare(strict_types=1);
 namespace OCA\Recognize\Dav\Faces;
 
 use \Rubix\ML\Kernels\Distance\Euclidean;
-use OC\Metadata\IMetadataManager;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Service\FaceClusterAnalyzer;
@@ -26,15 +25,13 @@ class FacePhoto implements IFile {
 	private Folder $userFolder;
 	private ?File $file = null;
 	private ITagManager $tagManager;
-	private IMetadataManager $metadataManager;
 	private IPreview $preview;
 
-	public function __construct(FaceDetectionMapper $detectionMapper, FaceDetection $faceDetection, Folder $userFolder, ITagManager $tagManager, IMetadataManager $metadataManager, IPreview $preview) {
+	public function __construct(FaceDetectionMapper $detectionMapper, FaceDetection $faceDetection, Folder $userFolder, ITagManager $tagManager, IPreview $preview) {
 		$this->detectionMapper = $detectionMapper;
 		$this->faceDetection = $faceDetection;
 		$this->userFolder = $userFolder;
 		$this->tagManager = $tagManager;
-		$this->metadataManager = $metadataManager;
 		$this->preview = $preview;
 	}
 
@@ -77,7 +74,7 @@ class FacePhoto implements IFile {
 	public function put($data) {
 		throw new Forbidden('Can\'t write to photos trough the faces api');
 	}
-	
+
 	public function getFile() : File {
 		if ($this->file === null) {
 			$nodes = $this->userFolder->getById($this->faceDetection->getFileId());
@@ -134,12 +131,6 @@ class FacePhoto implements IFile {
 	 */
 	public function getLastModified() {
 		return $this->getFile()->getMTime();
-	}
-
-	public function getMetadata(): string {
-		$file = $this->getFile();
-		$sizeMetadata = $this->metadataManager->fetchMetadataFor('size', [$file->getId()])[$file->getId()];
-		return json_encode($sizeMetadata->getDecodedValue());
 	}
 
 	public function hasPreview(): bool {

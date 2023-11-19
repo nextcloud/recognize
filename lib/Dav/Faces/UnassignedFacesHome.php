@@ -6,7 +6,6 @@
 declare(strict_types=1);
 namespace OCA\Recognize\Dav\Faces;
 
-use OC\Metadata\IMetadataManager;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCP\AppFramework\Db\DoesNotExistException;
@@ -24,10 +23,9 @@ class UnassignedFacesHome implements ICollection {
 	private IRootFolder $rootFolder;
 	private array $children = [];
 	private ITagManager $tagManager;
-	private IMetadataManager $metadataManager;
 	private IPreview $previewManager;
 
-	public function __construct(IUser $user, FaceDetectionMapper $faceDetectionMapper, IRootFolder $rootFolder, ITagManager $tagManager, IMetadataManager $metadataManager, IPreview $previewManager) {
+	public function __construct(IUser $user, FaceDetectionMapper $faceDetectionMapper, IRootFolder $rootFolder, ITagManager $tagManager, IPreview $previewManager) {
 		$this->user = $user;
 		$this->faceDetectionMapper = $faceDetectionMapper;
 		$this->rootFolder = $rootFolder;
@@ -110,7 +108,7 @@ class UnassignedFacesHome implements ICollection {
 		$this->children = array_map(function (FaceDetection $detection) {
 			return new UnassignedFacePhoto($this->faceDetectionMapper, $detection, $this->rootFolder->getUserFolder($this->user->getUID()), $this->tagManager, $this->metadataManager, $this->previewManager);
 		}, $detectionsWithFile);
-			
+
 		return $this->children;
 	}
 

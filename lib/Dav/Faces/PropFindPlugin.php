@@ -12,6 +12,7 @@ use OCA\DAV\Connector\Sabre\File;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Db\FaceDetectionWithTitle;
 use OCP\Files\DavUtil;
+use OCP\IPreview;
 use Sabre\DAV\INode;
 use Sabre\DAV\PropFind;
 use Sabre\DAV\Server;
@@ -25,10 +26,11 @@ class PropFindPlugin extends ServerPlugin {
 	public const FACE_PREVIEW_IMAGE_PROPERTYNAME = '{http://nextcloud.org/ns}face-preview-image';
 
 	private Server $server;
-	private FaceDetectionMapper $faceDetectionMapper;
 
-	public function __construct(FaceDetectionMapper $faceDetectionMapper) {
-		$this->faceDetectionMapper = $faceDetectionMapper;
+	public function __construct(
+		private FaceDetectionMapper $faceDetectionMapper,
+		private IPreview $previewManager,
+	) {
 	}
 
 	public function initialize(Server $server) {
@@ -40,10 +42,6 @@ class PropFindPlugin extends ServerPlugin {
 
 	public function propFind(PropFind $propFind, INode $node) {
 		if ($node instanceof FacePhoto) {
-			$propFind->handle(self::FILE_NAME_PROPERTYNAME, function () use ($node) {
-				return $node->getFile()->getName();
-			});
-
 			$propFind->handle(self::FACE_DETECTIONS_PROPERTYNAME, function () use ($node) {
 				return json_encode(
 					array_map(
@@ -52,14 +50,20 @@ class PropFindPlugin extends ServerPlugin {
 					)
 				);
 			});
-
 			$propFind->handle(FilesPlugin::INTERNAL_FILEID_PROPERTYNAME, fn () => $node->getFile()->getId());
+			$propFind->handle(FilesPlugin::GETETAG_PROPERTYNAME, fn () => $node->getETag());
 			$propFind->handle(self::FILE_NAME_PROPERTYNAME, fn () => $node->getFile()->getName());
-			$propFind->handle(self::REALPATH_PROPERTYNAME, fn () => $node->getFile()->getPath());
-			$propFind->handle(FilesPlugin::FILE_METADATA_SIZE, fn () => $node->getMetadata());
-			$propFind->handle(FilesPlugin::HAS_PREVIEW_PROPERTYNAME, fn () => json_encode($node->hasPreview()));
 			$propFind->handle(TagsPlugin::FAVORITE_PROPERTYNAME, fn () => $node->isFavorite() ? 1 : 0);
-			$propFind->handle(FilesPlugin::PERMISSIONS_PROPERTYNAME, fn () => str_replace('G', '', DavUtil::getDavPermissions($node->getFile()->getFileInfo())));
+			$propFind->handle(FilesPlugin::HAS_PREVIEW_PROPERTYNAME, fn () => json_encode($this->previewManager->isAvailable($node->getFile()->getFileInfo())));
+			$propFind->handle(FilesPlugin::PERMISSIONS_PROPERTYNAME, function () use ($node): string {
+				$permissions = DavUtil::getDavPermissions($node->getFile()->getFileInfo());
+				$filteredPermissions = str_replace('R', '', $permissions);
+				return $filteredPermissions;
+			});
+
+			foreach ($node->getFile()->getFileInfo()->getMetadata() as $metadataKey => $metadataValue) {
+				$propFind->handle(FilesPlugin::FILE_METADATA_PREFIX.$metadataKey, $metadataValue);
+			}
 		}
 
 		if ($node instanceof FaceRoot || $node instanceof UnassignedFacesHome) {

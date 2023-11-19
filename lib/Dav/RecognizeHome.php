@@ -6,7 +6,6 @@
 declare(strict_types=1);
 namespace OCA\Recognize\Dav;
 
-use OC\Metadata\IMetadataManager;
 use OCA\Recognize\Dav\Faces\FacesHome;
 use OCA\Recognize\Dav\Faces\UnassignedFacesHome;
 use OCA\Recognize\Db\FaceClusterMapper;
@@ -26,10 +25,9 @@ class RecognizeHome implements ICollection {
 	private FaceDetectionMapper $faceDetectionMapper;
 	private IRootFolder $rootFolder;
 	private ITagManager $tagManager;
-	private IMetadataManager $metadataManager;
 	private IPreview $previewManager;
 
-	public function __construct(array $principalInfo, FaceClusterMapper $faceClusterMapper, IUser $user, FaceDetectionMapper $faceDetectionMapper, IRootFolder $rootFolder, ITagManager $tagManager, IMetadataManager $metadataManager, IPreview $previewManager) {
+	public function __construct(array $principalInfo, FaceClusterMapper $faceClusterMapper, IUser $user, FaceDetectionMapper $faceDetectionMapper, IRootFolder $rootFolder, ITagManager $tagManager, IPreview $previewManager) {
 		$this->principalInfo = $principalInfo;
 		$this->faceClusterMapper = $faceClusterMapper;
 		$this->user = $user;

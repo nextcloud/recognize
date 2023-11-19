@@ -8,7 +8,6 @@ namespace OCA\Recognize\Dav;
 
 use \Sabre\DAVACL\AbstractPrincipalCollection;
 use \Sabre\DAVACL\PrincipalBackend\BackendInterface;
-use OC\Metadata\IMetadataManager;
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCP\Files\IRootFolder;
@@ -23,17 +22,15 @@ class RootCollection extends AbstractPrincipalCollection {
 	private FaceDetectionMapper $faceDetectionMapper;
 	private IRootFolder $rootFolder;
 	private ITagManager $tagManager;
-	private IMetadataManager $metadataManager;
 	private IPreview $previewManager;
 
-	public function __construct(BackendInterface $principalBackend, IUserSession $userSession, FaceClusterMapper $faceClusterMapper, FaceDetectionMapper $faceDetectionMapper, IRootFolder $rootFolder, ITagManager $tagManager, IMetadataManager $metadataManager, IPreview $previewManager) {
+	public function __construct(BackendInterface $principalBackend, IUserSession $userSession, FaceClusterMapper $faceClusterMapper, FaceDetectionMapper $faceDetectionMapper, IRootFolder $rootFolder, ITagManager $tagManager, IPreview $previewManager) {
 		parent::__construct($principalBackend, 'principals/users');
 		$this->userSession = $userSession;
 		$this->faceClusterMapper = $faceClusterMapper;
 		$this->faceDetectionMapper = $faceDetectionMapper;
 		$this->rootFolder = $rootFolder;
 		$this->tagManager = $tagManager;
-		$this->metadataManager = $metadataManager;
 		$this->previewManager = $previewManager;
 	}
 
@@ -43,7 +40,7 @@ class RootCollection extends AbstractPrincipalCollection {
 		if (is_null($user) || $name !== $user->getUID()) {
 			throw new Forbidden();
 		}
-		return new RecognizeHome($principalInfo, $this->faceClusterMapper, $user, $this->faceDetectionMapper, $this->rootFolder, $this->tagManager, $this->metadataManager, $this->previewManager);
+		return new RecognizeHome($principalInfo, $this->faceClusterMapper, $user, $this->faceDetectionMapper, $this->rootFolder, $this->tagManager, $this->previewManager);
 	}
 
 	public function getName() {

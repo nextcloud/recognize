@@ -6,7 +6,6 @@
 declare(strict_types=1);
 namespace OCA\Recognize\Dav\Faces;
 
-use OC\Metadata\IMetadataManager;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCP\Files\Folder;
@@ -16,8 +15,8 @@ use Sabre\DAV\Exception\Forbidden;
 
 class UnassignedFacePhoto extends FacePhoto {
 
-	public function __construct(FaceDetectionMapper $detectionMapper, FaceDetection $faceDetection, Folder $userFolder, ITagManager $tagManager, IMetadataManager $metadataManager, IPreview $preview) {
-		parent::__construct($detectionMapper, $faceDetection, $userFolder, $tagManager, $metadataManager, $preview);
+	public function __construct(FaceDetectionMapper $detectionMapper, FaceDetection $faceDetection, Folder $userFolder, ITagManager $tagManager, IPreview $preview) {
+		parent::__construct($detectionMapper, $faceDetection, $userFolder, $tagManager, $preview);
 	}
 
 	/**
