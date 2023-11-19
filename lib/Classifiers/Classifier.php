@@ -272,20 +272,25 @@ abstract class Classifier {
 			return $path;
 		}
 
-		try {
-			$this->logger->debug('generating preview of ' . $file->getId() . ' with dimension '.self::TEMP_FILE_DIMENSION);
-
-			$imageType = exif_imagetype($path); //To troubleshoot console errors, GD does not support all formats.
-			if (0 < $imageType) {
-				return $this->generatePrevieWithGD($path);
-			} else {
-				if (!$this->previewProvider->isAvailable($file)) {
-					return $path;
-				}
+		if ($this->previewProvider->isAvailable($file)) {
+			try {
+				$this->logger->debug('generating preview of ' . $file->getId() . ' with dimension ' . self::TEMP_FILE_DIMENSION . ' using nextcloud preview manager');
 				return $this->generatePreviewWithProvider($file);
+			} catch (\Throwable $e) {
+				$this->logger->warning('Failed to generate preview of ' . $file->getId() . ' with dimension ' . self::TEMP_FILE_DIMENSION . ' with nextcloud preview manager: ' . $e->getMessage());
 			}
-		} catch(\Throwable $e) {
-			$this->logger->warning('Failed to generate preview of ' . $file->getId() . ' with dimension '.self::TEMP_FILE_DIMENSION . ': ' . $e->getMessage());
+		}
+
+		try {
+			$imageType = exif_imagetype($path);
+			if ($imageType > 0) {
+				$this->logger->debug('generating preview of ' . $file->getId() . ' with dimension ' . self::TEMP_FILE_DIMENSION . ' using gdlib');
+				return $this->generatePreviewWithGD($path);
+			} else {
+				return $path;
+			}
+		} catch (\Throwable $e) {
+			$this->logger->warning('Failed to generate preview of ' . $file->getId() . ' with dimension ' . self::TEMP_FILE_DIMENSION . ' with gdlib: ' . $e->getMessage());
 			return $path;
 		}
 	}
@@ -347,7 +352,7 @@ abstract class Classifier {
 	 * @return string
 	 * @throws \OCA\Recognize\Exception\Exception
 	 */
-	public function generatePrevieWithGD(string $path): string {
+	public function generatePreviewWithGD(string $path): string {
 		$image = imagecreatefromstring(file_get_contents($path));
 		$width = imagesx($image);
 		$height = imagesy($image);
