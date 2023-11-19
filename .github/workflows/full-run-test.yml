@@ -28,9 +28,9 @@ jobs:
       # do not stop on another job's failure
       fail-fast: false
       matrix:
-        php-versions: ['8.1']
+        php-versions: ['8.2']
         databases: ['sqlite']
-        server-versions: ['stable27', 'master']
+        server-versions: ['master']
         pure-js-mode: ['false']
         imagenet-enabled: ['true']
         faces-enabled: ['true']
@@ -39,9 +39,9 @@ jobs:
         movinet-enabled: ['true']
         include:
           # test pure-js once
-          - server-versions: stable27
+          - server-versions: master
             databases: sqlite
-            php-versions: 8.1
+            php-versions: 8.2
             pure-js-mode: true
             imagenet-enabled: true
             faces-enabled: true
