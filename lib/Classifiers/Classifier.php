@@ -276,7 +276,7 @@ abstract class Classifier {
 			$this->logger->debug('generating preview of ' . $file->getId() . ' with dimension '.self::TEMP_FILE_DIMENSION);
 
 			$imageType = exif_imagetype($path); //To troubleshoot console errors, GD does not support all formats.
-			if (0 < $imageType && $this->config->getSystemValueString('recognize.preview.gd', 'true') === 'true') {
+			if (0 < $imageType) {
 				return $this->generatePrevieWithGD($path);
 			} else {
 				if (!$this->previewProvider->isAvailable($file)) {
