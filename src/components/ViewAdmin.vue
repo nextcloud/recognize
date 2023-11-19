@@ -262,7 +262,7 @@
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Tensorflow GPU mode')">
 			<p>
-				<NcCheckboxRadioSwitch :checked.sync="settings['tensorflow.gpu']" type="switch" @update:checked="onChange">
+				<NcCheckboxRadioSwitch :checked.sync="settings['tensorflow.gpu']" type="switch" @update:checked="onChange" :disabled="settings['tensorflow.purejs']">
 					{{ t('recognize', 'Enable GPU mode') }}
 				</NcCheckboxRadioSwitch>
 			</p>
