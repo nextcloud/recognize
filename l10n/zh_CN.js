@@ -66,7 +66,6 @@ OC.L10N.register(
     "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "要在执行分类作业之前下载所有模型，在服务器终端运行以下命令。",
     "To trigger a full classification run, run the following command on the server terminal. (The classification will run in multiple background jobs which can run in parallel.)" : "要触发完整的分类运行，请在服务器终端上运行以下命令。（分类将在多个后台作业中运行，这些作业可以并行运行。）",
     "To run a full classification run on the terminal, run the following. (The classification will run in sequence inside your terminal.)" : "在终端上运行完整的分类运行，请运行以下命令。（分类将在终端内按顺序运行。）",
-    "To run a face clustering run on for each user in the terminal, run the following. (The clustering will run in sequence inside your terminal.)" : "在终端上为每个用户运行面部聚类运行，请运行以下命令。（聚类将在您的终端内依次运行。）",
     "To remove all face clusters but keep the raw detected faces run the following on the terminal:" : "为了删除所有的人脸聚类但保留原始检测到的人脸，请在终端上运行以下命令：",
     "To remove all detected faces and face clusters run the following on the terminal:" : "要删除所有检测到的人脸和人脸聚类，请在终端上运行以下命令：",
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "你可以用下面的命令重置所有以前被 \"识别 \"分类的文件的标签。",
