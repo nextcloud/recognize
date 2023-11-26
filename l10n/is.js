@@ -7,6 +7,7 @@ OC.L10N.register(
     "Failed to save settings" : "Mistókst að vista stillingar",
     "never" : "aldrei",
     "{time} ago" : "fyrir {time} síðan",
+    "Architecture" : "Tölvuhögun",
     "Farm" : "Býli",
     "Landscape" : "Lárétt",
     "Portrait" : "Lóðrétt",

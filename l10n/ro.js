@@ -4,6 +4,8 @@ OC.L10N.register(
     "Status" : "Stare",
     "Reset" : "Resetare",
     "never" : "niciodată",
+    "Landscape" : "Peisaj",
+    "Portrait" : "Portret",
     "People" : "Persoane",
     "Dog" : "Câine",
     "Music" : "Muzică",
