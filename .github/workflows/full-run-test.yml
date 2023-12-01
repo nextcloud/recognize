@@ -197,3 +197,8 @@ jobs:
           mv faces/0/* faces/toot/
           mv faces/toot/ faces/blah/
           EOF
+
+      - name: Print logs
+        if: always()
+        run: |
+          cat data/nextcloud.log
