@@ -190,7 +190,11 @@ jobs:
       - name: Test webdav access
         if: ${{ matrix.faces-enabled }}
         run: |
-          echo -n "machine localhost\nlogin admin\npassword admin" > ~/.netrc
+          cat > ~/.netrc <<EOF
+          machine localhost
+          login admin
+          password admin
+          EOF
           cadaver http:://localhost:8080/remote.php/dav/recognize/admin/ <<EOF
           mv unassigned-faces/* faces/0/
           mkdir faces/toot
