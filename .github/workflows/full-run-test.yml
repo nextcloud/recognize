@@ -195,7 +195,7 @@ jobs:
           login admin
           password admin
           EOF
-          cadaver http:://localhost:8080/remote.php/dav/recognize/admin/ <<EOF
+          cadaver http://localhost:8080/remote.php/dav/recognize/admin/ <<EOF
           mv unassigned-faces/* faces/0/
           mkdir faces/toot
           mv faces/0/* faces/toot/
