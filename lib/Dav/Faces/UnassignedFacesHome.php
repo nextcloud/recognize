@@ -30,7 +30,6 @@ class UnassignedFacesHome implements ICollection {
 		$this->faceDetectionMapper = $faceDetectionMapper;
 		$this->rootFolder = $rootFolder;
 		$this->tagManager = $tagManager;
-		$this->metadataManager = $metadataManager;
 		$this->previewManager = $previewManager;
 	}
 
@@ -82,7 +81,7 @@ class UnassignedFacesHome implements ICollection {
 			throw new NotFound();
 		}
 
-		return new UnassignedFacePhoto($this->faceDetectionMapper, $detection, $this->rootFolder->getUserFolder($this->user->getUID()), $this->tagManager, $this->metadataManager, $this->previewManager);
+		return new UnassignedFacePhoto($this->faceDetectionMapper, $detection, $this->rootFolder->getUserFolder($this->user->getUID()), $this->tagManager, $this->previewManager);
 	}
 
 	public function childExists($name): bool {

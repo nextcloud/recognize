@@ -34,7 +34,6 @@ class RecognizeHome implements ICollection {
 		$this->faceDetectionMapper = $faceDetectionMapper;
 		$this->rootFolder = $rootFolder;
 		$this->tagManager = $tagManager;
-		$this->metadataManager = $metadataManager;
 		$this->previewManager = $previewManager;
 	}
 
@@ -60,11 +59,11 @@ class RecognizeHome implements ICollection {
 	}
 
 	private function getFacesHome() {
-		return new FacesHome($this->faceClusterMapper, $this->user, $this->faceDetectionMapper, $this->rootFolder, $this->tagManager, $this->metadataManager, $this->previewManager);
+		return new FacesHome($this->faceClusterMapper, $this->user, $this->faceDetectionMapper, $this->rootFolder, $this->tagManager, $this->previewManager);
 	}
 
 	private function getUnassignedFacesHome() {
-		return new UnassignedFacesHome($this->user, $this->faceDetectionMapper, $this->rootFolder, $this->tagManager, $this->metadataManager, $this->previewManager);
+		return new UnassignedFacesHome($this->user, $this->faceDetectionMapper, $this->rootFolder, $this->tagManager, $this->previewManager);
 	}
 
 	public function getChild($name) {
