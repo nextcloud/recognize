@@ -193,7 +193,7 @@ jobs:
           cat > ~/.netrc <<EOF
           machine localhost
           login admin
-          password admin
+          password password
           EOF
           cadaver http://localhost:8080/remote.php/dav/recognize/admin/ <<EOF
           mv unassigned-faces/* faces/0/
