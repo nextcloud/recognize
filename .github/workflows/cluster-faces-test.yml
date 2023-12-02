@@ -132,13 +132,25 @@ jobs:
         run: |
           ./occ app:enable -vvv ${{ env.APP_NAME }}
 
+      - uses: actions/cache/restore@v3
+        id: photos-cache
+        with:
+          path: data/admin/files/
+          key: https://cloud.marcelklehr.de/s/PkNYbmKnwMiQMFD/download/IMDb-Face.zip
+
       - name: Upload photos
+        if: steps.photos-cache.outputs.cache-hit != 'true'
         run: |
           mkdir -p data/admin/files/
           cd data/admin/files
           wget https://cloud.marcelklehr.de/s/PkNYbmKnwMiQMFD/download/IMDb-Face.zip
           unzip IMDb-Face.zip
           rm IMDb-Face.zip
+
+      - uses: actions/cache/save@v3
+        with:
+          path: data/admin/files/
+          key: https://cloud.marcelklehr.de/s/PkNYbmKnwMiQMFD/download/IMDb-Face.zip
 
       - name: Set pure-js mode
         run: |
