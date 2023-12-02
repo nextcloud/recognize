@@ -132,6 +132,10 @@ jobs:
         run: |
           ./occ app:enable -vvv ${{ env.APP_NAME }}
 
+      - name: Remove unnecessary models to make space
+        run: |
+          rm -rf apps/recognize/models
+
       - uses: actions/cache/restore@v3
         id: photos-cache
         with:
