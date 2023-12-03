@@ -198,7 +198,7 @@ jobs:
         id: clustering-cache
         with:
           path: out.json
-          key: ${{ runner.os }}-${{ hashFiles('out.txt', 'apps/recognize/src/classifier_faces.js', 'apps/recognize/lib/Classifiers/Classifier.php', 'apps/recognize/lib/Classifiers/Images/ClusteringFaceClassifier.php', 'apps/recognize/lib/Clustering/**', 'apps/recognize/lib/Service/FaceClusterAnalyzer.php', 'apps/recognize/lib/Command/ClusterFaces.php') }}-${{ matrix.pure-js-mode }}
+          key: ${{ runner.os }}-${{ hashFiles('out.txt', 'apps/recognize/src/classifier_faces.js', 'apps/recognize/lib/Classifiers/Classifier.php', 'apps/recognize/lib/Classifiers/Images/ClusteringFaceClassifier.php', 'apps/recognize/lib/Clustering/**', 'apps/recognize/lib/Dav/**', 'apps/recognize/lib/Service/FaceClusterAnalyzer.php', 'apps/recognize/lib/Command/ClusterFaces.php') }}-${{ matrix.pure-js-mode }}
 
       - name: Run clustering
         if: steps.clustering-cache.outputs.cache-hit != 'true'
