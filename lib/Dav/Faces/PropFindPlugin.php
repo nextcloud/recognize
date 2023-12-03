@@ -50,6 +50,10 @@ class PropFindPlugin extends ServerPlugin {
 					)
 				);
 			});
+			$propFind->handle(self::FILE_NAME_PROPERTYNAME, function () use ($node) {
+				return $node->getFile()->getName();
+			});
+			$propFind->handle(self::REALPATH_PROPERTYNAME, fn () => $node->getFile()->getPath());
 			$propFind->handle(FilesPlugin::INTERNAL_FILEID_PROPERTYNAME, fn () => $node->getFile()->getId());
 			$propFind->handle(FilesPlugin::GETETAG_PROPERTYNAME, fn () => $node->getETag());
 			$propFind->handle(self::FILE_NAME_PROPERTYNAME, fn () => $node->getFile()->getName());
