@@ -231,6 +231,7 @@ abstract class Classifier {
 					$i++;
 				}
 			}
+			$proc->stop();
 			$this->cleanUpTmpFiles();
 			if ($i !== count($paths)) {
 				$this->logger->warning('Classifier process output: '.$errOut);

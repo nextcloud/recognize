@@ -67,10 +67,12 @@ class StorageService {
 				$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger, $this->metadataManager);
 				try {
 					/** @var array|false $root */
-					$root = $qb->selectFileCache()
+					$result = $qb->selectFileCache()
 						->andWhere($qb->expr()->eq('filecache.storage', $qb->createNamedParameter($storageId, IQueryBuilder::PARAM_INT)))
 						->andWhere($qb->expr()->eq('filecache.path', $qb->createNamedParameter('files')))
-						->executeQuery()->fetch();
+						->executeQuery();
+					$root = $result->fetch();
+					$result->closeCursor();
 					if ($root !== false) {
 						$overrideRoot = intval($root['fileid']);
 					}

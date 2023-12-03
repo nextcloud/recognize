@@ -141,6 +141,7 @@ class Classify extends Command {
 					}
 				}
 			} while ($i > 0);
+			\OC_Util::tearDownFS();
 		}
 		return 0;
 	}
