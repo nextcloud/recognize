@@ -231,6 +231,7 @@ abstract class Classifier {
 					$i++;
 				}
 			}
+			$proc->stop();
 			$this->cleanUpTmpFiles();
 			if ($i !== count($paths)) {
 				$this->logger->warning('Classifier process output: '.$errOut);
@@ -340,8 +341,10 @@ abstract class Classifier {
 			$previewImage = imagecreatefromstring(file_get_contents($tmpname));
 			$use_gd_quality = (int)$this->config->getSystemValue('recognize.preview.quality', '100');
 			if (imagejpeg($previewImage, $tmpname, $use_gd_quality) === false) {
+				imagedestroy($previewImage);
 				throw new \OCA\Recognize\Exception\Exception('Could not copy preview file to temp folder');
 			}
+			imagedestroy($previewImage);
 		}
 
 		return $tmpname;
@@ -379,8 +382,12 @@ abstract class Classifier {
 
 		$use_gd_quality = (int)$this->config->getSystemValue('recognize.preview.quality', '100');
 		if (imagejpeg($previewImage, $tmpname, $use_gd_quality) === false) {
+			imagedestroy($image);
+			imagedestroy($previewImage);
 			throw new \OCA\Recognize\Exception\Exception('Could not copy preview file to temp folder');
 		}
+		imagedestroy($image);
+		imagedestroy($previewImage);
 
 		return $tmpname;
 	}

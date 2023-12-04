@@ -19,7 +19,6 @@ class ClusterFacesJob extends QueuedJob {
 	private FaceClusterAnalyzer $clusterAnalyzer;
 	private IJobList $jobList;
 	private LoggerInterface $logger;
-
 	public const BATCH_SIZE = 10000;
 	private SettingsService $settingsService;
 

@@ -66,11 +66,13 @@ class StorageService {
 				// Only crawl files, not cache or trashbin
 				$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger, $this->metadataManager);
 				try {
-					/** @var array|false $root */
-					$root = $qb->selectFileCache()
+					$res = $qb->selectFileCache()
 						->andWhere($qb->expr()->eq('filecache.storage', $qb->createNamedParameter($storageId, IQueryBuilder::PARAM_INT)))
 						->andWhere($qb->expr()->eq('filecache.path', $qb->createNamedParameter('files')))
-						->executeQuery()->fetch();
+						->executeQuery();
+					/** @var array|false $root */
+					$root = $res->fetch();
+					$res->closeCursor();
 					if ($root !== false) {
 						$overrideRoot = intval($root['fileid']);
 					}

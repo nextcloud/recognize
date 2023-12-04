@@ -17,7 +17,7 @@ env:
 
 jobs:
   php:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     strategy:
       # do not stop on another job's failure
@@ -132,7 +132,18 @@ jobs:
         run: |
           ./occ app:enable -vvv ${{ env.APP_NAME }}
 
+      - name: Remove unnecessary models to make space
+        run: |
+          rm -rf apps/recognize/models
+
+      - uses: actions/cache/restore@v3
+        id: photos-cache
+        with:
+          path: data/admin/files/
+          key: https://cloud.marcelklehr.de/s/PkNYbmKnwMiQMFD/download/IMDb-Face.zip
+
       - name: Upload photos
+        if: steps.photos-cache.outputs.cache-hit != 'true'
         run: |
           mkdir -p data/admin/files/
           cd data/admin/files
@@ -140,13 +151,17 @@ jobs:
           unzip IMDb-Face.zip
           rm IMDb-Face.zip
 
-      - name: Set pure-js mode
+      - uses: actions/cache/save@v3
+        with:
+          path: data/admin/files/
+          key: https://cloud.marcelklehr.de/s/PkNYbmKnwMiQMFD/download/IMDb-Face.zip
+
+      - name: Set config
         run: |
           ./occ config:app:set --value ${{ matrix.pure-js-mode }} recognize tensorflow.purejs
-
-      - name: Set faces.enabled
-        run: |
           ./occ config:app:set --value true recognize faces.enabled
+          # only use one core. GH actions has 2
+          ./occ config:app:set --value 1 recognize tensorflow.cores
 
       - uses: actions/cache/restore@v3
         id: db-cache
@@ -183,7 +198,7 @@ jobs:
         id: clustering-cache
         with:
           path: out.json
-          key: ${{ runner.os }}-${{ hashFiles('out.txt', 'apps/recognize/src/classifier_faces.js', 'apps/recognize/lib/Classifiers/Classifier.php', 'apps/recognize/lib/Classifiers/Images/ClusteringFaceClassifier.php', 'apps/recognize/lib/Clustering/**', 'apps/recognize/lib/Service/FaceClusterAnalyzer.php', 'apps/recognize/lib/Command/ClusterFaces.php') }}-${{ matrix.pure-js-mode }}
+          key: ${{ runner.os }}-${{ hashFiles('out.txt', 'apps/recognize/src/classifier_faces.js', 'apps/recognize/lib/Classifiers/Classifier.php', 'apps/recognize/lib/Classifiers/Images/ClusteringFaceClassifier.php', 'apps/recognize/lib/Clustering/**', 'apps/recognize/lib/Dav/**', 'apps/recognize/lib/Service/FaceClusterAnalyzer.php', 'apps/recognize/lib/Command/ClusterFaces.php') }}-${{ matrix.pure-js-mode }}
 
       - name: Run clustering
         if: steps.clustering-cache.outputs.cache-hit != 'true'

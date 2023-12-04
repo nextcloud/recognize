@@ -221,15 +221,15 @@
 					<span>{{ t('recognize', 'Number of CPU Cores (0 for no limit)') }}</span>
 				</label>
 			</p>
-      <p>&nbsp;</p>
-      <p>{{ t('recognize', 'By default, recognize will only ever run one classifier process at a time. If you have a lot of resources available and want to run as many processes in parallel as possible, you can turn on concurrency here.') }}</p>
-      <p>
-        <NcCheckboxRadioSwitch :checked.sync="settings['concurrency.enabled']"
-                               type="switch"
-                               @update:checked="onChange">
-          {{ t('recognize', 'Enable unlimited concurrency of classifier processes') }}
-        </NcCheckboxRadioSwitch>
-      </p>
+			<p>&nbsp;</p>
+			<p>{{ t('recognize', 'By default, recognize will only ever run one classifier process at a time. If you have a lot of resources available and want to run as many processes in parallel as possible, you can turn on concurrency here.') }}</p>
+			<p>
+				<NcCheckboxRadioSwitch :checked.sync="settings['concurrency.enabled']"
+					type="switch"
+					@update:checked="onChange">
+					{{ t('recognize', 'Enable unlimited concurrency of classifier processes') }}
+				</NcCheckboxRadioSwitch>
+			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Tensorflow WASM mode')">
 			<p v-if="avx === undefined || platform === undefined || musl === undefined">
@@ -262,7 +262,10 @@
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Tensorflow GPU mode')">
 			<p>
-				<NcCheckboxRadioSwitch :checked.sync="settings['tensorflow.gpu']" type="switch" @update:checked="onChange" :disabled="settings['tensorflow.purejs']">
+				<NcCheckboxRadioSwitch :checked.sync="settings['tensorflow.gpu']"
+					type="switch"
+					:disabled="settings['tensorflow.purejs']"
+					@update:checked="onChange">
 					{{ t('recognize', 'Enable GPU mode') }}
 				</NcCheckboxRadioSwitch>
 			</p>

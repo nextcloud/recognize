@@ -181,3 +181,28 @@ jobs:
         run: |
           ./occ recognize:classify
           ./occ recognize:cluster-faces
+
+      - name: Install cadaver
+        if: ${{ matrix.faces-enabled }}
+        run: |
+          sudo apt -y install cadaver
+
+      - name: Test webdav access
+        if: ${{ matrix.faces-enabled }}
+        run: |
+          cat > ~/.netrc <<EOF
+          machine localhost
+          login admin
+          password password
+          EOF
+          cadaver http://localhost:8080/remote.php/dav/recognize/admin/ <<EOF
+          mv unassigned-faces/* faces/0/
+          mkdir faces/toot
+          mv faces/0/* faces/toot/
+          mv faces/toot/ faces/blah/
+          EOF
+
+      - name: Print logs
+        if: always()
+        run: |
+          cat data/nextcloud.log

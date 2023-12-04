@@ -115,14 +115,14 @@ class ClusteringFaceClassifier extends Classifier {
 						$this->logger->error('Could not store face detection in database', ['exception' => $e]);
 						continue;
 					}
-					$usersToCluster[] = $userId;
+					$usersToCluster[$userId] = true;
 				}
 				$this->config->setAppValue('recognize', self::MODEL_NAME.'.status', 'true');
 				$this->config->setAppValue('recognize', self::MODEL_NAME.'.lastFile', time());
 			}
 		}
 
-		$usersToCluster = array_unique($usersToCluster);
+		$usersToCluster = array_keys($usersToCluster);
 		foreach ($usersToCluster as $userId) {
 			if (!$this->jobList->has(ClusterFacesJob::class, ['userId' => $userId])) {
 				$this->logger->debug('scheduling ClusterFacesJob for user '.$userId);
