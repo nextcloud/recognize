@@ -113,7 +113,7 @@ OC.L10N.register(
     "Failed to load settings" : "Produciuse un fallo ao cargar os axustes",
     "Failed to save settings" : "Produciuse un fallo ao gardar os axustes",
     "never" : "nunca",
-    "{time} ago" : "Hai {time}",
+    "{time} ago" : "hai {time}",
     "Cat" : "Gato",
     "Animal" : "Animal",
     "Wildlife" : "Fauna",
