@@ -26,6 +26,7 @@ OC.L10N.register(
     "Book" : "書",
     "Train" : "火車",
     "Car" : "車子",
+    "Keyboard" : "鍵盤",
     "Computer" : "桌上電腦",
     "Clock" : "時鐘",
     "Screen" : "螢幕顯示",
