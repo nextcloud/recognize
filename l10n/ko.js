@@ -4,6 +4,8 @@ OC.L10N.register(
     "Recognize" : "인식",
     "Status" : "상태",
     "Reset" : "초기화",
+    "By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used. (Note: In WASM mode, currently only 1 core can be used at all times.)" : "기본적으로 모든 CPU 코어가 인공지능 처리를 위해 사용되며, 이는 시스템에 상당한 부하를 줄 것입니다. 이를 방지하기 위해 인공지능 처리에 사용될 CPU 코어의 수를 제한할 수 있습니다. (주의: WASM 모드에서는 항상 하나의 코어만 사용됩니다.)",
+    "Number of CPU Cores (0 for no limit)" : "사용할 CPU의 코어의 수 (0을 입력하면 무제한)",
     "Failed to load settings" : "환경설정 로딩 실패",
     "Failed to save settings" : "환경설정 저장 실패",
     "never" : "하지 않음",
