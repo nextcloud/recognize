@@ -1,6 +1,7 @@
 OC.L10N.register(
     "recognize",
     {
+    "Recognize" : "Розпізнати",
     "Status" : "Статус",
     "Reset" : "Скидання",
     "Failed to load settings" : "Не вдалося завантажити налаштування",
