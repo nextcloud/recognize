@@ -20,6 +20,7 @@ OC.L10N.register(
     "Food" : "Їжа",
     "Train" : "Потяг",
     "Car" : "В автомобілі",
+    "Keyboard" : "Клавіатура",
     "Clock" : "Годинник",
     "Library" : "Бібліотека",
     "Display" : "Показати",
