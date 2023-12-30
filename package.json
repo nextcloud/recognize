@@ -60,7 +60,7 @@
     "fast-glob": "^3.2.11",
     "flickr-sdk": "^6.0.0",
     "google-img-scrap": "^1.0.6",
-    "vue": "^2.7.14"
+    "vue": "^2.7.16"
   },
   "engines": {
     "node": "^16.0.0",
