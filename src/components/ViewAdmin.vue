@@ -12,10 +12,10 @@
 			<NcNoteCard v-if="modelsDownloaded" show-alert type="success">
 				{{ t('recognize', 'The machine learning models have been downloaded successfully.') }}
 			</NcNoteCard>
-			<NcNoteCard v-else-if="!modelsDownloaded">
+			<NcNoteCard v-else-if="!modelsDownloaded" type="warning">
 				{{ t('recognize', 'The machine learning models still need to be downloaded.') }}
 			</NcNoteCard>
-			<NcNoteCard v-if="nodejs === false">
+			<NcNoteCard v-if="nodejs === false" type="warning">
 				{{ t('recognize', 'Could not execute the Node.js binary. You may need to set the path to a working binary manually.') }}
 			</NcNoteCard>
 			<NcNoteCard v-if="cron !== undefined && cron !== 'cron'" type="error">
@@ -40,16 +40,16 @@
 				<NcNoteCard v-else-if="settings['faces.status'] === false" show-alert type="error">
 					{{ t('recognize', 'An error occurred during face recognition, please check the Nextcloud logs.') }}
 				</NcNoteCard>
-				<NcNoteCard v-else>
+				<NcNoteCard v-else  type="warning">
 					{{ t('recognize', 'Waiting for status reports on face recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs.') }}
 				</NcNoteCard>
-				<NcNoteCard v-if="countQueued">
+				<NcNoteCard v-if="countQueued" type="info">
 					{{ t('recognize', 'Face recognition:') }} {{ countQueued.faces }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['faces.lastFile']) }}<span v-if="facesJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ facesJobs.scheduled }}, {{ facesJobs.lastRun ? t('recognize', 'Last background job execution: ') + showDate(facesJobs.lastRun) : '' }}</span>
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued && countQueued.faces && facesJobs && !facesJobs.scheduled" show-alert type="error">
 					{{ t('recognize', 'There are queued files in the face recognition queue but no background job is scheduled to process them.') }}
 				</NcNoteCard>
-				<NcNoteCard v-if="countQueued">
+				<NcNoteCard v-if="countQueued" type="info">
 					{{ t('recognize', 'Face clustering:') }} {{ countQueued.clusterFaces }} {{ t('recognize', 'faces left to cluster') }}, {{ t('recognize', 'Last clustering run: ') }} {{ showDate(settings['clusterFaces.lastRun']) }}<span v-if="clusterFacesJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ clusterFacesJobs.scheduled }}, {{ clusterFacesJobs.lastRun ? t('recognize', 'Last background job execution: ') + showDate(clusterFacesJobs.lastRun) : '' }}</span><br>
 					<small>{{ t('recognize', 'A minimum of 120 faces per user is necessary for clustering to kick in') }}</small>
 				</NcNoteCard>
@@ -73,10 +73,10 @@
 				<NcNoteCard v-else-if="settings['imagenet.status'] === false" show-alert type="error">
 					{{ t('recognize', 'An error occurred during object recognition, please check the Nextcloud logs.') }}
 				</NcNoteCard>
-				<NcNoteCard v-else>
+				<NcNoteCard v-else  type="warning">
 					{{ t('recognize', 'Waiting for status reports on object recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs.') }}
 				</NcNoteCard>
-				<NcNoteCard v-if="countQueued">
+				<NcNoteCard v-if="countQueued" type="info">
 					{{ t('recognize', 'Object recognition:') }} {{ countQueued.imagenet }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['imagenet.lastFile']) }}<span v-if="imagenetJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ imagenetJobs.scheduled }}, {{ imagenetJobs.lastRun ? t('recognize', 'Last background job execution: ') + showDate(imagenetJobs.lastRun) : '' }}</span>
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued && countQueued.imagenet && imagenetJobs && !imagenetJobs.scheduled" show-alert type="error">
@@ -90,10 +90,10 @@
 				<NcNoteCard v-else-if="settings['landmarks.status'] === false" show-alert type="error">
 					{{ t('recognize', 'An error occurred during landmark recognition, please check the Nextcloud logs.') }}
 				</NcNoteCard>
-				<NcNoteCard v-else>
+				<NcNoteCard v-else type="warning">
 					{{ t('recognize', 'Waiting for status reports on landmark recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs.') }}
 				</NcNoteCard>
-				<NcNoteCard v-if="countQueued">
+				<NcNoteCard v-if="countQueued" type="info">
 					{{ t('recognize', 'Landmark recognition:') }} {{ countQueued.landmarks }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['landmarks.lastFile']) }}<span v-if="landmarksJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ landmarksJobs.scheduled }}, {{ landmarksJobs.lastRun ? t('recognize', 'Last background job execution: ') + showDate(landmarksJobs.lastRun) : '' }}</span>
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued && countQueued.landmarks && landmarksJobs && !landmarksJobs.scheduled" show-alert type="error">
@@ -134,10 +134,10 @@
 				<NcNoteCard v-else-if="settings['musicnn.status'] === false" show-alert type="error">
 					{{ t('recognize', 'An error occurred during audio recognition, please check the Nextcloud logs.') }}
 				</NcNoteCard>
-				<NcNoteCard v-else>
+				<NcNoteCard v-else  type="warning">
 					{{ t('recognize', 'Waiting for status reports on audio recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs.') }}
 				</NcNoteCard>
-				<NcNoteCard v-if="countQueued">
+				<NcNoteCard v-if="countQueued"  type="info">
 					{{ t('recognize', 'Music genre recognition:') }} {{ countQueued.musicnn }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['musicnn.lastFile']) }}<span v-if="musicnnJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ muscinnJobs.scheduled }}, {{ musicnnJobs.lastRun ? t('recognize', 'Last background job execution: ') + showDate(musicnnJobs.lastRun) : '' }}</span>
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued && countQueued.musicnn && musicnnJobs && !muscinnJobs.scheduled" show-alert type="error">
@@ -163,10 +163,10 @@
 				<NcNoteCard v-else-if="settings['movinet.status'] === false" show-alert type="error">
 					{{ t('recognize', 'An error occurred during video recognition, please check the Nextcloud logs.') }}
 				</NcNoteCard>
-				<NcNoteCard v-else>
+				<NcNoteCard v-else type="warning">
 					{{ t('recognize', 'Waiting for status reports on video recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs.') }}
 				</NcNoteCard>
-				<NcNoteCard v-if="countQueued">
+				<NcNoteCard v-if="countQueued" type="info">
 					{{ t('recognize', 'Video recognition:') }} {{ countQueued.movinet }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['movinet.lastFile']) }}<span v-if="movinetJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ movinetJobs.scheduled }}, {{ movinetJobs.lastRun ? t('recognize', 'Last background job execution: ') + showDate(movinetJobs.lastRun) : '' }}</span>
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued && countQueued.movinet && movinetJobs && !movinetJobs.scheduled" show-alert type="error">
@@ -235,7 +235,7 @@
 			<p v-if="avx === undefined || platform === undefined || musl === undefined">
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking CPU') }}
 			</p>
-			<NcNoteCard v-else-if="avx === null || platform === null || musl === null">
+			<NcNoteCard v-else-if="avx === null || platform === null || musl === null" type="warning">
 				{{ t('recognize', 'Could not check whether your machine supports native TensorFlow operation. Make sure your OS has GNU lib C, your CPU supports AVX instructions and you are running on x86. If one of these things is not the case, you will need to run in WASM mode.') }}
 			</NcNoteCard>
 			<NcNoteCard v-else-if="avx && platform === 'x86_64' && !musl" type="success">
@@ -280,7 +280,7 @@
 			<p v-if="nodejs === undefined">
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking Node.js') }}
 			</p>
-			<NcNoteCard v-else-if="nodejs === false">
+			<NcNoteCard v-else-if="nodejs === false" type="warning">
 				{{ t('recognize', 'Could not execute the Node.js binary. You may need to set the path to a working binary manually.') }}
 			</NcNoteCard>
 			<NcNoteCard v-else type="success">
@@ -290,10 +290,10 @@
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking libtensorflow') }}
 			</p>
 			<template v-if="settings['tensorflow.purejs'] === false">
-				<NcNoteCard v-if="nodejs !== false && libtensorflow === false">
+				<NcNoteCard v-if="nodejs !== false && libtensorflow === false"  type="warning">
 					{{ t('recognize', 'Could not load libtensorflow in Node.js. You can try to manually install libtensorflow or run in WASM mode.') }}
 				</NcNoteCard>
-				<NcNoteCard v-else-if="nodejs !== false && libtensorflow === true && settings['tensorflow.gpu'] === true && gputensorflow === false">
+				<NcNoteCard v-else-if="nodejs !== false && libtensorflow === true && settings['tensorflow.gpu'] === true && gputensorflow === false" type="warning">
 					{{ t('recognize', 'Successfully loaded libtensorflow in Node.js, but couldn\'t load GPU. Make sure CUDA Toolkit and cuDNN are installed and accessible, or turn off GPU mode.') }}
 				</NcNoteCard>
 				<NcNoteCard v-else-if="settings['tensorflow.gpu'] === false && libtensorflow === true" type="success">
@@ -304,7 +304,7 @@
 				</NcNoteCard>
 			</template>
 			<template v-else>
-				<NcNoteCard v-if="nodejs !== false && wasmtensorflow === false">
+				<NcNoteCard v-if="nodejs !== false && wasmtensorflow === false" type="warning">
 					{{ t('recognize', 'Could not load Tensorflow WASM in Node.js. Something is wrong with your setup.') }}
 				</NcNoteCard>
 				<NcNoteCard v-else-if="wasmtensorflow === true" type="success">
@@ -323,7 +323,7 @@
 			<p v-if="nice === undefined">
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking Nice binary') }}
 			</p>
-			<NcNoteCard v-else-if="nice === false">
+			<NcNoteCard v-else-if="nice === false" type="warning">
 				{{ t('recognize', 'Could not find the Nice binary. You may need to set the path to a working binary manually.') }}
 			</NcNoteCard>
 			<p>
