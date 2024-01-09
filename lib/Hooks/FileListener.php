@@ -70,10 +70,7 @@ class FileListener implements IEventListener {
 			$node = $share->getNode();
 
 			$accessList = $this->shareManager->getAccessList($node, true, true);
-			/**
-			 * @var string[] $userIds
-			 */
-			$userIds = array_keys($accessList['users']);
+			$userIds = array_map(fn ($id) => (string)$id, array_keys($accessList['users']));
 
 			if ($node->getType() === FileInfo::TYPE_FOLDER) {
 				$mount = $node->getMountPoint();
