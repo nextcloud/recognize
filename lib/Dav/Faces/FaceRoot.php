@@ -109,6 +109,9 @@ class FaceRoot implements ICollection, IMoveTarget {
 		} catch (DoesNotExistException $e) {
 			throw new NotFound();
 		}
+		if ($detection->getClusterId() !== $this->cluster->getId()) {
+			throw new NotFound();
+		}
 		return new FacePhoto($this->detectionMapper, $detection, $this->rootFolder->getUserFolder($this->user->getUID()), $this->tagManager, $this->previewManager);
 	}
 
