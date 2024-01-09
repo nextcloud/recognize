@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once './vendor/autoload.php';
+require_once './vendor/scoper-autoload.php';
 
 use Nextcloud\CodingStandard\Config;
 

@@ -6,11 +6,11 @@
 declare(strict_types=1);
 namespace OCA\Recognize\Clustering;
 
-use \Rubix\ML\Datasets\Labeled;
-use \Rubix\ML\Graph\Nodes\Ball;
-use \Rubix\ML\Graph\Nodes\Hypersphere;
-use \Rubix\ML\Graph\Trees\BallTree;
-use \Rubix\ML\Kernels\Distance\Distance;
+use \OCA\Recognize\Rubix\ML\Datasets\Labeled;
+use \OCA\Recognize\Rubix\ML\Graph\Nodes\Ball;
+use \OCA\Recognize\Rubix\ML\Graph\Nodes\Hypersphere;
+use \OCA\Recognize\Rubix\ML\Graph\Trees\BallTree;
+use \OCA\Recognize\Rubix\ML\Kernels\Distance\Distance;
 
 class MrdBallTree extends BallTree {
 	private ?Labeled $dataset = null;
@@ -25,8 +25,8 @@ class MrdBallTree extends BallTree {
 	/**
 	 * @param int $maxLeafSize
 	 * @param int $coreDistSampleSize
-	 * @param \Rubix\ML\Kernels\Distance\Distance|null $kernel
-	 * @throws \Rubix\ML\Exceptions\InvalidArgumentException
+	 * @param \OCA\Recognize\Rubix\ML\Kernels\Distance\Distance|null $kernel
+	 * @throws \OCA\Recognize\Rubix\ML\Exceptions\InvalidArgumentException
 	 */
 	public function __construct(int $maxLeafSize = 30, int $sampleSize = 5, ?Distance $kernel = null) {
 		if ($maxLeafSize < 1) {
@@ -462,7 +462,7 @@ class MrdBallTree extends BallTree {
 	 *
 	 * @param int|string $sampleLabel
 	 * @param bool $useCachedValues
-	 * @throws \Rubix\ML\Exceptions\InvalidArgumentException
+	 * @throws \OCA\Recognize\Rubix\ML\Exceptions\InvalidArgumentException
 	 * @return array{list<mixed>,list<float>}
 	 */
 	public function getCoreNeighbors($sampleLabel, bool $useCachedValues = true): array {
@@ -546,8 +546,8 @@ class MrdBallTree extends BallTree {
 	 *
 	 * @param int $sampleLabel
 	 * @param float $radius
-	 * @throws \Rubix\ML\Exceptions\InvalidArgumentException
-	 * @throws \Rubix\ML\Exceptions\RuntimeException
+	 * @throws \OCA\Recognize\Rubix\ML\Exceptions\InvalidArgumentException
+	 * @throws \OCA\Recognize\Rubix\ML\Exceptions\RuntimeException
 	 * @return array{list<mixed>,list<float>}
 	 */
 	public function cachedRange($sampleLabel, float $radius): array {
@@ -624,8 +624,8 @@ class MrdBallTree extends BallTree {
 	 *
 	 * @internal
 	 *
-	 * @param \Rubix\ML\Datasets\Labeled $dataset
-	 * @throws \Rubix\ML\Exceptions\InvalidArgumentException
+	 * @param \OCA\Recognize\Rubix\ML\Datasets\Labeled $dataset
+	 * @throws \OCA\Recognize\Rubix\ML\Exceptions\InvalidArgumentException
 	 */
 	public function grow(Labeled $dataset): void {
 		$this->dataset = $dataset;
