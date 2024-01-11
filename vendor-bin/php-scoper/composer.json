@@ -1,0 +1,5 @@
+{
+    "require-dev": {
+        "humbug/php-scoper": "^0.18.7"
+    }
+}

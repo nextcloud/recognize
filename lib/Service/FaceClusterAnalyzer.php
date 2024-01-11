@@ -6,8 +6,8 @@
 declare(strict_types=1);
 namespace OCA\Recognize\Service;
 
-use \Rubix\ML\Datasets\Labeled;
-use \Rubix\ML\Kernels\Distance\Euclidean;
+use \OCA\Recognize\Rubix\ML\Datasets\Labeled;
+use \OCA\Recognize\Rubix\ML\Kernels\Distance\Euclidean;
 use OCA\Recognize\Clustering\HDBSCAN;
 use OCA\Recognize\Db\FaceCluster;
 use OCA\Recognize\Db\FaceClusterMapper;
