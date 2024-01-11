@@ -211,15 +211,14 @@
 		<NcSettingsSection :title="t('recognize', 'Resource usage') ">
 			<p>{{ t('recognize', 'By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used. (Note: In WASM mode, currently only 1 core can be used at all times.)') }}</p>
 			<p>
-				<label>
-					<input v-model="settings['tensorflow.cores']"
-						type="number"
-						:min="0"
-						:step="1"
-						:max="32"
-						@change="onChange">
-					<span>{{ t('recognize', 'Number of CPU Cores (0 for no limit)') }}</span>
-				</label>
+        <NcTextField :value.sync="settings['tensorflow.cores']"
+          type="number"
+          :min="0"
+          :step="1"
+          :max="32"
+          :label="t('recognize', 'Number of CPU Cores (0 for no limit)')"
+          :label-visible="true"
+          @update:value="onChange" />
 			</p>
 			<p>&nbsp;</p>
 			<p>{{ t('recognize', 'By default, recognize will only ever run one classifier process at a time. If you have a lot of resources available and want to run as many processes in parallel as possible, you can turn on concurrency here.') }}</p>
@@ -315,7 +314,7 @@
 				{{ t('recognize', 'If the shipped Node.js binary doesn\'t work on your system for some reason you can set the path to a custom node.js binary. Currently supported is Node v14.17 and newer v14 releases.') }}
 			</p>
 			<p>
-				<input v-model="settings['node_binary']" type="text" @change="onChange">
+				<NcTextField :value.sync="settings['node_binary']" @update:value="onChange" />
 			</p>
 			<p>{{ t('recognize', 'For Nextcloud Snap users, you need to adjust this path to point to the snap\'s "current" directory as the pre-configured path will change with each update. For example, set it to "/var/snap/nextcloud/current/nextcloud/extra-apps/recognize/bin/node" instead of "/var/snap/nextcloud/9337974/nextcloud/extra-apps/recognize/bin/node"') }}</p>
 		</NcSettingsSection>
@@ -330,23 +329,23 @@
 				{{ t('recognize', 'Nice binary path') }}
 			</p>
 			<p>
-				<input v-model="settings['nice_binary']"
-					type="text"
-					:placeholder="t('recognize', 'Nice binary path')"
-					@change="onChange">
+				<NcTextField :value.sync="settings['nice_binary']"
+          :label-visible="true"
+					:label="t('recognize', 'Nice binary path')"
+					@update:value="onChange" />
 			</p>
 			<p>&nbsp;</p>
 			<p>
 				{{ t('recognize', 'Nice value to set the priority of the Node.js processes. The value can only be from 0 to 19 since the Node.js process runs without superuser privileges. The higher the nice value, the lower the priority of the process.') }}
 			</p>
 			<p>
-				<input v-model="settings['nice_value']"
+				<NcTextField :value.sync="settings['nice_value']"
 					type="number"
 					:min="0"
 					:max="19"
 					:step="1"
 					:disabled="nice === false"
-					@change="onChange">
+					@update:value="onChange" />
 			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :title="t('recognize', 'Terminal commands') ">
@@ -362,7 +361,7 @@
 			<p>{{ t('recognize', 'Before running a full initial classification run on the terminal, you should stop all background processing that Recognize scheduled upon installation to avoid interference.') }}</p>
 			<pre><code>occ recognize:clear-background-jobs</code></pre>
 			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'To run a face clustering run on for each user in the terminal, run the following. Consider adding the parameter --batch-size <count> for large libraries to avoid PHP memory exhaustion. (The clustering will run in sequence inside your terminal.)') }}</p>
+			<p>{{ t('recognize', 'To run a face clustering run on for each user in the terminal, run the following. Consider adding the parameter --batch-size 10000 for large libraries to avoid PHP memory exhaustion. (The clustering will run in sequence inside your terminal.)') }}</p>
 			<pre><code>occ recognize:cluster-faces</code></pre>
 			<p>&nbsp;</p>
 			<p>{{ t('recognize', 'To remove all face clusters but keep the raw detected faces run the following on the terminal:') }}</p>
@@ -692,22 +691,6 @@ figure[class^='icon-'] {
 	position: fixed;
 	top: 70px;
 	right: 20px;
-}
-
-#recognize label {
-	margin-top: 10px;
-	display: flex;
-}
-
-#recognize label > * {
-	padding: 8px 0;
-	padding-left: 6px;
-}
-
-#recognize input[type=text], #recognize input[type=password] {
-	width: 50%;
-	min-width: 300px;
-	display: block;
 }
 
 #recognize a:link, #recognize a:visited, #recognize a:hover {
