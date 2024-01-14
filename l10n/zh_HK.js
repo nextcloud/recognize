@@ -101,6 +101,7 @@ OC.L10N.register(
     "To trigger a full classification run, run the following command on the server terminal. (The classification will run in multiple background jobs which can run in parallel.)" : "要觸發完整的分類運行，請在伺服器端執行以下命令。（分類將在多個後台作業中運行，這些作業可以並行運行。）",
     "To run a full classification run on the terminal, run the following. (The classification will run in sequence inside your terminal.)" : "要在終端上運行完整分類，請執行以下操作。（分類將在您的終端內按順序運行。）",
     "Before running a full initial classification run on the terminal, you should stop all background processing that Recognize scheduled upon installation to avoid interference." : "在終端上運行完整的初始分類運行之前，您應該停止所有識別安裝時安排的後台處理以避免干擾。",
+    "To run a face clustering run on for each user in the terminal, run the following. Consider adding the parameter --batch-size 10000 for large libraries to avoid PHP memory exhaustion. (The clustering will run in sequence inside your terminal.)" : "若要在終端機中為每個用戶運行臉部聚類，請執行以下操作：考慮在大型資料庫中添加參數 --batch-size 10000 以避免 PHP 記憶體耗盡。（聚類將在您的終端機中依序執行。）",
     "To remove all face clusters but keep the raw detected faces run the following on the terminal:" : "要刪除所有面部聚類但保留檢測到的原始面部，請在終端上運行以下命令：",
     "To remove all detected faces and face clusters run the following on the terminal:" : "要刪除所有檢測到的人臉和人臉簇，請在終端上運行以下命令：",
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "您可以使用以下命令重置之前已通過識別分類的所有文件的標籤：",
