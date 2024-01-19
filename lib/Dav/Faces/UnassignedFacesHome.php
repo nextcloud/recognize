@@ -105,7 +105,7 @@ class UnassignedFacesHome implements ICollection {
 		$detections = $this->faceDetectionMapper->findRejectedByUserId($this->user->getUID());
 		$detectionsWithFile = array_filter($detections, fn (FaceDetection $detection): bool => current($this->rootFolder->getUserFolder($this->user->getUID())->getById($detection->getFileId())) !== false);
 		$this->children = array_map(function (FaceDetection $detection) {
-			return new UnassignedFacePhoto($this->faceDetectionMapper, $detection, $this->rootFolder->getUserFolder($this->user->getUID()), $this->tagManager, $this->metadataManager, $this->previewManager);
+			return new UnassignedFacePhoto($this->faceDetectionMapper, $detection, $this->rootFolder->getUserFolder($this->user->getUID()), $this->tagManager, $this->previewManager);
 		}, $detectionsWithFile);
 
 		return $this->children;
