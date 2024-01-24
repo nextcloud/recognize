@@ -6,10 +6,10 @@
 declare(strict_types=1);
 namespace OCA\Recognize\Clustering;
 
-use \OCA\Recognize\Rubix\ML\Datasets\Labeled;
-use \OCA\Recognize\Rubix\ML\EstimatorType;
-use \OCA\Recognize\Rubix\ML\Helpers\Params;
-use \OCA\Recognize\Rubix\ML\Kernels\Distance\Distance;
+use \OCA\Recognize\Vendor\Rubix\ML\Datasets\Labeled;
+use \OCA\Recognize\Vendor\Rubix\ML\EstimatorType;
+use \OCA\Recognize\Vendor\Rubix\ML\Helpers\Params;
+use \OCA\Recognize\Vendor\Rubix\ML\Kernels\Distance\Distance;
 
 /**
  * HDBSCAN
@@ -59,7 +59,7 @@ class HDBSCAN {
 	 * The distance kernel used for computing interpoint distances.
 	 *
 	 */
-	protected \OCA\Recognize\Rubix\ML\Datasets\Labeled $dataset;
+	protected \OCA\Recognize\Vendor\Rubix\ML\Datasets\Labeled $dataset;
 
 
 
@@ -70,7 +70,7 @@ class HDBSCAN {
 	 * @param array $oldCoreDistances
 	 * @param Distance $kernel
 	 * @param bool $useTrueMst // (Build true or approximate minimum spanning tree)
-	 * @throws \OCA\Recognize\Rubix\ML\Exceptions\InvalidArgumentException
+	 * @throws \OCA\Recognize\Vendor\Rubix\ML\Exceptions\InvalidArgumentException
 	 */
 	public function __construct(Labeled $dataset, int $minClusterSize = 5, int $sampleSize = 5, array $oldCoreDistances = [], ?Distance $kernel = null, bool $useTrueMst = true) {
 		if ($minClusterSize < 2) {
@@ -96,7 +96,7 @@ class HDBSCAN {
 	/**
 	 * Return the estimator type.
 	 *
-	 * @return \OCA\Recognize\Rubix\ML\EstimatorType
+	 * @return \OCA\Recognize\Vendor\Rubix\ML\EstimatorType
 	 */
 	public function type(): EstimatorType {
 		return EstimatorType::clusterer();
@@ -105,7 +105,7 @@ class HDBSCAN {
 	/**
 	 * Return the data types that the estimator is compatible with.
 	 *
-	 * @return list<\OCA\Recognize\Rubix\ML\DataType>
+	 * @return list<\OCA\Recognize\Vendor\Rubix\ML\DataType>
 	 */
 	public function compatibility(): array {
 		return $this->mstSolver->kernel()->compatibility();
