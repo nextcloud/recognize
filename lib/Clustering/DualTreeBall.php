@@ -6,11 +6,11 @@
 declare(strict_types=1);
 namespace OCA\Recognize\Clustering;
 
-use \OCA\Recognize\Rubix\ML\Datasets\Labeled;
-use \OCA\Recognize\Rubix\ML\Graph\Nodes\Ball;
-use \OCA\Recognize\Rubix\ML\Helpers\Stats;
-use \OCA\Recognize\Rubix\ML\Kernels\Distance\Distance;
-use function \OCA\Recognize\Rubix\ML\argmax;
+use \OCA\Recognize\Vendor\Rubix\ML\Datasets\Labeled;
+use \OCA\Recognize\Vendor\Rubix\ML\Graph\Nodes\Ball;
+use \OCA\Recognize\Vendor\Rubix\ML\Helpers\Stats;
+use \OCA\Recognize\Vendor\Rubix\ML\Kernels\Distance\Distance;
+use function \OCA\Recognize\Vendor\Rubix\ML\argmax;
 
 class DualTreeBall extends Ball {
 	protected float $longestDistanceInNode = INF;
@@ -97,8 +97,8 @@ class DualTreeBall extends Ball {
 	/**
 	 * Factory method to build a hypersphere by splitting the dataset into left and right clusters.
 	 *
-	 * @param \OCA\Recognize\Rubix\ML\Datasets\Labeled $dataset
-	 * @param \OCA\Recognize\Rubix\ML\Kernels\Distance\Distance $kernel
+	 * @param \OCA\Recognize\Vendor\Rubix\ML\Datasets\Labeled $dataset
+	 * @param \OCA\Recognize\Vendor\Rubix\ML\Kernels\Distance\Distance $kernel
 	 * @return self
 	 */
 	public static function split(Labeled $dataset, Distance $kernel): self {

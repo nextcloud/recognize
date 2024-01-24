@@ -45,7 +45,9 @@ class Application extends App implements IBootstrap {
 	}
 
 	public function register(IRegistrationContext $context): void {
-		@include_once __DIR__ . '/../../vendor/autoload.php';
+		@include_once __DIR__ . '/../../vendor/scoper-autoload.php';
+		@include_once __DIR__ . '/../../vendor/rubix/ml/src/functions.php';
+		@include_once __DIR__ . '/../../vendor/rubix/ml/src/constants.php';
 
 		/** Register $principalBackend for the DAV collection */
 		$context->registerServiceAlias('principalBackend', Principal::class);

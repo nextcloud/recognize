@@ -24,12 +24,12 @@
         "test:unit": "phpunit --config tests/phpunit.xml",
         "post-install-cmd": [
             "@composer bin all install --ansi",
-            "grep -r 'OCA\\\\Recognize\\\\Rubix' ./vendor/rubix/ml/ || ( vendor/bin/php-scoper add-prefix --prefix='OCA\\Recognize' --output-dir=\".\" --working-dir=\"./vendor/rubix/ml/\" -f --config=\"../../../scoper.inc.php\" && sed -i 's:Rubix\\\\\\\\ML\\\\\\\\:OCA\\\\\\\\Recognize\\\\\\\\Rubix\\\\\\\\ML\\\\\\\\:' vendor/composer/installed.json )",
+            "grep -r 'OCA\\\\Recognize\\\\Vendor\\\\Rubix' ./vendor/rubix/ml/ || vendor/bin/php-scoper add-prefix --prefix='OCA\\Recognize\\Vendor' --output-dir=\".\" --working-dir=\"./vendor/\" -f --config=\"../scoper.inc.php\"",
             "composer dump-autoload"
         ],
         "post-update-cmd": [
             "@composer bin all update --ansi",
-            "grep -r 'OCA\\\\Recognize\\\\Rubix' ./vendor/rubix/ml/ || ( vendor/bin/php-scoper add-prefix --prefix='OCA\\Recognize' --output-dir=\".\" --working-dir=\"./vendor/rubix/ml/\" -f --config=\"../../../scoper.inc.php\" && sed -i 's:Rubix\\\\\\\\ML\\\\\\\\:OCA\\\\\\\\Recognize\\\\\\\\Rubix\\\\\\\\ML\\\\\\\\:' vendor/composer/installed.json )",
+            "grep -r 'OCA\\\\Recognize\\\\Vendor\\\\Rubix' ./vendor/rubix/ml/ || vendor/bin/php-scoper add-prefix --prefix='OCA\\Recognize\\Vendor' --output-dir=\".\" --working-dir=\"./vendor/\" -f --config=\"../scoper.inc.php\"",
             "composer dump-autoload"
         ]
     },

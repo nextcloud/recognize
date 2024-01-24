@@ -6,7 +6,7 @@
 declare(strict_types=1);
 namespace OCA\Recognize\Dav\Faces;
 
-use \OCA\Recognize\Rubix\ML\Kernels\Distance\Euclidean;
+use \OCA\Recognize\Vendor\Rubix\ML\Kernels\Distance\Euclidean;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Service\FaceClusterAnalyzer;

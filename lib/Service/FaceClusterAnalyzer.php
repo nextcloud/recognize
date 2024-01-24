@@ -6,8 +6,8 @@
 declare(strict_types=1);
 namespace OCA\Recognize\Service;
 
-use \OCA\Recognize\Rubix\ML\Datasets\Labeled;
-use \OCA\Recognize\Rubix\ML\Kernels\Distance\Euclidean;
+use \OCA\Recognize\Vendor\Rubix\ML\Datasets\Labeled;
+use \OCA\Recognize\Vendor\Rubix\ML\Kernels\Distance\Euclidean;
 use OCA\Recognize\Clustering\HDBSCAN;
 use OCA\Recognize\Db\FaceCluster;
 use OCA\Recognize\Db\FaceClusterMapper;
@@ -51,7 +51,7 @@ class FaceClusterAnalyzer {
 			ini_set('memory_limit', '-1');
 		}
 
-		
+
 		$sampledDetections = [];
 		$existingClusters = $this->faceClusters->findByUserId($userId);
 		/** @var array<int,int> $maxVotesByCluster */
@@ -86,6 +86,8 @@ class FaceClusterAnalyzer {
 		$dataset = new Labeled(array_map(static function (FaceDetection $detection): array {
 			return $detection->getVector();
 		}, $detections), array_combine(array_keys($detections), array_keys($detections)), false);
+
+		$dataset->features();
 
 		$n = count($detections);
 		$hdbscan = new HDBSCAN($dataset, $this->getMinClusterSize($n), $this->getMinSampleSize($n));

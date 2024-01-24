@@ -1,6 +1,6 @@
 <?php
 
-use \OCA\Recognize\Rubix\ML\Kernels\Distance\Euclidean;
+use \OCA\Recognize\Vendor\Rubix\ML\Kernels\Distance\Euclidean;
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
