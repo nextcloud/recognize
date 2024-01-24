@@ -70,6 +70,7 @@ clean:
 	rm -rf $(sign_dir)
 
 clean-dev:
+	rm -rf vendor
 	rm -rf node_modules
 
 appstore:
