@@ -7,7 +7,7 @@ source_dir=$(build_dir)/source
 sign_dir=$(build_dir)/sign
 package_name=$(app_name)
 cert_dir=$(HOME)/.nextcloud/certificates
-version+=6.1.0-beta.1
+version+=6.1.0-beta.2
 
 all: dev-setup build-js-production
 
@@ -73,6 +73,7 @@ clean-dev:
 	rm -rf node_modules
 
 appstore:
+	rm -rf vendor
 	composer install --no-dev
 	mkdir -p $(sign_dir)
 	rsync -a --delete \
