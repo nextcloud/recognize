@@ -77,7 +77,7 @@ class ClassifierTest extends TestCase {
 			->willReturnCallback(fn ($msg) => print($msg."\n"));
 		$logger->setCliOutput($cliOutput);
 		$this->jobList = \OC::$server->get(IJobList::class);
-		$this->config = \OC::$server->get(IAppConfig::class);
+		$this->config = \OC::$server->getRegisteredAppContainer('recognize')->get(IAppConfig::class);
 		$this->queue = \OC::$server->get(QueueService::class);
 		foreach (self::TEST_FILES as $filename) {
 			try {
