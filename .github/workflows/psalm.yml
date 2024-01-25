@@ -51,6 +51,7 @@ jobs:
       - name: Install dependencies
         run: |
           composer require --with-all-dependencies nextcloud/ocp:${{ matrix.server-versions }}
+          composer install
 
       - name: Run coding standards check
         run: composer run psalm
