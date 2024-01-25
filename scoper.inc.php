@@ -13,7 +13,8 @@ return [
 			->exclude([
 				'bin',
 				'bamarni',
-				'nextcloud'
+				'nextcloud',
+				'symfony'
 			])
 			->in('.'),
 		],
