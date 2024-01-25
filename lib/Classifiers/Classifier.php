@@ -20,6 +20,7 @@ use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
 use OCP\Files\NotPermittedException;
+use OCP\IConfig;
 use OCP\IPreview;
 use OCP\ITempManager;
 use Psr\Log\LoggerInterface;
@@ -339,7 +340,7 @@ abstract class Classifier {
 
 		if (in_array($imagetype, [IMAGETYPE_WEBP, IMAGETYPE_AVIF, false])) { // To troubleshoot if it is a webp or avif.
 			$previewImage = imagecreatefromstring(file_get_contents($tmpname));
-			$use_gd_quality = (int)$this->config->getSystemValue('recognize.preview.quality', '100');
+			$use_gd_quality = (int)\OCP\Server::get(IConfig::class)->getSystemValue('recognize.preview.quality', '100');
 			if (imagejpeg($previewImage, $tmpname, $use_gd_quality) === false) {
 				imagedestroy($previewImage);
 				throw new \OCA\Recognize\Exception\Exception('Could not copy preview file to temp folder');
@@ -380,7 +381,7 @@ abstract class Classifier {
 		// Create a temporary file *with the correct extension*
 		$tmpname = $this->tempManager->getTemporaryFile('.jpg');
 
-		$use_gd_quality = (int)$this->config->getSystemValue('recognize.preview.quality', '100');
+		$use_gd_quality = (int)\OCP\Server::get(IConfig::class)->getSystemValue('recognize.preview.quality', '100');
 		if (imagejpeg($previewImage, $tmpname, $use_gd_quality) === false) {
 			imagedestroy($image);
 			imagedestroy($previewImage);
