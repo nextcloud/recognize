@@ -14,7 +14,8 @@ return [
 				'bin',
 				'bamarni',
 				'nextcloud',
-				'symfony'
+				'symfony',
+				'psr'
 			])
 			->in('.'),
 		],
