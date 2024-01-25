@@ -29,6 +29,7 @@ use OCP\AppFramework\Services\IAppConfig;
 use OCP\BackgroundJob\IJobList;
 use OCP\DB\Exception;
 use OCP\IBinaryFinder;
+use OCP\IConfig;
 use OCP\IRequest;
 
 class AdminController extends Controller {
@@ -271,7 +272,7 @@ class AdminController extends Controller {
 	}
 
 	public function cron(): JSONResponse {
-		$cron = $this->config->getAppValue('core', 'backgroundjobs_mode', '');
+		$cron = \OCP\Server::get(IConfig::class)->getAppValue('core', 'backgroundjobs_mode', '');
 		return new JSONResponse(['cron' => $cron]);
 	}
 
