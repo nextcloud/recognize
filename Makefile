@@ -24,6 +24,7 @@ npm-update:
 
 composer-install:
 	composer install
+	composer install
 
 install-binaries:
 	mkdir -p bin
@@ -75,6 +76,7 @@ clean-dev:
 
 appstore:
 	rm -rf vendor
+	composer install --no-dev
 	composer install --no-dev
 	mkdir -p $(sign_dir)
 	rsync -a --delete \

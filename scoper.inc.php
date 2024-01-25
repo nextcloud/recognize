@@ -4,7 +4,19 @@ declare(strict_types=1);
 
 // scoper.inc.php
 
+use Symfony\Component\Finder\Finder;
+
 return [
+	'finders' => [
+		Finder::create()
+			->files()
+			->exclude([
+				'bin',
+				'bamarni',
+				'nextcloud'
+			])
+			->in('.'),
+		],
 	'patchers' => [
 		static function (string $filePath, string $prefix, string $content): string {
 			//
@@ -13,7 +25,7 @@ return [
 			if (str_contains($filePath, '/rubix/')) {
 				return preg_replace(
 					'%([ |<{:,])\\\\Rubix\\\\ML%',
-					'$1\\\\OCA\\\\Recognize\\\\Rubix\\\\ML',
+					'$1\\\\OCA\\\\Recognize\\\\Vendor\\\\Rubix\\\\ML',
 					$content
 				);
 			}
