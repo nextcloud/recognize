@@ -118,7 +118,7 @@ class ClusteringFaceClassifier extends Classifier {
 					$usersToCluster[$userId] = true;
 				}
 				$this->config->setAppValue(self::MODEL_NAME.'.status', 'true');
-				$this->config->setAppValue(self::MODEL_NAME.'.lastFile', time());
+				$this->config->setAppValue(self::MODEL_NAME.'.lastFile', (string)time());
 			}
 		}
 

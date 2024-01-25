@@ -51,7 +51,7 @@ class ImagenetClassifier extends Classifier {
 				return in_array($tagName, LandmarksClassifier::PRECONDITION_TAGS);
 			});
 			$this->config->setAppValue(self::MODEL_NAME.'.status', 'true');
-			$this->config->setAppValue(self::MODEL_NAME.'.lastFile', time());
+			$this->config->setAppValue(self::MODEL_NAME.'.lastFile', (string)time());
 
 			if (count($landmarkTags) > 0) {
 				try {
