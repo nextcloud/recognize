@@ -10,14 +10,14 @@ use OCA\Recognize\Service\FaceClusterAnalyzer;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\Entity;
 use OCP\AppFramework\Db\QBMapper;
+use OCP\AppFramework\Services\IAppConfig;
 use OCP\DB\QueryBuilder\IQueryBuilder;
-use OCP\IConfig;
 use OCP\IDBConnection;
 
 class FaceDetectionMapper extends QBMapper {
-	private IConfig $config;
+	private IAppConfig $config;
 
-	public function __construct(IDBConnection $db, IConfig $config) {
+	public function __construct(IDBConnection $db, IAppConfig $config) {
 		parent::__construct($db, 'recognize_face_detections', FaceDetection::class);
 		$this->db = $db;
 		$this->config = $config;

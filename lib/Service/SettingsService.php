@@ -16,8 +16,8 @@ use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
 use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
 use OCA\Recognize\Classifiers\Video\MovinetClassifier;
 use OCA\Recognize\Exception\Exception;
+use OCP\AppFramework\Services\IAppConfig;
 use OCP\BackgroundJob\IJobList;
-use OCP\IConfig;
 
 class SettingsService {
 	/** @var array<string,string>  */
@@ -63,10 +63,10 @@ class SettingsService {
 		'musicnn.batchSize' => '20',
 	];
 
-	private IConfig $config;
+	private IAppConfig $config;
 	private IJobList $jobList;
 
-	public function __construct(IConfig $config, IJobList $jobList) {
+	public function __construct(IAppConfig $config, IJobList $jobList) {
 		$this->config = $config;
 		$this->jobList = $jobList;
 	}
@@ -77,9 +77,9 @@ class SettingsService {
 	 */
 	public function getSetting(string $key): string {
 		if (strpos($key, 'batchSize') !== false) {
-			return $this->config->getAppValue('recognize', $key, $this->getSetting('tensorflow.purejs') === 'false' ? self::DEFAULTS[$key] : self::PUREJS_DEFAULTS[$key]);
+			return $this->config->getAppValue($key, $this->getSetting('tensorflow.purejs') === 'false' ? self::DEFAULTS[$key] : self::PUREJS_DEFAULTS[$key]);
 		}
-		return $this->config->getAppValue('recognize', $key, self::DEFAULTS[$key]);
+		return $this->config->getAppValue($key, self::DEFAULTS[$key]);
 	}
 
 	/**
@@ -92,7 +92,7 @@ class SettingsService {
 		if (!array_key_exists($key, self::DEFAULTS)) {
 			throw new Exception('Unknown settings key '.$key);
 		}
-		if ($value === 'true' && $this->config->getAppValue('recognize', $key, 'false') === 'false') {
+		if ($value === 'true' && $this->config->getAppValue($key, 'false') === 'false') {
 			// Additional model enabled: Schedule new crawl run for the affected mime types
 			switch ($key) {
 				case ClusteringFaceClassifier::MODEL_NAME . '.enabled':
@@ -114,7 +114,7 @@ class SettingsService {
 					break;
 			}
 		}
-		$this->config->setAppValue('recognize', $key, $value);
+		$this->config->setAppValue($key, $value);
 	}
 
 	/**

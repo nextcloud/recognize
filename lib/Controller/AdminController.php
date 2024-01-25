@@ -25,10 +25,10 @@ use OCA\Recognize\Service\TagManager;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\JSONResponse;
+use OCP\AppFramework\Services\IAppConfig;
 use OCP\BackgroundJob\IJobList;
 use OCP\DB\Exception;
 use OCP\IBinaryFinder;
-use OCP\IConfig;
 use OCP\IRequest;
 
 class AdminController extends Controller {
@@ -38,11 +38,11 @@ class AdminController extends Controller {
 	private QueueService $queue;
 	private FaceClusterMapper $clusterMapper;
 	private FaceDetectionMapper $detectionMapper;
-	private IConfig $config;
+	private IAppConfig $config;
 	private FaceDetectionMapper $faceDetections;
 	private IBinaryFinder $binaryFinder;
 
-	public function __construct(string $appName, IRequest $request, TagManager $tagManager, IJobList $jobList, SettingsService $settingsService, QueueService $queue, FaceClusterMapper $clusterMapper, FaceDetectionMapper $detectionMapper, IConfig $config, FaceDetectionMapper $faceDetections, IBinaryFinder $binaryFinder) {
+	public function __construct(string $appName, IRequest $request, TagManager $tagManager, IJobList $jobList, SettingsService $settingsService, QueueService $queue, FaceClusterMapper $clusterMapper, FaceDetectionMapper $detectionMapper, IAppConfig $config, FaceDetectionMapper $faceDetections, IBinaryFinder $binaryFinder) {
 		parent::__construct($appName, $request);
 		$this->tagManager = $tagManager;
 		$this->jobList = $jobList;
@@ -186,17 +186,17 @@ class AdminController extends Controller {
 
 	public function nice(): JSONResponse {
 		/* use nice binary from settings if available */
-		if ($this->config->getAppValue('recognize', 'nice_binary', '') !== '') {
-			$nice_path = $this->config->getAppValue('recognize', 'nice_binary');
+		if ($this->config->getAppValue('nice_binary', '') !== '') {
+			$nice_path = $this->config->getAppValue('nice_binary');
 		} else {
 			/* returns the path to the nice binary or false if not found */
 			$nice_path = $this->binaryFinder->findBinaryPath('nice');
 		}
 
 		if ($nice_path !== false) {
-			$this->config->setAppValue('recognize', 'nice_binary', $nice_path);
+			$this->config->setAppValue('nice_binary', $nice_path);
 		} else {
-			$this->config->setAppValue('recognize', 'nice_binary', '');
+			$this->config->setAppValue('nice_binary', '');
 			return new JSONResponse(['nice' => false]);
 		}
 

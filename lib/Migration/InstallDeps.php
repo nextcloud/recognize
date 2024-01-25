@@ -1,8 +1,4 @@
 <?php
-/*
- * Copyright (c) 2022 The Recognize contributors.
- * This file is licensed under the Affero General Public License version 3 or later. See the COPYING file.
- */
 
 declare(strict_types=1);
 /**
@@ -27,13 +23,12 @@ declare(strict_types=1);
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-declare(strict_types=1);
 namespace OCA\Recognize\Migration;
 
 use OCA\Recognize\Helper\TAR;
+use OCP\AppFramework\Services\IAppConfig;
 use OCP\Http\Client\IClientService;
 use OCP\IBinaryFinder;
-use OCP\IConfig;
 use OCP\Migration\IOutput;
 use OCP\Migration\IRepairStep;
 use Psr\Log\LoggerInterface;
@@ -43,7 +38,7 @@ class InstallDeps implements IRepairStep {
 	public const NODE_SERVER_OFFICIAL = 'https://nodejs.org/dist/';
 	public const NODE_SERVER_UNOFFICIAL = 'https://unofficial-builds.nodejs.org/download/release/';
 
-	protected IConfig $config;
+	protected IAppConfig $config;
 	private string $binaryDir;
 	private string $preGypBinaryDir;
 	private string $ffmpegDir;
@@ -56,7 +51,7 @@ class InstallDeps implements IRepairStep {
 	private string $tfjsGPUPath;
 	private IBinaryFinder $binaryFinder;
 
-	public function __construct(IConfig $config, IClientService $clientService, LoggerInterface $logger, IBinaryFinder $binaryFinder) {
+	public function __construct(IAppConfig $config, IClientService $clientService, LoggerInterface $logger, IBinaryFinder $binaryFinder) {
 		$this->config = $config;
 		$this->binaryDir = dirname(__DIR__, 2) . '/bin/';
 		$this->preGypBinaryDir = dirname(__DIR__, 2) . '/node_modules/@mapbox/node-pre-gyp/bin/';
@@ -77,7 +72,7 @@ class InstallDeps implements IRepairStep {
 
 	public function run(IOutput $output): void {
 		try {
-			$existingBinary = $this->config->getAppValue('recognize', 'node_binary', '');
+			$existingBinary = $this->config->getAppValue('node_binary', '');
 			if ($existingBinary !== '') {
 				$version = $this->testBinary($existingBinary);
 				if ($version === null) {
@@ -89,7 +84,7 @@ class InstallDeps implements IRepairStep {
 
 			$this->setBinariesPermissions();
 
-			$binaryPath = $this->config->getAppValue('recognize', 'node_binary', '');
+			$binaryPath = $this->config->getAppValue('node_binary', '');
 
 			$this->runTfjsInstall($binaryPath);
 			$this->runFfmpegInstall($binaryPath);
@@ -103,17 +98,17 @@ class InstallDeps implements IRepairStep {
 
 	protected function setNiceBinaryPath() : void {
 		/* use nice binary from settings if available */
-		if ($this->config->getAppValue('recognize', 'nice_binary', '') !== '') {
-			$nice_path = $this->config->getAppValue('recognize', 'nice_binary');
+		if ($this->config->getAppValue('nice_binary', '') !== '') {
+			$nice_path = $this->config->getAppValue('nice_binary');
 		} else {
 			/* returns the path to the nice binary or false if not found */
 			$nice_path = $this->binaryFinder->findBinaryPath('nice');
 		}
 
 		if ($nice_path !== false) {
-			$this->config->setAppValue('recognize', 'nice_binary', $nice_path);
+			$this->config->setAppValue('nice_binary', $nice_path);
 		} else {
-			$this->config->setAppValue('recognize', 'nice_binary', '');
+			$this->config->setAppValue('nice_binary', '');
 		}
 	}
 
@@ -156,12 +151,12 @@ class InstallDeps implements IRepairStep {
 		}
 
 		// Write the app config
-		$this->config->setAppValue('recognize', 'node_binary', $binaryPath);
+		$this->config->setAppValue('node_binary', $binaryPath);
 
 		$supportsAVX = $this->isAVXSupported();
 		if ($isARM || $isMusl || !$supportsAVX) {
 			$output->info('Enabling purejs mode (isMusl='.$isMusl.', isARM='.$isARM.', supportsAVX='.$supportsAVX.')');
-			$this->config->setAppValue('recognize', 'tensorflow.purejs', 'true');
+			$this->config->setAppValue('tensorflow.purejs', 'true');
 		}
 	}
 

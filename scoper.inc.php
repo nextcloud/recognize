@@ -18,7 +18,7 @@ return [
 				'psr'
 			])
 			->in('.'),
-		],
+	],
 	'patchers' => [
 		static function (string $filePath, string $prefix, string $content): string {
 			//

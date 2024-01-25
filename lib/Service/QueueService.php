@@ -18,8 +18,8 @@ use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
 use OCA\Recognize\Classifiers\Video\MovinetClassifier;
 use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Db\QueueMapper;
+use OCP\AppFramework\Services\IAppConfig;
 use OCP\BackgroundJob\IJobList;
-use OCP\IConfig;
 
 class QueueService {
 	/**
@@ -35,9 +35,9 @@ class QueueService {
 
 	private QueueMapper $queueMapper;
 	private IJobList $jobList;
-	private IConfig $config;
+	private IAppConfig $config;
 
-	public function __construct(QueueMapper $queueMapper, IJobList $jobList, IConfig $config) {
+	public function __construct(QueueMapper $queueMapper, IJobList $jobList, IAppConfig $config) {
 		$this->queueMapper = $queueMapper;
 		$this->jobList = $jobList;
 		$this->config = $config;
@@ -48,7 +48,7 @@ class QueueService {
 	 */
 	public function insertIntoQueue(string $model, QueueFile $file) : void {
 		// Only add to queue if this model is actually enabled
-		if ($this->config->getAppValue('recognize', $model.'.enabled', 'false') !== 'true') {
+		if ($this->config->getAppValue($model.'.enabled', 'false') !== 'true') {
 			return;
 		}
 

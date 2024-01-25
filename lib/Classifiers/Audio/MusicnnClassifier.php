@@ -10,8 +10,8 @@ use OCA\Recognize\Classifiers\Classifier;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
 use OCA\Recognize\Service\TagManager;
+use OCP\AppFramework\Services\IAppConfig;
 use OCP\Files\IRootFolder;
-use OCP\IConfig;
 use OCP\IPreview;
 use OCP\ITempManager;
 
@@ -22,7 +22,7 @@ class MusicnnClassifier extends Classifier {
 
 	private TagManager $tagManager;
 
-	public function __construct(Logger $logger, IConfig $config, TagManager $tagManager, QueueService $queue, IRootFolder $rootFolder, ITempManager $tempManager, IPreview $previewProvider) {
+	public function __construct(Logger $logger, IAppConfig $config, TagManager $tagManager, QueueService $queue, IRootFolder $rootFolder, ITempManager $tempManager, IPreview $previewProvider) {
 		parent::__construct($logger, $config, $rootFolder, $queue, $tempManager, $previewProvider);
 		$this->tagManager = $tagManager;
 	}
@@ -33,7 +33,7 @@ class MusicnnClassifier extends Classifier {
 	 * @throws \ErrorException|\RuntimeException
 	 */
 	public function classify(array $queueFiles): void {
-		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
+		if ($this->config->getAppValue('tensorflow.purejs', 'false') === 'true') {
 			$timeout = self::AUDIO_PUREJS_TIMEOUT;
 		} else {
 			$timeout = self::AUDIO_TIMEOUT;
@@ -45,8 +45,8 @@ class MusicnnClassifier extends Classifier {
 		 */
 		foreach ($classifierProcess as $queueFile => $results) {
 			$this->tagManager->assignTags($queueFile->getFileId(), $results);
-			$this->config->setAppValue('recognize', self::MODEL_NAME.'.status', 'true');
-			$this->config->setAppValue('recognize', self::MODEL_NAME.'.lastFile', time());
+			$this->config->setAppValue(self::MODEL_NAME.'.status', 'true');
+			$this->config->setAppValue(self::MODEL_NAME.'.lastFile', time());
 		}
 	}
 }

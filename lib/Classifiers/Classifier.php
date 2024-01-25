@@ -12,6 +12,7 @@ use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
 use OCA\Recognize\Constants;
 use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Service\QueueService;
+use OCP\AppFramework\Services\IAppConfig;
 use OCP\DB\Exception;
 use OCP\Files\File;
 use OCP\Files\InvalidPathException;
@@ -19,7 +20,6 @@ use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
 use OCP\Files\NotPermittedException;
-use OCP\IConfig;
 use OCP\IPreview;
 use OCP\ITempManager;
 use Psr\Log\LoggerInterface;
@@ -32,14 +32,14 @@ abstract class Classifier {
 	public const MAX_EXECUTION_TIME = 0;
 
 	protected LoggerInterface $logger;
-	protected IConfig $config;
+	protected IAppConfig $config;
 	private IRootFolder $rootFolder;
 	protected QueueService $queue;
 	private ITempManager $tempManager;
 	private IPreview $previewProvider;
 	private int $maxExecutionTime = self::MAX_EXECUTION_TIME;
 
-	public function __construct(LoggerInterface $logger, IConfig $config, IRootFolder $rootFolder, QueueService $queue, ITempManager $tempManager, IPreview  $previewProvider) {
+	public function __construct(LoggerInterface $logger, IAppConfig $config, IRootFolder $rootFolder, QueueService $queue, ITempManager $tempManager, IPreview  $previewProvider) {
 		$this->logger = $logger;
 		$this->config = $config;
 		$this->rootFolder = $rootFolder;
@@ -146,15 +146,15 @@ abstract class Classifier {
 		$this->logger->debug('Classifying '.var_export($paths, true));
 
 		$command = [
-			$this->config->getAppValue('recognize', 'node_binary'),
+			$this->config->getAppValue('node_binary'),
 			dirname(__DIR__, 2) . '/src/classifier_'.$model.'.js',
 			'-'
 		];
 
-		if (trim($this->config->getAppValue('recognize', 'nice_binary', '')) !== '') {
+		if (trim($this->config->getAppValue('nice_binary', '')) !== '') {
 			$command = [
-				$this->config->getAppValue('recognize', 'nice_binary'),
-				"-" . $this->config->getAppValue('recognize', 'nice_value', '0'),
+				$this->config->getAppValue('nice_binary'),
+				"-" . $this->config->getAppValue('nice_value', '0'),
 				...$command,
 			];
 		}
@@ -163,14 +163,14 @@ abstract class Classifier {
 
 		$proc = new Process($command, __DIR__);
 		$env = [];
-		if ($this->config->getAppValue('recognize', 'tensorflow.gpu', 'false') === 'true') {
+		if ($this->config->getAppValue('tensorflow.gpu', 'false') === 'true') {
 			$env['RECOGNIZE_GPU'] = 'true';
 		}
-		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
+		if ($this->config->getAppValue('tensorflow.purejs', 'false') === 'true') {
 			$env['RECOGNIZE_PUREJS'] = 'true';
 		}
 		// Set cores
-		$cores = $this->config->getAppValue('recognize', 'tensorflow.cores', '0');
+		$cores = $this->config->getAppValue('tensorflow.cores', '0');
 		if ($cores !== '0') {
 			$env['RECOGNIZE_CORES'] = $cores;
 		}

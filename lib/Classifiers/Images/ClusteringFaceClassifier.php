@@ -12,12 +12,12 @@ use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
+use OCP\AppFramework\Services\IAppConfig;
 use OCP\BackgroundJob\IJobList;
 use OCP\DB\Exception;
 use OCP\Files\Config\ICachedMountInfo;
 use OCP\Files\Config\IUserMountCache;
 use OCP\Files\IRootFolder;
-use OCP\IConfig;
 use OCP\IPreview;
 use OCP\ITempManager;
 
@@ -35,7 +35,7 @@ class ClusteringFaceClassifier extends Classifier {
 	private IUserMountCache $userMountCache;
 	private IJobList $jobList;
 
-	public function __construct(Logger $logger, IConfig $config, FaceDetectionMapper $faceDetections, QueueService $queue, IRootFolder $rootFolder, IUserMountCache $userMountCache, IJobList $jobList, ITempManager $tempManager, IPreview $previewProvider) {
+	public function __construct(Logger $logger, IAppConfig $config, FaceDetectionMapper $faceDetections, QueueService $queue, IRootFolder $rootFolder, IUserMountCache $userMountCache, IJobList $jobList, ITempManager $tempManager, IPreview $previewProvider) {
 		parent::__construct($logger, $config, $rootFolder, $queue, $tempManager, $previewProvider);
 		$this->faceDetections = $faceDetections;
 		$this->userMountCache = $userMountCache;
@@ -49,7 +49,7 @@ class ClusteringFaceClassifier extends Classifier {
 	 * @return void
 	 */
 	public function classify(array $queueFiles): void {
-		if ($this->config->getAppValue('recognize', 'tensorflow.purejs', 'false') === 'true') {
+		if ($this->config->getAppValue('tensorflow.purejs', 'false') === 'true') {
 			$timeout = self::IMAGE_PUREJS_TIMEOUT;
 		} else {
 			$timeout = self::IMAGE_TIMEOUT;
@@ -117,8 +117,8 @@ class ClusteringFaceClassifier extends Classifier {
 					}
 					$usersToCluster[$userId] = true;
 				}
-				$this->config->setAppValue('recognize', self::MODEL_NAME.'.status', 'true');
-				$this->config->setAppValue('recognize', self::MODEL_NAME.'.lastFile', time());
+				$this->config->setAppValue(self::MODEL_NAME.'.status', 'true');
+				$this->config->setAppValue(self::MODEL_NAME.'.lastFile', time());
 			}
 		}
 
