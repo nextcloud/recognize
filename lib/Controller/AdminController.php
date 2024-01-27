@@ -272,7 +272,7 @@ class AdminController extends Controller {
 	}
 
 	public function cron(): JSONResponse {
-		$cron = \OCP\Server::get(IConfig::class)->getAppValue('core', 'backgroundjobs_mode', '');
+		$cron = \OC::$server->getRegisteredAppContainer('core')->get(IAppConfig::class)->getAppValue('core', 'backgroundjobs_mode', '');
 		return new JSONResponse(['cron' => $cron]);
 	}
 
