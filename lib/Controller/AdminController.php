@@ -29,7 +29,6 @@ use OCP\AppFramework\Services\IAppConfig;
 use OCP\BackgroundJob\IJobList;
 use OCP\DB\Exception;
 use OCP\IBinaryFinder;
-use OCP\IConfig;
 use OCP\IRequest;
 
 class AdminController extends Controller {
