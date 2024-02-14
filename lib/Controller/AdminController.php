@@ -201,7 +201,7 @@ class AdminController extends Controller {
 		}
 
 		try {
-			exec($nice_path . ' --version' . ' 2>&1', $output, $returnCode);
+			exec($nice_path . ' true' . ' 2>&1', $output, $returnCode);
 		} catch (\Throwable $e) {
 			return new JSONResponse(['nice' => false]);
 		}
