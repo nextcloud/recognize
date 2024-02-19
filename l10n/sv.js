@@ -37,6 +37,7 @@ OC.L10N.register(
     "Event" : "Händelse",
     "Gas station" : "Bensinstation",
     "Parking" : "Parkering",
+    "Sign" : "Signera",
     "Gallery" : "Galleri",
     "Park" : "Park"
 },
