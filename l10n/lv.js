@@ -10,6 +10,7 @@ OC.L10N.register(
     "Office" : "Birojs",
     "Car" : "Automašīna",
     "Camping" : "Kempings",
+    "Barbecue" : "Bārbekjū",
     "Theater" : "Teātris",
     "Pizza" : "Pica",
     "Info" : "Info",
