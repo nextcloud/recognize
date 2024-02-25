@@ -7,6 +7,7 @@ OC.L10N.register(
     "Failed to save settings" : "Konservo de agordoj malsukcesis",
     "never" : "neniam",
     "{time} ago" : "antaŭ {time}",
+    "People" : "Homoj",
     "Dog" : "Hundo",
     "Music" : "Muziko",
     "Office" : "Oficejo",

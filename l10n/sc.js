@@ -3,7 +3,7 @@ OC.L10N.register(
     {
     "Status" : "Status",
     "Reset" : "Torra a impostare",
-    "Failed to load settings" : "No at fatuu a carrigare is impostatziones",
+    "Failed to load settings" : "Impossìbile carrigare sa cunfiguratzione",
     "Failed to save settings" : "No at fatu a sarvare is informatziones",
     "never" : "mai",
     "{time} ago" : "{time} a immoe",
