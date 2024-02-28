@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.1.0] - 2024-02-28
+
+### Fixed
+- fix(deps): Isolate all dependencies
+- Make 'nice' check cross-platform
+
+### Changed
+- Upgrade nextcloud/vue to v8.x
+
+### Fixed
+- fix(Rubix\ML): Isolate rubix
+- fix(FaceRoot#getChild): Validate detection matches cluster
+- fix(FileListener->ShareCreatedEvent): Cast userIds to string
+- Fix(l10n): Update translations from Transifex
+
 ## [6.1.0-beta.2] - 2024-01-11
 
 ### Fixed
