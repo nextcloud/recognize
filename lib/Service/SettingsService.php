@@ -77,9 +77,9 @@ class SettingsService {
 	 */
 	public function getSetting(string $key): string {
 		if (strpos($key, 'batchSize') !== false) {
-			return $this->config->getAppValue($key, $this->getSetting('tensorflow.purejs') === 'false' ? self::DEFAULTS[$key] : self::PUREJS_DEFAULTS[$key]);
+			return $this->config->getAPpValueString($key, $this->getSetting('tensorflow.purejs') === 'false' ? self::DEFAULTS[$key] : self::PUREJS_DEFAULTS[$key]);
 		}
-		return $this->config->getAppValue($key, self::DEFAULTS[$key]);
+		return $this->config->getAPpValueString($key, self::DEFAULTS[$key]);
 	}
 
 	/**
@@ -92,7 +92,7 @@ class SettingsService {
 		if (!array_key_exists($key, self::DEFAULTS)) {
 			throw new Exception('Unknown settings key '.$key);
 		}
-		if ($value === 'true' && $this->config->getAppValue($key, 'false') === 'false') {
+		if ($value === 'true' && $this->config->getAPpValueString($key, 'false') === 'false') {
 			// Additional model enabled: Schedule new crawl run for the affected mime types
 			switch ($key) {
 				case ClusteringFaceClassifier::MODEL_NAME . '.enabled':
@@ -114,7 +114,7 @@ class SettingsService {
 					break;
 			}
 		}
-		$this->config->setAppValue($key, $value);
+		$this->config->setAPpValueString($key, $value);
 	}
 
 	/**

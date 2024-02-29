@@ -72,7 +72,7 @@ class InstallDeps implements IRepairStep {
 
 	public function run(IOutput $output): void {
 		try {
-			$existingBinary = $this->config->getAppValue('node_binary', '');
+			$existingBinary = $this->config->getAPpValueString('node_binary', '');
 			if ($existingBinary !== '') {
 				$version = $this->testBinary($existingBinary);
 				if ($version === null) {
@@ -84,7 +84,7 @@ class InstallDeps implements IRepairStep {
 
 			$this->setBinariesPermissions();
 
-			$binaryPath = $this->config->getAppValue('node_binary', '');
+			$binaryPath = $this->config->getAPpValueString('node_binary', '');
 
 			$this->runTfjsInstall($binaryPath);
 			$this->runFfmpegInstall($binaryPath);
@@ -98,17 +98,17 @@ class InstallDeps implements IRepairStep {
 
 	protected function setNiceBinaryPath() : void {
 		/* use nice binary from settings if available */
-		if ($this->config->getAppValue('nice_binary', '') !== '') {
-			$nice_path = $this->config->getAppValue('nice_binary');
+		if ($this->config->getAPpValueString('nice_binary', '') !== '') {
+			$nice_path = $this->config->getAPpValueString('nice_binary');
 		} else {
 			/* returns the path to the nice binary or false if not found */
 			$nice_path = $this->binaryFinder->findBinaryPath('nice');
 		}
 
 		if ($nice_path !== false) {
-			$this->config->setAppValue('nice_binary', $nice_path);
+			$this->config->setAPpValueString('nice_binary', $nice_path);
 		} else {
-			$this->config->setAppValue('nice_binary', '');
+			$this->config->setAPpValueString('nice_binary', '');
 		}
 	}
 
@@ -151,12 +151,12 @@ class InstallDeps implements IRepairStep {
 		}
 
 		// Write the app config
-		$this->config->setAppValue('node_binary', $binaryPath);
+		$this->config->setAPpValueString('node_binary', $binaryPath);
 
 		$supportsAVX = $this->isAVXSupported();
 		if ($isARM || $isMusl || !$supportsAVX) {
 			$output->info('Enabling purejs mode (isMusl='.$isMusl.', isARM='.$isARM.', supportsAVX='.$supportsAVX.')');
-			$this->config->setAppValue('tensorflow.purejs', 'true');
+			$this->config->setAPpValueString('tensorflow.purejs', 'true');
 		}
 	}
 

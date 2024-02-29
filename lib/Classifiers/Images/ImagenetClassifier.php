@@ -36,7 +36,7 @@ class ImagenetClassifier extends Classifier {
 	 * @throws \ErrorException|\RuntimeException
 	 */
 	public function classify(array $queueFiles): void {
-		if ($this->config->getAppValue('tensorflow.purejs', 'false') === 'true') {
+		if ($this->config->getAPpValueString('tensorflow.purejs', 'false') === 'true') {
 			$timeout = self::IMAGE_PUREJS_TIMEOUT;
 		} else {
 			$timeout = self::IMAGE_TIMEOUT;
@@ -50,8 +50,8 @@ class ImagenetClassifier extends Classifier {
 			$landmarkTags = array_filter($results, static function ($tagName) {
 				return in_array($tagName, LandmarksClassifier::PRECONDITION_TAGS);
 			});
-			$this->config->setAppValue(self::MODEL_NAME.'.status', 'true');
-			$this->config->setAppValue(self::MODEL_NAME.'.lastFile', (string)time());
+			$this->config->setAPpValueString(self::MODEL_NAME.'.status', 'true');
+			$this->config->setAPpValueString(self::MODEL_NAME.'.lastFile', (string)time());
 
 			if (count($landmarkTags) > 0) {
 				try {

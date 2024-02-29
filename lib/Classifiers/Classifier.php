@@ -147,15 +147,15 @@ abstract class Classifier {
 		$this->logger->debug('Classifying '.var_export($paths, true));
 
 		$command = [
-			$this->config->getAppValue('node_binary'),
+			$this->config->getAPpValueString('node_binary'),
 			dirname(__DIR__, 2) . '/src/classifier_'.$model.'.js',
 			'-'
 		];
 
-		if (trim($this->config->getAppValue('nice_binary', '')) !== '') {
+		if (trim($this->config->getAPpValueString('nice_binary', '')) !== '') {
 			$command = [
-				$this->config->getAppValue('nice_binary'),
-				"-" . $this->config->getAppValue('nice_value', '0'),
+				$this->config->getAPpValueString('nice_binary'),
+				"-" . $this->config->getAPpValueString('nice_value', '0'),
 				...$command,
 			];
 		}
@@ -164,14 +164,14 @@ abstract class Classifier {
 
 		$proc = new Process($command, __DIR__);
 		$env = [];
-		if ($this->config->getAppValue('tensorflow.gpu', 'false') === 'true') {
+		if ($this->config->getAPpValueString('tensorflow.gpu', 'false') === 'true') {
 			$env['RECOGNIZE_GPU'] = 'true';
 		}
-		if ($this->config->getAppValue('tensorflow.purejs', 'false') === 'true') {
+		if ($this->config->getAPpValueString('tensorflow.purejs', 'false') === 'true') {
 			$env['RECOGNIZE_PUREJS'] = 'true';
 		}
 		// Set cores
-		$cores = $this->config->getAppValue('tensorflow.cores', '0');
+		$cores = $this->config->getAPpValueString('tensorflow.cores', '0');
 		if ($cores !== '0') {
 			$env['RECOGNIZE_CORES'] = $cores;
 		}

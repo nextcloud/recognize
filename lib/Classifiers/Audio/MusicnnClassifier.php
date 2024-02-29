@@ -33,7 +33,7 @@ class MusicnnClassifier extends Classifier {
 	 * @throws \ErrorException|\RuntimeException
 	 */
 	public function classify(array $queueFiles): void {
-		if ($this->config->getAppValue('tensorflow.purejs', 'false') === 'true') {
+		if ($this->config->getAPpValueString('tensorflow.purejs', 'false') === 'true') {
 			$timeout = self::AUDIO_PUREJS_TIMEOUT;
 		} else {
 			$timeout = self::AUDIO_TIMEOUT;
@@ -45,8 +45,8 @@ class MusicnnClassifier extends Classifier {
 		 */
 		foreach ($classifierProcess as $queueFile => $results) {
 			$this->tagManager->assignTags($queueFile->getFileId(), $results);
-			$this->config->setAppValue(self::MODEL_NAME.'.status', 'true');
-			$this->config->setAppValue(self::MODEL_NAME.'.lastFile', (string)time());
+			$this->config->setAPpValueString(self::MODEL_NAME.'.status', 'true');
+			$this->config->setAPpValueString(self::MODEL_NAME.'.lastFile', (string)time());
 		}
 	}
 }

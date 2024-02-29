@@ -186,17 +186,17 @@ class AdminController extends Controller {
 
 	public function nice(): JSONResponse {
 		/* use nice binary from settings if available */
-		if ($this->config->getAppValue('nice_binary', '') !== '') {
-			$nice_path = $this->config->getAppValue('nice_binary');
+		if ($this->config->getAPpValueString('nice_binary', '') !== '') {
+			$nice_path = $this->config->getAPpValueString('nice_binary');
 		} else {
 			/* returns the path to the nice binary or false if not found */
 			$nice_path = $this->binaryFinder->findBinaryPath('nice');
 		}
 
 		if ($nice_path !== false) {
-			$this->config->setAppValue('nice_binary', $nice_path);
+			$this->config->setAPpValueString('nice_binary', $nice_path);
 		} else {
-			$this->config->setAppValue('nice_binary', '');
+			$this->config->setAPpValueString('nice_binary', '');
 			return new JSONResponse(['nice' => false]);
 		}
 
@@ -273,7 +273,7 @@ class AdminController extends Controller {
 	public function cron(): JSONResponse {
 		/** @var IAppConfig $appConfig */
 		$appConfig = \OC::$server->getRegisteredAppContainer('core')->get(IAppConfig::class);
-		$cron = $appConfig->getAppValue('backgroundjobs_mode', '');
+		$cron = $appConfig->getAppValueString('backgroundjobs_mode', '');
 		return new JSONResponse(['cron' => $cron]);
 	}
 
