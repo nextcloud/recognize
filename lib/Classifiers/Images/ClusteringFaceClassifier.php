@@ -49,7 +49,7 @@ class ClusteringFaceClassifier extends Classifier {
 	 * @return void
 	 */
 	public function classify(array $queueFiles): void {
-		if ($this->config->getAPpValueString('tensorflow.purejs', 'false') === 'true') {
+		if ($this->config->getAppValueString('tensorflow.purejs', 'false') === 'true') {
 			$timeout = self::IMAGE_PUREJS_TIMEOUT;
 		} else {
 			$timeout = self::IMAGE_TIMEOUT;
@@ -117,8 +117,8 @@ class ClusteringFaceClassifier extends Classifier {
 					}
 					$usersToCluster[$userId] = true;
 				}
-				$this->config->setAPpValueString(self::MODEL_NAME.'.status', 'true');
-				$this->config->setAPpValueString(self::MODEL_NAME.'.lastFile', (string)time());
+				$this->config->setAppValueString(self::MODEL_NAME.'.status', 'true');
+				$this->config->setAppValueString(self::MODEL_NAME.'.lastFile', (string)time());
 			}
 		}
 

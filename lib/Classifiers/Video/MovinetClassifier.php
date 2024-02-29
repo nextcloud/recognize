@@ -33,7 +33,7 @@ class MovinetClassifier extends Classifier {
 	 * @throws \ErrorException|\RuntimeException|Exception
 	 */
 	public function classify(array $queueFiles): void {
-		if ($this->config->getAPpValueString('tensorflow.purejs', 'false') === 'true') {
+		if ($this->config->getAppValueString('tensorflow.purejs', 'false') === 'true') {
 			throw new Exception('Movinet does not support WASM mode');
 		} else {
 			$timeout = self::VIDEO_TIMEOUT;
@@ -44,8 +44,8 @@ class MovinetClassifier extends Classifier {
 		/** @var list<string> $results */
 		foreach ($classifierProcess as $queueFile => $results) {
 			$this->tagManager->assignTags($queueFile->getFileId(), $results);
-			$this->config->setAPpValueString(self::MODEL_NAME.'.status', 'true');
-			$this->config->setAPpValueString(self::MODEL_NAME.'.lastFile', (string)time());
+			$this->config->setAppValueString(self::MODEL_NAME.'.status', 'true');
+			$this->config->setAppValueString(self::MODEL_NAME.'.lastFile', (string)time());
 		}
 	}
 }

@@ -186,17 +186,17 @@ class AdminController extends Controller {
 
 	public function nice(): JSONResponse {
 		/* use nice binary from settings if available */
-		if ($this->config->getAPpValueString('nice_binary', '') !== '') {
-			$nice_path = $this->config->getAPpValueString('nice_binary');
+		if ($this->config->getAppValueString('nice_binary', '') !== '') {
+			$nice_path = $this->config->getAppValueString('nice_binary');
 		} else {
 			/* returns the path to the nice binary or false if not found */
 			$nice_path = $this->binaryFinder->findBinaryPath('nice');
 		}
 
 		if ($nice_path !== false) {
-			$this->config->setAPpValueString('nice_binary', $nice_path);
+			$this->config->setAppValueString('nice_binary', $nice_path);
 		} else {
-			$this->config->setAPpValueString('nice_binary', '');
+			$this->config->setAppValueString('nice_binary', '');
 			return new JSONResponse(['nice' => false]);
 		}
 

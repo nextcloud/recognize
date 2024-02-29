@@ -48,7 +48,7 @@ class QueueService {
 	 */
 	public function insertIntoQueue(string $model, QueueFile $file) : void {
 		// Only add to queue if this model is actually enabled
-		if ($this->config->getAPpValueString($model.'.enabled', 'false') !== 'true') {
+		if ($this->config->getAppValueString($model.'.enabled', 'false') !== 'true') {
 			return;
 		}
 
