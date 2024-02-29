@@ -25,9 +25,11 @@ use OCA\Recognize\Service\TagManager;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\JSONResponse;
+use OCP\AppFramework\QueryException;
 use OCP\AppFramework\Services\IAppConfig;
 use OCP\BackgroundJob\IJobList;
 use OCP\DB\Exception;
+use OCP\Exceptions\AppConfigTypeConflictException;
 use OCP\IBinaryFinder;
 use OCP\IRequest;
 
@@ -271,9 +273,13 @@ class AdminController extends Controller {
 	}
 
 	public function cron(): JSONResponse {
-		/** @var IAppConfig $appConfig */
-		$appConfig = \OC::$server->getRegisteredAppContainer('core')->get(IAppConfig::class);
-		$cron = $appConfig->getAppValueString('backgroundjobs_mode', '');
+		try {
+			/** @var IAppConfig $appConfig */
+			$appConfig = \OC::$server->getRegisteredAppContainer('core')->get(IAppConfig::class);
+			$cron = $appConfig->getAppValueString('backgroundjobs_mode', '');
+		} catch (QueryException|AppConfigTypeConflictException $e) {
+			new JSONResponse([], Http::STATUS_INTERNAL_SERVER_ERROR);
+		}
 		return new JSONResponse(['cron' => $cron]);
 	}
 
