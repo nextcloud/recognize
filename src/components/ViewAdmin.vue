@@ -311,7 +311,7 @@
 				</NcNoteCard>
 			</template>
 			<p>
-				{{ t('recognize', 'If the shipped Node.js binary doesn\'t work on your system for some reason you can set the path to a custom node.js binary. Currently supported is Node v14.17 and newer v14 releases.') }}
+				{{ t('recognize', 'If the shipped Node.js binary doesn\'t work on your system for some reason you can set the path to a custom node.js binary. Currently supported is Node v20.9 and newer v20 releases.') }}
 			</p>
 			<p>
 				<NcTextField :value.sync="settings['node_binary']" @update:value="onChange" />

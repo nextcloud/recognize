@@ -34,7 +34,7 @@ use OCP\Migration\IRepairStep;
 use Psr\Log\LoggerInterface;
 
 class InstallDeps implements IRepairStep {
-	public const NODE_VERSION = 'v14.18.2';
+	public const NODE_VERSION = 'v20.9.0';
 	public const NODE_SERVER_OFFICIAL = 'https://nodejs.org/dist/';
 	public const NODE_SERVER_UNOFFICIAL = 'https://unofficial-builds.nodejs.org/download/release/';
 
