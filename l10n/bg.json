@@ -63,7 +63,6 @@
     "Libtensorflow was loaded successfully into Node.js." : "libtensorflow беше успешно зареден в Node.js.",
     "Could not load Tensorflow WASM in Node.js. Something is wrong with your setup." : "Неуспешно зареждане на Tensorflow WASM в Node.js. Нещо не е наред с настройката ви.",
     "Tensorflow WASM was loaded successfully into Node.js." : "Tensorflow WASM беше успешно зареден в Node.js.",
-    "If the shipped Node.js binary doesn't work on your system for some reason you can set the path to a custom node.js binary. Currently supported is Node v14.17 and newer v14 releases." : "Ако доставеният двоичен файл на Node.js, поради някаква причина не работи на вашата система, може да зададете пътя към персонализиран двоичен файл на node.js. В момента се поддържат Node v14.17 и по-нови версии v14.",
     "Terminal commands" : "Терминални команди",
     "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "За изтегляне на всички модели преди изпълнението на задачите за класификация, пуснете следната команда на сървърния терминал.",
     "To trigger a full classification run, run the following command on the server terminal. (The classification will run in multiple background jobs which can run in parallel.)" : "За задействане на пълна класификация, изпълнете следната команда на терминала на сървъра. (Класификацията ще се изпълни в няколко фонови задачи, които могат да се изпълняват паралелно.)",

@@ -35,7 +35,6 @@
     "Your machine supports native TensorFlow operation, you do not need WASM mode." : "Váš systém podporuje natívne operácie TensorFlow, nepotrebujete WASM mód.",
     "WASM mode was activated automatically, because your machine does not support native TensorFlow operation:" : "Režim WASM bol aktivovaný automaticky, pretože váš stroj nepodporuje natívnu prevádzku TensorFlow:",
     "Enable WASM mode" : "Povoliť WASM mód",
-    "If the shipped Node.js binary doesn't work on your system for some reason you can set the path to a custom node.js binary. Currently supported is Node v14.17 and newer v14 releases." : "Ak dodaný binárny súbor Node.js vo vašom systéme z nejakého dôvodu nefunguje, môžete nastaviť cestu k vlastnému binárnemu súboru node.js. V súčasnosti je podporovaný Node v14.17 a novšie vydania v14.",
     "Terminal commands" : "Príkazy terminálu",
     "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "Ak chcete stiahnuť všetky modely pred vykonaním klasifikačných úloh, spustite nasledujúci príkaz na serverovom termináli.",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "Pomocou nasledujúceho príkazu môžete odstrániť všetky štítky, ku ktorým už nie sú priradené žiadne súbory:",

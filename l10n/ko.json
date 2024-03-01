@@ -87,7 +87,6 @@
     "Libtensorflow was loaded successfully into Node.js." : "Node.js에 libtensorflow가 성공적으로 불러와졌습니다.",
     "Could not load Tensorflow WASM in Node.js. Something is wrong with your setup." : "Node.js에서 Tensorflow WASM을 불러오지 못했습니다. 설정에 문제가 있을 수 있습니다.",
     "Tensorflow WASM was loaded successfully into Node.js." : "Node.js에서 Tensorflow WASM이 성공적으로 불러와졌습니다.",
-    "If the shipped Node.js binary doesn't work on your system for some reason you can set the path to a custom node.js binary. Currently supported is Node v14.17 and newer v14 releases." : "기본 제공된 Node.js 바이너리가 어떤 이유로든 시스템에서 작동하지 않으면, 사용자 정의 Node.js 바이너리의 경로를 설정할 수 있습니다. 현재 지원되는 버전은 Node v14.17 및 그 이후의 v14 릴리즈입니다.",
     "For Nextcloud Snap users, you need to adjust this path to point to the snap's \"current\" directory as the pre-configured path will change with each update. For example, set it to \"/var/snap/nextcloud/current/nextcloud/extra-apps/recognize/bin/node\" instead of \"/var/snap/nextcloud/9337974/nextcloud/extra-apps/recognize/bin/node\"" : "Nextcloud Snap 사용자의 경우, 각 업데이트로 예정된 경로가 변경되므로 Snap의 \"current\" 디렉토리를 가리키도록 이 경로를 조정해야 합니다. 예를 들어, 이 경로 대신 \"/var/snap/nextcloud/9337974/nextcloud/extra-apps/recognize/bin/node\" 다음 경로로 설정하세요  \"/var/snap/nextcloud/current/nextcloud/extra-apps/recognize/bin/node\"",
     "Classifier process priority" : "분류기 프로세스 우선순위",
     "Checking Nice binary" : "Nice 바이너리 확인 중",

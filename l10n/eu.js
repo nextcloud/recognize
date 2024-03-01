@@ -40,7 +40,6 @@ OC.L10N.register(
     "Enable GPU mode" : "Gaitu GPU modua",
     "Node.js" : "Node.js",
     "Checking Node.js" : "Node.js egiaztatzen",
-    "If the shipped Node.js binary doesn't work on your system for some reason you can set the path to a custom node.js binary. Currently supported is Node v14.17 and newer v14 releases." : "Bidaltako Node.js binarioak zure sisteman funtzionatzen ez badu arrazoiren batengatik, node.js bitar pertsonalizatu baterako bidea ezar dezakezu. Gaur egun onartzen da Node v14.17 eta v14 bertsio berriagoak.",
     "Terminal commands" : "Terminaleko komandoak",
     "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "Sailkapen-lanak exekutatzeko aurretiko eredu guztiak deskargatzeko, exekutatu komando hau zerbitzariaren terminalean.",
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "Aurretik Recognize bidez sailkatutako fitxategi guztien etiketak berrezarri ditzakezu komando honekin:",

@@ -61,7 +61,6 @@ OC.L10N.register(
     "Libtensorflow was loaded successfully into Node.js." : "Libtensorflow 已成功加载到 Node.js 中。",
     "Could not load Tensorflow WASM in Node.js. Something is wrong with your setup." : "无法在 Node.js 中加载 Tensorflow WASM。你的安装出了问题。",
     "Tensorflow WASM was loaded successfully into Node.js." : "Tensorflow WASM 已成功加载到 Node.js 中。",
-    "If the shipped Node.js binary doesn't work on your system for some reason you can set the path to a custom node.js binary. Currently supported is Node v14.17 and newer v14 releases." : "如果自带的 Node.js 二进制文件由于某种原因不能在你的系统上运行，你可以将路径设置为一个自定义的 node.js 二进制文件。目前支持的是 Node v14.17 和更新的 v14 版本。",
     "Terminal commands" : "终端命令",
     "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "要在执行分类作业之前下载所有模型，在服务器终端运行以下命令。",
     "To trigger a full classification run, run the following command on the server terminal. (The classification will run in multiple background jobs which can run in parallel.)" : "要触发完整的分类运行，请在服务器终端上运行以下命令。（分类将在多个后台作业中运行，这些作业可以并行运行。）",

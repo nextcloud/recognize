@@ -82,7 +82,6 @@
     "Libtensorflow was loaded successfully into Node.js." : "Libtensorflow se cargó correctamente en Node.js.",
     "Could not load Tensorflow WASM in Node.js. Something is wrong with your setup." : "No se pudo cargar TensorFlow WASM en Node.js. Algo está mal en tu configuración.",
     "Tensorflow WASM was loaded successfully into Node.js." : "TensorFlow WASM se cargó correctamente en Node.js.",
-    "If the shipped Node.js binary doesn't work on your system for some reason you can set the path to a custom node.js binary. Currently supported is Node v14.17 and newer v14 releases." : "Si el binario de Node.js incluido no funciona en tu sistema por alguna razón, puedes establecer la ruta a un binario de Node.js personalizado. Actualmente se admite Node v14.17 y las versiones más nuevas de la serie v14.",
     "Classifier process priority" : "Prioridad del proceso del clasificador",
     "Checking Nice binary" : "Comprobando el binario Nice",
     "Could not find the Nice binary. You may need to set the path to a working binary manually." : "No se encontró el binario Nice. Es posible que debas establecer la ruta a un binario funcional manualmente.",

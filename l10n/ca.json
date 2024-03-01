@@ -59,7 +59,6 @@
     "Libtensorflow was loaded successfully into Node.js." : "Libtensorflow s'ha carregat correctament a Node.js.",
     "Could not load Tensorflow WASM in Node.js. Something is wrong with your setup." : "No s'ha pogut carregar Tensorflow WASM a Node.js. Alguna cosa no funciona amb la vostra configuració.",
     "Tensorflow WASM was loaded successfully into Node.js." : "Tensorflow WASM s'ha carregat correctament a Node.js.",
-    "If the shipped Node.js binary doesn't work on your system for some reason you can set the path to a custom node.js binary. Currently supported is Node v14.17 and newer v14 releases." : "Si el binari Node.js enviat no funciona al vostre sistema per algun motiu, podeu establir el camí a un binari node.js personalitzat. Actualment s'admet Node v14.17 i versions més recents v14.",
     "Terminal commands" : "Mostra les ordres del terminal",
     "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "Per baixar tots els models previs a l'execució dels treballs de classificació, executeu l'ordre següent al terminal del servidor.",
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "Podeu restablir les etiquetes de tots els fitxers que s'han classificat prèviament per Recognize amb l'ordre següent:",
