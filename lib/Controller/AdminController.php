@@ -278,7 +278,7 @@ class AdminController extends Controller {
 			$appConfig = \OC::$server->getRegisteredAppContainer('core')->get(IAppConfig::class);
 			$cron = $appConfig->getAppValueString('backgroundjobs_mode', '');
 		} catch (QueryException|AppConfigTypeConflictException $e) {
-			new JSONResponse([], Http::STATUS_INTERNAL_SERVER_ERROR);
+			return new JSONResponse([], Http::STATUS_INTERNAL_SERVER_ERROR);
 		}
 		return new JSONResponse(['cron' => $cron]);
 	}
