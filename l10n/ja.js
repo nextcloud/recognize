@@ -19,6 +19,7 @@ OC.L10N.register(
     "Failed to save settings" : "設定の保存に失敗しました",
     "never" : "なし",
     "{time} ago" : "{time} 前",
+    "Cat" : "猫",
     "Architecture" : "アーキテクチャ",
     "Farm" : "農場",
     "Landscape" : "ランドスケープ",
