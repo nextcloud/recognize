@@ -217,7 +217,7 @@ class InstallDeps implements IRepairStep {
 
 	protected function runFfmpegInstall(string $nodeBinary): void {
 		$oriCwd = getcwd();
-		chdir($this->tfjsGPUPath);
+		chdir($this->ffmpegDir);
 		$cmd = escapeshellcmd($nodeBinary) . ' ' . escapeshellarg($this->ffmpegInstallScript);
 		try {
 			exec($cmd . ' 2>&1', $output, $returnCode); // Appending  2>&1 to avoid leaking sterr
