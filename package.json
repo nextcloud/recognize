@@ -28,7 +28,7 @@
     "@tensorflow/tfjs": "^4.6.0",
     "@tensorflow/tfjs-backend-wasm": "^4.6.0",
     "@tensorflow/tfjs-node": "^4.6.0",
-    "@tensorflow/tfjs-node-gpu": "^4.6.0",
+    "@tensorflow/tfjs-node-gpu": "^4.17.0",
     "@vladmandic/face-api": "^1.7.11",
     "download": "^8.0.0",
     "execa": "^5.1.1",
