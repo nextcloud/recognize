@@ -22,7 +22,7 @@ return [
 	'routes' => [
 		//internal ADMIN API
 		['name' => 'admin#reset', 'url' => '/admin/reset', 'verb' => 'GET'],
-		['name' => 'admin#clearALlJobs', 'url' => '/admin/clearJobs', 'verb' => 'GET'],
+		['name' => 'admin#clearAllJobs', 'url' => '/admin/clearJobs', 'verb' => 'GET'],
 		['name' => 'admin#recrawl', 'url' => '/admin/recrawl', 'verb' => 'GET'],
 		['name' => 'admin#reset_faces', 'url' => '/admin/resetFaces', 'verb' => 'GET'],
 		['name' => 'admin#count', 'url' => '/admin/count', 'verb' => 'GET'],
