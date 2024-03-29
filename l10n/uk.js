@@ -3,6 +3,8 @@ OC.L10N.register(
     {
     "Recognize" : "Розпізнати",
     "Status" : "Статус",
+    "The machine learning models have been downloaded successfully." : "Моделі машинного навчання було успішно звантажено.",
+    "The machine learning models still need to be downloaded." : "Моделі машинного навчання ще не звантажено.",
     "Reset" : "Скидання",
     "Failed to load settings" : "Не вдалося завантажити налаштування",
     "Failed to save settings" : "Неможливо зберегти налаштування",
