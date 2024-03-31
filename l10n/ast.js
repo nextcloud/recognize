@@ -8,6 +8,7 @@ OC.L10N.register(
     "Node.js {version} binary was installed successfully." : "El binariu de Node.js {version} instalóse correutamente.",
     "Failed to load settings" : "Nun se pue cargar la configuración",
     "Failed to save settings" : "Nun se pue guardar la configuración",
+    "Cat" : "Gatu",
     "Architecture" : "Arquiteutura",
     "Landscape" : "Horizontal",
     "Portrait" : "Vertical",
