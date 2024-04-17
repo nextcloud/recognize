@@ -157,21 +157,7 @@ class AdminController extends Controller {
 	}
 
 	public function platform(): JSONResponse {
-		try {
-			exec('lscpu --json' . ' 2>&1', $output, $returnCode);
-		} catch (\Throwable $e) {
-			return new JSONResponse(['platform' => null]);
-		}
-
-		if ($returnCode !== 0) {
-			return new JSONResponse(['platform' => null]);
-		}
-
-		$lscpu = \json_decode(trim(implode("\n", $output)), true);
-		if (!isset($lscpu['lscpu'][0]['data'])) {
-			return new JSONResponse(['platform' => null]);
-		}
-		return new JSONResponse(['platform' => $lscpu['lscpu'][0]['data']]);
+		return new JSONResponse(['platform' => php_uname('m')]);
 	}
 
 	public function musl(): JSONResponse {
