@@ -168,6 +168,9 @@ class AdminController extends Controller {
 		}
 
 		$lscpu = \json_decode(trim(implode("\n", $output)), true);
+		if (!isset($lscpu['lscpu'][0]['data'])) {
+			return new JSONResponse(['platform' => null]);
+		}
 		return new JSONResponse(['platform' => $lscpu['lscpu'][0]['data']]);
 	}
 

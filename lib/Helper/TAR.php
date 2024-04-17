@@ -209,7 +209,7 @@ class TAR extends Archive {
 			}
 			if (substr($file, 0, $pathLength) == $path and $file != $path) {
 				$result = substr($file, $pathLength);
-				if ($pos = strpos($result, '/')) {
+				if (($pos = strpos($result, '/')) !== false) {
 					$result = substr($result, 0, $pos + 1);
 				}
 				if (array_search($result, $folderContent) === false) {

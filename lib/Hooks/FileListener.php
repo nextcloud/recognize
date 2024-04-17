@@ -38,6 +38,9 @@ use OCP\Share\Events\ShareDeletedEvent;
 use OCP\Share\IManager;
 use Psr\Log\LoggerInterface;
 
+/**
+ * @psalm-implements IEventListener<Event>
+ */
 class FileListener implements IEventListener {
 	private FaceDetectionMapper $faceDetectionMapper;
 	private LoggerInterface $logger;
@@ -70,7 +73,7 @@ class FileListener implements IEventListener {
 			$node = $share->getNode();
 
 			$accessList = $this->shareManager->getAccessList($node, true, true);
-			$userIds = array_map(fn ($id) => (string)$id, array_keys($accessList['users']));
+			$userIds = array_map(fn (int|string $id) => (string)$id, array_keys($accessList['users']));
 
 			if ($node->getType() === FileInfo::TYPE_FOLDER) {
 				$mount = $node->getMountPoint();

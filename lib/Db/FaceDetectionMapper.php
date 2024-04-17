@@ -14,6 +14,9 @@ use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IConfig;
 use OCP\IDBConnection;
 
+/**
+ * @psalm-extends QBMapper<FaceDetection>
+ */
 class FaceDetectionMapper extends QBMapper {
 	private IConfig $config;
 
