@@ -65,7 +65,7 @@ abstract class Classifier {
 	 * @param QueueFile[] $queueFiles
 	 * @param int $timeout
 	 * @return \Generator
-	 * @psalm-return \Generator<QueueFile, mixed, mixed, void>
+	 * @psalm-return \Generator<QueueFile, mixed, mixed, null>
 	 * @throws \ErrorException|\RuntimeException
 	 */
 	public function classifyFiles(string $model, array $queueFiles, int $timeout): \Generator {

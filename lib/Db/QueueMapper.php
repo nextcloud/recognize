@@ -18,6 +18,9 @@ use OCP\DB\Exception;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 
+/**
+ * @psalm-extends QBMapper<QueueFile>
+ */
 class QueueMapper extends QBMapper {
 	public const MODELS = [
 		ImagenetClassifier::MODEL_NAME,

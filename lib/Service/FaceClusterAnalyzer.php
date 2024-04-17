@@ -99,7 +99,7 @@ class FaceClusterAnalyzer {
 			/** @var int[] $detectionKeys */
 			$detectionKeys = array_keys($flatCluster->getClusterVertices());
 
-			$clusterDetections = array_filter($detections, function (int $key) use ($detectionKeys) {
+			$clusterDetections = array_filter($detections, function ($key) use ($detectionKeys) {
 				return isset($detectionKeys[$key]);
 			}, ARRAY_FILTER_USE_KEY);
 			$clusterCentroid = self::calculateCentroidOfDetections($clusterDetections);

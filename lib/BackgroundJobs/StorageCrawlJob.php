@@ -40,7 +40,7 @@ class StorageCrawlJob extends QueuedJob {
 	}
 
 	/**
-	 * @param array{storage_id:int, root_id:int, override_root:int, last_file_id:int} $argument
+	 * @param array{storage_id:int, root_id:int, override_root:int, last_file_id:int, models?: list<string>} $argument
 	 * @return void
 	 */
 	protected function run($argument): void {
