@@ -22,6 +22,7 @@ use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
 use OCP\AppFramework\Services\IAppConfig;
 use OCP\BackgroundJob\IJobList;
+use OCP\Constants;
 use OCP\Files\Folder;
 use OCP\Files\IRootFolder;
 use OCP\SystemTag\ISystemTagObjectMapper;
@@ -32,6 +33,7 @@ use Test\TestCase;
  */
 class ClassifierTest extends TestCase {
 	public const TEST_USER1 = 'test-user1';
+	public const TEST_USER2 = 'test-user2';
 
 	public const TEST_FILES = ['alpine.jpg' ,'eiffeltower.jpg', 'Rock_Rejam.mp3', 'jumpingjack.gif', 'test'];
 	public const ALL_MODELS = [
@@ -58,6 +60,7 @@ class ClassifierTest extends TestCase {
 	private FaceDetectionMapper $faceDetectionMapper;
 	private IJobList $jobList;
 	private IAppConfig $config;
+	private \OCP\Share\IManager $shareManager;
 
 	public static function setUpBeforeClass(): void {
 		parent::setUpBeforeClass();
@@ -79,6 +82,7 @@ class ClassifierTest extends TestCase {
 		$this->jobList = \OC::$server->get(IJobList::class);
 		$this->config = \OC::$server->getRegisteredAppContainer('recognize')->get(IAppConfig::class);
 		$this->queue = \OC::$server->get(QueueService::class);
+		$this->shareManager = \OC::$server->get(\OCP\Share\IManager::class);
 		foreach (self::TEST_FILES as $filename) {
 			try {
 				$this->userFolder->get($filename)->delete();
@@ -143,6 +147,14 @@ class ClassifierTest extends TestCase {
 
 		$this->testFile = $this->userFolder->newFile('/alpine.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
 		$this->userFolder->newFolder('/test/ignore/');
+		$sharedFolder = $this->userFolder->newFolder('/test/shared/');
+		$share = $this->shareManager->newShare();
+		$share->setSharedBy(self::TEST_USER1);
+		$share->setSharedWith(self::TEST_USER2);
+		$share->setShareType(\OCP\Share\IShare::TYPE_USER);
+		$share->setNode($sharedFolder);
+		$share->setPermissions(Constants::PERMISSION_ALL);
+		$this->shareManager->createShare($share);
 		$ignoreFile = $this->userFolder->newFile('/test/' . $ignoreFileName, '');
 		$this->ignoredFile = $this->userFolder->newFile('/test/ignore/alpine-2.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
 
