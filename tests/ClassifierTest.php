@@ -22,7 +22,6 @@ use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
 use OCP\AppFramework\Services\IAppConfig;
 use OCP\BackgroundJob\IJobList;
-use OCP\Constants;
 use OCP\Files\Folder;
 use OCP\Files\IRootFolder;
 use OCP\SystemTag\ISystemTagObjectMapper;
@@ -66,6 +65,7 @@ class ClassifierTest extends TestCase {
 		parent::setUpBeforeClass();
 		$backend = new \Test\Util\User\Dummy();
 		$backend->createUser(self::TEST_USER1, self::TEST_USER1);
+		$backend->createUser(self::TEST_USER2, self::TEST_USER2);
 		\OC::$server->get(\OCP\IUserManager::class)->registerBackend($backend);
 	}
 
@@ -147,14 +147,6 @@ class ClassifierTest extends TestCase {
 
 		$this->testFile = $this->userFolder->newFile('/alpine.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
 		$this->userFolder->newFolder('/test/ignore/');
-		$sharedFolder = $this->userFolder->newFolder('/test/shared/');
-		$share = $this->shareManager->newShare();
-		$share->setSharedBy(self::TEST_USER1);
-		$share->setSharedWith(self::TEST_USER2);
-		$share->setShareType(\OCP\Share\IShare::TYPE_USER);
-		$share->setNode($sharedFolder);
-		$share->setPermissions(Constants::PERMISSION_ALL);
-		$this->shareManager->createShare($share);
 		$ignoreFile = $this->userFolder->newFile('/test/' . $ignoreFileName, '');
 		$this->ignoredFile = $this->userFolder->newFile('/test/ignore/alpine-2.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
 
@@ -495,6 +487,24 @@ class ClassifierTest extends TestCase {
 				}
 			}
 		}
+
+		// Test FileListener for moving files across share boundaries
+
+		self::assertCount(0, $this->faceDetectionMapper->findByUserId(self::TEST_USER2), 'user 2 should have no face detections');
+
+		$sharedFolder = $this->userFolder->newFolder('/shared/');
+		$share = $this->shareManager->newShare();
+		$share->setSharedBy(self::TEST_USER1);
+		$share->setSharedWith(self::TEST_USER2);
+		$share->setShareType(\OCP\Share\IShare::TYPE_USER);
+		$share->setNode($sharedFolder);
+		$share->setPermissions(\OCP\Constants::PERMISSION_ALL);
+		$this->shareManager->createShare($share);
+		$this->shareManager->acceptShare($share, self::TEST_USER2);
+
+		$testFiles[0]->move($sharedFolder->getPath().'/'.$testFiles[0]->getName());
+
+		self::assertCount(1, $this->faceDetectionMapper->findByUserId(self::TEST_USER2), 'user 2 should have 1 face detection now');
 	}
 
 	/**

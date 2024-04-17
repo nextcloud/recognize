@@ -21,7 +21,6 @@ use OCP\Files\Events\Node\NodeCreatedEvent;
 use OCP\Files\Events\Node\NodeDeletedEvent;
 use OCP\Files\Events\Node\NodeRenamedEvent;
 use OCP\Files\Events\NodeRemovedFromCache;
-use OCP\Files\IRootFolder;
 use OCP\Share\Events\ShareCreatedEvent;
 use OCP\Share\Events\ShareDeletedEvent;
 
@@ -43,11 +42,6 @@ class Application extends App implements IBootstrap {
 		$dispatcher->addServiceListener(ShareDeletedEvent::class, FileListener::class);
 		$dispatcher->addServiceListener(CacheEntryInsertedEvent::class, FileListener::class);
 		$dispatcher->addServiceListener(NodeRemovedFromCache::class, FileListener::class);
-		$rootFolder = $this->getContainer()->get(IRootFolder::class);
-		$rootFolder->listen('\OC\Files', 'postRename', function ($source, $target) {
-			$fileListener = $this->getContainer()->get(FileListener::class);
-			$fileListener->postRename($source, $target);
-		});
 	}
 
 	public function register(IRegistrationContext $context): void {

@@ -20,7 +20,6 @@ use OCP\DB\Exception;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
 use OCP\Files\Cache\CacheEntryInsertedEvent;
-use OCP\Files\Config\IUserMountCache;
 use OCP\Files\Events\Node\BeforeNodeDeletedEvent;
 use OCP\Files\Events\Node\BeforeNodeRenamedEvent;
 use OCP\Files\Events\Node\NodeCreatedEvent;
@@ -49,11 +48,11 @@ class FileListener implements IEventListener {
 	private ?bool $movingFromIgnoredTerritory;
 	private StorageService $storageService;
 	private IManager $shareManager;
-	private IUserMountCache $userMountCache;
 	private IRootFolder $rootFolder;
-	private array $nodeCache;
+	/** @var list<string> */
+	private array $sourceUserIds;
 
-	public function __construct(FaceDetectionMapper $faceDetectionMapper, LoggerInterface $logger, QueueService $queue, IgnoreService $ignoreService, StorageService $storageService, IManager $shareManager, IUserMountCache $userMountCache, IRootFolder $rootFolder) {
+	public function __construct(FaceDetectionMapper $faceDetectionMapper, LoggerInterface $logger, QueueService $queue, IgnoreService $ignoreService, StorageService $storageService, IManager $shareManager, IRootFolder $rootFolder) {
 		$this->faceDetectionMapper = $faceDetectionMapper;
 		$this->logger = $logger;
 		$this->queue = $queue;
@@ -61,27 +60,37 @@ class FileListener implements IEventListener {
 		$this->movingFromIgnoredTerritory = null;
 		$this->storageService = $storageService;
 		$this->shareManager = $shareManager;
-		$this->userMountCache = $userMountCache;
 		$this->rootFolder = $rootFolder;
-		$this->nodeCache = [];
 	}
 
 	public function handle(Event $event): void {
-		if ($event instanceof ShareCreatedEvent) {
-			$share = $event->getShare();
-			$ownerId = $share->getShareOwner();
-			$node = $share->getNode();
+		try {
+			if ($event instanceof ShareCreatedEvent) {
+				$share = $event->getShare();
+				$ownerId = $share->getShareOwner();
+				$node = $share->getNode();
 
-			$accessList = $this->shareManager->getAccessList($node, true, true);
-			$userIds = array_map(fn ($id) => strval($id), array_keys($accessList['users']));
+				$accessList = $this->shareManager->getAccessList($node, true, true);
+				$userIds = array_map(fn ($id) => strval($id), array_keys($accessList['users']));
 
-			if ($node->getType() === FileInfo::TYPE_FOLDER) {
-				$mount = $node->getMountPoint();
-				if ($mount->getNumericStorageId() === null) {
-					return;
-				}
-				$files = $this->storageService->getFilesInMount($mount->getNumericStorageId(), $node->getId(), [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
-				foreach ($files as $fileInfo) {
+				if ($node->getType() === FileInfo::TYPE_FOLDER) {
+					$mount = $node->getMountPoint();
+					if ($mount->getNumericStorageId() === null) {
+						return;
+					}
+					$files = $this->storageService->getFilesInMount($mount->getNumericStorageId(), $node->getId(), [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
+					foreach ($files as $fileInfo) {
+						foreach ($userIds as $userId) {
+							if ($userId === $ownerId) {
+								continue;
+							}
+							if (count($this->faceDetectionMapper->findByFileIdAndUser($node->getId(), $userId)) > 0) {
+								continue;
+							}
+							$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($fileInfo['fileid'], $ownerId, $userId);
+						}
+					}
+				} else {
 					foreach ($userIds as $userId) {
 						if ($userId === $ownerId) {
 							continue;
@@ -89,130 +98,138 @@ class FileListener implements IEventListener {
 						if (count($this->faceDetectionMapper->findByFileIdAndUser($node->getId(), $userId)) > 0) {
 							continue;
 						}
-						$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($fileInfo['fileid'], $ownerId, $userId);
+						$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($node->getId(), $ownerId, $userId);
 					}
-				}
-			} else {
-				foreach ($userIds as $userId) {
-					if ($userId === $ownerId) {
-						continue;
-					}
-					if (count($this->faceDetectionMapper->findByFileIdAndUser($node->getId(), $userId)) > 0) {
-						continue;
-					}
-					$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($node->getId(), $ownerId, $userId);
 				}
 			}
-		}
-		if ($event instanceof ShareDeletedEvent) {
-			$share = $event->getShare();
-			$node = $share->getNode();
+			if ($event instanceof ShareDeletedEvent) {
+				$share = $event->getShare();
+				$node = $share->getNode();
 
-			$accessList = $this->shareManager->getAccessList($node, true, true);
-			/**
-			 * @var string[] $userIds
-			 */
-			$userIds = array_keys($accessList['users']);
+				$accessList = $this->shareManager->getAccessList($node, true, true);
+				/**
+				 * @var string[] $userIds
+				 */
+				$userIds = array_keys($accessList['users']);
 
-			if ($node->getType() === FileInfo::TYPE_FOLDER) {
-				$mount = $node->getMountPoint();
-				if ($mount->getNumericStorageId() === null) {
+				if ($node->getType() === FileInfo::TYPE_FOLDER) {
+					$mount = $node->getMountPoint();
+					if ($mount->getNumericStorageId() === null) {
+						return;
+					}
+					$files = $this->storageService->getFilesInMount($mount->getNumericStorageId(), $node->getId(), [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
+					foreach ($files as $fileInfo) {
+						$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($fileInfo['fileid'], $userIds);
+					}
+				} else {
+					$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($node->getId(), $userIds);
+				}
+			}
+			if ($event instanceof BeforeNodeRenamedEvent) {
+				if (in_array($event->getSource()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
+					$this->resetIgnoreCache($event->getSource());
 					return;
 				}
-				$files = $this->storageService->getFilesInMount($mount->getNumericStorageId(), $node->getId(), [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
-				foreach ($files as $fileInfo) {
-					$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($fileInfo['fileid'], $userIds);
+				// We try to remember whether the source node is in ignored territory
+				// because after moving isIgnored doesn't work anymore :(
+				if ($this->isIgnored($event->getSource())) {
+					$this->movingFromIgnoredTerritory = true;
+				} else {
+					$this->movingFromIgnoredTerritory = false;
 				}
-			} else {
-				$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($node->getId(), $userIds);
-			}
-		}
-		if ($event instanceof BeforeNodeRenamedEvent) {
-			if (in_array($event->getSource()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true) &&
-				in_array($event->getTarget()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
-				$this->resetIgnoreCache($event->getSource());
+				$sourceAccessList = $this->shareManager->getAccessList($event->getSource(), true, true);
+				$this->sourceUserIds = array_map(fn ($id) => strval($id), array_keys($sourceAccessList['users']));
 				return;
 			}
-			// We try to remember whether the source node is in ignored territory
-			// because after moving isIgnored doesn't work anymore :(
-			if ($this->isIgnored($event->getSource())) {
-				$this->movingFromIgnoredTerritory = true;
-			} else {
-				$this->movingFromIgnoredTerritory = false;
-			}
-			return;
-		}
-		if ($event instanceof NodeRenamedEvent) {
-			if (in_array($event->getSource()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true) &&
-				in_array($event->getTarget()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
-				$this->resetIgnoreCache($event->getTarget());
-				$this->postInsert($event->getSource()->getParent());
-				$this->postDelete($event->getTarget()->getParent());
-				return;
-			}
-			if ($this->movingFromIgnoredTerritory) {
+			if ($event instanceof NodeRenamedEvent) {
+				if (in_array($event->getSource()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true) &&
+					in_array($event->getTarget()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
+					$this->resetIgnoreCache($event->getTarget());
+					$this->postInsert($event->getSource()->getParent());
+					$this->postDelete($event->getTarget()->getParent());
+					return;
+				}
+
+				if (in_array($event->getSource()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true) &&
+					!in_array($event->getTarget()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
+					$this->postInsert($event->getSource()->getParent());
+					return;
+				}
+
+				if (!in_array($event->getSource()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true) &&
+					in_array($event->getTarget()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
+					$this->resetIgnoreCache($event->getTarget());
+					$this->postDelete($event->getTarget()->getParent());
+					return;
+				}
+
+				if ($this->movingFromIgnoredTerritory) {
+					if ($this->isIgnored($event->getTarget())) {
+						return;
+					}
+					$this->postInsert($event->getTarget());
+					return;
+				}
 				if ($this->isIgnored($event->getTarget())) {
+					$this->postDelete($event->getTarget());
 					return;
 				}
-				$this->postInsert($event->getTarget());
+				$this->postRename($event->getSource(), $event->getTarget());
 				return;
 			}
-			if ($this->isIgnored($event->getTarget())) {
-				$this->postDelete($event->getTarget());
+			if ($event instanceof BeforeNodeDeletedEvent) {
+				$this->postDelete($event->getNode(), false);
 				return;
 			}
-			return;
-		}
-		if ($event instanceof BeforeNodeDeletedEvent) {
-			$this->postDelete($event->getNode(), false);
-			return;
-		}
-		if ($event instanceof NodeDeletedEvent) {
-			if (in_array($event->getNode()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
-				$this->resetIgnoreCache($event->getNode());
-				$this->postInsert($event->getNode()->getParent());
+			if ($event instanceof NodeDeletedEvent) {
+				if (in_array($event->getNode()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
+					$this->resetIgnoreCache($event->getNode());
+					$this->postInsert($event->getNode()->getParent());
+					return;
+				}
+			}
+			if ($event instanceof NodeCreatedEvent) {
+				if (in_array($event->getNode()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
+					$this->resetIgnoreCache($event->getNode());
+					$this->postDelete($event->getNode()->getParent());
+					return;
+				}
+				$this->postInsert($event->getNode(), false);
 				return;
 			}
-		}
-		if ($event instanceof NodeCreatedEvent) {
-			if (in_array($event->getNode()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
-				$this->resetIgnoreCache($event->getNode());
-				$this->postDelete($event->getNode()->getParent());
-				return;
+			if ($event instanceof CacheEntryInsertedEvent) {
+				$node = current($this->rootFolder->getById($event->getFileId()));
+				if ($node === false) {
+					return;
+				}
+				if ($node instanceof Folder) {
+					return;
+				}
+				if (in_array($node->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
+					$this->resetIgnoreCache($node);
+					$this->postDelete($node->getParent());
+					return;
+				}
+				$this->postInsert($node);
 			}
-			$this->postInsert($event->getNode(), false);
-			return;
-		}
-		if ($event instanceof CacheEntryInsertedEvent) {
-			$node = current($this->rootFolder->getById($event->getFileId()));
-			if ($node === false) {
-				return;
+			if ($event instanceof NodeRemovedFromCache) {
+				$cacheEntry = $event->getStorage()->getCache()->get($event->getPath());
+				if ($cacheEntry === false) {
+					return;
+				}
+				$node = current($this->rootFolder->getById($cacheEntry->getId()));
+				if ($node === false) {
+					return;
+				}
+				if (in_array($node->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
+					$this->resetIgnoreCache($node);
+					$this->postInsert($node->getParent());
+					return;
+				}
+				$this->postDelete($node);
 			}
-			if ($node instanceof Folder) {
-				return;
-			}
-			if (in_array($node->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
-				$this->resetIgnoreCache($node);
-				$this->postDelete($node->getParent());
-				return;
-			}
-			$this->postInsert($node);
-		}
-		if ($event instanceof NodeRemovedFromCache) {
-			$cacheEntry = $event->getStorage()->getCache()->get($event->getPath());
-			if ($cacheEntry === false) {
-				return;
-			}
-			$node = current($this->rootFolder->getById($cacheEntry->getId()));
-			if ($node === false) {
-				return;
-			}
-			if (in_array($node->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
-				$this->resetIgnoreCache($node);
-				$this->postInsert($node->getParent());
-				return;
-			}
-			$this->postDelete($node);
+		} catch (\Throwable $e) {
+			$this->logger->error('Error in recognize file listener', ['exception' => $e]);
 		}
 	}
 
@@ -315,58 +332,11 @@ class FileListener implements IEventListener {
 		}
 	}
 
-	public function preRename(Node $source, Node $target): void {
-		$sourceAccessList = $this->shareManager->getAccessList($source, true, true);
-		$sourceUserIds = array_map(fn ($id) => strval($id), array_keys($sourceAccessList['users']));
-		$targetAccessList = $this->shareManager->getAccessList($target, true, true);
-		$targetUserIds = array_map(fn ($id) => strval($id), array_keys($targetAccessList['users']));
-
-		$usersToRemove = array_diff($sourceUserIds, $targetUserIds);
-
-		if ($target->getType() === FileInfo::TYPE_FOLDER) {
-			$mount = $target->getMountPoint();
-			if ($mount->getNumericStorageId() === null) {
-				return;
-			}
-			$files = $this->storageService->getFilesInMount($mount->getNumericStorageId(), $source->getId(), [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
-			foreach ($files as $fileInfo) {
-				$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($fileInfo['fileid'], $usersToRemove);
-			}
-		} else {
-			$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($source->getId(), $usersToRemove);
-		}
-	}
-
 	public function postRename(Node $source, Node $target): void {
-		if (in_array($source->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true) &&
-			!in_array($target->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
-			$this->resetIgnoreCache($source);
-			$this->postInsert($target->getParent());
-			return;
-		}
-
-		if (!in_array($source->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true) &&
-			in_array($target->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
-			$this->resetIgnoreCache($target);
-			$this->postDelete($target->getParent());
-			return;
-		}
-
-		if ($this->isIgnored($target)) {
-			$this->postDelete($target);
-			return;
-		}
-		if ($this->isIgnored($source) && !$this->isIgnored($target)) {
-			$this->postInsert($target);
-			return;
-		}
-
-		$sourceAccessList = $this->shareManager->getAccessList($source, true, true);
-		$sourceUserIds = array_map(fn ($id) => strval($id), array_keys($sourceAccessList['users']));
 		$targetAccessList = $this->shareManager->getAccessList($target, true, true);
 		$targetUserIds = array_map(fn ($id) => strval($id), array_keys($targetAccessList['users']));
 
-		$usersToAdd = array_diff($targetUserIds, $sourceUserIds);
+		$usersToAdd = array_diff($targetUserIds, $this->sourceUserIds);
 		$existingUsers = array_diff($targetUserIds, $usersToAdd);
 		// *handwaving* I know this is a stretch but it's good enough
 		$ownerId = $existingUsers[0];
@@ -384,6 +354,7 @@ class FileListener implements IEventListener {
 					}
 					$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($fileInfo['fileid'], $ownerId, $userId);
 				}
+				$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($fileInfo['fileid'], $targetUserIds);
 			}
 		} else {
 			foreach ($usersToAdd as $userId) {
@@ -392,6 +363,7 @@ class FileListener implements IEventListener {
 				}
 				$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($target->getId(), $ownerId, $userId);
 			}
+			$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($source->getId(), $targetUserIds);
 		}
 	}
 
