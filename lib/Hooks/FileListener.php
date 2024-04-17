@@ -39,7 +39,7 @@ use OCP\Share\IManager;
 use Psr\Log\LoggerInterface;
 
 /**
- * @psalm-implements IEventListener<Event>
+ * @template-implements IEventListener<Event>
  */
 class FileListener implements IEventListener {
 	private FaceDetectionMapper $faceDetectionMapper;
@@ -73,7 +73,7 @@ class FileListener implements IEventListener {
 			$node = $share->getNode();
 
 			$accessList = $this->shareManager->getAccessList($node, true, true);
-			$userIds = array_map(fn (int|string $id) => (string)$id, array_keys($accessList['users']));
+			$userIds = array_map(fn ($id) => strval($id), array_keys($accessList['users']));
 
 			if ($node->getType() === FileInfo::TYPE_FOLDER) {
 				$mount = $node->getMountPoint();
@@ -312,6 +312,86 @@ class FileListener implements IEventListener {
 		} catch (Exception $e) {
 			$this->logger->error('Failed to add file to queue', ['exception' => $e]);
 			return;
+		}
+	}
+
+	public function preRename(Node $source, Node $target): void {
+		$sourceAccessList = $this->shareManager->getAccessList($source, true, true);
+		$sourceUserIds = array_map(fn ($id) => strval($id), array_keys($sourceAccessList['users']));
+		$targetAccessList = $this->shareManager->getAccessList($target, true, true);
+		$targetUserIds = array_map(fn ($id) => strval($id), array_keys($targetAccessList['users']));
+
+		$usersToRemove = array_diff($sourceUserIds, $targetUserIds);
+
+		if ($target->getType() === FileInfo::TYPE_FOLDER) {
+			$mount = $target->getMountPoint();
+			if ($mount->getNumericStorageId() === null) {
+				return;
+			}
+			$files = $this->storageService->getFilesInMount($mount->getNumericStorageId(), $source->getId(), [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
+			foreach ($files as $fileInfo) {
+				$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($fileInfo['fileid'], $usersToRemove);
+			}
+		} else {
+			$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($source->getId(), $usersToRemove);
+		}
+	}
+
+	public function postRename(Node $source, Node $target): void {
+		if (in_array($source->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true) &&
+			!in_array($target->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
+			$this->resetIgnoreCache($source);
+			$this->postInsert($target->getParent());
+			return;
+		}
+
+		if (!in_array($source->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true) &&
+			in_array($target->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
+			$this->resetIgnoreCache($target);
+			$this->postDelete($target->getParent());
+			return;
+		}
+
+		if ($this->isIgnored($target)) {
+			$this->postDelete($target);
+			return;
+		}
+		if ($this->isIgnored($source) && !$this->isIgnored($target)) {
+			$this->postInsert($target);
+			return;
+		}
+
+		$sourceAccessList = $this->shareManager->getAccessList($source, true, true);
+		$sourceUserIds = array_map(fn ($id) => strval($id), array_keys($sourceAccessList['users']));
+		$targetAccessList = $this->shareManager->getAccessList($target, true, true);
+		$targetUserIds = array_map(fn ($id) => strval($id), array_keys($targetAccessList['users']));
+
+		$usersToAdd = array_diff($targetUserIds, $sourceUserIds);
+		$existingUsers = array_diff($targetUserIds, $usersToAdd);
+		// *handwaving* I know this is a stretch but it's good enough
+		$ownerId = $existingUsers[0];
+
+		if ($target->getType() === FileInfo::TYPE_FOLDER) {
+			$mount = $target->getMountPoint();
+			if ($mount->getNumericStorageId() === null) {
+				return;
+			}
+			$files = $this->storageService->getFilesInMount($mount->getNumericStorageId(), $target->getId(), [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
+			foreach ($files as $fileInfo) {
+				foreach ($usersToAdd as $userId) {
+					if (count($this->faceDetectionMapper->findByFileIdAndUser($target->getId(), $userId)) > 0) {
+						continue;
+					}
+					$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($fileInfo['fileid'], $ownerId, $userId);
+				}
+			}
+		} else {
+			foreach ($usersToAdd as $userId) {
+				if (count($this->faceDetectionMapper->findByFileIdAndUser($target->getId(), $userId)) > 0) {
+					continue;
+				}
+				$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($target->getId(), $ownerId, $userId);
+			}
 		}
 	}
 
