@@ -505,6 +505,8 @@ class ClassifierTest extends TestCase {
 		$testFiles[0]->move($sharedFolder->getPath().'/'.$testFiles[0]->getName());
 
 		self::assertCount(1, $this->faceDetectionMapper->findByUserId(self::TEST_USER2), 'user 2 should have 1 face detection now');
+		$this->shareManager->deleteShare($share);
+		self::assertCount(0, $this->faceDetectionMapper->findByUserId(self::TEST_USER2), 'user 2 should have 0 face detections after deleting the share');
 	}
 
 	/**
