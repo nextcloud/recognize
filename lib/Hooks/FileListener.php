@@ -61,6 +61,7 @@ class FileListener implements IEventListener {
 		$this->storageService = $storageService;
 		$this->shareManager = $shareManager;
 		$this->rootFolder = $rootFolder;
+		$this->sourceUserIds = [];
 	}
 
 	public function handle(Event $event): void {
@@ -70,6 +71,7 @@ class FileListener implements IEventListener {
 				$ownerId = $share->getShareOwner();
 				$node = $share->getNode();
 
+				/** @var array{users:array<string,array{node_id:int, node_path: string}>, remote: array<string,array{node_id:int, node_path: string}>, mail: array<string,array{node_id:int, node_path: string}>} $accessList */
 				$accessList = $this->shareManager->getAccessList($node, true, true);
 				$userIds = array_map(fn ($id) => strval($id), array_keys($accessList['users']));
 
@@ -106,10 +108,8 @@ class FileListener implements IEventListener {
 				$share = $event->getShare();
 				$node = $share->getNode();
 
+				/** @var array{users:array<string,array{node_id:int, node_path: string}>, remote: array<string,array{node_id:int, node_path: string}>, mail: array<string,array{node_id:int, node_path: string}>} $accessList */
 				$accessList = $this->shareManager->getAccessList($node, true, true);
-				/**
-				 * @var string[] $userIds
-				 */
 				$userIds = array_keys($accessList['users']);
 
 				if ($node->getType() === FileInfo::TYPE_FOLDER) {
@@ -137,6 +137,7 @@ class FileListener implements IEventListener {
 				} else {
 					$this->movingFromIgnoredTerritory = false;
 				}
+				/** @var array{users:array<string,array{node_id:int, node_path: string}>, remote: array<string,array{node_id:int, node_path: string}>, mail: array<string,array{node_id:int, node_path: string}>} $sourceAccessList */
 				$sourceAccessList = $this->shareManager->getAccessList($event->getSource(), true, true);
 				$this->sourceUserIds = array_map(fn ($id) => strval($id), array_keys($sourceAccessList['users']));
 				return;
@@ -333,6 +334,7 @@ class FileListener implements IEventListener {
 	}
 
 	public function postRename(Node $source, Node $target): void {
+		/** @var array{users:array<string,array{node_id:int, node_path: string}>, remote: array<string,array{node_id:int, node_path: string}>, mail: array<string,array{node_id:int, node_path: string}>} $targetAccessList */
 		$targetAccessList = $this->shareManager->getAccessList($target, true, true);
 		$targetUserIds = array_map(fn ($id) => strval($id), array_keys($targetAccessList['users']));
 
@@ -343,10 +345,11 @@ class FileListener implements IEventListener {
 
 		if ($target->getType() === FileInfo::TYPE_FOLDER) {
 			$mount = $target->getMountPoint();
-			if ($mount->getNumericStorageId() === null) {
+			$numericStorageId = $mount->getNumericStorageId();
+			if ($numericStorageId === null) {
 				return;
 			}
-			$files = $this->storageService->getFilesInMount($mount->getNumericStorageId(), $target->getId(), [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
+			$files = $this->storageService->getFilesInMount($numericStorageId, $target->getId(), [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
 			foreach ($files as $fileInfo) {
 				foreach ($usersToAdd as $userId) {
 					if (count($this->faceDetectionMapper->findByFileIdAndUser($target->getId(), $userId)) > 0) {
