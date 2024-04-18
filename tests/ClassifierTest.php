@@ -32,6 +32,7 @@ use Test\TestCase;
  */
 class ClassifierTest extends TestCase {
 	public const TEST_USER1 = 'test-user1';
+	public const TEST_USER2 = 'test-user2';
 
 	public const TEST_FILES = ['alpine.jpg' ,'eiffeltower.jpg', 'Rock_Rejam.mp3', 'jumpingjack.gif', 'test'];
 	public const ALL_MODELS = [
@@ -58,11 +59,13 @@ class ClassifierTest extends TestCase {
 	private FaceDetectionMapper $faceDetectionMapper;
 	private IJobList $jobList;
 	private IAppConfig $config;
+	private \OCP\Share\IManager $shareManager;
 
 	public static function setUpBeforeClass(): void {
 		parent::setUpBeforeClass();
 		$backend = new \Test\Util\User\Dummy();
 		$backend->createUser(self::TEST_USER1, self::TEST_USER1);
+		$backend->createUser(self::TEST_USER2, self::TEST_USER2);
 		\OC::$server->get(\OCP\IUserManager::class)->registerBackend($backend);
 	}
 
@@ -79,6 +82,7 @@ class ClassifierTest extends TestCase {
 		$this->jobList = \OC::$server->get(IJobList::class);
 		$this->config = \OC::$server->getRegisteredAppContainer('recognize')->get(IAppConfig::class);
 		$this->queue = \OC::$server->get(QueueService::class);
+		$this->shareManager = \OC::$server->get(\OCP\Share\IManager::class);
 		foreach (self::TEST_FILES as $filename) {
 			try {
 				$this->userFolder->get($filename)->delete();
@@ -483,6 +487,26 @@ class ClassifierTest extends TestCase {
 				}
 			}
 		}
+
+		// Test FileListener for moving files across share boundaries
+
+		self::assertCount(0, $this->faceDetectionMapper->findByUserId(self::TEST_USER2), 'user 2 should have no face detections');
+
+		$sharedFolder = $this->userFolder->newFolder('/shared/');
+		$share = $this->shareManager->newShare();
+		$share->setSharedBy(self::TEST_USER1);
+		$share->setSharedWith(self::TEST_USER2);
+		$share->setShareType(\OCP\Share\IShare::TYPE_USER);
+		$share->setNode($sharedFolder);
+		$share->setPermissions(\OCP\Constants::PERMISSION_ALL);
+		$this->shareManager->createShare($share);
+		$this->shareManager->acceptShare($share, self::TEST_USER2);
+
+		$testFiles[0]->move($sharedFolder->getPath().'/'.$testFiles[0]->getName());
+
+		self::assertCount(1, $this->faceDetectionMapper->findByUserId(self::TEST_USER2), 'user 2 should have 1 face detection now');
+		$this->shareManager->deleteShare($share);
+		self::assertCount(0, $this->faceDetectionMapper->findByUserId(self::TEST_USER2), 'user 2 should have 0 face detections after deleting the share');
 	}
 
 	/**
