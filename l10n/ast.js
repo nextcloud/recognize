@@ -148,6 +148,7 @@ OC.L10N.register(
     "Info" : "Información",
     "Document" : "Documentu",
     "Puzzle" : "Puzzle",
+    "Bucket" : "Bucket",
     "Baby" : "Bebé",
     "Festival" : "Festival",
     "Event" : "Eventu",
