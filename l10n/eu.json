@@ -1,6 +1,7 @@
 { "translations": {
     "Recognize" : "Recognize",
     "Status" : "Egoera",
+    "Could not execute the Node.js binary. You may need to set the path to a working binary manually." : "Ezin izan da Node.js binarioa abiatu. Binarioaren bide-izena ezarri beharko duzu eskuz.",
     "The app is installed and will automatically classify files in background processes." : "Aplikazioa instalatuta dago eta automatikoki sailkatuko ditu fitxategiak atzeko planoetan.",
     "None of the tagging options below are currently selected. The app will currently do nothing." : "Beheko etiketatze aukeretako bat ere ez dago une honetan hautatuta. Une honetan aplikazioak ez du ezer egingo.",
     "Face recognition" : "Aurpegien ezagutzea",
@@ -38,6 +39,7 @@
     "Enable GPU mode" : "Gaitu GPU modua",
     "Node.js" : "Node.js",
     "Checking Node.js" : "Node.js egiaztatzen",
+    "Node.js {version} binary was installed successfully." : "Node.js {version} binarioa ondo instalatu da.",
     "Terminal commands" : "Terminaleko komandoak",
     "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "Sailkapen-lanak exekutatzeko aurretiko eredu guztiak deskargatzeko, exekutatu komando hau zerbitzariaren terminalean.",
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "Aurretik Recognize bidez sailkatutako fitxategi guztien etiketak berrezarri ditzakezu komando honekin:",
