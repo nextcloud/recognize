@@ -19,37 +19,31 @@ use OCA\Recognize\Service\StorageService;
 use OCP\Files\Config\ICachedMountInfo;
 use OCP\Files\Config\IUserMountCache;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Classify extends Command {
-	private StorageService $storageService;
-	private Logger $logger;
 	/** @var array<string, Classifier>  */
 	private array $classifiers = [];
-	private IUserMountCache $userMountCache;
-	private SettingsService $settings;
 
 	public function __construct(
-		StorageService $storageService,
-		Logger $logger,
+		private StorageService $storageService,
+		private Logger $logger,
 		ImagenetClassifier $imagenet,
 		ClusteringFaceClassifier $faces,
 		MovinetClassifier $movinet,
 		MusicnnClassifier $musicnn,
-		IUserMountCache $userMountCache,
-		SettingsService $settings
+		private IUserMountCache $userMountCache,
+		private SettingsService $settings,
+		private ClearBackgroundJobs $clearBackgroundJobs,
 	) {
 		parent::__construct();
-		$this->storageService = $storageService;
-		$this->logger = $logger;
 		$this->classifiers[ImagenetClassifier::MODEL_NAME] = $imagenet;
 		$this->classifiers[ClusteringFaceClassifier::MODEL_NAME] = $faces;
 		$this->classifiers[MusicnnClassifier::MODEL_NAME] = $musicnn;
 		$this->classifiers[MovinetClassifier::MODEL_NAME] = $movinet;
 		// Landmarks are currently processed out of band in a background job, because imagenet schedules it directly
-		$this->userMountCache = $userMountCache;
-		$this->settings = $settings;
 	}
 
 	/**
@@ -65,13 +59,17 @@ class Classify extends Command {
 	/**
 	 * Execute the command
 	 *
-	 * @param InputInterface  $input
+	 * @param InputInterface $input
 	 * @param OutputInterface $output
 	 *
 	 * @return int
+	 * @throws ExceptionInterface
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$this->logger->setCliOutput($output);
+
+		$this->clearBackgroundJobs->run($input, $output);
+
 		$models = array_values(array_filter([
 			ClusteringFaceClassifier::MODEL_NAME,
 			ImagenetClassifier::MODEL_NAME,
