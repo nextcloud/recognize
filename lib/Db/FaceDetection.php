@@ -67,6 +67,9 @@ class FaceDetection extends Entity {
 	public function toArray(): array {
 		$array = [];
 		foreach (static::$fields as $field) {
+			if ($field === 'vector') {
+				continue;
+			}
 			$array[$field] = $this->{$field};
 		}
 		return $array;
