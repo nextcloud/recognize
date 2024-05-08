@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.0.0] - 2024-05-08
+
+### Breaking changes
+
+ - Bump required Node.js to v20
+ - Drop NC 28 support
+
+### Fixed
+
+* fix(Classify command): make it clear queues and jobs
+* fix(DAV\FacesHome): Don't list empty clusters
+* fix(DAV): Don't make clients load vector data
+* Fix(l10n): Update translations from Transifex
+* fix(FileListener): Listen to file movements across share boundaries
+* fix plsatform check (Thanks to @mr-bryn)
+* Fixed spelling mistake in appinfo/routes.php (Thanks to @asp.nut)
+* fix(InstallDeps): Use ffmpegDir to install ffmpeg
+
 ## [6.1.0] - 2024-02-28
 
 ### Fixed
