@@ -165,7 +165,9 @@ class FaceDetectionMapper extends QBMapper {
 		$qb = $this->db->getQueryBuilder();
 		$qb->selectDistinct('d.user_id')
 			->from('recognize_face_detections', 'd');
-		return $qb->executeQuery()->fetchAll(\PDO::FETCH_COLUMN);
+		/** @var list<string> */
+		$list = $qb->executeQuery()->fetchAll(\PDO::FETCH_COLUMN);
+		return $list;
 	}
 
 	/**
