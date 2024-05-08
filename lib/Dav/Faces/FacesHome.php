@@ -90,6 +90,7 @@ class FacesHome implements ICollection {
 	 */
 	public function getChildren(): array {
 		$clusters = $this->faceClusterMapper->findByUserId($this->user->getUID());
+		$clusters = array_values(array_filter($clusters, fn ($cluster) => count($this->faceDetectionMapper->findByClusterId($cluster->getId())) > 0));
 		if (count($this->children) === 0) {
 			$this->children = array_map(function (FaceCluster $cluster) {
 				return new FaceRoot($this->faceClusterMapper, $cluster, $this->user, $this->faceDetectionMapper, $this->rootFolder, $this->tagManager, $this->previewManager);
