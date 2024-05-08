@@ -8,7 +8,7 @@
 	<div id="recognize">
 		<figure v-if="loading" class="icon-loading loading" />
 		<figure v-if="!loading && success" class="icon-checkmark success" />
-		<NcSettingsSection :title="t('recognize', 'Status')">
+		<NcSettingsSection :name="t('recognize', 'Status')">
 			<NcNoteCard v-if="modelsDownloaded" show-alert type="success">
 				{{ t('recognize', 'The machine learning models have been downloaded successfully.') }}
 			</NcNoteCard>
@@ -32,7 +32,7 @@
 				</p>
 			</template>
 		</NcSettingsSection>
-		<NcSettingsSection :title="t('recognize', 'Face recognition')">
+		<NcSettingsSection :name="t('recognize', 'Face recognition')">
 			<template v-if="settings['faces.enabled']">
 				<NcNoteCard v-if="settings['faces.status'] === true" show-alert type="success">
 					{{ t('recognize', 'Face recognition is working. ') }}
@@ -65,7 +65,7 @@
 					@update:value="onChange" />
 			</p>
 		</NcSettingsSection>
-		<NcSettingsSection :title="t('recognize', 'Object detection & landmark recognition')">
+		<NcSettingsSection :name="t('recognize', 'Object detection & landmark recognition')">
 			<template v-if="settings['imagenet.enabled']">
 				<NcNoteCard v-if="settings['imagenet.status'] === true" show-alert type="success">
 					{{ t('recognize', 'Object recognition is working.') }}
@@ -126,7 +126,7 @@
 					@update:value="onChange" />
 			</p>
 		</NcSettingsSection>
-		<NcSettingsSection :title="t('recognize', 'Audio tagging')">
+		<NcSettingsSection :name="t('recognize', 'Audio tagging')">
 			<template v-if="settings['musicnn.enabled']">
 				<NcNoteCard v-if="settings['musicnn.status'] === true" show-alert type="success">
 					{{ t('recognize', 'Audio recognition is working.') }}
@@ -155,7 +155,7 @@
 					@update:value="onChange" />
 			</p>
 		</NcSettingsSection>
-		<NcSettingsSection :title="t('recognize', 'Video tagging')">
+		<NcSettingsSection :name="t('recognize', 'Video tagging')">
 			<template v-if="settings['movinet.enabled']">
 				<NcNoteCard v-if="settings['movinet.status'] === true" show-alert type="success">
 					{{ t('recognize', 'Video recognition is working.') }}
@@ -187,7 +187,7 @@
 					@update:value="onChange" />
 			</p>
 		</NcSettingsSection>
-		<NcSettingsSection :title="t('recognize', 'Reset')">
+		<NcSettingsSection :name="t('recognize', 'Reset')">
 			<p>{{ t('recognize', 'Click the button below to remove all tags from all files that have been classified so far.') }}</p>
 			<button class="button" @click="onReset">
 				{{ t('recognize', 'Reset tags for classified files') }}
@@ -208,7 +208,7 @@
 				{{ t('recognize', 'Clear queues and background jobs') }}
 			</button>
 		</NcSettingsSection>
-		<NcSettingsSection :title="t('recognize', 'Resource usage') ">
+		<NcSettingsSection :name="t('recognize', 'Resource usage') ">
 			<p>{{ t('recognize', 'By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used. (Note: In WASM mode, currently only 1 core can be used at all times.)') }}</p>
 			<p>
         <NcTextField :value.sync="settings['tensorflow.cores']"
@@ -230,7 +230,7 @@
 				</NcCheckboxRadioSwitch>
 			</p>
 		</NcSettingsSection>
-		<NcSettingsSection :title="t('recognize', 'Tensorflow WASM mode')">
+		<NcSettingsSection :name="t('recognize', 'Tensorflow WASM mode')">
 			<p v-if="avx === undefined || platform === undefined || musl === undefined">
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking CPU') }}
 			</p>
@@ -259,7 +259,7 @@
 				{{ t('recognize', 'Recognize uses Tensorflow for running the machine learning models. Not all installations support Tensorflow, either because the CPU does not support AVX instructions, or because the platform is not x86 (ie. on a Raspberry Pi, which is ARM), or because the Operating System that your nextcloud runs on (when using docker, then that is the OS within the docker image) does not come with GNU lib C (for example Alpine Linux, which is also used by Nextcloud AIO). In most cases, even if your installation does not support native Tensorflow operation, you can still run Tensorflow using WebAssembly (WASM) in Node.js. This is somewhat slower but still works.') }}
 			</p>
 		</NcSettingsSection>
-		<NcSettingsSection :title="t('recognize', 'Tensorflow GPU mode')">
+		<NcSettingsSection :name="t('recognize', 'Tensorflow GPU mode')">
 			<p>
 				<NcCheckboxRadioSwitch :checked.sync="settings['tensorflow.gpu']"
 					type="switch"
@@ -275,7 +275,7 @@
 				<a href="https://github.com/nextcloud/recognize/wiki/GPU-mode">{{ t('recognize', 'Learn how to setup GPU mode with Recognize') }}</a>
 			</p>
 		</NcSettingsSection>
-		<NcSettingsSection :title="t('recognize', 'Node.js')">
+		<NcSettingsSection :name="t('recognize', 'Node.js')">
 			<p v-if="nodejs === undefined">
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking Node.js') }}
 			</p>
@@ -318,7 +318,7 @@
 			</p>
 			<p>{{ t('recognize', 'For Nextcloud Snap users, you need to adjust this path to point to the snap\'s "current" directory as the pre-configured path will change with each update. For example, set it to "/var/snap/nextcloud/current/nextcloud/extra-apps/recognize/bin/node" instead of "/var/snap/nextcloud/9337974/nextcloud/extra-apps/recognize/bin/node"') }}</p>
 		</NcSettingsSection>
-		<NcSettingsSection :title="t('recognize', 'Classifier process priority')">
+		<NcSettingsSection :name="t('recognize', 'Classifier process priority')">
 			<p v-if="nice === undefined">
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking Nice binary') }}
 			</p>
@@ -348,7 +348,7 @@
 					@update:value="onChange" />
 			</p>
 		</NcSettingsSection>
-		<NcSettingsSection :title="t('recognize', 'Terminal commands') ">
+		<NcSettingsSection :name="t('recognize', 'Terminal commands') ">
 			<p>{{ t('recognize', 'To download all models preliminary to executing the classification jobs, run the following command on the server terminal.') }}</p>
 			<pre><code>occ recognize:download-models</code></pre>
 			<p>&nbsp;</p>
