@@ -62,6 +62,7 @@
 					:value.sync="settings['faces.batchSize']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~500 or more, in WASM mode ~50 is recommended)')"
+          :title="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~500 or more, in WASM mode ~50 is recommended)')"
 					@update:value="onChange" />
 			</p>
 		</NcSettingsSection>
@@ -109,6 +110,7 @@
 					:value.sync="settings['imagenet.batchSize']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
+					:title="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
 					@update:value="onChange" />
 			</p>
 			<p>&nbsp;</p>
@@ -123,6 +125,7 @@
 					:value.sync="settings['landmarks.batchSize']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
+					:title="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
 					@update:value="onChange" />
 			</p>
 		</NcSettingsSection>
@@ -152,6 +155,7 @@
 					:value.sync="settings['musicnn.batchSize']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
+					:title="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
 					@update:value="onChange" />
 			</p>
 		</NcSettingsSection>
@@ -184,6 +188,7 @@
 					:value.sync="settings['movinet.batchSize']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~20 or more, in WASM mode ~5 is recommended)')"
+					:title="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~20 or more, in WASM mode ~5 is recommended)')"
 					@update:value="onChange" />
 			</p>
 		</NcSettingsSection>
