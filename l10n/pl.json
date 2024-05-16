@@ -17,6 +17,7 @@
     "Last classification: " : "Ostatnia klasyfikacja:",
     "Scheduled background jobs: " : "Zaplanowane zadania w tle:",
     "Last background job execution: " : "Ostatnie wykonanie zadania w tle:",
+    "Enable face recognition (groups photos by faces that appear in them; UI is in the photos app)" : "Włącz rozpoznawanie twarzy (grupuje zdjęcia według twarzy, które się na nich pojawiają; interfejs użytkownika znajduje się w aplikacji Zdjęcia)",
     "Object recognition is working." : "Rozpoznawanie obiektów działa.",
     "An error occurred during object recognition, please check the Nextcloud logs." : "Wystąpił błąd podczas rozpoznawania obiektu, sprawdź dziennik Nextcloud.",
     "Waiting for status reports on object recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs." : "Oczekiwanie na raporty o stanie rozpoznawania obiektów. Jeśli ten komunikat utrzymuje się dłużej niż 15 minut, sprawdź dzienniki Nextcloud.",
