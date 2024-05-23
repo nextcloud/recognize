@@ -1,5 +1,6 @@
 { "translations": {
     "Recognize" : "Recognize",
+    "Smart media tagging and face recognition with on-premises machine learning models" : "Étiquetage intelligent des médias et reconnaissance faciale à l'aide de modèles d'apprentissage sur site",
     "Status" : "Statut",
     "The machine learning models have been downloaded successfully." : "Les modèles de machine learning ont été téléchargés avec succès.",
     "The machine learning models still need to be downloaded." : "Les modèles de machine learning doivent encore être téléchargés.",
