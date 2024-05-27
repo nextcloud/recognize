@@ -51,6 +51,7 @@ class FileListener implements IEventListener {
 	private IRootFolder $rootFolder;
 	/** @var list<string> */
 	private array $sourceUserIds;
+	private ?Node $source = null;
 
 	public function __construct(FaceDetectionMapper $faceDetectionMapper, LoggerInterface $logger, QueueService $queue, IgnoreService $ignoreService, StorageService $storageService, IManager $shareManager, IRootFolder $rootFolder) {
 		$this->faceDetectionMapper = $faceDetectionMapper;
@@ -140,6 +141,7 @@ class FileListener implements IEventListener {
 				/** @var array{users:array<string,array{node_id:int, node_path: string}>, remote: array<string,array{node_id:int, node_path: string}>, mail: array<string,array{node_id:int, node_path: string}>} $sourceAccessList */
 				$sourceAccessList = $this->shareManager->getAccessList($event->getSource(), true, true);
 				$this->sourceUserIds = array_map(fn ($id) => strval($id), array_keys($sourceAccessList['users']));
+				$this->source = $event->getSource();
 				return;
 			}
 			if ($event instanceof NodeRenamedEvent) {
@@ -175,7 +177,7 @@ class FileListener implements IEventListener {
 					$this->postDelete($event->getTarget());
 					return;
 				}
-				$this->postRename($event->getSource(), $event->getTarget());
+				$this->postRename($this->source ?? $event->getSource(), $event->getTarget());
 				return;
 			}
 			if ($event instanceof BeforeNodeDeletedEvent) {
