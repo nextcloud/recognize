@@ -136,9 +136,9 @@ class FileListener implements IEventListener {
 					$this->movingFromIgnoredTerritory = false;
 				}
 				$mountInfos = $this->userMountCache->getMountsForFileId($event->getSource()->getId());
-				$this->sourceUserIds = array_map(static function (ICachedMountInfo $mountInfo) {
+				$this->sourceUserIds = array_values(array_map(static function (ICachedMountInfo $mountInfo) {
 					return $mountInfo->getUser()->getUID();
-				}, $mountInfos);
+				}, $mountInfos));
 				$this->source = $event->getSource();
 				return;
 			}
