@@ -21,7 +21,7 @@ use OCP\Files\Events\Node\NodeCreatedEvent;
 use OCP\Files\Events\Node\NodeDeletedEvent;
 use OCP\Files\Events\Node\NodeRenamedEvent;
 use OCP\Files\Events\NodeRemovedFromCache;
-use OCP\Share\Events\ShareCreatedEvent;
+use OCP\Share\Events\ShareAcceptedEvent;
 use OCP\Share\Events\ShareDeletedEvent;
 
 class Application extends App implements IBootstrap {
@@ -38,7 +38,7 @@ class Application extends App implements IBootstrap {
 		$dispatcher->addServiceListener(NodeCreatedEvent::class, FileListener::class);
 		$dispatcher->addServiceListener(NodeRenamedEvent::class, FileListener::class);
 		$dispatcher->addServiceListener(BeforeNodeRenamedEvent::class, FileListener::class);
-		$dispatcher->addServiceListener(ShareCreatedEvent::class, FileListener::class);
+		$dispatcher->addServiceListener(ShareAcceptedEvent::class, FileListener::class);
 		$dispatcher->addServiceListener(ShareDeletedEvent::class, FileListener::class);
 		$dispatcher->addServiceListener(CacheEntryInsertedEvent::class, FileListener::class);
 		$dispatcher->addServiceListener(NodeRemovedFromCache::class, FileListener::class);

@@ -34,7 +34,7 @@ use OCP\Files\InvalidPathException;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
-use OCP\Share\Events\ShareCreatedEvent;
+use OCP\Share\Events\ShareAcceptedEvent;
 use OCP\Share\Events\ShareDeletedEvent;
 use Psr\Log\LoggerInterface;
 
@@ -62,7 +62,7 @@ class FileListener implements IEventListener {
 
 	public function handle(Event $event): void {
 		try {
-			if ($event instanceof ShareCreatedEvent) {
+			if ($event instanceof ShareAcceptedEvent) {
 				$share = $event->getShare();
 				$ownerId = $share->getShareOwner();
 				$node = $share->getNode();
