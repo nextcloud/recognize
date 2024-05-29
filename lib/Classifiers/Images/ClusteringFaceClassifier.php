@@ -116,7 +116,8 @@ class ClusteringFaceClassifier extends Classifier {
 				}
 
 				try {
-					$userIds = $this->getUsersWithFileAccess($this->rootFolder->getFirstNodeById($queueFile->getFileId()));
+					$node = $this->rootFolder->getFirstNodeById($queueFile->getFileId());
+					$userIds = $node !== null ? $this->getUsersWithFileAccess($node) : [];
 				} catch (InvalidPathException|NotFoundException $e) {
 					$userIds = [];
 				}
