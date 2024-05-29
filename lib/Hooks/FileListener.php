@@ -74,6 +74,7 @@ class FileListener implements IEventListener {
 		$accessList = $this->shareManager->getAccessList($node, true, true);
 		$userIds = array_map(fn ($id) => strval($id), array_keys($accessList['users']));
 
+		$this->userMountCache->clear();
 		$mountInfos = $this->userMountCache->getMountsForFileId($node->getId());
 		$userIds += array_map(static function (ICachedMountInfo $mountInfo) {
 			return $mountInfo->getUser()->getUID();
