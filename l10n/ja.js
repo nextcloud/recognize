@@ -31,6 +31,7 @@ OC.L10N.register(
     "Food" : "食べ物",
     "Train" : "列車",
     "Car" : "自動車",
+    "Keyboard" : "キーボード",
     "Computer" : "コンピューター",
     "Clock" : "時計",
     "Screen" : "画面",
