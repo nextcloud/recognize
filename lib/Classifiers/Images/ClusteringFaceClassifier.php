@@ -17,9 +17,13 @@ use OCP\BackgroundJob\IJobList;
 use OCP\DB\Exception;
 use OCP\Files\Config\ICachedMountInfo;
 use OCP\Files\Config\IUserMountCache;
+use OCP\Files\InvalidPathException;
 use OCP\Files\IRootFolder;
+use OCP\Files\Node;
+use OCP\Files\NotFoundException;
 use OCP\IPreview;
 use OCP\ITempManager;
+use OCP\Share\IManager;
 
 class ClusteringFaceClassifier extends Classifier {
 	public const IMAGE_TIMEOUT = 120; // seconds
@@ -31,15 +35,33 @@ class ClusteringFaceClassifier extends Classifier {
 
 	public const MODEL_NAME = 'faces';
 
-	private FaceDetectionMapper $faceDetections;
-	private IUserMountCache $userMountCache;
-	private IJobList $jobList;
-
-	public function __construct(Logger $logger, IAppConfig $config, FaceDetectionMapper $faceDetections, QueueService $queue, IRootFolder $rootFolder, IUserMountCache $userMountCache, IJobList $jobList, ITempManager $tempManager, IPreview $previewProvider) {
+	public function __construct(
+		Logger $logger,
+		IAppConfig $config,
+		private FaceDetectionMapper $faceDetections,
+		QueueService $queue, IRootFolder $rootFolder,
+		private IUserMountCache $userMountCache, private IJobList $jobList, ITempManager $tempManager, IPreview $previewProvider,
+		private IManager $shareManager) {
 		parent::__construct($logger, $config, $rootFolder, $queue, $tempManager, $previewProvider);
-		$this->faceDetections = $faceDetections;
-		$this->userMountCache = $userMountCache;
-		$this->jobList = $jobList;
+	}
+
+	/**
+	 * @param Node $node
+	 * @return list<string>
+	 * @throws InvalidPathException
+	 * @throws NotFoundException
+	 */
+	private function getUsersWithFileAccess(Node $node): array {
+		/** @var array{users:array<string,array{node_id:int, node_path: string}>, remote: array<string,array{node_id:int, node_path: string}>, mail: array<string,array{node_id:int, node_path: string}>} $accessList */
+		$accessList = $this->shareManager->getAccessList($node, true, true);
+		$userIds = array_map(fn ($id) => strval($id), array_keys($accessList['users']));
+
+		$mountInfos = $this->userMountCache->getMountsForFileId($node->getId());
+		$userIds += array_map(static function (ICachedMountInfo $mountInfo) {
+			return $mountInfo->getUser()->getUID();
+		}, $mountInfos);
+
+		return array_values(array_unique($userIds));
 	}
 
 	/**
@@ -93,10 +115,11 @@ class ClusteringFaceClassifier extends Classifier {
 					continue;
 				}
 
-				$mountInfos = $this->userMountCache->getMountsForFileId($queueFile->getFileId());
-				$userIds = array_map(static function (ICachedMountInfo $mountInfo) {
-					return $mountInfo->getUser()->getUID();
-				}, $mountInfos);
+				try {
+					$userIds = $this->getUsersWithFileAccess($this->rootFolder->getFirstNodeById($queueFile->getFileId()));
+				} catch (InvalidPathException|NotFoundException $e) {
+					$userIds = [];
+				}
 
 				// Insert face detection for all users with access
 				foreach ($userIds as $userId) {

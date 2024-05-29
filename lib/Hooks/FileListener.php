@@ -35,7 +35,9 @@ use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
 use OCP\Share\Events\ShareAcceptedEvent;
+use OCP\Share\Events\ShareCreatedEvent;
 use OCP\Share\Events\ShareDeletedEvent;
+use OCP\Share\IManager;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -55,22 +57,38 @@ class FileListener implements IEventListener {
 		private StorageService $storageService,
 		private IRootFolder $rootFolder,
 		private IUserMountCache $userMountCache,
+		private IManager $shareManager,
 	) {
 		$this->movingFromIgnoredTerritory = null;
 		$this->sourceUserIds = [];
 	}
 
+	/**
+	 * @param Node $node
+	 * @return list<string>
+	 * @throws InvalidPathException
+	 * @throws NotFoundException
+	 */
+	private function getUsersWithFileAccess(Node $node): array {
+		/** @var array{users:array<string,array{node_id:int, node_path: string}>, remote: array<string,array{node_id:int, node_path: string}>, mail: array<string,array{node_id:int, node_path: string}>} $accessList */
+		$accessList = $this->shareManager->getAccessList($node, true, true);
+		$userIds = array_map(fn ($id) => strval($id), array_keys($accessList['users']));
+
+		$mountInfos = $this->userMountCache->getMountsForFileId($node->getId());
+		$userIds += array_map(static function (ICachedMountInfo $mountInfo) {
+			return $mountInfo->getUser()->getUID();
+		}, $mountInfos);
+
+		return array_values(array_unique($userIds));
+	}
+
 	public function handle(Event $event): void {
 		try {
-			if ($event instanceof ShareAcceptedEvent) {
+			if ($event instanceof ShareAcceptedEvent || $event instanceof ShareCreatedEvent) {
 				$share = $event->getShare();
 				$ownerId = $share->getShareOwner();
 				$node = $share->getNode();
-
-				$mountInfos = $this->userMountCache->getMountsForFileId($node->getId());
-				$userIds = array_map(static function (ICachedMountInfo $mountInfo) {
-					return $mountInfo->getUser()->getUID();
-				}, $mountInfos);
+				$userIds = $this->getUsersWithFileAccess($node);
 
 				if ($node->getType() === FileInfo::TYPE_FOLDER) {
 					$mount = $node->getMountPoint();
@@ -104,11 +122,7 @@ class FileListener implements IEventListener {
 			if ($event instanceof ShareDeletedEvent) {
 				$share = $event->getShare();
 				$node = $share->getNode();
-
-				$mountInfos = $this->userMountCache->getMountsForFileId($node->getId());
-				$userIds = array_map(static function (ICachedMountInfo $mountInfo) {
-					return $mountInfo->getUser()->getUID();
-				}, $mountInfos);
+				$userIds = $this->getUsersWithFileAccess($node);
 
 				if ($node->getType() === FileInfo::TYPE_FOLDER) {
 					$mount = $node->getMountPoint();
@@ -135,10 +149,7 @@ class FileListener implements IEventListener {
 				} else {
 					$this->movingFromIgnoredTerritory = false;
 				}
-				$mountInfos = $this->userMountCache->getMountsForFileId($event->getSource()->getId());
-				$this->sourceUserIds = array_values(array_map(static function (ICachedMountInfo $mountInfo) {
-					return $mountInfo->getUser()->getUID();
-				}, $mountInfos));
+				$this->sourceUserIds = $this->getUsersWithFileAccess($event->getSource());
 				$this->source = $event->getSource();
 				return;
 			}
@@ -334,10 +345,7 @@ class FileListener implements IEventListener {
 	}
 
 	public function postRename(Node $source, Node $target): void {
-		$mountInfos = $this->userMountCache->getMountsForFileId($target->getId());
-		$targetUserIds = array_map(static function (ICachedMountInfo $mountInfo) {
-			return $mountInfo->getUser()->getUID();
-		}, $mountInfos);
+		$targetUserIds = $this->getUsersWithFileAccess($target);
 
 		$usersToAdd = array_diff($targetUserIds, $this->sourceUserIds);
 		$existingUsers = array_diff($targetUserIds, $usersToAdd);

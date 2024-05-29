@@ -34,7 +34,7 @@ abstract class Classifier {
 
 	protected LoggerInterface $logger;
 	protected IAppConfig $config;
-	private IRootFolder $rootFolder;
+	protected IRootFolder $rootFolder;
 	protected QueueService $queue;
 	private ITempManager $tempManager;
 	private IPreview $previewProvider;
