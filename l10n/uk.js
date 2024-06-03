@@ -23,6 +23,7 @@ OC.L10N.register(
     "Train" : "Потяг",
     "Car" : "В автомобілі",
     "Keyboard" : "Клавіатура",
+    "Computer" : "Комп'ютер",
     "Clock" : "Годинник",
     "Library" : "Бібліотека",
     "Display" : "Показати",
