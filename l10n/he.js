@@ -24,6 +24,7 @@ OC.L10N.register(
     "Info" : "פרטים",
     "Document" : "מסמך",
     "Bucket" : "סל",
+    "Event" : "אירוע",
     "Gas station" : "תחנת דלק",
     "Parking" : "חנייה",
     "Gallery" : "גלריה",

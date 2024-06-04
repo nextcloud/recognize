@@ -11,6 +11,7 @@ OC.L10N.register(
     "Portrait" : "Portráid",
     "People" : "Daoine",
     "Music" : "Ceol",
+    "Office" : "Oifig",
     "Food" : "Bia",
     "Display" : "Taispeáin",
     "Camera" : "Ceamara",
