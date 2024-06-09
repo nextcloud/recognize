@@ -13,6 +13,7 @@ OC.L10N.register(
     "Music" : "Ceol",
     "Office" : "Oifig",
     "Food" : "Bia",
+    "Train" : "Traein",
     "Keyboard" : "Méarchlár",
     "Display" : "Taispeáin",
     "Camera" : "Ceamara",
