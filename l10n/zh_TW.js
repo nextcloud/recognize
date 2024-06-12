@@ -39,6 +39,7 @@ OC.L10N.register(
     "Theater" : "劇院",
     "Pizza" : "披薩",
     "Info" : "資訊",
+    "Document" : "文件",
     "Bucket" : "Bucket",
     "Festival" : "節日",
     "Event" : "事件",
