@@ -127,7 +127,7 @@ OC.L10N.register(
     "Beach" : "شاطئ",
     "Water" : "ماء",
     "Lakeside" : "شاطئ البحيرة ",
-    "Flower" : "ورد",
+    "Flower" : "وردة",
     "Plant" : "نبات",
     "Window" : "نافذة ",
     "Architecture" : "معمار",
