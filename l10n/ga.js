@@ -1,6 +1,7 @@
 OC.L10N.register(
     "recognize",
     {
+    "Recognize" : "Aithnigh",
     "Status" : "Stádas",
     "Reset" : "Athshocraigh",
     "Failed to load settings" : "Theip ar lódáil na socruithe",
