@@ -20,6 +20,7 @@ OC.L10N.register(
     "Display" : "Taispeáin",
     "Camera" : "Ceamara",
     "Info" : "Eolas",
+    "Document" : "Doiciméad",
     "Bucket" : "Buicéad",
     "Event" : "Imeacht",
     "Gallery" : "Gailearaí"
