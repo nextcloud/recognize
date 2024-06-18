@@ -34,10 +34,14 @@ use OCP\Files\InvalidPathException;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
+use OCP\IGroupManager;
+use OCP\IUser;
 use OCP\Share\Events\ShareAcceptedEvent;
 use OCP\Share\Events\ShareCreatedEvent;
 use OCP\Share\Events\ShareDeletedEvent;
 use OCP\Share\IManager;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -58,6 +62,7 @@ class FileListener implements IEventListener {
 		private IRootFolder $rootFolder,
 		private IUserMountCache $userMountCache,
 		private IManager $shareManager,
+		private IGroupManager $groupManager,
 	) {
 		$this->movingFromIgnoredTerritory = null;
 		$this->sourceUserIds = [];
@@ -80,6 +85,42 @@ class FileListener implements IEventListener {
 			return $mountInfo->getUser()->getUID();
 		}, $mountInfos);
 
+		$userIds += $this->getGroupFolderParticipants($node);
+
+		return array_values(array_unique($userIds));
+	}
+
+	private function getGroupFolderParticipants(Node $node) {
+		$filePath = $node->getPath();
+
+		// Now we need to find the group folder ID associated with this path
+		// Assuming the group folders are stored in a specific path, e.g., "/__groupfolders/<groupfolder_id>/..."
+		preg_match('/\/__groupfolders\/(\d+)\//', $filePath, $matches);
+
+		if (!isset($matches[1])) {
+			return [];
+		}
+
+		$groupFolderId = (int) $matches[1];
+
+		try {
+			$groupFolderManager = \OCP\Server::get(OCA\GroupFolders\Folder\FolderManager::class);
+		} catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+			return [];
+		}
+
+		$folder = $groupFolderManager->getFolder($groupFolderId);
+
+		$userIds = [];
+		// Fetch groups
+		if (!empty($folder['groups'])) {
+			foreach ($folder['groups'] as $groupId => $permissions) {
+				$group = $this->groupManager->get($groupId);
+				if ($group) {
+					$userIds += array_map(fn (IUser $user) => $user->getUID(), $group->getUsers());
+				}
+			}
+		}
 		return array_values(array_unique($userIds));
 	}
 

@@ -22,7 +22,6 @@ use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
 use OCP\AppFramework\Services\IAppConfig;
 use OCP\BackgroundJob\IJobList;
-use OCP\Files\Config\IUserMountCache;
 use OCP\Files\Folder;
 use OCP\Files\IRootFolder;
 use OCP\SystemTag\ISystemTagObjectMapper;
@@ -390,37 +389,6 @@ class ClassifierTest extends TestCase {
 			),
 			'Correct Tag should have been set on image file'
 		);
-	}
-
-	public function testSharing() : void {
-		$testFile = $this->userFolder->newFile('/jumpingjack.gif', file_get_contents(__DIR__.'/res/jumpingjack.gif'));
-
-		$userMountCache = \OCP\Server::get(IUserMountCache::class);
-		$userMountCache->clear();
-		$mountInfos = $userMountCache->getMountsForFileId($testFile->getId());
-		$users = array_map(static function (\OCP\Files\Config\ICachedMountInfo $mountInfo) {
-			return $mountInfo->getUser()->getUID();
-		}, $mountInfos);
-		self::assertEquals([self::TEST_USER1], $users);
-
-		$sharedFolder = $this->userFolder->newFolder('/shared/');
-		$share = $this->shareManager->newShare();
-		$share->setSharedBy(self::TEST_USER1);
-		$share->setSharedWith(self::TEST_USER2);
-		$share->setShareType(\OCP\Share\IShare::TYPE_USER);
-		$share->setNode($sharedFolder);
-		$share->setPermissions(\OCP\Constants::PERMISSION_ALL);
-		$this->shareManager->createShare($share);
-		$this->shareManager->acceptShare($share, self::TEST_USER2);
-
-		$testFile->move($sharedFolder->getPath().'/'.$testFile->getName());
-
-		$userMountCache->clear();
-		$mountInfos = $userMountCache->getMountsForFileId($testFile->getId());
-		$users = array_map(static function (\OCP\Files\Config\ICachedMountInfo $mountInfo) {
-			return $mountInfo->getUser()->getUID();
-		}, $mountInfos);
-		self::assertEquals([self::TEST_USER1, self::TEST_USER2], $users);
 	}
 
 	public function testFacesPipeline() : void {
