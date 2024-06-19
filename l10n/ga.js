@@ -17,12 +17,14 @@ OC.L10N.register(
     "Book" : "Leabhar",
     "Train" : "Traein",
     "Keyboard" : "Méarchlár",
+    "Computer" : "Ríomhaire",
     "Display" : "Taispeáin",
     "Camera" : "Ceamara",
     "Info" : "Eolas",
     "Document" : "Doiciméad",
     "Bucket" : "Buicéad",
     "Event" : "Imeacht",
+    "Sign" : "Comhartha",
     "Gallery" : "Gailearaí"
 },
 "nplurals=5; plural=(n==1 ? 0 : n==2 ? 1 : n<7 ? 2 : n<11 ? 3 : 4);");
