@@ -52,12 +52,8 @@ class ClusteringFaceClassifier extends Classifier {
 	 * @throws NotFoundException
 	 */
 	private function getUsersWithFileAccess(Node $node): array {
-		/** @var array{users:array<string,array{node_id:int, node_path: string}>, remote: array<string,array{node_id:int, node_path: string}>, mail: array<string,array{node_id:int, node_path: string}>} $accessList */
-		$accessList = $this->shareManager->getAccessList($node, true, true);
-		$userIds = array_map(fn ($id) => strval($id), array_keys($accessList['users']));
-
 		$mountInfos = $this->userMountCache->getMountsForFileId($node->getId());
-		$userIds += array_map(static function (ICachedMountInfo $mountInfo) {
+		$userIds = array_map(static function (ICachedMountInfo $mountInfo) {
 			return $mountInfo->getUser()->getUID();
 		}, $mountInfos);
 

@@ -6,6 +6,7 @@
 declare(strict_types=1);
 namespace OCA\Recognize\Hooks;
 
+use OCA\Recognize\BackgroundJobs\ClusterFacesJob;
 use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
 use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
 use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
@@ -16,6 +17,7 @@ use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Service\IgnoreService;
 use OCA\Recognize\Service\QueueService;
 use OCA\Recognize\Service\StorageService;
+use OCP\BackgroundJob\IJobList;
 use OCP\DB\Exception;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
@@ -35,13 +37,9 @@ use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
 use OCP\IGroupManager;
-use OCP\IUser;
 use OCP\Share\Events\ShareAcceptedEvent;
-use OCP\Share\Events\ShareCreatedEvent;
 use OCP\Share\Events\ShareDeletedEvent;
 use OCP\Share\IManager;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -63,6 +61,7 @@ class FileListener implements IEventListener {
 		private IUserMountCache $userMountCache,
 		private IManager $shareManager,
 		private IGroupManager $groupManager,
+		private IJobList $jobList,
 	) {
 		$this->movingFromIgnoredTerritory = null;
 		$this->sourceUserIds = [];
@@ -75,58 +74,18 @@ class FileListener implements IEventListener {
 	 * @throws NotFoundException
 	 */
 	private function getUsersWithFileAccess(Node $node): array {
-		/** @var array{users:array<string,array{node_id:int, node_path: string}>, remote: array<string,array{node_id:int, node_path: string}>, mail: array<string,array{node_id:int, node_path: string}>} $accessList */
-		$accessList = $this->shareManager->getAccessList($node, true, true);
-		$userIds = array_map(fn ($id) => strval($id), array_keys($accessList['users']));
-
 		$this->userMountCache->clear();
 		$mountInfos = $this->userMountCache->getMountsForFileId($node->getId());
-		$userIds += array_map(static function (ICachedMountInfo $mountInfo) {
+		$userIds = array_map(static function (ICachedMountInfo $mountInfo) {
 			return $mountInfo->getUser()->getUID();
 		}, $mountInfos);
 
-		$userIds += $this->getGroupFolderParticipants($node);
-
-		return array_values(array_unique($userIds));
-	}
-
-	private function getGroupFolderParticipants(Node $node) {
-		$filePath = $node->getPath();
-
-		// Now we need to find the group folder ID associated with this path
-		// Assuming the group folders are stored in a specific path, e.g., "/__groupfolders/<groupfolder_id>/..."
-		preg_match('/\/__groupfolders\/(\d+)\//', $filePath, $matches);
-
-		if (!isset($matches[1])) {
-			return [];
-		}
-
-		$groupFolderId = (int) $matches[1];
-
-		try {
-			$groupFolderManager = \OCP\Server::get(OCA\GroupFolders\Folder\FolderManager::class);
-		} catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
-			return [];
-		}
-
-		$folder = $groupFolderManager->getFolder($groupFolderId);
-
-		$userIds = [];
-		// Fetch groups
-		if (!empty($folder['groups'])) {
-			foreach ($folder['groups'] as $groupId => $permissions) {
-				$group = $this->groupManager->get($groupId);
-				if ($group) {
-					$userIds += array_map(fn (IUser $user) => $user->getUID(), $group->getUsers());
-				}
-			}
-		}
 		return array_values(array_unique($userIds));
 	}
 
 	public function handle(Event $event): void {
 		try {
-			if ($event instanceof ShareAcceptedEvent || $event instanceof ShareCreatedEvent) {
+			if ($event instanceof ShareAcceptedEvent) {
 				$share = $event->getShare();
 				$ownerId = $share->getShareOwner();
 				$node = $share->getNode();
@@ -259,6 +218,9 @@ class FileListener implements IEventListener {
 				if ($node instanceof Folder) {
 					return;
 				}
+				if (!str_contains('external', $node->getMountPoint()->getMountType())) {
+					return;
+				}
 				if (in_array($node->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
 					$this->resetIgnoreCache($node);
 					$this->postDelete($node->getParent());
@@ -386,39 +348,51 @@ class FileListener implements IEventListener {
 		}
 	}
 
+	/**
+	 * @throws InvalidPathException
+	 * @throws NotFoundException
+	 * @throws Exception
+	 */
 	public function postRename(Node $source, Node $target): void {
 		$targetUserIds = $this->getUsersWithFileAccess($target);
 
 		$usersToAdd = array_diff($targetUserIds, $this->sourceUserIds);
 		$existingUsers = array_diff($targetUserIds, $usersToAdd);
-		// *handwaving* I know this is a stretch but it's good enough
-		$ownerId = $existingUsers[0];
+		$ownerId = $source->getOwner() ? $source->getOwner()->getUID() : ($target->getOwner() ? $target->getOwner()->getUID() : $existingUsers[0]);
 
-		if ($target->getType() === FileInfo::TYPE_FOLDER) {
-			$mount = $target->getMountPoint();
-			$numericStorageId = $mount->getNumericStorageId();
-			if ($numericStorageId === null) {
-				return;
-			}
-			$files = $this->storageService->getFilesInMount($numericStorageId, $target->getId(), [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
-			foreach ($files as $fileInfo) {
-				foreach ($usersToAdd as $userId) {
-					if (count($this->faceDetectionMapper->findByFileIdAndUser($target->getId(), $userId)) > 0) {
+		$this->copyFaceDetectionsForNode($ownerId, $usersToAdd, $targetUserIds, $target);
+	}
+
+	/**
+	 * @param string $ownerId
+	 * @param list<string> $usersToAdd
+	 * @param list<string> $targetUserIds
+	 * @param Node $node
+	 * @return void
+	 * @throws Exception|InvalidPathException|NotFoundException
+	 */
+	private function copyFaceDetectionsForNode(string $ownerId, array $usersToAdd, array $targetUserIds, Node $node): void {
+		if ($node instanceof Folder) {
+			try {
+				foreach ($node->getDirectoryListing() as $node) {
+					if (!in_array($node->getMimetype(), Constants::IMAGE_FORMATS)) {
 						continue;
 					}
-					$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($fileInfo['fileid'], $ownerId, $userId);
+					$this->copyFaceDetectionsForNode($ownerId, $usersToAdd, $targetUserIds, $node);
 				}
-				$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($fileInfo['fileid'], $targetUserIds);
+			} catch (NotFoundException|Exception|InvalidPathException $e) {
+				$this->logger->warning('Error in recognize file listener', ['exception' => $e]);
 			}
-		} else {
-			foreach ($usersToAdd as $userId) {
-				if (count($this->faceDetectionMapper->findByFileIdAndUser($target->getId(), $userId)) > 0) {
-					continue;
-				}
-				$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($target->getId(), $ownerId, $userId);
-			}
-			$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($source->getId(), $targetUserIds);
+			return;
 		}
+		foreach ($usersToAdd as $userId) {
+			if (count($this->faceDetectionMapper->findByFileIdAndUser($node->getId(), $userId)) > 0) {
+				continue;
+			}
+			$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($node->getId(), $ownerId, $userId);
+			$this->jobList->add(ClusterFacesJob::class, ['userId' => $userId]);
+		}
+		$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($node->getId(), $targetUserIds);
 	}
 
 	/**
