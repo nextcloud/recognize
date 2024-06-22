@@ -10,6 +10,7 @@ OC.L10N.register(
     "Portrait" : "Portrets",
     "People" : "Cilvēki",
     "Dog" : "Suns",
+    "Music" : "Mūzika",
     "Office" : "Birojs",
     "Car" : "Automašīna",
     "Bike" : "Velosipēds",
