@@ -223,7 +223,7 @@ OC.L10N.register(
     "Snow" : "Neve",
     "Dome" : "Cúpula",
     "Screen" : "Pantalla",
-    "Flag" : "Bandeira",
+    "Flag" : "Indicador",
     "Truck" : "Camión",
     "Store" : "Tenda",
     "Tool" : "Ferramenta",
