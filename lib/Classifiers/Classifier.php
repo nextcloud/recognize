@@ -358,6 +358,9 @@ abstract class Classifier {
 	 */
 	public function generatePreviewWithGD(string $path): string {
 		$image = imagecreatefromstring(file_get_contents($path));
+		if (!$image) {
+			throw new \OCA\Recognize\Exception\Exception('Could not load image for preview with gdlib');
+		}
 		$width = imagesx($image);
 		$height = imagesy($image);
 
