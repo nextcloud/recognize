@@ -218,7 +218,7 @@ class FileListener implements IEventListener {
 				if ($node instanceof Folder) {
 					return;
 				}
-				if (!str_contains('external', $node->getMountPoint()->getMountType())) {
+				if (!str_contains($node->getMountPoint()->getMountType(), 'external')) {
 					return;
 				}
 				if (in_array($node->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
@@ -295,6 +295,7 @@ class FileListener implements IEventListener {
 	 * @throws \OCP\Files\InvalidPathException
 	 */
 	public function postInsert(Node $node, bool $recurse = true): void {
+		throw new \Exception('postInsert');
 		if ($node->getType() === FileInfo::TYPE_FOLDER) {
 			if (!$recurse) {
 				return;
