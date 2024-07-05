@@ -142,7 +142,7 @@ jobs:
           ./occ files:scan admin -vvv
           rm data/admin/files/res/alpine.JPG
           ./occ files:scan admin -vvv
-          for run in {1..100}; do php cron.php; sleep 10; done
+          for run in {1..100}; do php cron.php; done
           [ ! -z "$(./occ tag:list)" ]
 
       - name: Print tags
