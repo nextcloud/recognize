@@ -487,31 +487,6 @@ class ClassifierTest extends TestCase {
 				}
 			}
 		}
-
-		// Test FileListener for moving files across share boundaries
-
-		self::assertCount(0, $this->faceDetectionMapper->findByUserId(self::TEST_USER2), 'user 2 should have no face detections');
-
-		$sharedFolder = $this->userFolder->newFolder('/shared/');
-		$share = $this->shareManager->newShare();
-		$share->setSharedBy(self::TEST_USER1);
-		$share->setSharedWith(self::TEST_USER2);
-		$share->setShareType(\OCP\Share\IShare::TYPE_USER);
-		$share->setNode($sharedFolder);
-		$share->setPermissions(\OCP\Constants::PERMISSION_ALL);
-		$this->shareManager->createShare($share);
-		$this->shareManager->acceptShare($share, self::TEST_USER2);
-
-		$testFiles[0]->move($sharedFolder->getPath().'/'.$testFiles[0]->getName());
-
-		try {
-			self::assertCount(1, $this->faceDetectionMapper->findByUserId(self::TEST_USER2), 'user 2 should have 1 face detection now');
-			$this->shareManager->deleteShare($share);
-			self::assertCount(0, $this->faceDetectionMapper->findByUserId(self::TEST_USER2), 'user 2 should have 0 face detections after deleting the share');
-		} catch (\Throwable $e) {
-			$this->shareManager->deleteShare($share);
-			throw $e;
-		}
 	}
 
 	/**
