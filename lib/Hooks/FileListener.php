@@ -356,9 +356,11 @@ class FileListener implements IEventListener {
 	public function postRename(Node $source, Node $target): void {
 		$targetUserIds = $this->getUsersWithFileAccess($target);
 
-		$usersToAdd = array_diff($targetUserIds, $this->sourceUserIds);
+		$usersToAdd = array_values(array_diff($targetUserIds, $this->sourceUserIds));
 		$existingUsers = array_diff($targetUserIds, $usersToAdd);
-		$ownerId = $source->getOwner() ? $source->getOwner()->getUID() : ($target->getOwner() ? $target->getOwner()->getUID() : $existingUsers[0]);
+		$sourceOwner = $source->getOwner();
+		$targetOwner = $target->getOwner();
+		$ownerId = $sourceOwner !== null ? $sourceOwner->getUID() : ($targetOwner ? $targetOwner->getUID() : $existingUsers[0]);
 
 		$this->copyFaceDetectionsForNode($ownerId, $usersToAdd, $targetUserIds, $target);
 	}
