@@ -295,7 +295,6 @@ class FileListener implements IEventListener {
 	 * @throws \OCP\Files\InvalidPathException
 	 */
 	public function postInsert(Node $node, bool $recurse = true): void {
-		throw new \Exception('postInsert');
 		if ($node->getType() === FileInfo::TYPE_FOLDER) {
 			if (!$recurse) {
 				return;
