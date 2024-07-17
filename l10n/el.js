@@ -33,7 +33,7 @@ OC.L10N.register(
     "Document" : "Έγγραφο",
     "Bucket" : "Κάδος",
     "Festival" : "Φεστιβάλ",
-    "Event" : "Συιμβάν",
+    "Event" : "Συμβάν",
     "Gas station" : "Βενζινάδικο",
     "Parking" : "Πάρκινγκ",
     "Sign" : "Υπογραφή",
