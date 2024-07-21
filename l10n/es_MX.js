@@ -19,6 +19,7 @@ OC.L10N.register(
     "Info" : "Info",
     "Document" : "Documento",
     "Bucket" : "Bucket",
+    "Event" : "Evento",
     "Gallery" : "Galería"
 },
 "nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;");
