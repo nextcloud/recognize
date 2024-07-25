@@ -6,6 +6,7 @@ OC.L10N.register(
     "Failed to load settings" : "Tải cấu hình thất bại",
     "Failed to save settings" : "Lưu cấu hình thất bại",
     "never" : "không thay đổi",
+    "Cat" : "Mèo",
     "Farm" : "Nông trại",
     "Dog" : "Chó ",
     "Music" : "Nhạc",
