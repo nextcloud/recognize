@@ -7,13 +7,11 @@ declare(strict_types=1);
 namespace OCA\Recognize\Service;
 
 use OC\Files\Cache\CacheQueryBuilder;
-use OC\SystemConfig;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\FilesMetadata\IFilesMetadataManager;
 use OCP\ICache;
 use OCP\ICacheFactory;
 use OCP\IDBConnection;
-use Psr\Log\LoggerInterface;
 
 class IgnoreService {
 	private array $inMemoryCache = [];
@@ -21,8 +19,6 @@ class IgnoreService {
 
 	public function __construct(
 		private IDBConnection $db,
-		private SystemConfig $systemConfig,
-		private LoggerInterface $logger,
 		ICacheFactory $cacheFactory,
 		private IFilesMetadataManager $metadataManager) {
 		$this->localCache = $cacheFactory->createLocal('recognize-ignored-directories');

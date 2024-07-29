@@ -7,7 +7,6 @@ declare(strict_types=1);
 namespace OCA\Recognize\Service;
 
 use OC\Files\Cache\CacheQueryBuilder;
-use OC\SystemConfig;
 use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
 use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
 use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
@@ -36,7 +35,6 @@ class StorageService {
 	public function __construct(
 		private IDBConnection $db,
 		private Logger $logger,
-		private SystemConfig $systemConfig,
 		private IgnoreService $ignoreService,
 		private IMimeTypeLoader $mimeTypes,
 		private IFilesMetadataManager $metadataManager,
@@ -99,7 +97,7 @@ class StorageService {
 	 * @return \Generator<int,array{fileid:int, image:bool, video:bool, audio:bool},mixed,void>
 	 */
 	public function getFilesInMount(int $storageId, int $rootId, array $models, int $lastFileId = 0, int $maxResults = 100) : \Generator {
-		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger, $this->metadataManager);
+		$qb = new CacheQueryBuilder($this->db->getQueryBuilder(), $this->metadataManager);
 		try {
 			$result = $qb->selectFileCache()
 				->andWhere($qb->expr()->eq('filecache.fileid', $qb->createNamedParameter($rootId, IQueryBuilder::PARAM_INT)))
@@ -131,7 +129,7 @@ class StorageService {
 		$videoTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::VIDEO_FORMATS);
 		$audioTypes = array_map(fn ($mimeType) => $this->mimeTypes->getId($mimeType), Constants::AUDIO_FORMATS);
 
-		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger, $this->metadataManager);
+		$qb = new CacheQueryBuilder($this->db->getQueryBuilder(), $this->metadataManager);
 		$ignoreFileidsExpr = [];
 		if (count(array_intersect([ClusteringFaceClassifier::MODEL_NAME, ImagenetClassifier::MODEL_NAME, LandmarksClassifier::MODEL_NAME], $models)) > 0) {
 			$expr = array_map(fn (string $path): string => $qb->expr()->notLike('path', $qb->createNamedParameter($path ? $path . '/%' : '%')), $ignorePathsImage);
