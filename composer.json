@@ -21,6 +21,8 @@
         "cs:check": "php-cs-fixer fix --dry-run --diff",
         "cs:fix": "php-cs-fixer fix",
         "psalm": "psalm.phar",
+        "psalm:update-baseline": "psalm.phar --threads=1 --update-baseline",
+        "psalm:update-baseline:force": "psalm.phar --threads=1 --update-baseline --set-baseline=psalm-baseline.xml",
         "test:unit": "phpunit --config tests/phpunit.xml",
         "post-install-cmd": [
             "@composer bin all install --ansi",

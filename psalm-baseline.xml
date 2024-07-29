@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.23.1@8471a896ccea3526b26d082f4461eeea467f10a4">
+<files psalm-version="5.25.0@01a8eb06b9e9cc6cfb6a320bf9fb14331919d505">
   <file src="lib/AppInfo/Application.php">
     <DeprecatedInterface>
       <code><![CDATA[$this->getContainer()]]></code>
@@ -691,14 +691,6 @@
     </MoreSpecificImplementedParamType>
   </file>
   <file src="lib/Controller/AdminController.php">
-    <MixedArrayAccess>
-      <code><![CDATA[$lscpu['lscpu']]]></code>
-      <code><![CDATA[$lscpu['lscpu'][0]]]></code>
-      <code><![CDATA[$lscpu['lscpu'][0]['data']]]></code>
-    </MixedArrayAccess>
-    <MixedAssignment>
-      <code><![CDATA[$lscpu]]></code>
-    </MixedAssignment>
     <MixedInferredReturnType>
       <code><![CDATA[JSONResponse]]></code>
     </MixedInferredReturnType>
@@ -799,7 +791,6 @@
       <code><![CDATA[class FaceDetectionMapper extends QBMapper {]]></code>
     </InvalidDocblock>
     <LessSpecificReturnStatement>
-      <code><![CDATA[$qb->executeQuery()->fetchAll(\PDO::FETCH_COLUMN)]]></code>
       <code><![CDATA[$this->findEntities($qb)]]></code>
       <code><![CDATA[$this->findEntities($qb)]]></code>
       <code><![CDATA[$this->findEntities($qb)]]></code>
@@ -828,7 +819,6 @@
       <code><![CDATA[list<\OCA\Recognize\Db\FaceDetection>]]></code>
       <code><![CDATA[list<\OCA\Recognize\Db\FaceDetection>]]></code>
       <code><![CDATA[list<\OCA\Recognize\Db\FaceDetectionWithTitle>]]></code>
-      <code><![CDATA[list<string>]]></code>
     </MoreSpecificReturnType>
   </file>
   <file src="lib/Db/FaceDetectionWithTitle.php">
@@ -979,20 +969,6 @@
     </UndefinedDocblockClass>
   </file>
   <file src="lib/Hooks/FileListener.php">
-    <InvalidDocblock>
-      <code><![CDATA[FileListener]]></code>
-      <code><![CDATA[class FileListener implements IEventListener {]]></code>
-    </InvalidDocblock>
-    <MissingTemplateParam>
-      <code><![CDATA[IEventListener]]></code>
-    </MissingTemplateParam>
-    <MixedArgument>
-      <code><![CDATA[$accessList['users']]]></code>
-      <code><![CDATA[$accessList['users']]]></code>
-    </MixedArgument>
-    <MixedArgumentTypeCoercion>
-      <code><![CDATA[fn (int|string $id) => (string)$id]]></code>
-    </MixedArgumentTypeCoercion>
     <PossiblyNullArgument>
       <code><![CDATA[$mount->getNumericStorageId()]]></code>
       <code><![CDATA[$mount->getNumericStorageId()]]></code>
@@ -1053,9 +1029,20 @@
     </PossiblyFalseArgument>
   </file>
   <file src="lib/Service/IgnoreService.php">
+    <MixedAssignment>
+      <code><![CDATA[$result]]></code>
+    </MixedAssignment>
     <MixedInferredReturnType>
       <code><![CDATA[list<string>]]></code>
     </MixedInferredReturnType>
+    <MixedMethodCall>
+      <code><![CDATA[andWhere]]></code>
+      <code><![CDATA[andWhere]]></code>
+      <code><![CDATA[eq]]></code>
+      <code><![CDATA[executeQuery]]></code>
+      <code><![CDATA[fetchAll]]></code>
+      <code><![CDATA[in]]></code>
+    </MixedMethodCall>
     <MixedReturnStatement>
       <code><![CDATA[$this->inMemoryCache[$cacheKey]]]></code>
     </MixedReturnStatement>
@@ -1064,6 +1051,63 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Service/StorageService.php">
+    <MixedAssignment>
+      <code><![CDATA[$files]]></code>
+      <code><![CDATA[$ignoreFileidsExpr[]]]></code>
+      <code><![CDATA[$ignoreFileidsExpr[]]]></code>
+      <code><![CDATA[$ignoreFileidsExpr[]]]></code>
+      <code><![CDATA[$res]]></code>
+      <code><![CDATA[$result]]></code>
+    </MixedAssignment>
+    <MixedInferredReturnType>
+      <code><![CDATA[string]]></code>
+      <code><![CDATA[string]]></code>
+      <code><![CDATA[string]]></code>
+      <code><![CDATA[string]]></code>
+    </MixedInferredReturnType>
+    <MixedMethodCall>
+      <code><![CDATA[andWhere]]></code>
+      <code><![CDATA[andWhere]]></code>
+      <code><![CDATA[andWhere]]></code>
+      <code><![CDATA[andWhere]]></code>
+      <code><![CDATA[andWhere]]></code>
+      <code><![CDATA[andWhere]]></code>
+      <code><![CDATA[andWhere]]></code>
+      <code><![CDATA[andX]]></code>
+      <code><![CDATA[andX]]></code>
+      <code><![CDATA[andX]]></code>
+      <code><![CDATA[andX]]></code>
+      <code><![CDATA[closeCursor]]></code>
+      <code><![CDATA[closeCursor]]></code>
+      <code><![CDATA[closeCursor]]></code>
+      <code><![CDATA[eq]]></code>
+      <code><![CDATA[eq]]></code>
+      <code><![CDATA[eq]]></code>
+      <code><![CDATA[eq]]></code>
+      <code><![CDATA[executeQuery]]></code>
+      <code><![CDATA[executeQuery]]></code>
+      <code><![CDATA[executeQuery]]></code>
+      <code><![CDATA[fetch]]></code>
+      <code><![CDATA[fetch]]></code>
+      <code><![CDATA[fetch]]></code>
+      <code><![CDATA[gt]]></code>
+      <code><![CDATA[in]]></code>
+      <code><![CDATA[in]]></code>
+      <code><![CDATA[in]]></code>
+      <code><![CDATA[like]]></code>
+      <code><![CDATA[notLike]]></code>
+      <code><![CDATA[notLike]]></code>
+      <code><![CDATA[notLike]]></code>
+      <code><![CDATA[notLike]]></code>
+      <code><![CDATA[orX]]></code>
+      <code><![CDATA[whereStorageId]]></code>
+    </MixedMethodCall>
+    <MixedReturnStatement>
+      <code><![CDATA[$qb->expr()->notLike('path', $qb->createNamedParameter($path ? $path . '/%' : '%'))]]></code>
+      <code><![CDATA[$qb->expr()->notLike('path', $qb->createNamedParameter($path ? $path . '/%' : '%'))]]></code>
+      <code><![CDATA[$qb->expr()->notLike('path', $qb->createNamedParameter($path ? $path . '/%' : '%'))]]></code>
+      <code><![CDATA[$qb->expr()->notLike('path', $qb->createNamedParameter($path ? $path . '/%' : '%'))]]></code>
+    </MixedReturnStatement>
     <RedundantCastGivenDocblockType>
       <code><![CDATA[(int)$row['root_id']]]></code>
       <code><![CDATA[(int)$row['storage_id']]]></code>
