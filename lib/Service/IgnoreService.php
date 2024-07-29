@@ -45,7 +45,7 @@ class IgnoreService {
 			return $directories;
 		}
 
-		$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger, $this->metadataManager);
+		$qb = new CacheQueryBuilder($this->db->getQueryBuilder(), $this->metadataManager);
 		$result = $qb->selectFileCache()
 			->andWhere($qb->expr()->in('name', $qb->createNamedParameter($ignoreMarkers, IQueryBuilder::PARAM_STR_ARRAY)))
 			->andWhere($qb->expr()->eq('storage', $qb->createNamedParameter($storageId, IQueryBuilder::PARAM_INT)))

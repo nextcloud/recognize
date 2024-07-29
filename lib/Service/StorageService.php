@@ -64,7 +64,7 @@ class StorageService {
 			$overrideRoot = $rootId;
 			if (in_array($row['mount_provider_class'], self::HOME_MOUNT_TYPES)) {
 				// Only crawl files, not cache or trashbin
-				$qb = new CacheQueryBuilder($this->db, $this->systemConfig, $this->logger, $this->metadataManager);
+				$qb = new CacheQueryBuilder($this->db->getQueryBuilder(), $this->metadataManager);
 				try {
 					$res = $qb->selectFileCache()
 						->andWhere($qb->expr()->eq('filecache.storage', $qb->createNamedParameter($storageId, IQueryBuilder::PARAM_INT)))
