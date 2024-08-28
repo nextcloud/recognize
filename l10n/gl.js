@@ -10,7 +10,7 @@ OC.L10N.register(
     "Could not execute the Node.js binary. You may need to set the path to a working binary manually." : "Non foi posíbel executar o binario Node.js. Quizais necesite definir manualmente a ruta a un binario que funcione.",
     "Background Jobs are not executed via cron. Recognize requires background jobs to be executed via cron." : "Os traballos en segundo plano non se executan mediante cron. Recognize precisa que se executen traballos en segundo plano mediante cron.",
     "The app is installed and will automatically classify files in background processes." : "A aplicación está instalada e clasificará automaticamente os ficheiros en procesos en segundo plano.",
-    "None of the tagging options below are currently selected. The app will currently do nothing." : "Ningunha das opcións de etiquetado a continuación está seleccionada. A aplicación non fará nada neste momento.",
+    "None of the tagging options below are currently selected. The app will currently do nothing." : "Ningunha das opcións de etiquetado a continuación está seleccionada. A aplicación non fará ren neste momento.",
     "Face recognition" : "Recoñecemento facial",
     "Face recognition is working. " : "Recoñecemento facial está funcionando.",
     "An error occurred during face recognition, please check the Nextcloud logs." : "Produciuse un erro durante o recoñecemento facial. Comprobe os rexistros de Nextcloud.",
