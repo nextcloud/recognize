@@ -57,6 +57,7 @@ OC.L10N.register(
     "Reset faces for classified files" : "Убрать все метки лиц с обработанных файлов",
     "Click the button below to rescan all files in this instance and add them to the classifier queues." : "Для повторного распознавания всех файлов, нажмите кнопку, расположенную ниже.",
     "Rescan all files" : "Повторно распознать все файлы",
+    "Resource usage" : "Использование ресурсов",
     "Number of CPU Cores (0 for no limit)" : "Количество используемых ядер (0 — все доступные)",
     "Tensorflow WASM mode" : "WASM режим Tensorflow",
     "Checking CPU" : "Проверка ЦП",
