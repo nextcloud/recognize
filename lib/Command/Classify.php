@@ -21,6 +21,7 @@ use OCP\Files\Config\IUserMountCache;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Classify extends Command {
@@ -53,7 +54,8 @@ class Classify extends Command {
 	 */
 	protected function configure() {
 		$this->setName('recognize:classify')
-			->setDescription('Classify all files with the current settings in one go (will likely take a long time)');
+			->setDescription('Classify all files with the current settings in one go (will likely take a long time)')
+			->addOption('retry', null, InputOption::VALUE_NONE, "Only classify untagged images");
 	}
 
 	/**
