@@ -22,6 +22,7 @@ use OCP\Files\Config\IUserMountCache;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -72,7 +73,11 @@ class Classify extends Command {
 	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$this->logger->setCliOutput($output);
 
-		$this->clearBackgroundJobs->run($input, $output);
+		// pop "retry" flag from parameters passed to clear background jobs
+		$clearBackgroundJobs = new ArrayInput([
+            'command' => 'recognize:clear-background-jobs',
+        ]);
+		$this->clearBackgroundJobs->run($clearBackgroundJobs, $output);
 
 		$models = array_values(array_filter([
 			ClusteringFaceClassifier::MODEL_NAME,
