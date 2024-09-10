@@ -111,6 +111,7 @@ class Classify extends Command {
 				foreach ($this->storageService->getFilesInMount($mount['storage_id'], $mount['override_root'], $models, $lastFileId) as $file) {
 					$i++;
 					// if retry flag is set, skip tagged files
+					$lastFileId = $file['fileid'];
 					if ($input->getOption('retry')) {
 						$fileTags = $this->tagManager->getTagsForFiles([$lastFileId]);
 						// check if processed tag is already in the tags
@@ -118,7 +119,6 @@ class Classify extends Command {
 							continue;	
 						}
 					}
-					$lastFileId = $file['fileid'];
 					$queueFile = new QueueFile();
 					$queueFile->setStorageId($mount['storage_id']);
 					$queueFile->setRootId($mount['root_id']);
