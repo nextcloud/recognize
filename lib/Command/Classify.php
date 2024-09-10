@@ -109,6 +109,7 @@ class Classify extends Command {
 					MusicnnClassifier::MODEL_NAME => [],
 				];
 				foreach ($this->storageService->getFilesInMount($mount['storage_id'], $mount['override_root'], $models, $lastFileId) as $file) {
+					$i++;
 					// if retry flag is set, skip tagged files
 					if ($input->getOption('retry')) {
 						$fileTags = $this->tagManager->getTagsForFiles([$lastFileId]);
@@ -117,7 +118,6 @@ class Classify extends Command {
 							continue;	
 						}
 					}
-					$i++;
 					$lastFileId = $file['fileid'];
 					$queueFile = new QueueFile();
 					$queueFile->setStorageId($mount['storage_id']);
