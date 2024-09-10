@@ -16,6 +16,7 @@ use OCA\Recognize\Exception\Exception;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\SettingsService;
 use OCA\Recognize\Service\StorageService;
+use OCA\Recognize\Service\TagManager;
 use OCP\Files\Config\ICachedMountInfo;
 use OCP\Files\Config\IUserMountCache;
 use Symfony\Component\Console\Command\Command;
@@ -30,6 +31,7 @@ class Classify extends Command {
 
 	public function __construct(
 		private StorageService $storageService,
+		private TagManager $tagManager,
 		private Logger $logger,
 		ImagenetClassifier $imagenet,
 		ClusteringFaceClassifier $faces,
@@ -79,6 +81,8 @@ class Classify extends Command {
 			MusicnnClassifier::MODEL_NAME,
 		], fn ($modelName) => $this->settings->getSetting($modelName . '.enabled') === 'true'));
 
+		$processedTag = $this->tagManager->getProcessedTag();
+
 		foreach ($this->storageService->getMounts() as $mount) {
 			$this->logger->info('Processing storage ' . $mount['storage_id'] . ' with root ID ' . $mount['override_root']);
 
@@ -102,6 +106,14 @@ class Classify extends Command {
 				foreach ($this->storageService->getFilesInMount($mount['storage_id'], $mount['override_root'], $models, $lastFileId) as $file) {
 					$i++;
 					$lastFileId = $file['fileid'];
+					// if retry flag is set, skip tagged files
+					if ($input->getOption('retry')) {
+						$fileTags = $this->tagManager->getTagsForFiles([$lastFileId]);
+						// check if processed tag is already in the tags
+						if (in_array($processedTag, $fileTags)) {
+							continue;	
+						}
+					}
 					$queueFile = new QueueFile();
 					$queueFile->setStorageId($mount['storage_id']);
 					$queueFile->setRootId($mount['root_id']);
