@@ -110,15 +110,7 @@ class Classify extends Command {
 				];
 				foreach ($this->storageService->getFilesInMount($mount['storage_id'], $mount['override_root'], $models, $lastFileId) as $file) {
 					$i++;
-					// if retry flag is set, skip tagged files
 					$lastFileId = $file['fileid'];
-					if ($input->getOption('retry')) {
-						$fileTags = $this->tagManager->getTagsForFiles([$lastFileId]);
-						// check if processed tag is already in the tags
-						if (in_array($processedTag, $fileTags[$lastFileId])) {
-							continue;	
-						}
-					}
 					$queueFile = new QueueFile();
 					$queueFile->setStorageId($mount['storage_id']);
 					$queueFile->setRootId($mount['root_id']);
@@ -126,11 +118,21 @@ class Classify extends Command {
 					$queueFile->setUpdate(false);
 
 					if ($file['image']) {
-						if (in_array(ImagenetClassifier::MODEL_NAME, $models)) {
-							$queues[ImagenetClassifier::MODEL_NAME][] = $queueFile;
-						}
 						if (in_array(ClusteringFaceClassifier::MODEL_NAME, $models)) {
 							$queues[ClusteringFaceClassifier::MODEL_NAME][] = $queueFile;
+						}
+					}
+					// if retry flag is set, skip other classifiers for tagged files
+					if ($input->getOption('retry')) {
+						$fileTags = $this->tagManager->getTagsForFiles([$lastFileId]);
+						// check if processed tag is already in the tags
+						if (in_array($processedTag, $fileTags[$lastFileId])) {
+							continue;	
+						}
+					}
+					if ($file['image']) {
+						if (in_array(ImagenetClassifier::MODEL_NAME, $models)) {
+							$queues[ImagenetClassifier::MODEL_NAME][] = $queueFile;
 						}
 					}
 					if ($file['video']) {
