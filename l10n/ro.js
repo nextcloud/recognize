@@ -21,6 +21,7 @@ OC.L10N.register(
     "Theater" : "Teatru",
     "Pizza" : "Pizza",
     "Info" : "Info",
+    "Document" : "Document",
     "Event" : "Eveniment",
     "Gallery" : "Galerie",
     "Park" : "Parc"
