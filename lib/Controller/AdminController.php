@@ -136,7 +136,7 @@ class AdminController extends Controller {
 		}
 		$iterator = $this->jobList->getJobsIterator($tasks[$task], null, 0);
 		$lastRun = [];
-		foreach($iterator as $job) {
+		foreach ($iterator as $job) {
 			$lastRun[] = $job->getLastRun();
 		}
 		$count = count($lastRun);
