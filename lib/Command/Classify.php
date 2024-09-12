@@ -21,8 +21,8 @@ use OCP\Files\Config\ICachedMountInfo;
 use OCP\Files\Config\IUserMountCache;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\ExceptionInterface;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -127,7 +127,7 @@ class Classify extends Command {
 						$fileTags = $this->tagManager->getTagsForFiles([$lastFileId]);
 						// check if processed tag is already in the tags
 						if (in_array($processedTag, $fileTags[$lastFileId])) {
-							continue;	
+							continue;
 						}
 					}
 					if ($file['image']) {
