@@ -74,9 +74,7 @@ class Classify extends Command {
 		$this->logger->setCliOutput($output);
 
 		// pop "retry" flag from parameters passed to clear background jobs
-		$clearBackgroundJobs = new ArrayInput([
-            'command' => 'recognize:clear-background-jobs',
-        ]);
+		$clearBackgroundJobs = new ArrayInput([]);
 		$this->clearBackgroundJobs->run($clearBackgroundJobs, $output);
 
 		$models = array_values(array_filter([
