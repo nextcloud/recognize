@@ -16,11 +16,14 @@ use OCA\Recognize\Exception\Exception;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\SettingsService;
 use OCA\Recognize\Service\StorageService;
+use OCA\Recognize\Service\TagManager;
 use OCP\Files\Config\ICachedMountInfo;
 use OCP\Files\Config\IUserMountCache;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\ExceptionInterface;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Classify extends Command {
@@ -29,6 +32,7 @@ class Classify extends Command {
 
 	public function __construct(
 		private StorageService $storageService,
+		private TagManager $tagManager,
 		private Logger $logger,
 		ImagenetClassifier $imagenet,
 		ClusteringFaceClassifier $faces,
@@ -53,7 +57,8 @@ class Classify extends Command {
 	 */
 	protected function configure() {
 		$this->setName('recognize:classify')
-			->setDescription('Classify all files with the current settings in one go (will likely take a long time)');
+			->setDescription('Classify all files with the current settings in one go (will likely take a long time)')
+			->addOption('retry', null, InputOption::VALUE_NONE, "Only classify untagged images");
 	}
 
 	/**
@@ -68,7 +73,9 @@ class Classify extends Command {
 	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$this->logger->setCliOutput($output);
 
-		$this->clearBackgroundJobs->run($input, $output);
+		// pop "retry" flag from parameters passed to clear background jobs
+		$clearBackgroundJobs = new ArrayInput([]);
+		$this->clearBackgroundJobs->run($clearBackgroundJobs, $output);
 
 		$models = array_values(array_filter([
 			ClusteringFaceClassifier::MODEL_NAME,
@@ -76,6 +83,8 @@ class Classify extends Command {
 			MovinetClassifier::MODEL_NAME,
 			MusicnnClassifier::MODEL_NAME,
 		], fn ($modelName) => $this->settings->getSetting($modelName . '.enabled') === 'true'));
+
+		$processedTag = $this->tagManager->getProcessedTag();
 
 		foreach ($this->storageService->getMounts() as $mount) {
 			$this->logger->info('Processing storage ' . $mount['storage_id'] . ' with root ID ' . $mount['override_root']);
@@ -107,11 +116,21 @@ class Classify extends Command {
 					$queueFile->setUpdate(false);
 
 					if ($file['image']) {
-						if (in_array(ImagenetClassifier::MODEL_NAME, $models)) {
-							$queues[ImagenetClassifier::MODEL_NAME][] = $queueFile;
-						}
 						if (in_array(ClusteringFaceClassifier::MODEL_NAME, $models)) {
 							$queues[ClusteringFaceClassifier::MODEL_NAME][] = $queueFile;
+						}
+					}
+					// if retry flag is set, skip other classifiers for tagged files
+					if ($input->getOption('retry')) {
+						$fileTags = $this->tagManager->getTagsForFiles([$lastFileId]);
+						// check if processed tag is already in the tags
+						if (in_array($processedTag, $fileTags[$lastFileId])) {
+							continue;
+						}
+					}
+					if ($file['image']) {
+						if (in_array(ImagenetClassifier::MODEL_NAME, $models)) {
+							$queues[ImagenetClassifier::MODEL_NAME][] = $queueFile;
 						}
 					}
 					if ($file['video']) {

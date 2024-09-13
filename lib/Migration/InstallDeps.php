@@ -90,7 +90,7 @@ class InstallDeps implements IRepairStep {
 			$this->runFfmpegInstall($binaryPath);
 			$this->runTfjsGpuInstall($binaryPath);
 			$this->setNiceBinaryPath();
-		} catch(\Throwable $e) {
+		} catch (\Throwable $e) {
 			$output->warning('Failed to automatically install dependencies for recognize. Check the recognize admin panel for potential problems.');
 			$this->logger->error('Failed to automatically install dependencies for recognize. Check the recognize admin panel for potential problems.', ['exception' => $e]);
 		}

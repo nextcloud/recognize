@@ -79,7 +79,7 @@ class TagManager {
 
 	/**
 	 * @param array $fileIds
-	 * @return array
+	 * @return array<array-key, array<array-key,ISystemTag>>
 	 */
 	public function getTagsForFiles(array $fileIds): array {
 		/** @var array<string, string[]> $tagsByFile */
