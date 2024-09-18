@@ -2,7 +2,7 @@ OC.L10N.register(
     "recognize",
     {
     "Status" : "Status",
-    "Reset" : "Torra a impostare",
+    "Reset" : "Riprìstinu",
     "Failed to load settings" : "Impossìbile carrigare sa cunfiguratzione",
     "Failed to save settings" : "No at fatu a sarvare is informatziones",
     "never" : "mai",
