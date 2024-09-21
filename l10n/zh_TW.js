@@ -3,6 +3,7 @@ OC.L10N.register(
     {
     "Recognize" : "識別",
     "Status" : "狀態",
+    "The machine learning models still need to be downloaded." : "仍需要下載機器學習模型。",
     "Could not execute the Node.js binary. You may need to set the path to a working binary manually." : "無法執行 Node.js 可執行檔。您可能需要手動設定可運作的可執行檔路徑。",
     "Reset" : "重設",
     "Node.js" : "Node.js",
