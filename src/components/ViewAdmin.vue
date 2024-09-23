@@ -40,7 +40,7 @@
 				<NcNoteCard v-else-if="settings['faces.status'] === false" show-alert type="error">
 					{{ t('recognize', 'An error occurred during face recognition, please check the Nextcloud logs.') }}
 				</NcNoteCard>
-				<NcNoteCard v-else  type="warning">
+				<NcNoteCard v-else type="warning">
 					{{ t('recognize', 'Waiting for status reports on face recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs.') }}
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued" type="info">
@@ -62,7 +62,7 @@
 					:value.sync="settings['faces.batchSize']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~500 or more, in WASM mode ~50 is recommended)')"
-          :title="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~500 or more, in WASM mode ~50 is recommended)')"
+					:title="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~500 or more, in WASM mode ~50 is recommended)')"
 					@update:value="onChange" />
 			</p>
 		</NcSettingsSection>
@@ -74,7 +74,7 @@
 				<NcNoteCard v-else-if="settings['imagenet.status'] === false" show-alert type="error">
 					{{ t('recognize', 'An error occurred during object recognition, please check the Nextcloud logs.') }}
 				</NcNoteCard>
-				<NcNoteCard v-else  type="warning">
+				<NcNoteCard v-else type="warning">
 					{{ t('recognize', 'Waiting for status reports on object recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs.') }}
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued" type="info">
@@ -137,10 +137,10 @@
 				<NcNoteCard v-else-if="settings['musicnn.status'] === false" show-alert type="error">
 					{{ t('recognize', 'An error occurred during audio recognition, please check the Nextcloud logs.') }}
 				</NcNoteCard>
-				<NcNoteCard v-else  type="warning">
+				<NcNoteCard v-else type="warning">
 					{{ t('recognize', 'Waiting for status reports on audio recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs.') }}
 				</NcNoteCard>
-				<NcNoteCard v-if="countQueued"  type="info">
+				<NcNoteCard v-if="countQueued" type="info">
 					{{ t('recognize', 'Music genre recognition:') }} {{ countQueued.musicnn }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['musicnn.lastFile']) }}<span v-if="musicnnJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ musicnnJobs.scheduled }}, {{ musicnnJobs.lastRun ? t('recognize', 'Last background job execution: ') + showDate(musicnnJobs.lastRun) : '' }}</span>
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued && countQueued.musicnn && musicnnJobs && !musicnnJobs.scheduled" show-alert type="error">
@@ -216,14 +216,14 @@
 		<NcSettingsSection :name="t('recognize', 'Resource usage') ">
 			<p>{{ t('recognize', 'By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used. (Note: In WASM mode, currently only 1 core can be used at all times.)') }}</p>
 			<p>
-        <NcTextField :value.sync="settings['tensorflow.cores']"
-          type="number"
-          :min="0"
-          :step="1"
-          :max="32"
-          :label="t('recognize', 'Number of CPU Cores (0 for no limit)')"
-          :label-visible="true"
-          @update:value="onChange" />
+				<NcTextField :value.sync="settings['tensorflow.cores']"
+					type="number"
+					:min="0"
+					:step="1"
+					:max="32"
+					:label="t('recognize', 'Number of CPU Cores (0 for no limit)')"
+					:label-visible="true"
+					@update:value="onChange" />
 			</p>
 			<p>&nbsp;</p>
 			<p>{{ t('recognize', 'By default, recognize will only ever run one classifier process at a time. If you have a lot of resources available and want to run as many processes in parallel as possible, you can turn on concurrency here.') }}</p>
@@ -294,7 +294,7 @@
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking libtensorflow') }}
 			</p>
 			<template v-if="settings['tensorflow.purejs'] === false">
-				<NcNoteCard v-if="nodejs !== false && libtensorflow === false"  type="warning">
+				<NcNoteCard v-if="nodejs !== false && libtensorflow === false" type="warning">
 					{{ t('recognize', 'Could not load libtensorflow in Node.js. You can try to manually install libtensorflow or run in WASM mode.') }}
 				</NcNoteCard>
 				<NcNoteCard v-else-if="nodejs !== false && libtensorflow === true && settings['tensorflow.gpu'] === true && gputensorflow === false" type="warning">
@@ -335,7 +335,7 @@
 			</p>
 			<p>
 				<NcTextField :value.sync="settings['nice_binary']"
-          :label-visible="true"
+					:label-visible="true"
 					:label="t('recognize', 'Nice binary path')"
 					@update:value="onChange" />
 			</p>
