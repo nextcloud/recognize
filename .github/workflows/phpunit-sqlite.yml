@@ -120,6 +120,14 @@ jobs:
           composer remove nextcloud/ocp --dev
           composer i
 
+      - name: Set up repo
+        working-directory: apps/${{ env.APP_NAME }}
+        run: |
+          make remove-binaries # Make it download tfjs from scratch
+          rm -rf models # Make it download from github
+          wget https://github.com/nextcloud/recognize/releases/download/v3.4.0/test-files.zip
+          unzip test-files.zip -d tests/res/
+
       - name: Set up Nextcloud
         env:
           DB_PORT: 4444
