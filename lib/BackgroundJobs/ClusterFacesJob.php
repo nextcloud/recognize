@@ -44,6 +44,5 @@ class ClusterFacesJob extends QueuedJob {
 			$this->settingsService->setSetting('clusterFaces.status', 'false');
 			$this->logger->error('Failed to calculate face clusters', ['exception' => $e]);
 		}
-		$this->jobList->remove(self::class, $argument);
 	}
 }
