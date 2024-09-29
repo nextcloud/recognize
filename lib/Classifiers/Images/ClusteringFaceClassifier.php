@@ -60,12 +60,12 @@ class ClusteringFaceClassifier extends Classifier {
 		return array_values(array_unique($userIds));
 	}
 
-	/**
-	 * @param string $user
-	 * @param \OCA\Recognize\Db\QueueFile[] $queueFiles
-	 * @throws \ErrorException|\RuntimeException
-	 * @return void
-	 */
+    /**
+     * @param string $user
+     * @param \OCA\Recognize\Db\QueueFile[] $queueFiles
+     * @return void
+     * @throws \ErrorException
+     */
 	public function classify(array $queueFiles): void {
 		if ($this->config->getAppValueString('tensorflow.purejs', 'false') === 'true') {
 			$timeout = self::IMAGE_PUREJS_TIMEOUT;
@@ -94,58 +94,61 @@ class ClusteringFaceClassifier extends Classifier {
 		}
 
 		$usersToCluster = [];
-        $classifierProcess = $this->classifyFiles(self::MODEL_NAME, $filteredQueueFiles, $timeout);
+        try {
+            $classifierProcess = $this->classifyFiles(self::MODEL_NAME, $filteredQueueFiles, $timeout);
 
-        /**
-         * @var list<array> $faces
-         */
-        foreach ($classifierProcess as $queueFile => $faces) {
-            $this->logger->debug('Face results for ' . $queueFile->getFileId() . ' are in');
-            foreach ($faces as $face) {
-                if ($face['score'] < self::MIN_FACE_RECOGNITION_SCORE) {
-                    $this->logger->debug('Face score too low. continuing with next face.');
-                    continue;
-                }
-                if (abs($face['angle']['roll']) > self::MAX_FACE_ROLL || abs($face['angle']['yaw']) > self::MAX_FACE_YAW) {
-                    $this->logger->debug('Face is not straight. continuing with next face.');
-                    continue;
-                }
-
-                try {
-                    $node = $this->rootFolder->getFirstNodeById($queueFile->getFileId());
-                    $userIds = $node !== null ? $this->getUsersWithFileAccess($node) : [];
-                } catch (InvalidPathException|NotFoundException $e) {
-                    $userIds = [];
-                }
-
-                // Insert face detection for all users with access
-                foreach ($userIds as $userId) {
-                    $this->logger->debug('preparing face detection for user ' . $userId);
-                    $faceDetection = new FaceDetection();
-                    $faceDetection->setX($face['x']);
-                    $faceDetection->setY($face['y']);
-                    $faceDetection->setWidth($face['width']);
-                    $faceDetection->setHeight($face['height']);
-                    $faceDetection->setVector($face['vector']);
-                    $faceDetection->setFileId($queueFile->getFileId());
-                    $faceDetection->setUserId($userId);
-                    try {
-                        $this->faceDetections->insert($faceDetection);
-                    } catch (Exception $e) {
-                        $this->logger->error('Could not store face detection in database', ['exception' => $e]);
+            /**
+             * @var list<array> $faces
+             */
+            foreach ($classifierProcess as $queueFile => $faces) {
+                $this->logger->debug('Face results for ' . $queueFile->getFileId() . ' are in');
+                foreach ($faces as $face) {
+                    if ($face['score'] < self::MIN_FACE_RECOGNITION_SCORE) {
+                        $this->logger->debug('Face score too low. continuing with next face.');
                         continue;
                     }
-                    $usersToCluster[$userId] = true;
-                }
-                $this->config->setAppValueString(self::MODEL_NAME . '.status', 'true');
-                $this->config->setAppValueString(self::MODEL_NAME . '.lastFile', (string)time());
+                    if (abs($face['angle']['roll']) > self::MAX_FACE_ROLL || abs($face['angle']['yaw']) > self::MAX_FACE_YAW) {
+                        $this->logger->debug('Face is not straight. continuing with next face.');
+                        continue;
+                    }
 
-                $usersToCluster = array_keys($usersToCluster);
-                foreach ($usersToCluster as $userId) {
-                    $this->logger->debug('scheduling ClusterFacesJob for user ' . $userId);
-                    $this->jobList->add(ClusterFacesJob::class, ['userId' => $userId]);
+                    try {
+                        $node = $this->rootFolder->getFirstNodeById($queueFile->getFileId());
+                        $userIds = $node !== null ? $this->getUsersWithFileAccess($node) : [];
+                    } catch (InvalidPathException|NotFoundException $e) {
+                        $userIds = [];
+                    }
+
+                    // Insert face detection for all users with access
+                    foreach ($userIds as $userId) {
+                        $this->logger->debug('preparing face detection for user ' . $userId);
+                        $faceDetection = new FaceDetection();
+                        $faceDetection->setX($face['x']);
+                        $faceDetection->setY($face['y']);
+                        $faceDetection->setWidth($face['width']);
+                        $faceDetection->setHeight($face['height']);
+                        $faceDetection->setVector($face['vector']);
+                        $faceDetection->setFileId($queueFile->getFileId());
+                        $faceDetection->setUserId($userId);
+                        try {
+                            $this->faceDetections->insert($faceDetection);
+                        } catch (Exception $e) {
+                            $this->logger->error('Could not store face detection in database', ['exception' => $e]);
+                            continue;
+                        }
+                        $usersToCluster[$userId] = true;
+                    }
+                    $this->config->setAppValueString(self::MODEL_NAME . '.status', 'true');
+                    $this->config->setAppValueString(self::MODEL_NAME . '.lastFile', (string)time());
                 }
             }
+        } finally {
+            $usersToCluster = array_keys($usersToCluster);
+            foreach ($usersToCluster as $userId) {
+                $this->logger->debug('scheduling ClusterFacesJob for user ' . $userId);
+                $this->jobList->add(ClusterFacesJob::class, ['userId' => $userId]);
+            }
+            $this->logger->debug('face classifier end');
         }
 	}
 }
