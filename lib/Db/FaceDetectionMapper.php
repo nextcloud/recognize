@@ -306,6 +306,24 @@ class FaceDetectionMapper extends QBMapper {
 		return (int) $count;
 	}
 
+	/**
+	 * @return array<string>
+	 * @throws \OCP\DB\Exception
+	 */
+	public function getUsersForUnclustered(): array {
+		$qb = $this->db->getQueryBuilder();
+		$qb->selectDistinct('user_id')
+			->from('recognize_face_detections')
+			->where($qb->expr()->isNull('cluster_id'))
+			->andWhere($qb->expr()->gte('height', $qb->createPositionalParameter(FaceClusterAnalyzer::MIN_DETECTION_SIZE)))
+			->andWhere($qb->expr()->gte('width', $qb->createPositionalParameter(FaceClusterAnalyzer::MIN_DETECTION_SIZE)));
+		$result = $qb->executeQuery();
+		/** @var array<string> $users */
+		$users = $result->fetchAll(\PDO::FETCH_COLUMN);
+		$result->closeCursor();
+		return $users;
+	}
+
 	protected function mapRowToEntity(array $row): Entity {
 		try {
 			return parent::mapRowToEntity($row);
