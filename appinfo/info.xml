@@ -94,6 +94,9 @@ The app does not send any sensitive data to cloud providers or similar services.
 	<dependencies>
 		<nextcloud min-version="30" max-version="30" />
 	</dependencies>
+	<background-jobs>
+		<job>OCA\Recognize\BackgroundJobs\MaintenanceJob</job>
+	</background-jobs>
 
 	<repair-steps>
 		<post-migration>
