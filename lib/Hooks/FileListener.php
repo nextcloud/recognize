@@ -218,9 +218,6 @@ class FileListener implements IEventListener {
 				if ($node instanceof Folder) {
 					return;
 				}
-				if (!str_contains($node->getMountPoint()->getMountType(), 'external')) {
-					return;
-				}
 				if (in_array($node->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
 					$this->resetIgnoreCache($node);
 					$this->postDelete($node->getParent());
