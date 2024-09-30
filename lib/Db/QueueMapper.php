@@ -110,7 +110,7 @@ class QueueMapper extends QBMapper {
 		} catch (DoesNotExistException $e) {
 			return false;
 		} catch (MultipleObjectsReturnedException $e) {
-			return false;
+			return true;
 		} catch (Exception $e) {
 			return false;
 		}
