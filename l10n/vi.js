@@ -8,6 +8,7 @@ OC.L10N.register(
     "never" : "không thay đổi",
     "Cat" : "Mèo",
     "Farm" : "Nông trại",
+    "People" : "Mọi người",
     "Dog" : "Chó ",
     "Music" : "Nhạc",
     "Office" : "Văn phòng",
