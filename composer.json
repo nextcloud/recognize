@@ -1,6 +1,6 @@
 {
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.1",
         "ext-json": "*",
         "ext-pdo": "*",
         "rubix/ml": "2.x",
@@ -37,7 +37,7 @@
     },
     "config": {
         "platform": {
-            "php": "8.0.2"
+            "php": "8.1.0"
         },
         "allow-plugins": {
             "bamarni/composer-bin-plugin": true,
