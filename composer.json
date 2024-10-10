@@ -1,6 +1,6 @@
 {
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.1",
         "ext-json": "*",
         "ext-pdo": "*",
         "rubix/ml": "2.x",
@@ -13,8 +13,8 @@
     },
     "require-dev": {
         "nextcloud/ocp": "dev-master",
-        "symfony/console": "^5.4",
-        "symfony/process": "^5.2"
+        "symfony/console": "^6.4",
+        "symfony/process": "^6.4"
     },
     "scripts": {
         "lint": "find . -name \\*.php -not -path './vendor/*' -print0 | xargs -0 -n1 php -l",
@@ -37,7 +37,7 @@
     },
     "config": {
         "platform": {
-            "php": "8.0.2"
+            "php": "8.1.0"
         },
         "allow-plugins": {
             "bamarni/composer-bin-plugin": true,
