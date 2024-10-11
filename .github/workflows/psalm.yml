@@ -31,7 +31,7 @@ jobs:
     strategy:
       matrix:
         php-versions: [ '8.1', '8.2', '8.3' ]
-        server-versions: [ 'dev-master' ]
+        server-versions: [ 'dev-stable30' ]
       fail-fast: false
 
     name: Nextcloud

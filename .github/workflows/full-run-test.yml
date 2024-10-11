@@ -30,7 +30,7 @@ jobs:
       matrix:
         php-versions: ['8.2']
         databases: ['sqlite']
-        server-versions: ['master']
+        server-versions: ['stable30']
         pure-js-mode: ['false']
         imagenet-enabled: ['true']
         faces-enabled: ['true']
@@ -39,7 +39,7 @@ jobs:
         movinet-enabled: ['true']
         include:
           # test pure-js once
-          - server-versions: master
+          - server-versions: stable30
             databases: sqlite
             php-versions: 8.2
             pure-js-mode: true
