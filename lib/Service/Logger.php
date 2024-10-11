@@ -6,9 +6,9 @@
 declare(strict_types=1);
 namespace OCA\Recognize\Service;
 
+use \Stringable;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use \Stringable;
 
 class Logger implements LoggerInterface {
 	private LoggerInterface $logger;
