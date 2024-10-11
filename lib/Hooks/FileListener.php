@@ -47,6 +47,7 @@ use Psr\Log\LoggerInterface;
  */
 class FileListener implements IEventListener {
 	private ?bool $movingFromIgnoredTerritory;
+	private ?array $movingDirFromIgnoredTerritory;
 	/** @var list<string> */
 	private array $sourceUserIds;
 	private ?Node $source = null;
@@ -64,6 +65,7 @@ class FileListener implements IEventListener {
 		private IJobList $jobList,
 	) {
 		$this->movingFromIgnoredTerritory = null;
+		$this->movingDirFromIgnoredTerritory = null;
 		$this->sourceUserIds = [];
 	}
 
@@ -139,16 +141,22 @@ class FileListener implements IEventListener {
 				}
 			}
 			if ($event instanceof BeforeNodeRenamedEvent) {
+				$this->movingFromIgnoredTerritory = null;
+				$this->movingDirFromIgnoredTerritory = [];
 				if (in_array($event->getSource()->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
 					$this->resetIgnoreCache($event->getSource());
 					return;
 				}
 				// We try to remember whether the source node is in ignored territory
 				// because after moving isIgnored doesn't work anymore :(
-				if ($this->isIgnored($event->getSource())) {
-					$this->movingFromIgnoredTerritory = true;
+				if ($event->getSource()->getType() !== FileInfo::TYPE_FOLDER) {
+					if ($this->isFileIgnored($event->getSource())) {
+						$this->movingFromIgnoredTerritory = true;
+					} else {
+						$this->movingFromIgnoredTerritory = false;
+					}
 				} else {
-					$this->movingFromIgnoredTerritory = false;
+					$this->movingDirFromIgnoredTerritory = $this->getDirIgnores($event->getSource());
 				}
 				$this->sourceUserIds = $this->getUsersWithFileAccess($event->getSource());
 				$this->source = $event->getSource();
@@ -175,17 +183,39 @@ class FileListener implements IEventListener {
 					$this->postDelete($event->getTarget()->getParent());
 					return;
 				}
-
-				if ($this->movingFromIgnoredTerritory) {
-					if ($this->isIgnored($event->getTarget())) {
+				if ($event->getTarget()->getType() !== FileInfo::TYPE_FOLDER) {
+					if ($this->movingFromIgnoredTerritory) {
+						if ($this->isFileIgnored($event->getTarget())) {
+							return;
+						}
+						$this->postInsert($event->getTarget());
 						return;
 					}
-					$this->postInsert($event->getTarget());
-					return;
-				}
-				if ($this->isIgnored($event->getTarget())) {
-					$this->postDelete($event->getTarget());
-					return;
+					if ($this->isFileIgnored($event->getTarget())) {
+						$this->postDelete($event->getTarget());
+						return;
+					}
+				} else {
+					if ($this->movingDirFromIgnoredTerritory !== null && count($this->movingDirFromIgnoredTerritory) !== 0) {
+						$oldIgnores = $this->movingDirFromIgnoredTerritory;
+						$newIgnores = $this->getDirIgnores($event->getTarget());
+						$diff1 = array_diff($newIgnores, $oldIgnores);
+						$diff2 = array_diff($oldIgnores, $newIgnores);
+						if (count($diff1) !== 0 || count($diff2) !== 0) {
+							if (count($diff1) !== 0) {
+								$this->postDelete($event->getTarget(), true, $diff1);
+							}
+							if (count($diff2) !== 0) {
+								$this->postInsert($event->getTarget(), true, $diff2);
+							}
+						}
+						return;
+					}
+					$ignoredMimeTypes = $this->getDirIgnores($event->getTarget());
+					if (!empty($ignoredMimeTypes)) {
+						$this->postDelete($event->getTarget(), true, $ignoredMimeTypes);
+						return;
+					}
 				}
 				$this->postRename($this->source ?? $event->getSource(), $event->getTarget());
 				return;
@@ -249,7 +279,7 @@ class FileListener implements IEventListener {
 		}
 	}
 
-	public function postDelete(Node $node, bool $recurse = true): void {
+	public function postDelete(Node $node, bool $recurse = true, ?array $mimeTypes = null): void {
 		if ($node->getType() === FileInfo::TYPE_FOLDER) {
 			if (!$recurse) {
 				return;
@@ -257,11 +287,15 @@ class FileListener implements IEventListener {
 			try {
 				/** @var Folder $node */
 				foreach ($node->getDirectoryListing() as $child) {
-					$this->postDelete($child);
+					$this->postDelete($child, true, $mimeTypes);
 				}
 			} catch (NotFoundException $e) {
 				$this->logger->debug($e->getMessage(), ['exception' => $e]);
 			}
+			return;
+		}
+
+		if ($mimeTypes !== null && !in_array($node->getMimetype(), $mimeTypes)) {
 			return;
 		}
 
@@ -294,7 +328,7 @@ class FileListener implements IEventListener {
 	/**
 	 * @throws \OCP\Files\InvalidPathException
 	 */
-	public function postInsert(Node $node, bool $recurse = true): void {
+	public function postInsert(Node $node, bool $recurse = true, ?array $mimeTypes = null): void {
 		if ($node->getType() === FileInfo::TYPE_FOLDER) {
 			if (!$recurse) {
 				return;
@@ -312,6 +346,10 @@ class FileListener implements IEventListener {
 			return;
 		}
 
+		if ($mimeTypes !== null && !in_array($node->getMimetype(), $mimeTypes)) {
+			return;
+		}
+
 		$queueFile = new QueueFile();
 		if ($node->getMountPoint()->getNumericStorageId() === null) {
 			return;
@@ -319,7 +357,7 @@ class FileListener implements IEventListener {
 		$queueFile->setStorageId($node->getMountPoint()->getNumericStorageId());
 		$queueFile->setRootId($node->getMountPoint()->getStorageRootId());
 
-		if ($this->isIgnored($node)) {
+		if ($this->isFileIgnored($node)) {
 			return;
 		}
 
@@ -404,7 +442,7 @@ class FileListener implements IEventListener {
 	 * @throws \OCP\Files\InvalidPathException
 	 * @throws \OCP\Files\NotFoundException
 	 */
-	public function isIgnored(Node $node) : bool {
+	public function isFileIgnored(Node $node) : bool {
 		$ignoreMarkers = [];
 		$mimeType = $node->getMimetype();
 		$storageId = $node->getMountPoint()->getNumericStorageId();
@@ -422,6 +460,7 @@ class FileListener implements IEventListener {
 		if (in_array($mimeType, Constants::AUDIO_FORMATS)) {
 			$ignoreMarkers = array_merge($ignoreMarkers, Constants::IGNORE_MARKERS_AUDIO);
 		}
+
 		if (count($ignoreMarkers) === 0) {
 			return true;
 		}
@@ -429,15 +468,43 @@ class FileListener implements IEventListener {
 		$ignoreMarkers = array_merge($ignoreMarkers, Constants::IGNORE_MARKERS_ALL);
 		$ignoredPaths = $this->ignoreService->getIgnoredDirectories($storageId, $ignoreMarkers);
 
-		$relevantIgnorePaths = array_filter($ignoredPaths, static function (string $ignoredPath) use ($node) {
-			return stripos($node->getInternalPath(), $ignoredPath ? $ignoredPath . '/' : $ignoredPath) === 0;
-		});
 
-		if (count($relevantIgnorePaths) > 0) {
-			return true;
+		foreach ($ignoredPaths as $ignoredPath) {
+			if (stripos($node->getInternalPath(), $ignoredPath ? $ignoredPath . '/' : $ignoredPath) === 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * @param \OCP\Files\Node $node
+	 * @return array
+	 * @throws Exception
+	 */
+	public function getDirIgnores(Node $node) : array {
+		$storageId = $node->getMountPoint()->getNumericStorageId();
+		if ($storageId === null) {
+			return [];
 		}
 
-		return false;
+		$ignoredMimeTypes = [];
+		foreach ([
+			[Constants::IGNORE_MARKERS_IMAGE, Constants::IMAGE_FORMATS],
+			[Constants::IGNORE_MARKERS_VIDEO, Constants::VIDEO_FORMATS],
+			[Constants::IGNORE_MARKERS_AUDIO, Constants::AUDIO_FORMATS],
+			[Constants::IGNORE_MARKERS_ALL, array_merge(Constants::IMAGE_FORMATS, Constants::VIDEO_FORMATS, Constants::AUDIO_FORMATS)],
+		] as $iteration) {
+			[$ignoreMarkers, $mimeTypes] = $iteration;
+			$ignoredPaths = $this->ignoreService->getIgnoredDirectories($storageId, $ignoreMarkers);
+			foreach ($ignoredPaths as $ignoredPath) {
+				if (stripos($node->getInternalPath(), $ignoredPath ? $ignoredPath . '/' : $ignoredPath) === 0) {
+					$ignoredMimeTypes = array_unique(array_merge($ignoredMimeTypes, $mimeTypes));
+				}
+			}
+		}
+
+		return $ignoredMimeTypes;
 	}
 
 	private function resetIgnoreCache(Node $node) : void {
