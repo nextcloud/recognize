@@ -187,6 +187,59 @@ class ClassifierTest extends TestCase {
 	/**
 	 * @dataProvider ignoreImageFilesProvider
 	 * @return void
+	 * @throws \OCP\DB\Exception
+	 * @throws \OCP\Files\InvalidPathException
+	 * @throws \OCP\Files\NotFoundException
+	 * @throws \OCP\Files\NotPermittedException
+	 */
+	public function testFileListenerWithFolder(string $ignoreFileName) : void {
+		$this->config->setAppValueString('imagenet.enabled', 'true');
+		$this->queue->clearQueue(ImagenetClassifier::MODEL_NAME);
+
+		$folder = $this->userFolder->newFolder('/folder/');
+		$this->testFile = $folder->newFile('/alpine.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
+		$ignoreFolder = $this->userFolder->newFolder('/test/ignore/');
+		$ignoredFolder = $ignoreFolder->newFolder('/folder/');
+		$ignoreFile = $this->userFolder->newFile('/test/' . $ignoreFileName, '');
+		$this->ignoredFile = $ignoredFolder->newFile('/alpine-2.jpg', file_get_contents(__DIR__.'/res/alpine.JPG'));
+
+		$storageId = $this->testFile->getMountPoint()->getNumericStorageId();
+		$rootId = $this->testFile->getMountPoint()->getStorageRootId();
+
+		self::assertCount(1, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'one element should have been added to imagenet queue');
+
+		$folder->delete();
+
+		self::assertCount(0, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'entry should have been removed from imagenet queue');
+
+		$ignoreFile->delete();
+
+		self::assertCount(1, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'one element should have been added to imagenet queue after deleting ignore file');
+
+		$ignoreFile = $this->userFolder->newFile('/test/' . $ignoreFileName, '');
+
+		self::assertCount(0, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'entry should have been removed from imagenet queue after creating ignore file');
+
+		$ignoredFolder->move($this->userFolder->getPath() . '/folder2');
+
+		self::assertCount(1, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'one element should have been added to imagenet queue after moving it out of ignored territory');
+
+		$ignoreFile->move($this->userFolder->getPath() . '/' . $ignoreFileName);
+
+		self::assertCount(0, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'entry should have been removed from imagenet queue after moving ignore file');
+
+		$ignoreFile->move($this->userFolder->getPath() . '/test/' . $ignoreFileName);
+
+		self::assertCount(1, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'one element should have been added to imagenet queue after moving ignore file');
+
+		$ignoredFolder->move($this->userFolder->getPath() . '/test/ignore/folder');
+
+		self::assertCount(0, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'entry should have been removed from imagenet queue after moving it into ignored territory');
+	}
+
+	/**
+	 * @dataProvider ignoreImageFilesProvider
+	 * @return void
 	 * @throws \OCP\Files\InvalidPathException
 	 * @throws \OCP\Files\NotFoundException
 	 */
