@@ -191,7 +191,7 @@ class FileListener implements IEventListener {
 				return;
 			}
 			if ($event instanceof BeforeNodeDeletedEvent) {
-				$this->postDelete($event->getNode(), false);
+				$this->postDelete($event->getNode());
 				return;
 			}
 			if ($event instanceof NodeDeletedEvent) {
