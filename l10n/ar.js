@@ -137,7 +137,7 @@ OC.L10N.register(
     "Farm" : "مزرعة",
     "Landscape" : "وضع أُفُقي",
     "Portrait" : "وضع رأسي",
-    "People" : "الناس",
+    "People" : "أشخاص",
     "Fashion" : "موضة",
     "Ship" : "سفينة",
     "Vehicle" : "مركبة",
