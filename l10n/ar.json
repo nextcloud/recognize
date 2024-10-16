@@ -105,7 +105,7 @@
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "يمكنك إعادة تعيين وسوم جميع الملفات التي تمّ تصنيفها مسبقًا عن طريق خدمة التّعَرُّف باستخدام الأمر التالي:",
     "You can delete all tags that no longer have any files associated with them with the following command:" : "يمكنك حذف جميع السِّمَات tags التي لم يعد لها أي ملفات مرتبطة بها باستخدام الأمر التالي:",
     "To remove tags that were created by Recognize version 2 from all files run the following on the terminal:" : "لإزالة السِّمَات tags التي تم إنشاؤها بواسطة \"التعرُّف الإصدار 2\" Recognize من جميع الملفات، قم بتشغيل ما يلي على سطر الأوامر في الطرفية terminal:",
-    "Your server does not support AVX instructions" : "الخادوم الخاص بك لا يدعم تعليمات AVX",
+    "Your server does not support AVX instructions" : "الخادم الخاص بك لا يدعم أوامر المعالجة من نوع AVX",
     "Your server does not have an x86 64-bit CPU" : "لا يحتوي خادومك على وحدة معالجة مركزية x86-64 بت",
     "Your server uses musl libc" : "خادومك يستعمل musl libc",
     "Failed to load settings" : "فشل في تحميل الإعدادات",
