@@ -241,7 +241,7 @@ OC.L10N.register(
     "Bike" : "دراجة",
     "Scooter" : "سكوتر",
     "Camping" : "تخيم",
-    "Cart" : "عربة مجرورة",
+    "Cart" : "العربة",
     "Piggy bank" : "حصالة نقود",
     "Bottle" : "زجاجة",
     "Plate" : "طبق",

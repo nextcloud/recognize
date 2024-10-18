@@ -31,6 +31,7 @@ OC.L10N.register(
     "Computer" : "桌上電腦",
     "Clock" : "時鐘",
     "Screen" : "螢幕顯示",
+    "Flag" : "旗標",
     "Library" : "圖書館",
     "Display" : "顯示",
     "Bike" : "腳踏車",
