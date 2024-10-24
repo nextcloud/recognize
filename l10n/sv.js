@@ -1,6 +1,7 @@
 OC.L10N.register(
     "recognize",
     {
+    "Recognize" : "Identifiera",
     "Status" : "Status",
     "Reset" : "Återställ",
     "Failed to load settings" : "Kunde inte läsa in inställningar",
