@@ -82,7 +82,7 @@ OC.L10N.register(
     "Learn how to setup GPU mode with Recognize" : "Aprenda a como configurar el modo GPU con Recognize",
     "Node.js" : "Node.js",
     "Checking Node.js" : "Comprobando Node.js",
-    "Node.js {version} binary was installed successfully." : "El binario Node.js {version} fue instalado exitósamente.",
+    "Node.js {version} binary was installed successfully." : "El binario Node.js {version} se ha instalado correctamente.",
     "Checking libtensorflow" : "Comprobando libtensorflow",
     "Could not load libtensorflow in Node.js. You can try to manually install libtensorflow or run in WASM mode." : "No fue posible cargar libtensorflow en Node.js. Puede intentar instalar manualmente libtensorflow o utilizar el modo WASM.",
     "Successfully loaded libtensorflow in Node.js, but couldn't load GPU. Make sure CUDA Toolkit and cuDNN are installed and accessible, or turn off GPU mode." : "Se cargó libtensorflow exitosamente en Node.js, aunque no se pudo cargar GPU. Asegúrese que el toolkit CUDA y cuDNN están instalados y son accesibles, o bien, desactive el modo GPU.",
