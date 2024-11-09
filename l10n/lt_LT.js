@@ -88,6 +88,7 @@ OC.L10N.register(
     "Bucket" : "Amazon S3 saugykla",
     "Mountain" : "Kalnas",
     "Festival" : "Festivalis",
+    "Event" : "Įvykis",
     "Public transport" : "Viešasis transportas",
     "Toy" : "Žaislas",
     "Vase" : "Vaza",
