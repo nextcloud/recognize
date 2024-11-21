@@ -21,6 +21,7 @@ OC.L10N.register(
     "Camera" : "Fotocàmera",
     "Pizza" : "Pitza",
     "Info" : "Informatziones",
+    "Document" : "Documentu",
     "Bucket" : "Bucket",
     "Gas station" : "Distribudore de benzina",
     "Parking" : "Allogu po veturas",
