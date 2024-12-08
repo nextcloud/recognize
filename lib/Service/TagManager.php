@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (c) 2022 The Recognize contributors.
  * This file is licensed under the Affero General Public License version 3 or later. See the COPYING file.
@@ -79,7 +80,7 @@ class TagManager {
 
 	/**
 	 * @param array $fileIds
-	 * @return array
+	 * @return array<array-key, array<array-key,ISystemTag>>
 	 */
 	public function getTagsForFiles(array $fileIds): array {
 		/** @var array<string, string[]> $tagsByFile */

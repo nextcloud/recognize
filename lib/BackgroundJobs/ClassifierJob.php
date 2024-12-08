@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (c) 2022 The Recognize contributors.
  * This file is licensed under the Affero General Public License version 3 or later. See the COPYING file.
@@ -71,15 +72,15 @@ abstract class ClassifierJob extends TimedJob {
 		try {
 			$this->logger->debug('Running ' . $model . ' classifier');
 			$this->classify($files);
-		} catch(\RuntimeException $e) {
+		} catch (\RuntimeException $e) {
 			$this->logger->warning('Temporary problem with ' . $model . ' classifier, trying again soon', ['exception' => $e]);
-		} catch(\ErrorException $e) {
+		} catch (\ErrorException $e) {
 			$this->settingsService->setSetting($model.'.status', 'false');
 			$this->logger->warning('Problem with ' . $model . ' classifier', ['exception' => $e]);
 			$this->logger->debug('Removing '.static::class.' with argument ' . var_export($argument, true) . 'from oc_jobs');
 			$this->jobList->remove(static::class, $argument);
 			throw $e;
-		} catch(\Throwable $e) {
+		} catch (\Throwable $e) {
 			$this->settingsService->setSetting($model.'.status', 'false');
 			throw $e;
 		}

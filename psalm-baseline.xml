@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.25.0@01a8eb06b9e9cc6cfb6a320bf9fb14331919d505">
+<files psalm-version="5.26.1@d747f6500b38ac4f7dfc5edbcae6e4b637d7add0">
   <file src="lib/AppInfo/Application.php">
     <DeprecatedInterface>
       <code><![CDATA[$this->getContainer()]]></code>
@@ -1049,6 +1049,19 @@
     <RedundantConditionGivenDocblockType>
       <code><![CDATA[$directories !== null]]></code>
     </RedundantConditionGivenDocblockType>
+  </file>
+  <file src="lib/Service/Logger.php">
+    <ImplicitToStringCast>
+      <code><![CDATA[$message]]></code>
+      <code><![CDATA[$message]]></code>
+      <code><![CDATA[$message]]></code>
+      <code><![CDATA[$message]]></code>
+      <code><![CDATA[$message]]></code>
+      <code><![CDATA[$message]]></code>
+      <code><![CDATA[$message]]></code>
+      <code><![CDATA[$message]]></code>
+      <code><![CDATA[$message]]></code>
+    </ImplicitToStringCast>
   </file>
   <file src="lib/Service/StorageService.php">
     <MixedAssignment>
