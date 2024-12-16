@@ -80,7 +80,7 @@
     "Learn how to setup GPU mode with Recognize" : "تونۇش ئارقىلىق GPU ھالىتىنى قانداق تەڭشەشنى ئۆگىنىۋېلىڭ",
     "Node.js" : "Node.js",
     "Checking Node.js" : "Node.js نى تەكشۈرۈش",
-    "Node.js {version} binary was installed successfully." : "Node.js {نەشرى} ئىككىلىك مۇۋەپپەقىيەتلىك ئورنىتىلدى.",
+    "Node.js {version} binary was installed successfully." : "Node.js {version} ئىككىلىك مۇۋەپپەقىيەتلىك ئورنىتىلدى.",
     "Checking libtensorflow" : "Libtensorflow نى تەكشۈرۈش",
     "Could not load libtensorflow in Node.js. You can try to manually install libtensorflow or run in WASM mode." : "Node.js. دا libtensorflow نى يۈكلىيەلمىدى. Libtensorflow نى قولدا ئورنىتىپ ياكى WASM ھالەتتە ئىجرا قىلسىڭىز بولىدۇ.",
     "Successfully loaded libtensorflow in Node.js, but couldn't load GPU. Make sure CUDA Toolkit and cuDNN are installed and accessible, or turn off GPU mode." : "Node.js غا libtensorflow نى مۇۋەپپەقىيەتلىك يۈكلىدى ، ئەمما GPU نى يۈكلىيەلمىدى. CUDA قورال قوراللىرى ۋە cuDNN نىڭ ئورنىتىلغان ۋە زىيارەت قىلىنىدىغانلىقىنى جەزملەشتۈرۈڭ ياكى GPU ھالىتىنى ئېتىۋېتىڭ.",
