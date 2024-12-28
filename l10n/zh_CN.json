@@ -18,6 +18,7 @@
     "An error occurred during object recognition, please check the Nextcloud logs." : "在物体识别过程中发生了一个错误，请检查 Nextcloud 的日志。",
     "Waiting for status reports on object recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs." : "正在等待物体识别的状态报告。如果该信息持续超过 15 分钟，请检查 Nextcloud 的日志。",
     "Object recognition:" : "物体识别：",
+    "Waiting for status reports on landmark recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs." : "等待地标识别的状态报告。如果此消息持续超过 15 分钟，请检查 Nextcloud 日志。",
     "Enable object recognition (e.g. food, vehicles, landscapes)" : "实现物体识别（例如食物、车辆、景观）。",
     "The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)" : "每次作业运行要处理的文件数量（每 5 分钟安排一次作业；对于正常操作大约 100 或更多，在 WASM 模式下建议大约 20）。",
     "Enable landmark recognition (e.g. Eiffel Tower, Golden Gate Bridge)" : "实现地标识别（例如埃菲尔铁塔、金门大桥）。",
