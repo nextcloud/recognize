@@ -35,6 +35,7 @@ OC.L10N.register(
     "Computer" : "コンピューター",
     "Clock" : "時計",
     "Screen" : "画面",
+    "Flag" : "フラグ",
     "Library" : "図書館",
     "Display" : "表示",
     "Bike" : "バイク",
