@@ -7,3 +7,5 @@ build
 /vendor-bin/*/vendor
 /lib/Vendor
 /lib/autoload
+/js/
+/vendor-bin/
