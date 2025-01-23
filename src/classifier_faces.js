@@ -1,4 +1,3 @@
-const path = require('path')
 const fs = require('fs/promises')
 
 let tf, Human, Jimp, wasm
@@ -32,10 +31,10 @@ if (process.argv.length < 3) throw new Error('Incorrect arguments: node classifi
 
 const config = {
 	cacheSensitivity: 0.01,
-	//modelBasePath: 'file://node_modules/@vladmandic/human/models/',
+	// modelBasePath: 'file://node_modules/@vladmandic/human/models/',
 	modelBasePath: 'https://vladmandic.github.io/human-models/models/',
 	backend: PUREJS ? 'wasm' : 'tensorflow',
-	//wasmPath: 'file://node_modules/@tensorflow/tfjs-backend-wasm/dist/',
+	// wasmPath: 'file://node_modules/@tensorflow/tfjs-backend-wasm/dist/',
 	wasmPath: `https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm@${tf.version_core}/dist/`,
 	debug: false,
 	async: false,
@@ -67,7 +66,7 @@ async function main() {
 		paths = process.argv.slice(2)
 	}
 
-	Human.env.updateBackend();
+	Human.env.updateBackend()
 	const human = new Human.Human(config)
 
 	for (const path of paths) {
@@ -99,7 +98,7 @@ async function main() {
 }
 
 if (PUREJS) {
-	wasm.setWasmPaths(config.wasmPath, true);
+	wasm.setWasmPaths(config.wasmPath, true)
 }
 tf.setBackend(PUREJS ? 'wasm' : 'tensorflow')
 	.then(() => main())
