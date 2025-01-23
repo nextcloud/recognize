@@ -76,7 +76,7 @@ Requirements:
 The app does not send any sensitive data to cloud providers or similar services. All processing is done on your Nextcloud machine, using Tensorflow.js running in Node.js.
 
 ]]></description>
-	<version>9.0.0-dev.0</version>
+	<version>10.0.0-dev.0</version>
 	<licence>agpl</licence>
 	<author mail="mklehr@gmx.net">Marcel Klehr</author>
 	<types>
@@ -92,7 +92,7 @@ The app does not send any sensitive data to cloud providers or similar services.
 	<screenshot>https://raw.githubusercontent.com/nextcloud/recognize/main/screenshots/Logo.png</screenshot>
 	<screenshot>https://raw.githubusercontent.com/nextcloud/recognize/main/screenshots/imagenet_examples.jpg</screenshot>
 	<dependencies>
-		<nextcloud min-version="31" max-version="31" />
+		<nextcloud min-version="32" max-version="32" />
 	</dependencies>
 	<background-jobs>
 		<job>OCA\Recognize\BackgroundJobs\MaintenanceJob</job>
