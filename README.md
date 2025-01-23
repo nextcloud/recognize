@@ -60,7 +60,7 @@ Learn more about the Nextcloud Ethical AI Rating [in our blog](https://nextcloud
 ### Examples
 
 ![](https://github.com/marcelklehr/recognize/raw/master/screenshots/imagenet_examples.jpg)
-(Screenshot by \_DigitalWriter\)
+(Screenshot by \_DigitalWriter\_)
 
 ### Privacy
 This app does not send any sensitive data to cloud providers or similar services. All image processing is done on your nextcloud machine, using Tensorflow.js running in Node.js, which comes bundled with this app.
