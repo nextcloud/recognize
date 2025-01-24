@@ -61,7 +61,7 @@ class FaceDetection extends Entity {
 		$this->addType('height', 'float');
 		$this->addType('width', 'float');
 		$this->addType('vector', 'json');
-		$this->addType('clusterId', 'int');
+		$this->addType('clusterId', 'integer');
 		$this->addType('threshold', 'float');
 	}
 

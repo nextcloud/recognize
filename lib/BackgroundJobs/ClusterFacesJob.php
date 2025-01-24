@@ -37,7 +37,6 @@ class ClusterFacesJob extends QueuedJob {
 	 * @return void
 	 */
 	protected function run($argument) {
-		/** @var string $userId */
 		$userId = (string) $argument['userId'];
 		try {
 			$this->clusterAnalyzer->calculateClusters($userId, self::BATCH_SIZE);
