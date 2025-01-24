@@ -113,8 +113,8 @@ class Logger implements LoggerInterface {
 	 */
 	public function log($level, $message, array $context = array()): void {
 		if (isset($this->cliOutput)) {
-			$this->cliOutput->writeln($message);
+			$this->cliOutput->writeln((string)$message);
 		}
-		$this->logger->log($level, $message, $context);
+		$this->logger->log($level, (string)$message, $context);
 	}
 }
