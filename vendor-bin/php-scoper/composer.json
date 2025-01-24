@@ -1,5 +1,23 @@
 {
-    "require-dev": {
-        "humbug/php-scoper": "^0.18.7"
+    "require": {
+        "humbug/php-scoper": "^0.18",
+        "cweagans/composer-patches": "^1.7"
+    },
+    "config": {
+        "platform": {
+            "php": "8.1"
+        },
+        "allow-plugins": {
+            "cweagans/composer-patches": true
+        }
+    },
+    "extra": {
+        "patches": {
+            "thecodingmachine/safe": {
+                "PHP 8.4 compatibility, patch 1": "https://patch-diff.githubusercontent.com/raw/thecodingmachine/safe/pull/464.patch",
+                "PHP 8.4 compatibility, patch 2": "https://patch-diff.githubusercontent.com/raw/thecodingmachine/safe/pull/466.patch",
+                "PHP 8.4 compatibility, patch 3": "https://github.com/blizzz/safe/commit/6eeee2a20ffb2be3456ae8615b227c78e1ca8a20.patch"
+            }
+        }
     }
 }
