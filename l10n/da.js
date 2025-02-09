@@ -30,7 +30,7 @@ OC.L10N.register(
     "Pizza" : "Pizza",
     "Info" : "Info",
     "Document" : "Dokument",
-    "Bucket" : "Bucket",
+    "Bucket" : "Spand",
     "Festival" : "Festival",
     "Event" : "Begivenhed",
     "Gallery" : "Galleri",
