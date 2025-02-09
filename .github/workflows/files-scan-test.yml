@@ -138,6 +138,7 @@ jobs:
       - name: Run scan
         env:
           GITHUB_REF: ${{ github.ref }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
           ./occ files:scan admin -vvv
           rm data/admin/files/res/alpine.JPG
