@@ -3,10 +3,11 @@ const path = require('path')
 const tar = require('tar')
 const VERSION = require('../package.json').version
 const ref = process.env.GITHUB_REF ? process.env.GITHUB_REF : `refs/tags/v${VERSION}`
+const repository = process.env.GITHUB_REPOSITORY ?? 'nextcloud/recognize'
 
 exports.downloadAll = async () => {
 	await download(
-		`https://github.com/nextcloud/recognize/archive/${ref}.tar.gz`,
+		`https://github.com/${repository}/archive/${ref}.tar.gz`,
 		path.resolve(__dirname, '..'),
 		{ filename: 'recognize.tar.gz' }
 	)
