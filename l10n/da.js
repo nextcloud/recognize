@@ -12,6 +12,8 @@ OC.L10N.register(
     "Cat" : "Kat",
     "Architecture" : "Arkitektur",
     "Farm" : "Gård",
+    "Landscape" : "Landskab",
+    "Portrait" : "Portræt",
     "People" : "Personer",
     "Cooking" : "Madlavning",
     "Dog" : "Hund",
