@@ -45,8 +45,10 @@ class SquaredDistance implements Distance {
 	public function compute(array $a, array $b): float {
 		$distance = 0.0;
 
-		foreach ($a as $i => $value) {
-			$distance += ($value - $b[$i]) ** 2;
+		$count = count($a);
+		for ($i = 0; $i < $count; $i++) {
+			$diff = $a[$i] - $b[$i];
+			$distance += $diff * $diff;
 		}
 
 		return $distance;
