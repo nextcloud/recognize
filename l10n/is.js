@@ -21,6 +21,7 @@ OC.L10N.register(
     "Computer" : "Tölva",
     "Clock" : "Klukka",
     "Screen" : "Screen",
+    "Flag" : "Flagg",
     "Library" : "Bókasafn",
     "Display" : "Birting",
     "Bike" : "Hjólandi",
