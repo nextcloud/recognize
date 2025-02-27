@@ -1,12 +1,12 @@
 OC.L10N.register(
     "recognize",
     {
-    "Status" : "Status",
-    "Reset" : "Riprìstinu",
     "Failed to load settings" : "Impossìbile carrigare sa cunfiguratzione",
     "Failed to save settings" : "No at fatu a sarvare is informatziones",
     "never" : "mai",
     "{time} ago" : "{time} a immoe",
+    "Status" : "Status",
+    "Reset" : "Riprìstinu",
     "People" : "Gente",
     "Music" : "Mùsica",
     "Office" : "Ofìtziu",

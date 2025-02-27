@@ -1,9 +1,9 @@
 OC.L10N.register(
     "recognize",
     {
+    "never" : "niciodată",
     "Status" : "Stare",
     "Reset" : "Resetare",
-    "never" : "niciodată",
     "Farm" : "Fermă",
     "Landscape" : "Peisaj",
     "Portrait" : "Portret",

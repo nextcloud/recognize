@@ -1,12 +1,12 @@
 OC.L10N.register(
     "recognize",
     {
-    "Status" : "מצב",
-    "Reset" : "איפוס",
     "Failed to load settings" : "טעינת ההגדרות נכשלה",
     "Failed to save settings" : "שמירת ההגדרות נכשלה",
     "never" : "מעולם לא",
     "{time} ago" : "לפני {time}",
+    "Status" : "מצב",
+    "Reset" : "איפוס",
     "Cat" : "חתול",
     "Dog" : "כלב",
     "Music" : "מוזיקה",

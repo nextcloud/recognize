@@ -1,11 +1,11 @@
 { "translations": {
     "Recognize" : "Reconéisser",
+    "never" : "pas jamai",
+    "{time} ago" : "fa {time}",
     "Status" : "Estat",
     "Audio tagging" : "Etiquetatge d’àudio",
     "Video tagging" : "Etiquetatge de vidèos",
     "Reset" : "Reïnicializar",
-    "never" : "pas jamai",
-    "{time} ago" : "fa {time}",
     "Cat" : "Gat",
     "Animal" : "Animal",
     "Wildlife" : "Vida salvatja",

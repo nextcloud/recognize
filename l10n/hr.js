@@ -1,12 +1,12 @@
 OC.L10N.register(
     "recognize",
     {
-    "Status" : "Status",
-    "Reset" : "Resetiraj",
     "Failed to load settings" : "Učitavanje postavki nije uspjelo",
     "Failed to save settings" : "Spremanje postavki nije uspjelo",
     "never" : "nikad",
     "{time} ago" : "Prije {time}",
+    "Status" : "Status",
+    "Reset" : "Resetiraj",
     "People" : "Ljudi",
     "Music" : "Glazba",
     "Office" : "Ured",

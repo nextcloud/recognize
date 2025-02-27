@@ -1,12 +1,12 @@
 OC.L10N.register(
     "recognize",
     {
-    "Status" : "Stato",
-    "Reset" : "Restarigi",
     "Failed to load settings" : "Ŝargo de agordoj malsukcesis",
     "Failed to save settings" : "Konservo de agordoj malsukcesis",
     "never" : "neniam",
     "{time} ago" : "antaŭ {time}",
+    "Status" : "Stato",
+    "Reset" : "Restarigi",
     "People" : "Homoj",
     "Dog" : "Hundo",
     "Music" : "Muziko",

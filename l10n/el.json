@@ -1,11 +1,11 @@
 { "translations": {
     "Recognize" : "Αναγνώριση",
-    "Status" : "Κατάσταση",
-    "Reset" : "Επαναφορά",
     "Failed to load settings" : "Αποτυχία φόρτωσης ρυθμίσεων",
     "Failed to save settings" : "Αποτυχία αποθήκευσης ρυθμίσεων",
     "never" : "ποτέ",
     "{time} ago" : "{time} πριν",
+    "Status" : "Κατάσταση",
+    "Reset" : "Επαναφορά",
     "Cat" : "Γάτα",
     "Farm" : "Φάρμα",
     "Landscape" : "Οριζόντια",

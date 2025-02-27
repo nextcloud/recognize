@@ -1,9 +1,9 @@
 OC.L10N.register(
     "recognize",
     {
+    "never" : "mitte kunagi",
     "Status" : "Staatus",
     "Reset" : "Lähtesta",
-    "never" : "mitte kunagi",
     "Landscape" : "Horisontaalne",
     "Portrait" : "Vertikaalne",
     "People" : "Inimese",

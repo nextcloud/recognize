@@ -1,12 +1,12 @@
 OC.L10N.register(
     "recognize",
     {
-    "Status" : "Staða",
-    "Reset" : "Endurstilla",
     "Failed to load settings" : "Mistókst að hlaða inn stillingum",
     "Failed to save settings" : "Mistókst að vista stillingar",
     "never" : "aldrei",
     "{time} ago" : "fyrir {time} síðan",
+    "Status" : "Staða",
+    "Reset" : "Endurstilla",
     "Architecture" : "Tölvuhögun",
     "Farm" : "Býli",
     "Landscape" : "Lárétt",

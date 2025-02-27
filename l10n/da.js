@@ -1,14 +1,14 @@
 OC.L10N.register(
     "recognize",
     {
-    "Status" : "Status",
-    "Reset" : "Nulstil",
-    "Node.js" : "Node.js",
-    "Checking Node.js" : "Tjekker Node.js",
     "Failed to load settings" : "Fejl ved indlæsning af indstillinger",
     "Failed to save settings" : "Kunne ikke gemme indstillinger",
     "never" : "aldrig",
     "{time} ago" : "{time} siden",
+    "Status" : "Status",
+    "Reset" : "Nulstil",
+    "Node.js" : "Node.js",
+    "Checking Node.js" : "Tjekker Node.js",
     "Cat" : "Kat",
     "Architecture" : "Arkitektur",
     "Farm" : "Gård",

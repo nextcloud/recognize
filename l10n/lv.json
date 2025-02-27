@@ -1,5 +1,7 @@
 { "translations": {
     "Smart media tagging and face recognition with on-premises machine learning models" : "Viedā informācijas nesēju atzīmēšana ar birkām un sejas atpazīšana ar uz vietas izvietotiem mašīnmācīšanās modeļiem.",
+    "Failed to save settings" : "Neizdevās saglabāt iestatījumus",
+    "never" : "nekad",
     "Status" : "Status",
     "Face recognition" : "Seju atpazīšana",
     "Face recognition is working. " : "Seju atpazīšana darbojas.",
@@ -9,8 +11,6 @@
     "There are queued files in the face recognition queue but no background job is scheduled to process them." : "Ir ierindotas datnes seju atpazīšanas rindā, bet nav ieplānots neviens fona darbs, kas tās apstrādātu.",
     "Enable face recognition (groups photos by faces that appear in them; UI is in the photos app)" : "Iespējot seju atpazīšanu (apkopo fotoattēlus pēc sejām, kas parādās tajos; lietotāja saskarne ir fotoattēlu lietotnē)",
     "Reset" : "Atiestatīt",
-    "Failed to save settings" : "Neizdevās saglabāt iestatījumus",
-    "never" : "nekad",
     "Farm" : "Ferma",
     "Landscape" : "Ainava",
     "Portrait" : "Portrets",

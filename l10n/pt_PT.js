@@ -2,10 +2,10 @@ OC.L10N.register(
     "recognize",
     {
     "Recognize" : "Reconhecer",
-    "Status" : "Estado",
-    "Reset" : "Reiniciar",
     "Failed to save settings" : "Erro ao gravar as definições",
     "never" : "nunca",
+    "Status" : "Estado",
+    "Reset" : "Reiniciar",
     "People" : "Pessoas",
     "Music" : "Música",
     "Office" : "Escritório",

@@ -1,10 +1,10 @@
 OC.L10N.register(
     "recognize",
     {
-    "Status" : "Status",
-    "Reset" : "Reset",
     "Failed to save settings" : "Failed to save settings",
     "never" : "never",
+    "Status" : "Status",
+    "Reset" : "Reset",
     "Architecture" : "Architecture",
     "Farm" : "Farm",
     "People" : "People",

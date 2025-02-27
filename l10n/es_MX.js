@@ -1,11 +1,11 @@
 OC.L10N.register(
     "recognize",
     {
-    "Status" : "Estatus",
-    "Reset" : "Reiniciar",
     "Failed to load settings" : "No se pudo cargar la configuración",
     "Failed to save settings" : "No se pudo guardar la configuración",
     "never" : "nunca",
+    "Status" : "Estatus",
+    "Reset" : "Reiniciar",
     "Architecture" : "Arquitectura",
     "Landscape" : "Paisaje",
     "Portrait" : "Retrato",
