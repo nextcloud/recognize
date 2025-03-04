@@ -20,7 +20,7 @@ class FaceClusterAnalyzer {
 	public const MIN_DETECTION_SIZE = 0.03;
 	public const MIN_CLUSTER_SEPARATION = 0.35;
 	public const MAX_CLUSTER_EDGE_LENGTH = 0.5;
-	public const DIMENSIONS = 128;
+	public const DIMENSIONS = 1024;
 	public const MAX_OVERLAP_NEW_CLUSTER = 0.1;
 	public const MIN_OVERLAP_EXISTING_CLUSTER = 0.5;
 
@@ -187,7 +187,7 @@ class FaceClusterAnalyzer {
 	 * @return list<float>
 	 */
 	public static function calculateCentroidOfDetections(array $detections): array {
-		// init 128 dimensional vector
+		// init 1024 dimensional vector
 		/** @var list<float> $sum */
 		$sum = [];
 		for ($i = 0; $i < self::DIMENSIONS; $i++) {
