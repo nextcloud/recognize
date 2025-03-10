@@ -323,9 +323,9 @@ abstract class Classifier {
 		// Create a temporary file *with the correct extension*
 		$tmpname = $this->tempManager->getTemporaryFile('.jpg');
 
-        if ($tmpname === false) {
-            throw new \OCA\Recognize\Exception\Exception('Could not create tmpfile');
-        }
+		if ($tmpname === false) {
+			throw new \OCA\Recognize\Exception\Exception('Could not create tmpfile');
+		}
 
 		$tmpfile = fopen($tmpname, 'wb');
 
@@ -389,11 +389,11 @@ abstract class Classifier {
 		// Create a temporary file *with the correct extension*
 		$tmpname = $this->tempManager->getTemporaryFile('.jpg');
 
-        if ($tmpname === false) {
-            throw new \OCA\Recognize\Exception\Exception('Could not create tmpfile');
-        }
+		if ($tmpname === false) {
+			throw new \OCA\Recognize\Exception\Exception('Could not create tmpfile');
+		}
 
-        $use_gd_quality = (int)\OCP\Server::get(IConfig::class)->getSystemValue('recognize.preview.quality', '100');
+		$use_gd_quality = (int)\OCP\Server::get(IConfig::class)->getSystemValue('recognize.preview.quality', '100');
 		if (imagejpeg($previewImage, $tmpname, $use_gd_quality) === false) {
 			imagedestroy($image);
 			imagedestroy($previewImage);
