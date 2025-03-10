@@ -140,21 +140,21 @@ jobs:
         id: photos-cache
         with:
           path: data/admin/files/
-          key: https://cloud.nextcloud.com/s/wfDk23DBsXYrd4S/download/IMDb-Face.zip
+          key: https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip
 
       - name: Upload photos
         if: steps.photos-cache.outputs.cache-hit != 'true'
         run: |
           mkdir -p data/admin/files/
           cd data/admin/files
-          wget https://cloud.nextcloud.com/s/wfDk23DBsXYrd4S/download/IMDb-Face.zip
+          wget https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip
           unzip IMDb-Face.zip
           rm IMDb-Face.zip
 
       - uses: actions/cache/save@v3
         with:
           path: data/admin/files/
-          key: https://cloud.nextcloud.com/s/wfDk23DBsXYrd4S/download/IMDb-Face.zip
+          key: https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip
 
       - name: Set config
         run: |
@@ -259,7 +259,7 @@ jobs:
       - name: Download IMDb-Face.csv
         working-directory: apps/${{ env.APP_NAME }}/tests/res
         run: |
-          wget https://cloud.nextcloud.com/s/wfDk23DBsXYrd4S/download/IMDb-Face-csv.zip 
+          wget https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face-csv.zip 
           unzip IMDb-Face-csv.zip
           rm IMDb-Face-csv.zip
 
