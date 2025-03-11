@@ -4,6 +4,7 @@
         "ext-json": "*",
         "ext-pdo": "*",
         "rubix/ml": "2.x",
+        "amphp\/parallel": "1.4.x",
         "bamarni/composer-bin-plugin": "^1.8"
     },
     "autoload": {
