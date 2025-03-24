@@ -83,7 +83,7 @@ jobs:
           path: apps/${{ env.APP_NAME }}
 
       - name: Read package.json node and npm engines version
-        uses: skjnldsv/read-package-engines-version-actions@v1.1
+        uses: skjnldsv/read-package-engines-version-actions@v2.2
         id: versions
         with:
           path: apps/${{ env.APP_NAME }}
