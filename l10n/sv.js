@@ -23,6 +23,7 @@ OC.L10N.register(
     "Computer" : "Dator",
     "Clock" : "Klocka",
     "Screen" : "Skärm",
+    "Flag" : "Flag",
     "Library" : "Bibliotek",
     "Display" : "Visa",
     "Bike" : "Cykel",
