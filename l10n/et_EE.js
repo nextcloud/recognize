@@ -6,6 +6,7 @@ OC.L10N.register(
     "never" : "mitte kunagi",
     "Status" : "Staatus",
     "Reset" : "Lähtesta",
+    "Architecture" : "Arhitektuur",
     "Landscape" : "Horisontaalne",
     "Portrait" : "Vertikaalne",
     "People" : "Inimese",
