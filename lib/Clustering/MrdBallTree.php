@@ -179,7 +179,7 @@ final class MrdBallTree extends BallTree {
 		}
 
 		if ($this->kernel instanceof SquaredDistance) {
-			$longestDistance = (float) min($longestDistance, (2.0 * sqrt($queryNode->radius()) + sqrt($shortestDistance)) ** 2.0);
+			$longestDistance = min($longestDistance, (2.0 * sqrt($queryNode->radius()) + sqrt($shortestDistance)) ** 2.0);
 		} else {
 			$longestDistance = (float) min($longestDistance, 2.0 * $queryNode->radius() + $shortestDistance);
 		}

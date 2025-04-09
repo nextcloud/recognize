@@ -492,7 +492,6 @@
       <code><![CDATA[$this->coreNeighborDistances]]></code>
     </PropertyTypeCoercion>
     <RedundantCastGivenDocblockType>
-      <code><![CDATA[(float) min($longestDistance, (2.0* sqrt($queryNode->radius()) + sqrt($shortestDistance)) ** 2.0)]]></code>
       <code><![CDATA[(float) min($longestDistance, 2.0 * $queryNode->radius() + $shortestDistance)]]></code>
     </RedundantCastGivenDocblockType>
     <RedundantFunctionCallGivenDocblockType>
