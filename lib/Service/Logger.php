@@ -10,7 +10,7 @@ namespace OCA\Recognize\Service;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class Logger implements LoggerInterface {
+final class Logger implements LoggerInterface {
 	private LoggerInterface $logger;
 	private ?OutputInterface $cliOutput = null;
 

@@ -15,7 +15,7 @@ use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\IJobList;
 use OCP\Files\Config\IUserMountCache;
 
-class ClassifyLandmarksJob extends ClassifierJob {
+final class ClassifyLandmarksJob extends ClassifierJob {
 	public const MODEL_NAME = 'landmarks';
 
 	private SettingsService $settingsService;

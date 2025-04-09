@@ -22,7 +22,7 @@ use Sabre\DAV\ICollection;
 use Sabre\DAV\IMoveTarget;
 use Sabre\DAV\INode;
 
-class FaceRoot implements ICollection, IMoveTarget {
+final class FaceRoot implements ICollection, IMoveTarget {
 	private FaceClusterMapper $clusterMapper;
 	private FaceCluster $cluster;
 	private IUser $user;

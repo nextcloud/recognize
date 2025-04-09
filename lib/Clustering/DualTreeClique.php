@@ -13,7 +13,7 @@ use \OCA\Recognize\Vendor\Rubix\ML\Helpers\Stats;
 use \OCA\Recognize\Vendor\Rubix\ML\Kernels\Distance\Distance;
 use function \OCA\Recognize\Vendor\Rubix\ML\argmax;
 
-class DualTreeClique extends Clique {
+final class DualTreeClique extends Clique {
 	protected float $longestDistanceInNode = INF;
 	protected bool $fullyConnected = false;
 	/**
@@ -63,8 +63,11 @@ class DualTreeClique extends Clique {
 		}
 
 		$labels = $this->dataset->labels();
-
-		$setId = $labelToSetId[array_pop($labels)];
+        $lastLabel = array_pop($labels);
+        if (!isset($labelToSetId[$lastLabel])) {
+            return null;
+        }
+		$setId = $labelToSetId[$lastLabel];
 
 		foreach ($labels as $label) {
 			if ($setId !== $labelToSetId[$label]) {

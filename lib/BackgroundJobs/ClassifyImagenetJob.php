@@ -15,7 +15,7 @@ use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\IJobList;
 use OCP\Files\Config\IUserMountCache;
 
-class ClassifyImagenetJob extends ClassifierJob {
+final class ClassifyImagenetJob extends ClassifierJob {
 	public const MODEL_NAME = 'imagenet';
 
 	private SettingsService $settingsService;

@@ -10,7 +10,7 @@ namespace OCA\Recognize\Clustering;
 use \OCA\Recognize\Vendor\Rubix\ML\Datasets\Labeled;
 use \OCA\Recognize\Vendor\Rubix\ML\Kernels\Distance\Distance;
 
-class MstSolver {
+final class MstSolver {
 	private MrdBallTree $tree;
 	private Distance $kernel;
 	private bool $useTrueMst;
@@ -83,9 +83,9 @@ class MstSolver {
 
 		// Update the bound of the query node
 		if ($this->kernel instanceof SquaredDistance) {
-			$longestDistance = min($longestDistance, (2 * sqrt($queryNode->radius()) + sqrt($shortestDistance)) ** 2);
+			$longestDistance = min($longestDistance, (2.0 * sqrt($queryNode->radius()) + sqrt($shortestDistance)) ** 2.0);
 		} else {
-			$longestDistance = min($longestDistance, 2 * $queryNode->radius() + $shortestDistance);
+			$longestDistance = min($longestDistance, 2.0 * $queryNode->radius() + $shortestDistance);
 		}
 
 		$queryNode->setLongestDistance($longestDistance);
@@ -163,14 +163,14 @@ class MstSolver {
 		// TODO: min($longestLeft, $longestRight) + 2 * ($queryNode->radius()) <--- Can be made tighter?
 		if ($this->kernel instanceof SquaredDistance) {
 			$longestDistance = max($longestLeft, $longestRight);
-			$longestLeft = (sqrt($longestLeft) + 2 * (sqrt($queryNode->radius()) - sqrt($queryLeft->radius()))) ** 2;
-			$longestRight = (sqrt($longestRight) + 2 * (sqrt($queryNode->radius()) - sqrt($queryRight->radius()))) ** 2;
-			$longestDistance = min($longestDistance, min($longestLeft, $longestRight), (sqrt(min($longestLeft, $longestRight)) + 2 * (sqrt($queryNode->radius()))) ** 2);
+			$longestLeft = (sqrt($longestLeft) + 2.0 * (sqrt($queryNode->radius()) - sqrt($queryLeft->radius()))) ** 2.0;
+			$longestRight = (sqrt($longestRight) + 2.0 * (sqrt($queryNode->radius()) - sqrt($queryRight->radius()))) ** 2.0;
+			$longestDistance = (float) min($longestDistance, min($longestLeft, $longestRight), (sqrt(min($longestLeft, $longestRight)) + 2.0 * (sqrt($queryNode->radius()))) ** 2.0);
 		} else {
 			$longestDistance = max($longestLeft, $longestRight);
-			$longestLeft = $longestLeft + 2 * ($queryNode->radius() - $queryLeft->radius());
-			$longestRight = $longestRight + 2 * ($queryNode->radius() - $queryRight->radius());
-			$longestDistance = min($longestDistance, min($longestLeft, $longestRight), min($longestLeft, $longestRight) + 2 * ($queryNode->radius()));
+			$longestLeft = $longestLeft + 2.0 * ($queryNode->radius() - $queryLeft->radius());
+			$longestRight = $longestRight + 2.0 * ($queryNode->radius() - $queryRight->radius());
+			$longestDistance = (float) min($longestDistance, min($longestLeft, $longestRight), min($longestLeft, $longestRight) + 2.0 * ($queryNode->radius()));
 		}
 
 		$queryNode->setLongestDistance($longestDistance);
@@ -179,7 +179,7 @@ class MstSolver {
 	}
 
 	/**
-	 * @return array<int,array{vertexFrom:int|string,vertexTo:int|string,distance:float}>
+	 * @return list<array{vertexFrom:int|string,vertexTo:int|string,distance:float}>
 	 */
 	public function getMst(): array {
 		$edges = [];

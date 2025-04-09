@@ -17,7 +17,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ClusterFaces extends Command {
+final class ClusterFaces extends Command {
 	private Logger $logger;
 
 	private FaceDetectionMapper $detectionMapper;

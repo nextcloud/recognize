@@ -7,5 +7,5 @@
 declare(strict_types=1);
 namespace OCA\Recognize\Exception;
 
-class Exception extends \Exception {
+final class Exception extends \Exception {
 }

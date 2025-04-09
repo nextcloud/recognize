@@ -17,7 +17,7 @@ use OCP\Files\IRootFolder;
 use OCP\IPreview;
 use OCP\ITempManager;
 
-class ImagenetClassifier extends Classifier {
+final class ImagenetClassifier extends Classifier {
 	public const IMAGE_TIMEOUT = 480; // seconds
 	public const IMAGE_PUREJS_TIMEOUT = 600; // seconds
 	public const MODEL_NAME = 'imagenet';

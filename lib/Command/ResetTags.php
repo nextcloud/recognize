@@ -12,7 +12,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ResetTags extends Command {
+final class ResetTags extends Command {
 	private TagManager $tagManager;
 
 	public function __construct(TagManager $tagManager) {

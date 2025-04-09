@@ -13,7 +13,7 @@ use OCP\Http\Client\IClientService;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
-class DownloadModelsService {
+final class DownloadModelsService {
 	private IClientService $clientService;
 	private bool $isCLI;
 
