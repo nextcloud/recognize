@@ -13,7 +13,7 @@ use \OCA\Recognize\Vendor\Rubix\ML\Helpers\Stats;
 use \OCA\Recognize\Vendor\Rubix\ML\Kernels\Distance\Distance;
 use function \OCA\Recognize\Vendor\Rubix\ML\argmax;
 
-class DualTreeBall extends Ball {
+final class DualTreeBall extends Ball {
 	protected float $longestDistanceInNode = INF;
 	protected bool $fullyConnected = false;
 	protected $setId;

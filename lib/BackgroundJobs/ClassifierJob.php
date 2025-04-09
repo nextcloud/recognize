@@ -106,7 +106,7 @@ abstract class ClassifierJob extends TimedJob {
 	abstract protected function getBatchSize(): int;
 
 	/**
-	 * @param array $files
+	 * @param list<OCA\Recognize\Db\QueueFile> $files
 	 * @return void
 	 * @throws \RuntimeException|\ErrorException
 	 */

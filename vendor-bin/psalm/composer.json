@@ -1,5 +1,5 @@
 {
     "require": {
-        "psalm/phar": "5.*"
+        "psalm/phar": "6.*"
     }
 }

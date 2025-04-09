@@ -15,7 +15,7 @@ use OCP\IDBConnection;
 /**
  * @psalm-extends QBMapper<FaceCluster>
  */
-class FaceClusterMapper extends QBMapper {
+final class FaceClusterMapper extends QBMapper {
 	public function __construct(IDBConnection $db) {
 		parent::__construct($db, 'recognize_face_clusters', FaceCluster::class);
 		$this->db = $db;

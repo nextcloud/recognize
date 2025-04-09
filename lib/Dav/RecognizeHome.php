@@ -19,7 +19,7 @@ use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAV\Exception\NotFound;
 use Sabre\DAV\ICollection;
 
-class RecognizeHome implements ICollection {
+final class RecognizeHome implements ICollection {
 	private array $principalInfo;
 	private FaceClusterMapper $faceClusterMapper;
 	private IUser $user;

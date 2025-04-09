@@ -33,7 +33,7 @@ use OCP\Exceptions\AppConfigTypeConflictException;
 use OCP\IBinaryFinder;
 use OCP\IRequest;
 
-class AdminController extends Controller {
+final class AdminController extends Controller {
 	private TagManager $tagManager;
 	private IJobList $jobList;
 	private SettingsService $settingsService;

@@ -140,22 +140,21 @@
         },
         {
             "name": "fidry/filesystem",
-            "version": "1.2.1",
+            "version": "1.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/theofidry/filesystem.git",
-                "reference": "8303225d289da1c434f6009743fbe9aad852de0c"
+                "reference": "3e1f9cac40f807b7c4196013ab77cc1b9416e3e5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/theofidry/filesystem/zipball/8303225d289da1c434f6009743fbe9aad852de0c",
-                "reference": "8303225d289da1c434f6009743fbe9aad852de0c",
+                "url": "https://api.github.com/repos/theofidry/filesystem/zipball/3e1f9cac40f807b7c4196013ab77cc1b9416e3e5",
+                "reference": "3e1f9cac40f807b7c4196013ab77cc1b9416e3e5",
                 "shasum": ""
             },
             "require": {
                 "php": "^8.1",
-                "symfony/filesystem": "^6.4 || ^7.0",
-                "thecodingmachine/safe": "^2.0"
+                "symfony/filesystem": "^6.4 || ^7.0"
             },
             "require-dev": {
                 "bamarni/composer-bin-plugin": "^1.4",
@@ -195,7 +194,7 @@
             ],
             "support": {
                 "issues": "https://github.com/theofidry/filesystem/issues",
-                "source": "https://github.com/theofidry/filesystem/tree/1.2.1"
+                "source": "https://github.com/theofidry/filesystem/tree/1.2.3"
             },
             "funding": [
                 {
@@ -203,7 +202,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-12-10T13:29:09+00:00"
+            "time": "2025-02-13T22:58:51+00:00"
         },
         {
             "name": "humbug/php-scoper",

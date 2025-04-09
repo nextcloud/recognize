@@ -23,7 +23,7 @@ use OCP\BackgroundJob\QueuedJob;
 use OCP\DB\Exception;
 use Psr\Log\LoggerInterface;
 
-class StorageCrawlJob extends QueuedJob {
+final class StorageCrawlJob extends QueuedJob {
 	public const BATCH_SIZE = 2000;
 	private LoggerInterface $logger;
 	private QueueService $queue;

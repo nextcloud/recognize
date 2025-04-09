@@ -25,7 +25,7 @@ use OCP\Share\Events\ShareAcceptedEvent;
 use OCP\Share\Events\ShareCreatedEvent;
 use OCP\Share\Events\ShareDeletedEvent;
 
-class Application extends App implements IBootstrap {
+final class Application extends App implements IBootstrap {
 	public const APP_ID = 'recognize';
 
 	public function __construct() {

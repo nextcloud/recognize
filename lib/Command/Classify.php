@@ -27,7 +27,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class Classify extends Command {
+final class Classify extends Command {
 	/** @var array<string, Classifier>  */
 	private array $classifiers = [];
 

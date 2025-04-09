@@ -14,7 +14,7 @@ use OCP\ICache;
 use OCP\ICacheFactory;
 use OCP\IDBConnection;
 
-class IgnoreService {
+final class IgnoreService {
 	private array $inMemoryCache = [];
 	private ICache $localCache;
 

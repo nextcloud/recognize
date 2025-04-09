@@ -19,7 +19,7 @@ use \OCA\Recognize\Vendor\Rubix\ML\Kernels\Distance\Distance;
  * @package     Rubix/ML
  * @author      Sami Finnilä
  */
-class SquaredDistance implements Distance {
+final class SquaredDistance implements Distance {
 	/**
 	 * Return the data types that this kernel is compatible with.
 	 *

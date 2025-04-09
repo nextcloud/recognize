@@ -12,7 +12,7 @@ namespace OCA\Recognize\Db;
  * @method setTitle(string $title)
  * @method static self fromRow(array $array)
  */
-class FaceDetectionWithTitle extends FaceDetection {
+final class FaceDetectionWithTitle extends FaceDetection {
 	protected $title;
 
 	public static $columns = ['id', 'user_id', 'file_id', 'x', 'y', 'height', 'width', 'vector', 'cluster_id', 'title'];

@@ -18,7 +18,7 @@ use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAV\Exception\NotFound;
 use Sabre\DAV\ICollection;
 
-class UnassignedFacesHome implements ICollection {
+final class UnassignedFacesHome implements ICollection {
 	private IUser $user;
 	private FaceDetectionMapper $faceDetectionMapper;
 	private IRootFolder $rootFolder;

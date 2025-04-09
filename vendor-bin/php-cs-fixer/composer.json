@@ -1,6 +1,6 @@
 {
     "require": {
-        "friendsofphp/php-cs-fixer": "^3",
-        "nextcloud/coding-standard": "^1"
+        "friendsofphp/php-cs-fixer": "3.x",
+        "nextcloud/coding-standard": "1.x"
     }
 }

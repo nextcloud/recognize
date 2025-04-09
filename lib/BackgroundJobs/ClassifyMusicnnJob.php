@@ -15,7 +15,7 @@ use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\IJobList;
 use OCP\Files\Config\IUserMountCache;
 
-class ClassifyMusicnnJob extends ClassifierJob {
+final class ClassifyMusicnnJob extends ClassifierJob {
 	public const MODEL_NAME = 'musicnn';
 
 	private SettingsService $settingsService;
