@@ -115,10 +115,10 @@ final class MstClusterer {
 			}
 
 			$currentLongestEdgeKey = array_key_last($this->remainingEdges);
-            /**
-             * @var $currentLongestEdge array{vertexFrom: int, vertexTo:int, distance:float, finalLambda?: float}
-             */
-            $currentLongestEdge = array_pop($this->remainingEdges);
+			/**
+			 * @var $currentLongestEdge array{vertexFrom: int, vertexTo:int, distance:float, finalLambda?: float}
+			 */
+			$currentLongestEdge = array_pop($this->remainingEdges);
 
 			$vertexConnectedFrom = $currentLongestEdge["vertexFrom"];
 			$vertexConnectedTo = $currentLongestEdge["vertexTo"];

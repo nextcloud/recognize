@@ -16,13 +16,13 @@ use \OCA\Recognize\Vendor\Rubix\ML\Kernels\Distance\Distance;
 final class MrdBallTree extends BallTree {
 	private ?Labeled $dataset = null;
 	private array $nativeInterpointCache = [];
-    /**
-     * @var array<array-key,list<float>>
-     */
+	/**
+	 * @var array<array-key,list<float>>
+	 */
 	private array $coreDistances = [];
-    /**
-     * @var array<array-key,list<float>>
-     */
+	/**
+	 * @var array<array-key,list<float>>
+	 */
 	private array $coreNeighborDistances = [];
 	private int $sampleSize;
 	private array $nodeDistances;
@@ -179,7 +179,7 @@ final class MrdBallTree extends BallTree {
 		}
 
 		if ($this->kernel instanceof SquaredDistance) {
-			$longestDistance = (float) min($longestDistance, (2.0* sqrt($queryNode->radius()) + sqrt($shortestDistance)) ** 2.0);
+			$longestDistance = (float) min($longestDistance, (2.0 * sqrt($queryNode->radius()) + sqrt($shortestDistance)) ** 2.0);
 		} else {
 			$longestDistance = (float) min($longestDistance, 2.0 * $queryNode->radius() + $shortestDistance);
 		}

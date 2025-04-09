@@ -102,20 +102,20 @@ abstract class Classifier {
 				$path = $this->getConvertedFilePath($files[0]);
 				if (in_array($model, [ImagenetClassifier::MODEL_NAME, LandmarksClassifier::MODEL_NAME, ClusteringFaceClassifier::MODEL_NAME], true)) {
 					// Check file data size
-                    $filesize = filesize($path);
-                    if ($filesize !== false) {
-                        $filesizeMb = $filesize / (1024 * 1024);
-                        if ($filesizeMb > 8) {
-                            $this->logger->debug('File is too large for classifier: ' . $files[0]->getPath());
-                            try {
-                                $this->logger->debug('removing ' . $queueFile->getFileId() . ' from ' . $model . ' queue');
-                                $this->queue->removeFromQueue($model, $queueFile);
-                            } catch (Exception $e) {
-                                $this->logger->warning($e->getMessage(), ['exception' => $e]);
-                            }
-                            continue;
-                        }
-                    }
+					$filesize = filesize($path);
+					if ($filesize !== false) {
+						$filesizeMb = $filesize / (1024 * 1024);
+						if ($filesizeMb > 8) {
+							$this->logger->debug('File is too large for classifier: ' . $files[0]->getPath());
+							try {
+								$this->logger->debug('removing ' . $queueFile->getFileId() . ' from ' . $model . ' queue');
+								$this->queue->removeFromQueue($model, $queueFile);
+							} catch (Exception $e) {
+								$this->logger->warning($e->getMessage(), ['exception' => $e]);
+							}
+							continue;
+						}
+					}
 					// Check file dimensions
 					$dimensions = @getimagesize($path);
 					if (isset($dimensions) && $dimensions !== false && ($dimensions[0] > 1024 || $dimensions[1] > 1024)) {
@@ -344,13 +344,13 @@ abstract class Classifier {
 
 		if (in_array($imagetype, [IMAGETYPE_WEBP, IMAGETYPE_AVIF, false])) { // To troubleshoot if it is a webp or avif.
 			$imageString = file_get_contents($tmpname);
-            if ($imageString === false) {
-                throw new \OCA\Recognize\Exception\Exception('Could not load preview file from temp folder');
-            }
-            $previewImage = imagecreatefromstring($imageString);
-            if ($previewImage === false) {
-                throw new \OCA\Recognize\Exception\Exception('Could not load preview file from temp folder');
-            }
+			if ($imageString === false) {
+				throw new \OCA\Recognize\Exception\Exception('Could not load preview file from temp folder');
+			}
+			$previewImage = imagecreatefromstring($imageString);
+			if ($previewImage === false) {
+				throw new \OCA\Recognize\Exception\Exception('Could not load preview file from temp folder');
+			}
 			$use_gd_quality = (int)\OCP\Server::get(IConfig::class)->getSystemValue('recognize.preview.quality', '100');
 			if (imagejpeg($previewImage, $tmpname, $use_gd_quality) === false) {
 				imagedestroy($previewImage);
@@ -368,10 +368,10 @@ abstract class Classifier {
 	 * @throws \OCA\Recognize\Exception\Exception
 	 */
 	public function generatePreviewWithGD(string $path): string {
-        $imageContents = file_get_contents($path);
-        if (!$imageContents) {
-            throw new \OCA\Recognize\Exception\Exception('Could not load image for preview with gdlib');
-        }
+		$imageContents = file_get_contents($path);
+		if (!$imageContents) {
+			throw new \OCA\Recognize\Exception\Exception('Could not load image for preview with gdlib');
+		}
 		$image = imagecreatefromstring($imageContents);
 		if (!$image) {
 			throw new \OCA\Recognize\Exception\Exception('Could not load image for preview with gdlib');
@@ -379,9 +379,9 @@ abstract class Classifier {
 		$width = imagesx($image);
 		$height = imagesy($image);
 
-        if ($width === false || $height === false) {
-            throw new \OCA\Recognize\Exception\Exception('Could not get image dimensions for preview with gdlib');
-        }
+		if ($width === false || $height === false) {
+			throw new \OCA\Recognize\Exception\Exception('Could not get image dimensions for preview with gdlib');
+		}
 
 		$maxWidth = (float) self::TEMP_FILE_DIMENSION;
 		$maxHeight = (float) self::TEMP_FILE_DIMENSION;
