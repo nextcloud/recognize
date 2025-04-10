@@ -21,7 +21,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ClearBackgroundJobs extends Command {
+final class ClearBackgroundJobs extends Command {
 	private IJobList $jobList;
 	private LoggerInterface $logger;
 	

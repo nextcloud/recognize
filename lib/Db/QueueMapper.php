@@ -22,7 +22,7 @@ use OCP\IDBConnection;
 /**
  * @psalm-extends QBMapper<QueueFile>
  */
-class QueueMapper extends QBMapper {
+final class QueueMapper extends QBMapper {
 	public const MODELS = [
 		ImagenetClassifier::MODEL_NAME,
 		ClusteringFaceClassifier::MODEL_NAME,

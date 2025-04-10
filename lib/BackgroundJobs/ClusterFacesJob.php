@@ -16,7 +16,7 @@ use OCP\BackgroundJob\QueuedJob;
 use OCP\DB\Exception;
 use Psr\Log\LoggerInterface;
 
-class ClusterFacesJob extends QueuedJob {
+final class ClusterFacesJob extends QueuedJob {
 	private FaceClusterAnalyzer $clusterAnalyzer;
 	private IJobList $jobList;
 	private LoggerInterface $logger;

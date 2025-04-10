@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.26.1@d747f6500b38ac4f7dfc5edbcae6e4b637d7add0">
+<files psalm-version="6.10.0@9c0add4eb88d4b169ac04acb7c679918cbb9c252">
   <file src="lib/AppInfo/Application.php">
     <DeprecatedInterface>
       <code><![CDATA[$this->getContainer()]]></code>
@@ -12,6 +12,9 @@
     </UndefinedClass>
   </file>
   <file src="lib/BackgroundJobs/ClassifierJob.php">
+    <ArgumentTypeCoercion>
+      <code><![CDATA[$files]]></code>
+    </ArgumentTypeCoercion>
     <MixedArgument>
       <code><![CDATA[$rootId]]></code>
     </MixedArgument>
@@ -21,61 +24,64 @@
     <TypeDoesNotContainType>
       <code><![CDATA[$jobClass === static::class]]></code>
     </TypeDoesNotContainType>
+    <UndefinedDocblockClass>
+      <code><![CDATA[list<OCA\Recognize\Db\QueueFile>]]></code>
+    </UndefinedDocblockClass>
   </file>
   <file src="lib/BackgroundJobs/ClassifyFacesJob.php">
+    <ImplementedParamTypeMismatch>
+      <code><![CDATA[$files]]></code>
+    </ImplementedParamTypeMismatch>
     <MissingParamType>
       <code><![CDATA[$argument]]></code>
     </MissingParamType>
     <MixedArgument>
       <code><![CDATA[$argument]]></code>
     </MixedArgument>
-    <MoreSpecificImplementedParamType>
-      <code><![CDATA[$files]]></code>
-    </MoreSpecificImplementedParamType>
   </file>
   <file src="lib/BackgroundJobs/ClassifyImagenetJob.php">
+    <ImplementedParamTypeMismatch>
+      <code><![CDATA[$files]]></code>
+    </ImplementedParamTypeMismatch>
     <MissingParamType>
       <code><![CDATA[$argument]]></code>
     </MissingParamType>
     <MixedArgument>
       <code><![CDATA[$argument]]></code>
     </MixedArgument>
-    <MoreSpecificImplementedParamType>
-      <code><![CDATA[$files]]></code>
-    </MoreSpecificImplementedParamType>
   </file>
   <file src="lib/BackgroundJobs/ClassifyLandmarksJob.php">
+    <ImplementedParamTypeMismatch>
+      <code><![CDATA[$files]]></code>
+    </ImplementedParamTypeMismatch>
     <MissingParamType>
       <code><![CDATA[$argument]]></code>
     </MissingParamType>
     <MixedArgument>
       <code><![CDATA[$argument]]></code>
     </MixedArgument>
-    <MoreSpecificImplementedParamType>
-      <code><![CDATA[$files]]></code>
-    </MoreSpecificImplementedParamType>
   </file>
   <file src="lib/BackgroundJobs/ClassifyMovinetJob.php">
+    <ImplementedParamTypeMismatch>
+      <code><![CDATA[$files]]></code>
+    </ImplementedParamTypeMismatch>
     <MissingParamType>
       <code><![CDATA[$argument]]></code>
     </MissingParamType>
     <MixedArgument>
       <code><![CDATA[$argument]]></code>
     </MixedArgument>
-    <MoreSpecificImplementedParamType>
-      <code><![CDATA[$files]]></code>
-    </MoreSpecificImplementedParamType>
   </file>
   <file src="lib/BackgroundJobs/ClassifyMusicnnJob.php">
+    <ImplementedParamTypeMismatch>
+      <code><![CDATA[$files]]></code>
+    </ImplementedParamTypeMismatch>
     <MissingParamType>
       <code><![CDATA[$argument]]></code>
     </MissingParamType>
     <MixedArgument>
       <code><![CDATA[$argument]]></code>
     </MixedArgument>
-    <MoreSpecificImplementedParamType>
-      <code><![CDATA[$files]]></code>
-    </MoreSpecificImplementedParamType>
   </file>
   <file src="lib/BackgroundJobs/ClusterFacesJob.php">
     <MissingParamType>
@@ -84,9 +90,6 @@
     <MixedArrayAccess>
       <code><![CDATA[$argument['userId']]]></code>
     </MixedArrayAccess>
-    <UnnecessaryVarAnnotation>
-      <code><![CDATA[string]]></code>
-    </UnnecessaryVarAnnotation>
   </file>
   <file src="lib/BackgroundJobs/SchedulerJob.php">
     <MissingParamType>
@@ -108,15 +111,22 @@
     <MixedAssignment>
       <code><![CDATA[$results]]></code>
     </MixedAssignment>
-    <PossiblyNullOperand>
-      <code><![CDATA[$proc->getPid()]]></code>
-    </PossiblyNullOperand>
+    <PossiblyFalseArgument>
+      <code><![CDATA[$previewImage]]></code>
+      <code><![CDATA[$previewImage]]></code>
+      <code><![CDATA[$previewImage]]></code>
+    </PossiblyFalseArgument>
     <RedundantCondition>
       <code><![CDATA[isset($dimensions)]]></code>
     </RedundantCondition>
-    <UnusedFunctionCall>
-      <code><![CDATA[json_decode]]></code>
-    </UnusedFunctionCall>
+    <RiskyTruthyFalsyComparison>
+      <code><![CDATA[!$imageContents]]></code>
+    </RiskyTruthyFalsyComparison>
+    <TypeDoesNotContainType>
+      <code><![CDATA[$height === false]]></code>
+      <code><![CDATA[$width === false]]></code>
+      <code><![CDATA[$width === false]]></code>
+    </TypeDoesNotContainType>
   </file>
   <file src="lib/Classifiers/Images/ClusteringFaceClassifier.php">
     <MixedArgument>
@@ -161,10 +171,6 @@
       <code><![CDATA[$this->longestDistanceInNode]]></code>
       <code><![CDATA[$values]]></code>
     </MixedAssignment>
-    <MixedInferredReturnType>
-      <code><![CDATA[null|int|string]]></code>
-      <code><![CDATA[null|int|string]]></code>
-    </MixedInferredReturnType>
     <MixedReturnStatement>
       <code><![CDATA[$this->setId]]></code>
       <code><![CDATA[$this->setId]]></code>
@@ -191,13 +197,14 @@
     </MixedArgumentTypeCoercion>
     <MixedArrayOffset>
       <code><![CDATA[$labelToSetId[$label]]]></code>
-      <code><![CDATA[$labelToSetId[array_pop($labels)]]]></code>
+      <code><![CDATA[$labelToSetId[$lastLabel]]]></code>
     </MixedArrayOffset>
     <MixedArrayTypeCoercion>
-      <code><![CDATA[$labelToSetId[array_pop($labels)]]]></code>
+      <code><![CDATA[$labelToSetId[$lastLabel]]]></code>
     </MixedArrayTypeCoercion>
     <MixedAssignment>
       <code><![CDATA[$label]]></code>
+      <code><![CDATA[$lastLabel]]></code>
       <code><![CDATA[$values]]></code>
     </MixedAssignment>
     <PossiblyInvalidArrayOffset>
@@ -223,9 +230,29 @@
       <code><![CDATA[$a_vector]]></code>
       <code><![CDATA[$b_vector]]></code>
     </ArgumentTypeCoercion>
+    <FalsableReturnStatement>
+      <code><![CDATA[$this->coreDistances[$label]]]></code>
+      <code><![CDATA[$this->coreDistances[$queryLabel] ?? INF]]></code>
+    </FalsableReturnStatement>
     <InvalidNullableReturnType>
       <code><![CDATA[Labeled]]></code>
     </InvalidNullableReturnType>
+    <InvalidPropertyAssignmentValue>
+      <code><![CDATA[$this->coreDistances]]></code>
+      <code><![CDATA[$this->coreDistances]]></code>
+      <code><![CDATA[$this->coreDistances]]></code>
+      <code><![CDATA[$this->coreDistances]]></code>
+      <code><![CDATA[$this->coreDistances]]></code>
+      <code><![CDATA[$this->coreDistances]]></code>
+    </InvalidPropertyAssignmentValue>
+    <InvalidReturnStatement>
+      <code><![CDATA[$this->coreDistances[$label]]]></code>
+      <code><![CDATA[$this->coreDistances[$queryLabel] ?? INF]]></code>
+    </InvalidReturnStatement>
+    <InvalidReturnType>
+      <code><![CDATA[float]]></code>
+      <code><![CDATA[float]]></code>
+    </InvalidReturnType>
     <LessSpecificReturnStatement>
       <code><![CDATA[$this->root]]></code>
     </LessSpecificReturnStatement>
@@ -242,12 +269,9 @@
     </MissingParamType>
     <MixedArgument>
       <code><![CDATA[$bestDistances]]></code>
-      <code><![CDATA[$coreNeighborDistances]]></code>
-      <code><![CDATA[$coreNeighborDistances]]></code>
       <code><![CDATA[$k]]></code>
       <code><![CDATA[$label]]></code>
       <code><![CDATA[$label]]></code>
-      <code><![CDATA[$longestDistance]]></code>
       <code><![CDATA[$longestLeft]]></code>
       <code><![CDATA[$longestRight]]></code>
       <code><![CDATA[$maxRange]]></code>
@@ -261,22 +285,8 @@
       <code><![CDATA[$querySample]]></code>
       <code><![CDATA[$referenceNode]]></code>
       <code><![CDATA[$referenceSample]]></code>
-      <code><![CDATA[$shortestDistance]]></code>
       <code><![CDATA[$this->coreNeighborDistances[$label]]]></code>
       <code><![CDATA[$this->coreNeighborDistances[$label]]]></code>
-      <code><![CDATA[$this->coreNeighborDistances[$label]]]></code>
-      <code><![CDATA[$this->coreNeighborDistances[$queryLabel]]]></code>
-      <code><![CDATA[$this->coreNeighborDistances[$queryLabel]]]></code>
-      <code><![CDATA[$this->coreNeighborDistances[$queryLabel]]]></code>
-      <code><![CDATA[$this->coreNeighborDistances[$queryLabel]]]></code>
-      <code><![CDATA[$this->coreNeighborDistances[$queryLabel]]]></code>
-      <code><![CDATA[$this->coreNeighborDistances[$referenceLabel]]]></code>
-      <code><![CDATA[$this->coreNeighborDistances[$referenceLabel]]]></code>
-      <code><![CDATA[$this->coreNeighborDistances[$referenceLabel]]]></code>
-      <code><![CDATA[$this->coreNeighborDistances[$referenceLabel]]]></code>
-      <code><![CDATA[$this->coreNeighborDistances[$referenceLabel]]]></code>
-      <code><![CDATA[$this->coreNeighborDistances[$sampleLabel]]]></code>
-      <code><![CDATA[$this->coreNeighborDistances[$sampleLabel]]]></code>
       <code><![CDATA[reset($oldCoreNeighbors)]]></code>
     </MixedArgument>
     <MixedArgumentTypeCoercion>
@@ -293,12 +303,7 @@
       <code><![CDATA[$this->nativeInterpointCache[$smallIndex][$largeIndex]]]></code>
     </MixedArrayAccess>
     <MixedArrayAssignment>
-      <code><![CDATA[$coreNeighborDistances[$referenceLabel]]]></code>
       <code><![CDATA[$this->coreNeighborDistances[$neighborLabel][$label]]]></code>
-      <code><![CDATA[$this->coreNeighborDistances[$queryLabel][$referenceLabel]]]></code>
-      <code><![CDATA[$this->coreNeighborDistances[$queryLabel][$referenceLabel]]]></code>
-      <code><![CDATA[$this->coreNeighborDistances[$referenceLabel][$queryLabel]]]></code>
-      <code><![CDATA[$this->coreNeighborDistances[$referenceLabel][$queryLabel]]]></code>
       <code><![CDATA[$this->nativeInterpointCache[$smallIndex][$largeIndex]]]></code>
       <code><![CDATA[$this->nodeDistances[$smallIndex][$largeIndex]]]></code>
     </MixedArrayAssignment>
@@ -359,8 +364,6 @@
       <code><![CDATA[$this->nodeDistances[$smallIndex]]]></code>
     </MixedArrayTypeCoercion>
     <MixedAssignment>
-      <code><![CDATA[$bestDistance]]></code>
-      <code><![CDATA[$bestDistances[$queryLabel]]]></code>
       <code><![CDATA[$child]]></code>
       <code><![CDATA[$currentBound]]></code>
       <code><![CDATA[$label]]></code>
@@ -371,11 +374,6 @@
       <code><![CDATA[$largeIndex]]></code>
       <code><![CDATA[$largeIndex]]></code>
       <code><![CDATA[$largeIndex]]></code>
-      <code><![CDATA[$longestDistance]]></code>
-      <code><![CDATA[$longestDistance]]></code>
-      <code><![CDATA[$longestDistance]]></code>
-      <code><![CDATA[$longestDistance]]></code>
-      <code><![CDATA[$longestDistance]]></code>
       <code><![CDATA[$longestDistance]]></code>
       <code><![CDATA[$longestDistance]]></code>
       <code><![CDATA[$longestLeft]]></code>
@@ -403,19 +401,12 @@
       <code><![CDATA[$referenceRight]]></code>
       <code><![CDATA[$referenceSample]]></code>
       <code><![CDATA[$referenceSamples]]></code>
-      <code><![CDATA[$shortestDistance]]></code>
       <code><![CDATA[$smallIndex]]></code>
       <code><![CDATA[$smallIndex]]></code>
       <code><![CDATA[$smallIndex]]></code>
       <code><![CDATA[$subChild]]></code>
       <code><![CDATA[$subStack[]]]></code>
     </MixedAssignment>
-    <MixedInferredReturnType>
-      <code><![CDATA[float]]></code>
-      <code><![CDATA[float]]></code>
-      <code><![CDATA[float]]></code>
-      <code><![CDATA[float]]></code>
-    </MixedInferredReturnType>
     <MixedMethodCall>
       <code><![CDATA[children]]></code>
       <code><![CDATA[getLongestDistance]]></code>
@@ -451,24 +442,19 @@
       <code><![CDATA[$queryNode->radius()]]></code>
       <code><![CDATA[$queryNode->radius() - $queryLeft->radius()]]></code>
       <code><![CDATA[$queryNode->radius() - $queryRight->radius()]]></code>
-      <code><![CDATA[$shortestDistance]]></code>
       <code><![CDATA[min($longestLeft, $longestRight)]]></code>
     </MixedOperand>
+    <MixedPropertyTypeCoercion>
+      <code><![CDATA[$this->coreDistances]]></code>
+      <code><![CDATA[$this->coreDistances]]></code>
+      <code><![CDATA[$this->coreDistances]]></code>
+      <code><![CDATA[$this->coreNeighborDistances]]></code>
+    </MixedPropertyTypeCoercion>
     <MixedReturnStatement>
       <code><![CDATA[$nodeDistance]]></code>
       <code><![CDATA[$nodeDistance]]></code>
-      <code><![CDATA[$this->coreDistances[$label]]]></code>
-      <code><![CDATA[$this->coreDistances[$label]]]></code>
-      <code><![CDATA[$this->coreDistances[$queryLabel] ?? INF]]></code>
-      <code><![CDATA[$this->coreDistances[$queryLabel] ?? INF]]></code>
-      <code><![CDATA[$this->coreNeighborDistances[$a][$b]]]></code>
-      <code><![CDATA[$this->coreNeighborDistances[$b][$a]]]></code>
       <code><![CDATA[$this->nativeInterpointCache[$smallIndex][$largeIndex]]]></code>
     </MixedReturnStatement>
-    <MixedReturnTypeCoercion>
-      <code><![CDATA[[array_keys($this->coreNeighborDistances[$sampleLabel]), array_values($this->coreNeighborDistances[$sampleLabel])]]]></code>
-      <code><![CDATA[array{list<mixed>,list<float>}]]></code>
-    </MixedReturnTypeCoercion>
     <MoreSpecificReturnType>
       <code><![CDATA[DualTreeBall]]></code>
     </MoreSpecificReturnType>
@@ -492,6 +478,25 @@
       <code><![CDATA[dataset]]></code>
       <code><![CDATA[dataset]]></code>
     </PossiblyUndefinedMethod>
+    <PropertyTypeCoercion>
+      <code><![CDATA[$this->coreNeighborDistances]]></code>
+      <code><![CDATA[$this->coreNeighborDistances]]></code>
+      <code><![CDATA[$this->coreNeighborDistances]]></code>
+      <code><![CDATA[$this->coreNeighborDistances]]></code>
+      <code><![CDATA[$this->coreNeighborDistances]]></code>
+      <code><![CDATA[$this->coreNeighborDistances]]></code>
+      <code><![CDATA[$this->coreNeighborDistances]]></code>
+      <code><![CDATA[$this->coreNeighborDistances]]></code>
+      <code><![CDATA[$this->coreNeighborDistances]]></code>
+      <code><![CDATA[$this->coreNeighborDistances]]></code>
+      <code><![CDATA[$this->coreNeighborDistances]]></code>
+    </PropertyTypeCoercion>
+    <RedundantCastGivenDocblockType>
+      <code><![CDATA[(float) min($longestDistance, 2.0 * $queryNode->radius() + $shortestDistance)]]></code>
+    </RedundantCastGivenDocblockType>
+    <RedundantFunctionCallGivenDocblockType>
+      <code><![CDATA[array_values]]></code>
+    </RedundantFunctionCallGivenDocblockType>
     <UndefinedMethod>
       <code><![CDATA[resetFullyConnectedStatus]]></code>
       <code><![CDATA[resetLongestEdge]]></code>
@@ -499,11 +504,14 @@
     <UnsupportedPropertyReferenceUsage>
       <code><![CDATA[$coreNeighborDistances = & $this->coreNeighborDistances[$queryLabel]]]></code>
     </UnsupportedPropertyReferenceUsage>
-    <UnusedVariable>
-      <code><![CDATA[$labels]]></code>
-    </UnusedVariable>
   </file>
   <file src="lib/Clustering/MstClusterer.php">
+    <InvalidOperand>
+      <code><![CDATA[($currentLambda - $lastLambda) * $edgeCount]]></code>
+    </InvalidOperand>
+    <MissingDocblockType>
+      <code><![CDATA[$currentLongestEdge]]></code>
+    </MissingDocblockType>
     <MixedArgument>
       <code><![CDATA[$childCluster->getCoreEdges()]]></code>
     </MixedArgument>
@@ -546,6 +554,9 @@
       <code><![CDATA[$referenceRight]]></code>
       <code><![CDATA[$referenceRight]]></code>
     </ArgumentTypeCoercion>
+    <LessSpecificReturnStatement>
+      <code><![CDATA[$edges]]></code>
+    </LessSpecificReturnStatement>
     <MissingParamType>
       <code><![CDATA[$queryNode]]></code>
       <code><![CDATA[$referenceNode]]></code>
@@ -582,8 +593,6 @@
       <code><![CDATA[$referenceLabels[$referenceKey]]]></code>
       <code><![CDATA[$vertexSets[$setId1]]]></code>
       <code><![CDATA[$vertexSets[$setId1]]]></code>
-      <code><![CDATA[$vertexSets[$setId1]]]></code>
-      <code><![CDATA[$vertexSets[$setId2]]]></code>
       <code><![CDATA[$vertexSets[$setId2]]]></code>
       <code><![CDATA[$vertexToSetId[$connectingEdge["vertexFrom"]]]]></code>
       <code><![CDATA[$vertexToSetId[$connectingEdge["vertexTo"]]]]></code>
@@ -592,8 +601,6 @@
     </MixedArrayOffset>
     <MixedArrayTypeCoercion>
       <code><![CDATA[$vertexSets[$setId1]]]></code>
-      <code><![CDATA[$vertexSets[$setId1]]]></code>
-      <code><![CDATA[$vertexSets[$setId2]]]></code>
       <code><![CDATA[$vertexSets[$setId2]]]></code>
     </MixedArrayTypeCoercion>
     <MixedAssignment>
@@ -602,8 +609,6 @@
       <code><![CDATA[$currentBound]]></code>
       <code><![CDATA[$edges[]]]></code>
       <code><![CDATA[$label]]></code>
-      <code><![CDATA[$longestDistance]]></code>
-      <code><![CDATA[$longestDistance]]></code>
       <code><![CDATA[$longestDistance]]></code>
       <code><![CDATA[$longestDistance]]></code>
       <code><![CDATA[$longestDistance]]></code>
@@ -648,13 +653,12 @@
     </MixedMethodCall>
     <MixedOperand>
       <code><![CDATA[$queryNode->radius()]]></code>
-      <code><![CDATA[2 * $queryNode->radius()]]></code>
+      <code><![CDATA[2.0 * $queryNode->radius()]]></code>
       <code><![CDATA[min($longestLeft, $longestRight)]]></code>
     </MixedOperand>
-    <MixedReturnTypeCoercion>
-      <code><![CDATA[$edges]]></code>
-      <code><![CDATA[array<int,array{vertexFrom:int|string,vertexTo:int|string,distance:float}>]]></code>
-    </MixedReturnTypeCoercion>
+    <MoreSpecificReturnType>
+      <code><![CDATA[list<array{vertexFrom:int|string,vertexTo:int|string,distance:float}>]]></code>
+    </MoreSpecificReturnType>
     <PossiblyNullArgument>
       <code><![CDATA[$queryLeft]]></code>
       <code><![CDATA[$queryLeft]]></code>
@@ -693,10 +697,10 @@
       <code><![CDATA[$b]]></code>
     </MoreSpecificImplementedParamType>
   </file>
-  <file src="lib/Controller/AdminController.php">
-    <MixedInferredReturnType>
-      <code><![CDATA[JSONResponse]]></code>
-    </MixedInferredReturnType>
+  <file src="lib/Command/RemoveLegacyTags.php">
+    <PossiblyFalseArgument>
+      <code><![CDATA[file_get_contents(__DIR__ . '/../../src/things.json')]]></code>
+    </PossiblyFalseArgument>
   </file>
   <file src="lib/Dav/Faces/FacePhoto.php">
     <UndefinedClass>
@@ -753,7 +757,7 @@
   <file src="lib/Db/FaceClusterMapper.php">
     <InvalidDocblock>
       <code><![CDATA[FaceClusterMapper]]></code>
-      <code><![CDATA[class FaceClusterMapper extends QBMapper {]]></code>
+      <code><![CDATA[final class FaceClusterMapper extends QBMapper {]]></code>
     </InvalidDocblock>
     <LessSpecificReturnStatement>
       <code><![CDATA[$this->findEntities($qb)]]></code>
@@ -770,9 +774,6 @@
     </MoreSpecificReturnType>
   </file>
   <file src="lib/Db/FaceDetection.php">
-    <InvalidArgument>
-      <code><![CDATA['int']]></code>
-    </InvalidArgument>
     <MissingPropertyType>
       <code><![CDATA[$clusterId]]></code>
       <code><![CDATA[$fileId]]></code>
@@ -794,7 +795,7 @@
   <file src="lib/Db/FaceDetectionMapper.php">
     <InvalidDocblock>
       <code><![CDATA[FaceDetectionMapper]]></code>
-      <code><![CDATA[class FaceDetectionMapper extends QBMapper {]]></code>
+      <code><![CDATA[final class FaceDetectionMapper extends QBMapper {]]></code>
     </InvalidDocblock>
     <LessSpecificReturnStatement>
       <code><![CDATA[$this->findEntities($qb)]]></code>
@@ -828,9 +829,6 @@
     </MoreSpecificReturnType>
   </file>
   <file src="lib/Db/FaceDetectionWithTitle.php">
-    <LessSpecificImplementedReturnType>
-      <code><![CDATA[self]]></code>
-    </LessSpecificImplementedReturnType>
     <MissingPropertyType>
       <code><![CDATA[$title]]></code>
     </MissingPropertyType>
@@ -855,7 +853,7 @@
     </FalsableReturnStatement>
     <InvalidDocblock>
       <code><![CDATA[QueueMapper]]></code>
-      <code><![CDATA[class QueueMapper extends QBMapper {]]></code>
+      <code><![CDATA[final class QueueMapper extends QBMapper {]]></code>
     </InvalidDocblock>
     <LessSpecificReturnStatement>
       <code><![CDATA[$this->findEntities($qb)]]></code>
@@ -863,9 +861,6 @@
     <MissingTemplateParam>
       <code><![CDATA[QueueMapper]]></code>
     </MissingTemplateParam>
-    <MixedInferredReturnType>
-      <code><![CDATA[int]]></code>
-    </MixedInferredReturnType>
     <MixedReturnStatement>
       <code><![CDATA[$result->fetchOne()]]></code>
       <code><![CDATA[$result->fetchOne()]]></code>
@@ -917,19 +912,6 @@
       <code><![CDATA[$this->tar]]></code>
       <code><![CDATA[$this->tar]]></code>
     </MixedAssignment>
-    <MixedInferredReturnType>
-      <code><![CDATA[?\PEAR_Error]]></code>
-      <code><![CDATA[bool]]></code>
-      <code><![CDATA[bool]]></code>
-      <code><![CDATA[bool]]></code>
-      <code><![CDATA[bool]]></code>
-      <code><![CDATA[bool]]></code>
-      <code><![CDATA[bool|resource]]></code>
-      <code><![CDATA[int]]></code>
-      <code><![CDATA[int]]></code>
-      <code><![CDATA[list<string>]]></code>
-      <code><![CDATA[string]]></code>
-    </MixedInferredReturnType>
     <MixedReturnStatement>
       <code><![CDATA[$result]]></code>
       <code><![CDATA[$stat['mtime']]]></code>
@@ -982,6 +964,11 @@
     </PossiblyNullArgument>
   </file>
   <file src="lib/Migration/InstallDeps.php">
+    <InvalidOperand>
+      <code><![CDATA[$isARM]]></code>
+      <code><![CDATA[$isMusl]]></code>
+      <code><![CDATA[$supportsAVX]]></code>
+    </InvalidOperand>
     <MixedArgument>
       <code><![CDATA[$item->getPathname()]]></code>
       <code><![CDATA[$item->getPathname()]]></code>
@@ -994,6 +981,13 @@
       <code><![CDATA[getPathname]]></code>
       <code><![CDATA[getPathname]]></code>
     </MixedMethodCall>
+    <PossiblyFalseArgument>
+      <code><![CDATA[$oriCwd]]></code>
+      <code><![CDATA[$oriCwd]]></code>
+      <code><![CDATA[$oriCwd]]></code>
+      <code><![CDATA[realpath($item->getPathname())]]></code>
+      <code><![CDATA[realpath($item->getPathname())]]></code>
+    </PossiblyFalseArgument>
     <PossiblyUndefinedVariable>
       <code><![CDATA[$output]]></code>
       <code><![CDATA[$returnCode]]></code>
@@ -1011,9 +1005,6 @@
       <code><![CDATA[$file]]></code>
       <code><![CDATA[$packageJson]]></code>
     </MixedAssignment>
-    <MixedInferredReturnType>
-      <code><![CDATA[string]]></code>
-    </MixedInferredReturnType>
     <MixedMethodCall>
       <code><![CDATA[getRealPath]]></code>
       <code><![CDATA[getRealPath]]></code>
@@ -1022,6 +1013,9 @@
     <MixedReturnStatement>
       <code><![CDATA[$packageJson['version']]]></code>
     </MixedReturnStatement>
+    <PossiblyFalseArgument>
+      <code><![CDATA[file_get_contents(__DIR__. '/../../package.json')]]></code>
+    </PossiblyFalseArgument>
     <RiskyTruthyFalsyComparison>
       <code><![CDATA[getenv('GITHUB_REF')]]></code>
     </RiskyTruthyFalsyComparison>
@@ -1030,6 +1024,13 @@
     <ArgumentTypeCoercion>
       <code><![CDATA[$unclusteredDetections[$detectionKey]->getVector()]]></code>
     </ArgumentTypeCoercion>
+    <InvalidOperand>
+      <code><![CDATA[$batchSize ** (0.55)]]></code>
+      <code><![CDATA[$batchSize ** (1.0 / 4.7)]]></code>
+      <code><![CDATA[$batchSize ** (1.0 / 5.6)]]></code>
+      <code><![CDATA[$batchSize / 4.0]]></code>
+      <code><![CDATA[-0.007 * $numberClusters]]></code>
+    </InvalidOperand>
     <PossiblyFalseArgument>
       <code><![CDATA[$clusterId]]></code>
     </PossiblyFalseArgument>
@@ -1038,9 +1039,6 @@
     <MixedAssignment>
       <code><![CDATA[$result]]></code>
     </MixedAssignment>
-    <MixedInferredReturnType>
-      <code><![CDATA[list<string>]]></code>
-    </MixedInferredReturnType>
     <MixedMethodCall>
       <code><![CDATA[andWhere]]></code>
       <code><![CDATA[andWhere]]></code>
@@ -1056,22 +1054,6 @@
       <code><![CDATA[$directories !== null]]></code>
     </RedundantConditionGivenDocblockType>
   </file>
-  <file src="lib/Service/Logger.php">
-    <MissingParamType>
-      <code><![CDATA[$message]]></code>
-      <code><![CDATA[$message]]></code>
-      <code><![CDATA[$message]]></code>
-      <code><![CDATA[$message]]></code>
-      <code><![CDATA[$message]]></code>
-      <code><![CDATA[$message]]></code>
-      <code><![CDATA[$message]]></code>
-      <code><![CDATA[$message]]></code>
-      <code><![CDATA[$message]]></code>
-    </MissingParamType>
-    <MixedArgument>
-      <code><![CDATA[$message]]></code>
-    </MixedArgument>
-  </file>
   <file src="lib/Service/StorageService.php">
     <MixedAssignment>
       <code><![CDATA[$files]]></code>
@@ -1081,12 +1063,6 @@
       <code><![CDATA[$res]]></code>
       <code><![CDATA[$result]]></code>
     </MixedAssignment>
-    <MixedInferredReturnType>
-      <code><![CDATA[string]]></code>
-      <code><![CDATA[string]]></code>
-      <code><![CDATA[string]]></code>
-      <code><![CDATA[string]]></code>
-    </MixedInferredReturnType>
     <MixedMethodCall>
       <code><![CDATA[andWhere]]></code>
       <code><![CDATA[andWhere]]></code>
@@ -1134,5 +1110,10 @@
       <code><![CDATA[(int)$row['root_id']]]></code>
       <code><![CDATA[(int)$row['storage_id']]]></code>
     </RedundantCastGivenDocblockType>
+  </file>
+  <file src="lib/Service/TagManager.php">
+    <PossiblyFalseArgument>
+      <code><![CDATA[$json]]></code>
+    </PossiblyFalseArgument>
   </file>
 </files>

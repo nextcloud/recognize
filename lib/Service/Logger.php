@@ -10,7 +10,7 @@ namespace OCA\Recognize\Service;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class Logger implements LoggerInterface {
+final class Logger implements LoggerInterface {
 	private LoggerInterface $logger;
 	private ?OutputInterface $cliOutput = null;
 
@@ -31,7 +31,7 @@ class Logger implements LoggerInterface {
 	/**
 	 * @inheritDoc
 	 */
-	public function emergency($message, array $context = array()): void {
+	public function emergency(string|\Stringable $message, array $context = array()): void {
 		if (isset($this->cliOutput)) {
 			$this->cliOutput->writeln((string)$message);
 		}
@@ -41,7 +41,7 @@ class Logger implements LoggerInterface {
 	/**
 	 * @inheritDoc
 	 */
-	public function alert($message, array $context = array()): void {
+	public function alert(string|\Stringable$message, array $context = array()): void {
 		if (isset($this->cliOutput)) {
 			$this->cliOutput->writeln((string)$message);
 		}
@@ -51,7 +51,7 @@ class Logger implements LoggerInterface {
 	/**
 	 * @inheritDoc
 	 */
-	public function critical($message, array $context = array()): void {
+	public function critical(string|\Stringable $message, array $context = array()): void {
 		if (isset($this->cliOutput)) {
 			$this->cliOutput->writeln((string)$message);
 		}
@@ -61,7 +61,7 @@ class Logger implements LoggerInterface {
 	/**
 	 * @inheritDoc
 	 */
-	public function error($message, array $context = array()): void {
+	public function error(string|\Stringable $message, array $context = array()): void {
 		if (isset($this->cliOutput)) {
 			$this->cliOutput->writeln((string)$message);
 		}
@@ -71,7 +71,7 @@ class Logger implements LoggerInterface {
 	/**
 	 * @inheritDoc
 	 */
-	public function warning($message, array $context = array()): void {
+	public function warning(string|\Stringable $message, array $context = array()): void {
 		if (isset($this->cliOutput)) {
 			$this->cliOutput->writeln((string)$message);
 		}
@@ -81,7 +81,7 @@ class Logger implements LoggerInterface {
 	/**
 	 * @inheritDoc
 	 */
-	public function notice($message, array $context = array()): void {
+	public function notice(string|\Stringable $message, array $context = array()): void {
 		if (isset($this->cliOutput)) {
 			$this->cliOutput->writeln((string)$message);
 		}
@@ -91,7 +91,7 @@ class Logger implements LoggerInterface {
 	/**
 	 * @inheritDoc
 	 */
-	public function info($message, array $context = array()): void {
+	public function info(string|\Stringable $message, array $context = array()): void {
 		if (isset($this->cliOutput) && !$this->cliOutput->isQuiet()) {
 			$this->cliOutput->writeln((string)$message);
 		}
@@ -101,7 +101,7 @@ class Logger implements LoggerInterface {
 	/**
 	 * @inheritDoc
 	 */
-	public function debug($message, array $context = array()): void {
+	public function debug(string|\Stringable $message, array $context = array()): void {
 		if (isset($this->cliOutput) && !$this->cliOutput->isQuiet()) {
 			$this->cliOutput->writeln((string)$message);
 		}
@@ -111,7 +111,7 @@ class Logger implements LoggerInterface {
 	/**
 	 * @inheritDoc
 	 */
-	public function log($level, $message, array $context = array()): void {
+	public function log($level, string|\Stringable $message, array $context = array()): void {
 		if (isset($this->cliOutput)) {
 			$this->cliOutput->writeln((string)$message);
 		}

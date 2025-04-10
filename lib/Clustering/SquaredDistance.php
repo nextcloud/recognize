@@ -19,7 +19,7 @@ use \OCA\Recognize\Vendor\Rubix\ML\Kernels\Distance\Distance;
  * @package     Rubix/ML
  * @author      Sami Finnilä
  */
-class SquaredDistance implements Distance {
+final class SquaredDistance implements Distance {
 	/**
 	 * Return the data types that this kernel is compatible with.
 	 *
@@ -47,7 +47,7 @@ class SquaredDistance implements Distance {
 
 		$count = count($a);
 		for ($i = 0; $i < $count; $i++) {
-			$diff = $a[$i] - $b[$i];
+			$diff = (float)$a[$i] - (float)$b[$i];
 			$distance += $diff * $diff;
 		}
 

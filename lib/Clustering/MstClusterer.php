@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace OCA\Recognize\Clustering;
 
 // TODO: store vertex lambda length (relative to cluster lambda length) for all vertices for improved soft clustering (see https://hdbscan.readthedocs.io/en/latest/soft_clustering.html)
-class MstClusterer {
+final class MstClusterer {
 	/**
 	 * @var array<int, array{vertexFrom: int, vertexTo:int, distance:float, finalLambda?: float}>
 	 */
@@ -115,6 +115,9 @@ class MstClusterer {
 			}
 
 			$currentLongestEdgeKey = array_key_last($this->remainingEdges);
+			/**
+			 * @var $currentLongestEdge array{vertexFrom: int, vertexTo:int, distance:float, finalLambda?: float}
+			 */
 			$currentLongestEdge = array_pop($this->remainingEdges);
 
 			$vertexConnectedFrom = $currentLongestEdge["vertexFrom"];
@@ -127,9 +130,9 @@ class MstClusterer {
 			if ($edgeLength > $this->maxEdgeLength) {
 				// Prevent formation of clusters with edges longer than the maximum edge length
 				// This is done by forcing the weight of the current cluster to zero
-				$lastLambda = $currentLambda = 1 / $edgeLength;
+				$lastLambda = $currentLambda = 1.0 / $edgeLength;
 			} elseif ($edgeLength > 0.0) {
-				$currentLambda = 1 / $edgeLength;
+				$currentLambda = 1.0 / $edgeLength;
 			}
 
 			$this->clusterWeight += ($currentLambda - $lastLambda) * $edgeCount;

@@ -17,7 +17,7 @@ use OCP\Files\IRootFolder;
 use OCP\IPreview;
 use OCP\ITempManager;
 
-class MovinetClassifier extends Classifier {
+final class MovinetClassifier extends Classifier {
 	public const VIDEO_TIMEOUT = 480; // seconds
 	public const MODEL_NAME = 'movinet';
 

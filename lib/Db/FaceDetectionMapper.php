@@ -18,7 +18,7 @@ use OCP\IDBConnection;
 /**
  * @psalm-extends QBMapper<FaceDetection>
  */
-class FaceDetectionMapper extends QBMapper {
+final class FaceDetectionMapper extends QBMapper {
 	private IConfig $config;
 
 	public function __construct(IDBConnection $db, IConfig $config) {

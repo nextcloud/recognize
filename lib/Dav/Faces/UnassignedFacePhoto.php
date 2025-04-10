@@ -14,7 +14,7 @@ use OCP\IPreview;
 use OCP\ITagManager;
 use Sabre\DAV\Exception\Forbidden;
 
-class UnassignedFacePhoto extends FacePhoto {
+final class UnassignedFacePhoto extends FacePhoto {
 
 	public function __construct(FaceDetectionMapper $detectionMapper, FaceDetection $faceDetection, Folder $userFolder, ITagManager $tagManager, IPreview $preview) {
 		parent::__construct($detectionMapper, $faceDetection, $userFolder, $tagManager, $preview);

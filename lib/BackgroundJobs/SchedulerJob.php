@@ -19,7 +19,7 @@ use OCP\BackgroundJob\IJobList;
 use OCP\BackgroundJob\QueuedJob;
 use Psr\Log\LoggerInterface;
 
-class SchedulerJob extends QueuedJob {
+final class SchedulerJob extends QueuedJob {
 	public const INTERVAL = 30 * 60; // 30 minutes
 	public const ALLOWED_MOUNT_TYPES = [
 		'OC\Files\Mount\LocalHomeMountProvider',

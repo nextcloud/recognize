@@ -17,7 +17,7 @@ use OCP\ITagManager;
 use OCP\IUserSession;
 use Sabre\DAV\Exception\Forbidden;
 
-class RootCollection extends AbstractPrincipalCollection {
+final class RootCollection extends AbstractPrincipalCollection {
 	private IUserSession $userSession;
 	private FaceClusterMapper $faceClusterMapper;
 	private FaceDetectionMapper $faceDetectionMapper;

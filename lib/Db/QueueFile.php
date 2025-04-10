@@ -22,7 +22,7 @@ use OCP\AppFramework\Db\Entity;
  * @method setUpdate(boolean $update)
  * @method bool getUpdate()
  */
-class QueueFile extends Entity {
+final class QueueFile extends Entity {
 	public $id;
 	protected $fileId;
 	protected $storageId;

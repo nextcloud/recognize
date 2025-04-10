@@ -12,7 +12,7 @@ use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Services\IInitialState;
 use OCP\Settings\ISettings;
 
-class AdminSettings implements ISettings {
+final class AdminSettings implements ISettings {
 	private IInitialState $initialState;
 	private SettingsService $settingsService;
 

@@ -14,7 +14,7 @@ use OCP\BackgroundJob\TimedJob;
 use OCP\DB\Exception;
 use Psr\Log\LoggerInterface;
 
-class MaintenanceJob extends TimedJob {
+final class MaintenanceJob extends TimedJob {
 
 	public function __construct(
 		ITimeFactory $time,
