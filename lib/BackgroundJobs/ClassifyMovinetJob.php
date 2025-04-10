@@ -15,7 +15,7 @@ use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\IJobList;
 use OCP\Files\Config\IUserMountCache;
 
-class ClassifyMovinetJob extends ClassifierJob {
+final class ClassifyMovinetJob extends ClassifierJob {
 	public const MODEL_NAME = 'movinet';
 
 	private SettingsService $settingsService;

@@ -20,7 +20,7 @@ use OCP\Files\IMimeTypeLoader;
 use OCP\FilesMetadata\IFilesMetadataManager;
 use OCP\IDBConnection;
 
-class StorageService {
+final class StorageService {
 	public const ALLOWED_MOUNT_TYPES = [
 		'OC\Files\Mount\LocalHomeMountProvider',
 		'OC\Files\Mount\ObjectHomeMountProvider',

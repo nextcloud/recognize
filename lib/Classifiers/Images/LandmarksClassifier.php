@@ -16,7 +16,7 @@ use OCP\Files\IRootFolder;
 use OCP\IPreview;
 use OCP\ITempManager;
 
-class LandmarksClassifier extends Classifier {
+final class LandmarksClassifier extends Classifier {
 	public const IMAGE_TIMEOUT = 480; // seconds
 	public const IMAGE_PUREJS_TIMEOUT = 600; // seconds
 	public const MODEL_NAME = 'landmarks';

@@ -32,7 +32,7 @@ use \OCA\Recognize\Vendor\Rubix\ML\Kernels\Distance\Distance;
  *
  * @author      Sami Finnilä
  */
-class HDBSCAN {
+final class HDBSCAN {
 	/**
 	 * The minimum number of samples that can be considered to form a cluster.
 	 * Larger values will generate more stable clusters.

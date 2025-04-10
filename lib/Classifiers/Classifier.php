@@ -102,16 +102,19 @@ abstract class Classifier {
 				$path = $this->getConvertedFilePath($files[0]);
 				if (in_array($model, [ImagenetClassifier::MODEL_NAME, LandmarksClassifier::MODEL_NAME, ClusteringFaceClassifier::MODEL_NAME], true)) {
 					// Check file data size
-					$filesizeMb = filesize($path) / (1024 * 1024);
-					if ($filesizeMb > 8) {
-						$this->logger->debug('File is too large for classifier: ' . $files[0]->getPath());
-						try {
-							$this->logger->debug('removing ' . $queueFile->getFileId() . ' from ' . $model . ' queue');
-							$this->queue->removeFromQueue($model, $queueFile);
-						} catch (Exception $e) {
-							$this->logger->warning($e->getMessage(), ['exception' => $e]);
+					$filesize = filesize($path);
+					if ($filesize !== false) {
+						$filesizeMb = $filesize / (1024 * 1024);
+						if ($filesizeMb > 8) {
+							$this->logger->debug('File is too large for classifier: ' . $files[0]->getPath());
+							try {
+								$this->logger->debug('removing ' . $queueFile->getFileId() . ' from ' . $model . ' queue');
+								$this->queue->removeFromQueue($model, $queueFile);
+							} catch (Exception $e) {
+								$this->logger->warning($e->getMessage(), ['exception' => $e]);
+							}
+							continue;
 						}
-						continue;
 					}
 					// Check file dimensions
 					$dimensions = @getimagesize($path);
@@ -183,7 +186,7 @@ abstract class Classifier {
 			$proc->start();
 
 			if ($cores !== '0') {
-				@exec('taskset -cp ' . implode(',', range(0, (int)$cores, 1)) . ' ' . $proc->getPid());
+				@exec('taskset -cp ' . implode(',', range(0, (int)$cores, 1)) . ' ' . ((string)$proc->getPid()));
 			}
 
 			$i = 0;
@@ -340,7 +343,14 @@ abstract class Classifier {
 		$imagetype = exif_imagetype($tmpname);
 
 		if (in_array($imagetype, [IMAGETYPE_WEBP, IMAGETYPE_AVIF, false])) { // To troubleshoot if it is a webp or avif.
-			$previewImage = imagecreatefromstring(file_get_contents($tmpname));
+			$imageString = file_get_contents($tmpname);
+			if ($imageString === false) {
+				throw new \OCA\Recognize\Exception\Exception('Could not load preview file from temp folder');
+			}
+			$previewImage = imagecreatefromstring($imageString);
+			if ($previewImage === false) {
+				throw new \OCA\Recognize\Exception\Exception('Could not load preview file from temp folder');
+			}
 			$use_gd_quality = (int)\OCP\Server::get(IConfig::class)->getSystemValue('recognize.preview.quality', '100');
 			if (imagejpeg($previewImage, $tmpname, $use_gd_quality) === false) {
 				imagedestroy($previewImage);
@@ -358,18 +368,26 @@ abstract class Classifier {
 	 * @throws \OCA\Recognize\Exception\Exception
 	 */
 	public function generatePreviewWithGD(string $path): string {
-		$image = imagecreatefromstring(file_get_contents($path));
+		$imageContents = file_get_contents($path);
+		if (!$imageContents) {
+			throw new \OCA\Recognize\Exception\Exception('Could not load image for preview with gdlib');
+		}
+		$image = imagecreatefromstring($imageContents);
 		if (!$image) {
 			throw new \OCA\Recognize\Exception\Exception('Could not load image for preview with gdlib');
 		}
 		$width = imagesx($image);
 		$height = imagesy($image);
 
-		$maxWidth = self::TEMP_FILE_DIMENSION;
-		$maxHeight = self::TEMP_FILE_DIMENSION;
+		if ($width === false || $height === false) {
+			throw new \OCA\Recognize\Exception\Exception('Could not get image dimensions for preview with gdlib');
+		}
+
+		$maxWidth = (float) self::TEMP_FILE_DIMENSION;
+		$maxHeight = (float) self::TEMP_FILE_DIMENSION;
 
 		if ($width > $maxWidth || $height > $maxHeight) {
-			$aspectRatio = $width / $height;
+			$aspectRatio = (float) ($width / $height);
 			if ($width > $height) {
 				$newWidth = $maxWidth;
 				$newHeight = $maxWidth / $aspectRatio;

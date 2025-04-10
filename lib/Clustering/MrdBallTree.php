@@ -13,10 +13,16 @@ use \OCA\Recognize\Vendor\Rubix\ML\Graph\Nodes\Hypersphere;
 use \OCA\Recognize\Vendor\Rubix\ML\Graph\Trees\BallTree;
 use \OCA\Recognize\Vendor\Rubix\ML\Kernels\Distance\Distance;
 
-class MrdBallTree extends BallTree {
+final class MrdBallTree extends BallTree {
 	private ?Labeled $dataset = null;
 	private array $nativeInterpointCache = [];
+	/**
+	 * @var array<array-key,list<float>>
+	 */
 	private array $coreDistances = [];
+	/**
+	 * @var array<array-key,list<float>>
+	 */
 	private array $coreNeighborDistances = [];
 	private int $sampleSize;
 	private array $nodeDistances;
@@ -122,7 +128,7 @@ class MrdBallTree extends BallTree {
 	 * @param \OCA\Recognize\Clustering\DualTreeBall|\OCA\Recognize\Clustering\DualTreeClique $referenceNode
 	 * @param int $k
 	 * @param float $maxRange
-	 * @param array $bestDistances
+	 * @param array<array-key, float> $bestDistances
 	 * @return void
 	 */
 	private function updateNearestNeighbors($queryNode, $referenceNode, $k, $maxRange, &$bestDistances): void {
@@ -157,7 +163,7 @@ class MrdBallTree extends BallTree {
 					if (count($coreNeighborDistances) >= $k) {
 						asort($coreNeighborDistances);
 						$coreNeighborDistances = array_slice($coreNeighborDistances, 0, $k, true);
-						$bestDistance = min(end($coreNeighborDistances), $maxRange);
+						$bestDistance = (float) min(end($coreNeighborDistances), $maxRange);
 					}
 				}
 			}
@@ -173,9 +179,9 @@ class MrdBallTree extends BallTree {
 		}
 
 		if ($this->kernel instanceof SquaredDistance) {
-			$longestDistance = min($longestDistance, (2 * sqrt($queryNode->radius()) + sqrt($shortestDistance)) ** 2);
+			$longestDistance = min($longestDistance, (2.0 * sqrt($queryNode->radius()) + sqrt($shortestDistance)) ** 2.0);
 		} else {
-			$longestDistance = min($longestDistance, 2 * $queryNode->radius() + $shortestDistance);
+			$longestDistance = (float) min($longestDistance, 2.0 * $queryNode->radius() + $shortestDistance);
 		}
 		$queryNode->setLongestDistance($longestDistance);
 	}
@@ -234,14 +240,14 @@ class MrdBallTree extends BallTree {
 		// TODO: min($longestLeft, $longestRight) + 2 * ($queryNode->radius()) <--- Can be made tighter by using the shortest distance from child.
 		if ($this->kernel instanceof SquaredDistance) {
 			$longestDistance = max($longestLeft, $longestRight);
-			$longestLeft = (sqrt($longestLeft) + 2 * (sqrt($queryNode->radius()) - sqrt($queryLeft->radius()))) ** 2;
-			$longestRight = (sqrt($longestRight) + 2 * (sqrt($queryNode->radius()) - sqrt($queryRight->radius()))) ** 2;
-			$longestDistance = min($longestDistance, min($longestLeft, $longestRight), (sqrt(min($longestLeft, $longestRight)) + 2 * (sqrt($queryNode->radius()))) ** 2);
+			$longestLeft = (sqrt($longestLeft) + 2.0 * (sqrt($queryNode->radius()) - sqrt($queryLeft->radius()))) ** 2.0;
+			$longestRight = (sqrt($longestRight) + 2.0 * (sqrt($queryNode->radius()) - sqrt($queryRight->radius()))) ** 2.0;
+			$longestDistance = (float) min($longestDistance, min($longestLeft, $longestRight), (sqrt(min($longestLeft, $longestRight)) + 2.0 * (sqrt($queryNode->radius()))) ** 2.0);
 		} else {
 			$longestDistance = max($longestLeft, $longestRight);
 			$longestLeft = $longestLeft + 2 * ($queryNode->radius() - $queryLeft->radius());
 			$longestRight = $longestRight + 2 * ($queryNode->radius() - $queryRight->radius());
-			$longestDistance = min($longestDistance, min($longestLeft, $longestRight), min($longestLeft, $longestRight) + 2 * ($queryNode->radius()));
+			$longestDistance = (float) min($longestDistance, min($longestLeft, $longestRight), min($longestLeft, $longestRight) + 2.0 * ($queryNode->radius()));
 		}
 
 		$queryNode->setLongestDistance($longestDistance);
@@ -573,7 +579,7 @@ class MrdBallTree extends BallTree {
 							$childRadius = sqrt($child->radius());
 							$minDistance = $distance - $childRadius;
 							$minDistance = abs($minDistance) * $minDistance;
-							$maxDistance = ($distance + $childRadius) ** 2;
+							$maxDistance = ($distance + $childRadius) ** 2.0;
 						} else {
 							$childRadius = $child->radius();
 							$minDistance = $distance - $childRadius;

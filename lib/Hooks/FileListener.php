@@ -46,7 +46,7 @@ use Psr\Log\LoggerInterface;
 /**
  * @template-implements IEventListener<Event>
  */
-class FileListener implements IEventListener {
+final class FileListener implements IEventListener {
 	private ?bool $movingFromIgnoredTerritory;
 	private ?array $movingDirFromIgnoredTerritory;
 	/** @var list<string> */

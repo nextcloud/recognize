@@ -22,7 +22,7 @@ use OCA\Recognize\Db\QueueMapper;
 use OCP\AppFramework\Services\IAppConfig;
 use OCP\BackgroundJob\IJobList;
 
-class QueueService {
+final class QueueService {
 	/**
 	 * @const array<string, string> JOB_CLASSES
 	 */

@@ -19,7 +19,7 @@ use OCA\Recognize\Exception\Exception;
 use OCP\AppFramework\Services\IAppConfig;
 use OCP\BackgroundJob\IJobList;
 
-class SettingsService {
+final class SettingsService {
 	/** @var array<string,string>  */
 	private const DEFAULTS = [
 		'tensorflow.cores' => '0',

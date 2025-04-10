@@ -18,7 +18,7 @@ use OCP\AppFramework\Db\Entity;
  * @method string getUserId()
  * @method setUserId(string $userId)
  */
-class FaceCluster extends Entity {
+final class FaceCluster extends Entity {
 	protected $title;
 	protected $userId;
 

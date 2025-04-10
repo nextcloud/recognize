@@ -35,7 +35,7 @@ namespace OCA\Recognize\Helper;
 
 use Icewind\Streams\CallbackWrapper;
 
-class TAR extends Archive {
+final class TAR extends Archive {
 	public const PLAIN = 0;
 	public const GZIP = 1;
 	public const BZIP = 2;

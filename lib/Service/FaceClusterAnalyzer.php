@@ -15,7 +15,7 @@ use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
 
-class FaceClusterAnalyzer {
+final class FaceClusterAnalyzer {
 	public const MIN_DATASET_SIZE = 120;
 	public const MIN_DETECTION_SIZE = 0.03;
 	public const MIN_CLUSTER_SEPARATION = 0.35;
@@ -191,7 +191,7 @@ class FaceClusterAnalyzer {
 		/** @var list<float> $sum */
 		$sum = [];
 		for ($i = 0; $i < self::DIMENSIONS; $i++) {
-			$sum[] = 0;
+			$sum[] = 0.0;
 		}
 
 		if (count($detections) === 0) {
@@ -205,7 +205,7 @@ class FaceClusterAnalyzer {
 		}
 
 		$centroid = array_map(static function ($el) use ($detections) {
-			return $el / count($detections);
+			return $el / (float) count($detections);
 		}, $sum);
 
 		return $centroid;
@@ -252,7 +252,7 @@ class FaceClusterAnalyzer {
 	 * @return int
 	 */
 	private function getMinClusterSize(int $batchSize) : int {
-		return (int)round(max(2, min(5, $batchSize ** (1 / 4.7))));
+		return (int)round(max(2.0, min(5.0, $batchSize ** (1.0 / 4.7))));
 	}
 
 	/**
@@ -261,7 +261,7 @@ class FaceClusterAnalyzer {
 	 * @return int
 	 */
 	private function getMinSampleSize(int $batchSize) : int {
-		return (int)round(max(2, min(4, $batchSize ** (1 / 5.6))));
+		return (int)round(max(2, min(4, $batchSize ** (1.0 / 5.6))));
 	}
 
 	/**
@@ -271,10 +271,10 @@ class FaceClusterAnalyzer {
 	 * @return int
 	 */
 	private function getReferenceSampleSize(int $numberClusters) : int {
-		return (int)round(75 * 2 ** (-0.007 * $numberClusters) + 5);
+		return (int)round(75.0 * 2.0 ** (-0.007 * $numberClusters) + 5.0);
 	}
 
 	private function getRejectSampleSize(int $batchSize): int {
-		return (int) min(($batchSize / 4), 12 * $batchSize ** (0.55)); // I love maths. Slap me.
+		return (int) min(($batchSize / 4.0), 12.0 * $batchSize ** (0.55)); // I love maths. Slap me.
 	}
 }

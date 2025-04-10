@@ -19,7 +19,7 @@ use Sabre\DAV\PropFind;
 use Sabre\DAV\Server;
 use Sabre\DAV\ServerPlugin;
 
-class PropFindPlugin extends ServerPlugin {
+final class PropFindPlugin extends ServerPlugin {
 	public const FACE_DETECTIONS_PROPERTYNAME = '{http://nextcloud.org/ns}face-detections';
 	public const FILE_NAME_PROPERTYNAME = '{http://nextcloud.org/ns}file-name';
 	public const REALPATH_PROPERTYNAME = '{http://nextcloud.org/ns}realpath';
