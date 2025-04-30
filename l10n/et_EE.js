@@ -19,6 +19,7 @@ OC.L10N.register(
     "Camera" : "Kaamera",
     "Pizza" : "Pitsa",
     "Info" : "Info",
+    "Document" : "Dokument",
     "Bucket" : "Korv",
     "Event" : "Sündmus",
     "Gallery" : "Galerii",
