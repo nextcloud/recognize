@@ -14,6 +14,8 @@ OC.L10N.register(
     "Office" : "Kontor",
     "Food" : "Toit",
     "Car" : "Auto",
+    "Computer" : "Arvuti",
+    "Library" : "Raamatukogu",
     "Display" : "Vaade",
     "Camping" : "Telkimine",
     "Camera" : "Kaamera",
@@ -22,6 +24,8 @@ OC.L10N.register(
     "Document" : "Dokument",
     "Bucket" : "Korv",
     "Event" : "Sündmus",
+    "Gas station" : "Tankla",
+    "Parking" : "Parkla",
     "Gallery" : "Galerii",
     "Park" : "Park"
 },

@@ -12,6 +12,8 @@
     "Office" : "Kontor",
     "Food" : "Toit",
     "Car" : "Auto",
+    "Computer" : "Arvuti",
+    "Library" : "Raamatukogu",
     "Display" : "Vaade",
     "Camping" : "Telkimine",
     "Camera" : "Kaamera",
@@ -20,6 +22,8 @@
     "Document" : "Dokument",
     "Bucket" : "Korv",
     "Event" : "Sündmus",
+    "Gas station" : "Tankla",
+    "Parking" : "Parkla",
     "Gallery" : "Galerii",
     "Park" : "Park"
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
