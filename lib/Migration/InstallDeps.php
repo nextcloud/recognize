@@ -141,7 +141,7 @@ final class InstallDeps implements IRepairStep {
 				$isARM = true;
 			}
 		} else {
-			$output->warning('CPU archtecture $uname is not supported.');
+			$output->warning('CPU architecture $uname is not supported.');
 			return;
 		}
 
