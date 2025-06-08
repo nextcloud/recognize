@@ -3,7 +3,7 @@ OC.L10N.register(
     {
     "Recognize" : "Распознавание",
     "Smart media tagging and face recognition with on-premises machine learning models" : "Интеллектуальная маркировка медиаконтента и распознавание лиц с использованием локальных моделей машинного обучения",
-    "Your server does not support AVX instructions" : "Сервер не поддерживает набор инструкций AVX.",
+    "Your server does not support AVX instructions" : "Ваш сервер не поддерживает набор инструкций AVX.",
     "Your server does not have an x86 64-bit CPU" : "На сервере установлен процессор, отличный от x86 64-бита",
     "Your server uses musl libc" : "На сервере используется библиотека musl libc",
     "Failed to load settings" : "Не удалось загрузить параметры",
