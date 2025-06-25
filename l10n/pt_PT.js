@@ -6,6 +6,8 @@ OC.L10N.register(
     "never" : "nunca",
     "Status" : "Estado",
     "Reset" : "Reiniciar",
+    "Landscape" : "Landscape",
+    "Portrait" : "Portrait",
     "People" : "Pessoas",
     "Music" : "Música",
     "Office" : "Escritório",
