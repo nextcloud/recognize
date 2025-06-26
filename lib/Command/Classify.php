@@ -147,6 +147,9 @@ final class Classify extends Command {
 				}
 
 				foreach ($this->classifiers as $modelName => $classifier) {
+					if (!in_array($modelName, $models)) {
+						continue;
+					}
 					try {
 						$classifier->setMaxExecutionTime(0);
 						$classifier->classify($queues[$modelName]);
