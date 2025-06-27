@@ -15,6 +15,7 @@ use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Service\QueueService;
 use OCP\AppFramework\Services\IAppConfig;
 use OCP\DB\Exception;
+use OCP\Encryption\Exceptions\GenericEncryptionException;
 use OCP\Files\File;
 use OCP\Files\InvalidPathException;
 use OCP\Files\IRootFolder;
@@ -134,6 +135,14 @@ abstract class Classifier {
 				$fileNames[] = $files[0]->getPath();
 			} catch (NotFoundException|InvalidPathException $e) {
 				$this->logger->warning('Could not find file', ['exception' => $e]);
+				try {
+					$this->queue->removeFromQueue($model, $queueFile);
+				} catch (Exception $e) {
+					$this->logger->warning($e->getMessage(), ['exception' => $e]);
+				}
+				continue;
+			} catch (GenericEncryptionException $e) {
+				$this->logger->warning('Could not load encrypted file', ['exception' => $e]);
 				try {
 					$this->queue->removeFromQueue($model, $queueFile);
 				} catch (Exception $e) {
@@ -261,6 +270,7 @@ abstract class Classifier {
 	 * @param \OCP\Files\Node $file
 	 * @return string Path to file to process
 	 * @throws \OCP\Files\NotFoundException
+	 * @throws GenericEncryptionException
 	 */
 	private function getConvertedFilePath(Node $file): string {
 		if (!$file instanceof File) {
@@ -292,9 +302,9 @@ abstract class Classifier {
 			if ($imageType > 0) {
 				$this->logger->debug('generating preview of ' . $file->getId() . ' with dimension ' . self::TEMP_FILE_DIMENSION . ' using gdlib');
 				return $this->generatePreviewWithGD($path);
-			} else {
-				return $path;
 			}
+
+			return $path;
 		} catch (\Throwable $e) {
 			$this->logger->warning('Failed to generate preview of ' . $file->getId() . ' with dimension ' . self::TEMP_FILE_DIMENSION . ' with gdlib: ' . $e->getMessage());
 			return $path;
