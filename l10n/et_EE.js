@@ -30,6 +30,7 @@ OC.L10N.register(
     "Event" : "Sündmus",
     "Gas station" : "Tankla",
     "Parking" : "Parkla",
+    "Sign" : "Kirjuta alla",
     "Gallery" : "Galerii",
     "Park" : "Park"
 },
