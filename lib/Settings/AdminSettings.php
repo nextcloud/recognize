@@ -35,7 +35,7 @@ class AdminSettings implements ISettings {
 		$modelsDownloaded = file_exists($modelsPath);
 		$this->initialState->provideInitialState('modelsDownloaded', $modelsDownloaded);
 
-		$tagsEnabled = $this->appManager->isEnabledForAnyone('systemtags');
+		$tagsEnabled = $this->appManager->isEnabledForUser('systemtags');
 		$this->initialState->provideInitialState('tagsEnabled', $tagsEnabled);
 
 		return new TemplateResponse('recognize', 'admin');
