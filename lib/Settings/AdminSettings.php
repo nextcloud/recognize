@@ -16,10 +16,12 @@ use OCP\Settings\ISettings;
 class AdminSettings implements ISettings {
 	private IInitialState $initialState;
 	private SettingsService $settingsService;
+	private IAppManager $appManager;
 
-	public function __construct(IInitialState $initialState, SettingsService $settingsService) {
+	public function __construct(IInitialState $initialState, SettingsService $settingsService, IAppManager $appManager) {
 		$this->initialState = $initialState;
 		$this->settingsService = $settingsService;
+		$this->appManager = $appManager;
 	}
 
 	/**
