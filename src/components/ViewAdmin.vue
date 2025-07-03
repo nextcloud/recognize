@@ -15,6 +15,12 @@
 			<NcNoteCard v-else-if="!modelsDownloaded" type="warning">
 				{{ t('recognize', 'The machine learning models still need to be downloaded.') }}
 			</NcNoteCard>
+			<NcNoteCard v-if="tagsEnabled" show-alert type="success">
+				{{ t('recognize', 'The systemtags app is enabled.') }}
+			</NcNoteCard>
+			<NcNoteCard v-else-if="!tagsEnabled" type="warning">
+				{{ t('recognize', 'The systemtags app is currently disabled. Some features of this app will not work.') }}
+			</NcNoteCard>
 			<NcNoteCard v-if="nodejs === false" type="warning">
 				{{ t('recognize', 'Could not execute the Node.js binary. You may need to set the path to a working binary manually.') }}
 			</NcNoteCard>
@@ -429,6 +435,7 @@ export default {
 			movinetJobs: null,
 			musicnnJobs: null,
 			clusterFacesJobs: null,
+			tagsEnabled: null,
 		}
 	},
 
@@ -456,6 +463,7 @@ export default {
 	},
 	async created() {
 		this.modelsDownloaded = loadState('recognize', 'modelsDownloaded')
+		this.tagsEnabled = loadState('recognize', 'tagsEnabled')
 		this.getCount()
 		this.getAVX()
 		this.getPlatform()

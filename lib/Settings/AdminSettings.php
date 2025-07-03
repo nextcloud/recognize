@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace OCA\Recognize\Settings;
 
 use OCA\Recognize\Service\SettingsService;
+use OCP\App\IAppManager;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Services\IInitialState;
 use OCP\Settings\ISettings;
@@ -31,6 +32,9 @@ class AdminSettings implements ISettings {
 		$modelsPath = __DIR__ . '/../../models';
 		$modelsDownloaded = file_exists($modelsPath);
 		$this->initialState->provideInitialState('modelsDownloaded', $modelsDownloaded);
+
+		$tagsEnabled = $this->appManager->isEnabledForAnyone('systemtags');
+		$this->initialState->provideInitialState('tagsEnabled', $tagsEnabled);
 
 		return new TemplateResponse('recognize', 'admin');
 	}
