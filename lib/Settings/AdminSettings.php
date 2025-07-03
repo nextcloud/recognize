@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace OCA\Recognize\Settings;
 
 use OCA\Recognize\Service\SettingsService;
+use OCP\App\IAppManager;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Services\IInitialState;
 use OCP\Settings\ISettings;
@@ -15,10 +16,12 @@ use OCP\Settings\ISettings;
 class AdminSettings implements ISettings {
 	private IInitialState $initialState;
 	private SettingsService $settingsService;
+	private IAppManager $appManager;
 
-	public function __construct(IInitialState $initialState, SettingsService $settingsService) {
+	public function __construct(IInitialState $initialState, SettingsService $settingsService, IAppManager $appManager) {
 		$this->initialState = $initialState;
 		$this->settingsService = $settingsService;
+		$this->appManager = $appManager;
 	}
 
 	/**
@@ -31,6 +34,9 @@ class AdminSettings implements ISettings {
 		$modelsPath = __DIR__ . '/../../models';
 		$modelsDownloaded = file_exists($modelsPath);
 		$this->initialState->provideInitialState('modelsDownloaded', $modelsDownloaded);
+
+		$tagsEnabled = $this->appManager->isEnabledForUser('systemtags');
+		$this->initialState->provideInitialState('tagsEnabled', $tagsEnabled);
 
 		return new TemplateResponse('recognize', 'admin');
 	}
