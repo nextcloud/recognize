@@ -12,6 +12,7 @@
     "Status" : "狀態",
     "The machine learning models have been downloaded successfully." : "機器學習模型已成功下載。",
     "The machine learning models still need to be downloaded." : "機器學習模型仍然需要下載。",
+    "The systemtags app is enabled." : "已啟用 systemtags 應用程式",
     "Could not execute the Node.js binary. You may need to set the path to a working binary manually." : "Could not execute the Node.js binary. You may need to set the path to a working binary manually.",
     "Background Jobs are not executed via cron. Recognize requires background jobs to be executed via cron." : "後台作業不通過 cron 執行。Recognize 需要通過 cron 執行後台作業。",
     "The app is installed and will automatically classify files in background processes." : "該應用程式已安裝，並將自動對後台進程中的檔案進行分類。",
