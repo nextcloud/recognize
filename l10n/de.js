@@ -14,6 +14,8 @@ OC.L10N.register(
     "Status" : "Status",
     "The machine learning models have been downloaded successfully." : "Die Modelle für maschinelles Lernen wurden heruntergeladen.",
     "The machine learning models still need to be downloaded." : "Die Modelle für maschinelles Lernen müssen noch heruntergeladen werden.",
+    "The systemtags app is enabled." : "Die App \"systemtags\" ist aktiviert.",
+    "The systemtags app is currently disabled. Some features of this app will not work." : "Die App \"systemtags\" ist derzeit deaktiviert. Einige Funktionen dieser App werden nicht funktionieren.",
     "Could not execute the Node.js binary. You may need to set the path to a working binary manually." : "Die Node.js-Bibliothek konnte nicht ausgeführt werden. Möglicherweise musst du den Pfad zu einer funktionierenden Bibliothek manuell festlegen.",
     "Background Jobs are not executed via cron. Recognize requires background jobs to be executed via cron." : "Hintergrundaufgaben werden nicht über Cron ausgeführt. Recognize erfordert die Ausführung von Hintergrundaufgaben über Cron.",
     "The app is installed and will automatically classify files in background processes." : "Die App ist installiert und klassifiziert Dateien automatisch in Hintergrundprozessen.",

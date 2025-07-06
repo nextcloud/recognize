@@ -14,6 +14,8 @@ OC.L10N.register(
     "Status" : "Stádas",
     "The machine learning models have been downloaded successfully." : "Tá na samhlacha meaisínfhoghlama íoslódála go rathúil.",
     "The machine learning models still need to be downloaded." : "Ní mór na samhlacha meaisínfhoghlama a íoslódáil fós.",
+    "The systemtags app is enabled." : "Tá an aip systemtags cumasaithe.",
+    "The systemtags app is currently disabled. Some features of this app will not work." : "Tá an aip systemtags díchumasaithe faoi láthair. Ní oibreoidh roinnt gnéithe den aip seo.",
     "Could not execute the Node.js binary. You may need to set the path to a working binary manually." : "Níorbh fhéidir an dénártha Node.js a rith. Seans go mbeidh ort an cosán chuig dénártha oibre a shocrú de láimh.",
     "Background Jobs are not executed via cron. Recognize requires background jobs to be executed via cron." : "Ní dhéantar Jabanna Cúlra trí cron. Éilíonn Aithint go ndéanfaí poist chúlra trí cron.",
     "The app is installed and will automatically classify files in background processes." : "Tá an aip suiteáilte agus déanfaidh sé comhaid a rangú go huathoibríoch i bpróisis chúlra.",
