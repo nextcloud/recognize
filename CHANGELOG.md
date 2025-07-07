@@ -4,6 +4,54 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.0.0] - 2025-07-07
+
+### Breaking changes
+
+- Dropped support for Nextcloud 31
+
+### New
+
+* Added Support for Nextcloud 32
+* 
+### Fixed
+* Fix(l10n): Update translations from Transifex
+
+## [9.0.3] - 2025-07-07
+
+### Fixed
+
+- Fixed build
+
+## [9.0.2] - 2025-07-07
+
+### Fixed
+
+* fix(AdminView): Warn about disabled systemtags app
+* fix(Classifier): Do not get stuck when decryption fails
+* fix: Don't error if movinet.enabled=false and wasm=true
+
+## [9.0.1]
+
+### Fixed
+
+- Fix compatibility with LoggerInterface
+
+## [9.0.0]
+
+### Breaking changes
+
+* Dropped support for Nextcloud 30
+
+### New
+
+* Added Support for Nextcloud 31
+
+### Fixed
+* Fix face clustering on instances that use numeric user IDs (Thanks to @joeyame)
+* Fix(l10n): Update translations from Transifex
+
+
 ## [8.2.0]
 
 ### New
