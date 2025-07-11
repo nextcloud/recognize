@@ -85,6 +85,7 @@ The app does not send any sensitive data to cloud providers or similar services.
 	<category>organization</category>
 	<category>search</category>
 	<category>multimedia</category>
+	<category>ai</category>
 	<website>https://github.com/nextcloud/recognize</website>
 	<bugs>https://github.com/nextcloud/recognize/issues</bugs>
 	<repository type="git">https://github.com/nextcloud/recognize.git</repository>
