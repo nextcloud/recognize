@@ -14,6 +14,8 @@ OC.L10N.register(
     "Status" : "Статус",
     "The machine learning models have been downloaded successfully." : "Успешно су преузети модели машинског учења.",
     "The machine learning models still need to be downloaded." : "Још увек је потребно да се преузму модели машинског учења.",
+    "The systemtags app is enabled." : "Укључена је апликација системске ознаке.",
+    "The systemtags app is currently disabled. Some features of this app will not work." : "Апликација системске ознаке је тренутно искључена. Неке функције ове апликације неће радити.",
     "Could not execute the Node.js binary. You may need to set the path to a working binary manually." : "Не може да се изврши Node.js бинарни фајл. Можда је потребно да ручно поставите путању до функционалног бинарног фајла.",
     "Background Jobs are not executed via cron. Recognize requires background jobs to be executed via cron." : "Позадински послови се не извршавају са cron. Препознај захтева да се позадински послови извршавају са cron.",
     "The app is installed and will automatically classify files in background processes." : "Апликација је инсталирана и аутоматски ће да класификује фајлове у позадинским процесима.",
