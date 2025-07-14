@@ -20,7 +20,7 @@ env:
 
 jobs:
   php:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     strategy:
       # do not stop on another job's failure
