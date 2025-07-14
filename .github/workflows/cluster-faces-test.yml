@@ -7,17 +7,20 @@ on:
       - 'src/**'
   push:
     branches:
-      - master
+      - main
+      - stable8
+      - stable9
     paths:
       - 'lib/**'
       - 'src/**'
+  workflow_dispatch:
 
 env:
   APP_NAME: recognize
 
 jobs:
   php:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     strategy:
       # do not stop on another job's failure
