@@ -13,6 +13,7 @@ on:
     paths:
       - 'lib/**'
       - 'src/**'
+  workflow_dispatch:
 
 env:
   APP_NAME: recognize
