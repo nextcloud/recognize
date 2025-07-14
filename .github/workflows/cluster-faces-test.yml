@@ -7,7 +7,9 @@ on:
       - 'src/**'
   push:
     branches:
-      - master
+      - main
+      - stable8
+      - stable9
     paths:
       - 'lib/**'
       - 'src/**'
