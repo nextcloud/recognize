@@ -55,6 +55,8 @@ jobs:
       MYSQL_PORT: 4444
       PGSQL_PORT: 4445
 
+    timeout-minutes: 36 # max + 3*std over the last 212 successful runs
+
     services:
       mysql:
         image: mariadb:10.5
