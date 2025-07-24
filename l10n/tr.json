@@ -12,6 +12,8 @@
     "Status" : "Durum",
     "The machine learning models have been downloaded successfully." : "Makine öğrenmesi modelleri indirildi.",
     "The machine learning models still need to be downloaded." : "Makine öğrenmesi modellerinin indirilmesi gerekiyor.",
+    "The systemtags app is enabled." : "systemtags uygulaması kullanılıyor.",
+    "The systemtags app is currently disabled. Some features of this app will not work." : "systemtags uygulaması kullanıma alınmamış. Bu uygulamanın bazı özellikleri çalışmayacak.",
     "Could not execute the Node.js binary. You may need to set the path to a working binary manually." : "Node.js binary dosyası yürütülemedi. Çalışan bir binary dosyasının yolunu el ile ayarlamanız gerekebilir.",
     "Background Jobs are not executed via cron. Recognize requires background jobs to be executed via cron." : "Arka plan görevleri cron zamanlanmış görevi ile yürütülmüyor. Recognize için arka plan görevlerinin cron ile yürütülmesi gereklidir.",
     "The app is installed and will automatically classify files in background processes." : "Uygulama kuruldu ve arka planda dosyaları otomatik olarak sınıflandıracak.",
