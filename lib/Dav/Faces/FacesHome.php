@@ -50,9 +50,15 @@ class FacesHome implements ICollection {
 	}
 
 	public function createDirectory($name) {
+		if ($this->childExists(basename($name))) {
+			throw new Forbidden('Not allowed to create duplicate names');
+		}
+		if (preg_match('/^[0-9]+$/', basename($name), $matches) != false) {
+			throw new Forbidden('Not allowed to use numbers as names');
+		}
 		$entity = new FaceCluster();
 		$entity->setUserId($this->user->getUID());
-		$entity->setTitle($name);
+		$entity->setTitle(basename($name));
 		$this->faceClusterMapper->insert($entity);
 	}
 
@@ -90,9 +96,9 @@ class FacesHome implements ICollection {
 	 * @throws \OCP\DB\Exception
 	 */
 	public function getChildren(): array {
-		$clusters = $this->faceClusterMapper->findByUserId($this->user->getUID());
-		$clusters = array_values(array_filter($clusters, fn ($cluster) => count($this->faceDetectionMapper->findByClusterId($cluster->getId())) > 0));
 		if (count($this->children) === 0) {
+			$clusters = $this->faceClusterMapper->findByUserId($this->user->getUID());
+			$clusters = array_values(array_filter($clusters, fn ($cluster) => count($this->faceDetectionMapper->findByClusterId($cluster->getId())) > 0));
 			$this->children = array_map(function (FaceCluster $cluster) {
 				return new FaceRoot($this->faceClusterMapper, $cluster, $this->user, $this->faceDetectionMapper, $this->rootFolder, $this->tagManager, $this->previewManager);
 			}, $clusters);
