@@ -45,6 +45,28 @@ class FaceDetectionMapper extends QBMapper {
 	/**
 	 * @throws \OCP\DB\Exception
 	 */
+	public function insert(Entity $entity): FaceDetection {
+		$qb = $this->db->getQueryBuilder();
+		$qb->select(FaceDetection::$columns)
+			->from('recognize_face_detections')
+			->where($qb->expr()->eq('file_id', $qb->createPositionalParameter($entity->getFileId(), IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()->eq('user_id', $qb->createPositionalParameter($entity->getUserId(), IQueryBuilder::PARAM_STR)))
+			->andWhere($qb->expr()->eq('x', $qb->createPositionalParameter($entity->getX(), IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()->eq('y', $qb->createPositionalParameter($entity->getY(), IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()->eq('height', $qb->createPositionalParameter($entity->getHeight(), IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()->eq('width', $qb->createPositionalParameter($entity->getWidth(), IQueryBuilder::PARAM_INT)));
+		$duplicates = $this->findEntities($qb);
+
+		if (empty($duplicates)) {
+			return parent::insert($entity);
+		}
+
+		return $duplicates[0];
+	}
+
+	/**
+	 * @throws \OCP\DB\Exception
+	 */
 	public function deleteAll(): void {
 		$qb = $this->db->getQueryBuilder();
 		$qb->delete('recognize_face_detections')
