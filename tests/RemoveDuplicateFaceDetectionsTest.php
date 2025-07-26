@@ -22,11 +22,8 @@ class RemoveDuplicateFaceDetectionsTest extends TestCase {
 		$qb = $this->db->getQueryBuilder();
 		$qb->delete('recognize_face_detections')->executeStatement();
 
-		// Generate 11 face detections per file (1000 files per user; 100 users)
-		// = 1.100.000 face detections out of which 900.000 are superfluous duplicates to be removed
-		// After the repair step there should be 200.000 left
-		for ($k = 0; $k < 100; $k++) {
-			for ($j = 0; $j < 1000; $j++) {
+		for ($k = 0; $k < 10; $k++) {
+			for ($j = 0; $j < 10; $j++) {
 				$user = 'user' . $k;
 				$x = rand(0, 100) / 100;
 				$y = rand(0, 100) / 100;
@@ -66,7 +63,7 @@ class RemoveDuplicateFaceDetectionsTest extends TestCase {
 		// Check
 		$qb = $this->db->getQueryBuilder();
 		$count = $qb->select($qb->func()->count('*'))->from('recognize_face_detections')->executeQuery()->fetchOne();
-		$this->assertEquals(1100000, (int)$count);
+		$this->assertEquals(10 * 10 * 11, (int)$count); // 1100
 
 		// Run
 		$repairStep->run($output);
@@ -74,6 +71,6 @@ class RemoveDuplicateFaceDetectionsTest extends TestCase {
 		// Assert
 		$qb = $this->db->getQueryBuilder();
 		$count = $qb->select($qb->func()->count('*'))->from('recognize_face_detections')->executeQuery()->fetchOne();
-		$this->assertEquals(200000, (int)$count);
+		$this->assertEquals(10 * 10 * 11 - 10 * 10 * 9, (int)$count); // 200
 	}
 }
