@@ -44,13 +44,21 @@ final class RemoveDuplicateFaceDetections implements IRepairStep {
 	public function run(IOutput $output): void {
 		try {
 			$subQuery = $this->db->getQueryBuilder();
-			$subQuery->select($subQuery->func()->min('id'))
+			$subQuery->selectAlias($subQuery->func()->min('id'), 'id')
 				->from('recognize_face_detections')
 				->groupBy('file_id', 'user_id', 'x', 'y', 'height', 'width');
 
+			if ($this->db->getDatabaseProvider() === IDBConnection::PLATFORM_MYSQL) {
+				$secondSubQuery = $this->db->getQueryBuilder();
+				$secondSubQuery->select('id')->from($secondSubQuery->createFunction('(' . $subQuery->getSQL() .')'), 'x');
+				$sql = $secondSubQuery->getSQL();
+			} else {
+				$sql = $subQuery->getSQL();
+			}
+
 			$qb = $this->db->getQueryBuilder();
 			$qb->delete('recognize_face_detections')
-				->where($qb->expr()->notIn('id', $qb->createFunction('(' . $subQuery->getSQL() .')')));
+				->where($qb->expr()->notIn('id', $qb->createFunction('(' . $sql .')')));
 
 			$qb->executeStatement();
 		} catch (\Throwable $e) {
