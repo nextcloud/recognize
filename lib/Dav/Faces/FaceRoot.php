@@ -57,7 +57,7 @@ final class FaceRoot implements ICollection, IMoveTarget {
 	 */
 	public function setName($name) {
 		try {
-			$this->clusterMapper->findByUserAndTitle($this->user->getUID(), $name);
+			$this->clusterMapper->findByUserAndTitle($this->user->getUID(), basename($name));
 			throw new Forbidden('Not allowed to create duplicate names');
 		} catch (DoesNotExistException $e) {
 			// pass
