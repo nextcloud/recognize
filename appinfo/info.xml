@@ -101,8 +101,10 @@ The app does not send any sensitive data to cloud providers or similar services.
 	<repair-steps>
 		<post-migration>
 			<step>OCA\Recognize\Migration\InstallDeps</step>
-			<step>OCA\Recognize\Migration\RemoveDuplicateFaceDetections</step>
 		</post-migration>
+		<live-migration>
+			<step>OCA\Recognize\Migration\RemoveDuplicateFaceDetections</step>
+		</live-migration>
 		<install>
 			<step>OCA\Recognize\Migration\InstallDeps</step>
 		</install>
