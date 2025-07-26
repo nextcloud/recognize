@@ -11,6 +11,7 @@ use OCA\Recognize\Service\FaceClusterAnalyzer;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\Entity;
 use OCP\AppFramework\Db\QBMapper;
+use OCP\DB\Exception;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IConfig;
 use OCP\IDBConnection;
@@ -62,6 +63,13 @@ class FaceDetectionMapper extends QBMapper {
 		}
 
 		return $duplicates[0];
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	public function insertWithoutDeduplication(Entity $entity): FaceDetection {
+		return parent::insert($entity);
 	}
 
 	/**
