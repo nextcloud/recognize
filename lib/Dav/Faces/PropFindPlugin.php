@@ -10,10 +10,15 @@ namespace OCA\Recognize\Dav\Faces;
 use \OCA\DAV\Connector\Sabre\FilesPlugin;
 use \OCA\DAV\Connector\Sabre\TagsPlugin;
 use OCA\DAV\Connector\Sabre\File;
+use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Db\FaceDetectionWithTitle;
+use OCP\AppFramework\Db\DoesNotExistException;
+use OCP\AppFramework\Db\MultipleObjectsReturnedException;
+use OCP\DB\Exception;
 use OCP\Files\DavUtil;
 use OCP\IPreview;
+use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAV\INode;
 use Sabre\DAV\PropFind;
 use Sabre\DAV\Server;
@@ -31,6 +36,7 @@ final class PropFindPlugin extends ServerPlugin {
 	public function __construct(
 		private FaceDetectionMapper $faceDetectionMapper,
 		private IPreview $previewManager,
+		private FaceClusterMapper $faceClusterMapper,
 	) {
 	}
 
@@ -38,6 +44,7 @@ final class PropFindPlugin extends ServerPlugin {
 		$this->server = $server;
 
 		$this->server->on('propFind', [$this, 'propFind']);
+		$this->server->on('beforeMove', [$this, 'beforeMove']);
 	}
 
 
@@ -86,5 +93,24 @@ final class PropFindPlugin extends ServerPlugin {
 				);
 			});
 		}
+	}
+
+	public function beforeMove($source, $target) {
+		// recognize/{userId}/faces/{name}
+		if (str_starts_with($source, 'recognize') && str_starts_with($target, 'recognize')) {
+			$sourceParts = explode('/', $source);
+			$targetParts = explode('/', $target);
+			if ($sourceParts[2] === 'faces' && $targetParts[2] === 'faces' && count($sourceParts) === 4 && count($targetParts) === 4) {
+				try {
+					$this->faceClusterMapper->findByUserAndTitle($targetParts[1], $targetParts[3]);
+					throw new Forbidden('The target node already exists and cannot be overwritten');
+				} catch (DoesNotExistException $e) {
+					return true;
+				} catch (MultipleObjectsReturnedException|Exception $e) {
+					throw $e;
+				}
+			}
+		}
+		return true;
 	}
 }
