@@ -60,19 +60,9 @@ final class Version010000001Date20250727094721 extends SimpleMigrationStep {
 			return;
 		}
 
-		$selectQuery = $this->db->getQueryBuilder();
-		$selectQuery->select('id', 'vector')
-			->from('recognize_face_detections');
-		$updateQuery = $this->db->getQueryBuilder();
-		$updateQuery->update('recognize_face_detections')
-			->set('face_vector', $updateQuery->createParameter('face_vector'))
-			->where($updateQuery->expr()->eq('id', $updateQuery->createParameter('id')));
-		$result = $selectQuery->executeQuery();
-		while ($row = $result->fetch()) {
-			$updateQuery->setParameter('id', $row['id']);
-			$updateQuery->setParameter('face_vector', $row['vector']);
-			$updateQuery->executeStatement();
-		}
-		$result->closeCursor();
+		$query = $this->db->getQueryBuilder();
+		$query->update('recognize_face_detections')
+			->set('face_vector', 'vector');
+		$query->executeStatement();
 	}
 }
