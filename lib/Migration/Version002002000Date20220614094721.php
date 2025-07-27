@@ -65,7 +65,7 @@ final class Version002002000Date20220614094721 extends SimpleMigrationStep {
 			$table->addColumn('width', Types::FLOAT, [
 				'notnull' => false,
 			]);
-			$table->addColumn('vector', Types::TEXT, [
+			$table->addColumn('face_vector', Types::TEXT, [
 				'notnull' => true,
 			]);
 			$table->addColumn('cluster_id', 'bigint', [
