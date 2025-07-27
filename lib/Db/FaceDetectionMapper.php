@@ -11,6 +11,7 @@ use OCA\Recognize\Service\FaceClusterAnalyzer;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\Entity;
 use OCP\AppFramework\Db\QBMapper;
+use OCP\DB\Exception;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IConfig;
 use OCP\IDBConnection;
@@ -40,6 +41,35 @@ class FaceDetectionMapper extends QBMapper {
 			->where($qb->expr()->eq('id', $qb->createNamedParameter($id)));
 
 		return $this->findEntity($qb);
+	}
+
+	/**
+	 * @throws \OCP\DB\Exception
+	 */
+	public function insert(Entity $entity): FaceDetection {
+		$qb = $this->db->getQueryBuilder();
+		$qb->select(FaceDetection::$columns)
+			->from('recognize_face_detections')
+			->where($qb->expr()->eq('file_id', $qb->createPositionalParameter($entity->getFileId(), IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()->eq('user_id', $qb->createPositionalParameter($entity->getUserId(), IQueryBuilder::PARAM_STR)))
+			->andWhere($qb->expr()->eq('x', $qb->createPositionalParameter($entity->getX(), IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()->eq('y', $qb->createPositionalParameter($entity->getY(), IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()->eq('height', $qb->createPositionalParameter($entity->getHeight(), IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()->eq('width', $qb->createPositionalParameter($entity->getWidth(), IQueryBuilder::PARAM_INT)));
+		$duplicates = $this->findEntities($qb);
+
+		if (empty($duplicates)) {
+			return parent::insert($entity);
+		}
+
+		return $duplicates[0];
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	public function insertWithoutDeduplication(Entity $entity): FaceDetection {
+		return parent::insert($entity);
 	}
 
 	/**
