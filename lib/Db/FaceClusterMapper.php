@@ -58,14 +58,18 @@ class FaceClusterMapper extends QBMapper {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select(FaceCluster::$columns)
 			->from('recognize_face_clusters')
-			->where($qb->expr()->eq('user_id', $qb->createPositionalParameter($userId)))
-			->andWhere($qb->expr()->orX(
+			->where($qb->expr()->eq('user_id', $qb->createPositionalParameter($userId)));
+		if (preg_match('/^[0-9]+$/', $title, $matches) != false) {
+			$qb->andWhere($qb->expr()->orX(
 				$qb->expr()->eq('title', $qb->createPositionalParameter($title)),
 				$qb->expr()->andX(
 					$qb->expr()->eq('title', $qb->createPositionalParameter('')),
 					$qb->expr()->eq('id', $qb->createPositionalParameter((int) $title, IQueryBuilder::PARAM_INT))
 				)
 			));
+		} else {
+			$qb->andWhere($qb->expr()->eq('title', $qb->createPositionalParameter($title)));
+		}
 		return $this->findEntity($qb);
 	}
 
