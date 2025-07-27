@@ -66,7 +66,7 @@ final class Version002002000Date20220614094721 extends SimpleMigrationStep {
 				'notnull' => false,
 			]);
 			$table->addColumn('vector', Types::TEXT, [
-				'notnull' => true,
+				'notnull' => false,
 			]);
 			$table->addColumn('cluster_id', 'bigint', [
 				'notnull' => false,
