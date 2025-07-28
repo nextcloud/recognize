@@ -21,8 +21,6 @@ use OCP\AppFramework\Db\Entity;
  * @method float getY()
  * @method float getHeight()
  * @method float getWidth()
- * @method float[] getVector()
- * @method setVector(array $vector)
  * @method setX(float $x)
  * @method setY(float $y)
  * @method setHeight(float $height)
@@ -30,7 +28,7 @@ use OCP\AppFramework\Db\Entity;
  * @method setClusterId(int|null $clusterId)
  * @method int|null getClusterId()
  * @method float getThreshold()
- *  @method setThreshold(float $threshold)
+ * @method setThreshold(float $threshold)
  */
 class FaceDetection extends Entity {
 	protected $fileId;
@@ -39,17 +37,17 @@ class FaceDetection extends Entity {
 	protected $y;
 	protected $height;
 	protected $width;
-	protected $vector;
+	protected $faceVector;
 	protected $clusterId;
 	protected $threshold;
 	/**
 	 * @var string[]
 	 */
-	public static $columns = ['id', 'user_id', 'file_id', 'x', 'y', 'height', 'width', 'vector', 'cluster_id', 'threshold'];
+	public static $columns = ['id', 'user_id', 'file_id', 'x', 'y', 'height', 'width', 'face_vector', 'cluster_id', 'threshold'];
 	/**
 	 * @var string[]
 	 */
-	public static $fields = ['id', 'userId', 'fileId', 'x', 'y', 'height', 'width', 'vector', 'clusterId', 'threshold'];
+	public static $fields = ['id', 'userId', 'fileId', 'x', 'y', 'height', 'width', 'faceVector', 'clusterId', 'threshold'];
 
 	public function __construct() {
 		// add types in constructor
@@ -60,7 +58,7 @@ class FaceDetection extends Entity {
 		$this->addType('y', 'float');
 		$this->addType('height', 'float');
 		$this->addType('width', 'float');
-		$this->addType('vector', 'json');
+		$this->addType('faceVector', 'json');
 		$this->addType('clusterId', 'integer');
 		$this->addType('threshold', 'float');
 	}
@@ -68,11 +66,18 @@ class FaceDetection extends Entity {
 	public function toArray(): array {
 		$array = [];
 		foreach (static::$fields as $field) {
-			if ($field === 'vector') {
+			if ($field === 'faceVector') {
 				continue;
 			}
 			$array[$field] = $this->{$field};
 		}
 		return $array;
+	}
+
+	public function getVector(): array {
+		return $this->getter('faceVector');
+	}
+	public function setVector(array $vector): void {
+		$this->setter('faceVector', [$vector]);
 	}
 }
