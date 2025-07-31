@@ -26,6 +26,7 @@ OC.L10N.register(
     "Info" : "Thông tin",
     "Document" : "Tài liệu",
     "Festival" : "Lễ hội",
+    "Event" : "Sự kiện",
     "Gallery" : "Thư viện",
     "Park" : "Công viên"
 },
