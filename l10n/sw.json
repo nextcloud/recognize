@@ -1,0 +1,19 @@
+{ "translations": {
+    "Failed to load settings" : "Failed to load settings",
+    "Failed to save settings" : "Failed to save settings",
+    "never" : "kamwe",
+    "Status" : "Wadhifa",
+    "Reset" : "Pangilia upya",
+    "Landscape" : "Landscape",
+    "Portrait" : "Portrait",
+    "People" : "Watu",
+    "Music" : "Muziki",
+    "Food" : "Food",
+    "Display" : "Onyesho",
+    "Camera" : "Camera",
+    "Document" : "Nyaraka",
+    "Bucket" : "Bucket",
+    "Event" : "Tukio",
+    "Gallery" : "Matunzio"
+},"pluralForm" :"nplurals=2; plural=(n != 1);"
+}
