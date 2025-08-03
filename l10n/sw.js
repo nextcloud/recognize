@@ -13,6 +13,7 @@ OC.L10N.register(
     "Food" : "Food",
     "Display" : "Onyesho",
     "Camera" : "Camera",
+    "Info" : "Info",
     "Document" : "Nyaraka",
     "Bucket" : "Bucket",
     "Event" : "Tukio",
