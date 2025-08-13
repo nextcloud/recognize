@@ -11,6 +11,7 @@ OC.L10N.register(
     "People" : "Watu",
     "Music" : "Muziki",
     "Food" : "Food",
+    "Book" : "Kitabu",
     "Display" : "Onyesho",
     "Camera" : "Camera",
     "Info" : "Info",
