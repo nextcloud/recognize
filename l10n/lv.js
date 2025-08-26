@@ -27,7 +27,7 @@ OC.L10N.register(
     "Barbecue" : "Bārbekjū",
     "Theater" : "Teātris",
     "Pizza" : "Pica",
-    "Info" : "Info",
+    "Info" : "Informācija",
     "Document" : "Dokuments",
     "Festival" : "Festivāls",
     "Event" : "Notikums",
