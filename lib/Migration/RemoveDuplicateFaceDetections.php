@@ -24,6 +24,7 @@ declare(strict_types=1);
  */
 namespace OCA\Recognize\Migration;
 
+use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 use OCP\Migration\IOutput;
 use OCP\Migration\IRepairStep;
@@ -43,27 +44,44 @@ final class RemoveDuplicateFaceDetections implements IRepairStep {
 
 	public function run(IOutput $output): void {
 		try {
-			$subQuery = $this->db->getQueryBuilder();
-			$subQuery->selectAlias($subQuery->func()->min('id'), 'id')
+			$selectQuery = $this->db->getQueryBuilder();
+			$selectQuery
+				->select('file_id', 'user_id', 'x', 'y', 'height', 'width')
+				->selectAlias($selectQuery->func()->min('id'), 'min_id')
 				->from('recognize_face_detections')
 				->groupBy('file_id', 'user_id', 'x', 'y', 'height', 'width');
 
-			if ($this->db->getDatabaseProvider() === IDBConnection::PLATFORM_MYSQL) {
-				$secondSubQuery = $this->db->getQueryBuilder();
-				$secondSubQuery->select('id')->from($secondSubQuery->createFunction('(' . $subQuery->getSQL() .')'), 'x');
-				$sql = $secondSubQuery->getSQL();
-			} else {
-				$sql = $subQuery->getSQL();
+			$result = $selectQuery->executeQuery();
+
+			$deleteQuery = $this->db->getQueryBuilder();
+			$deleteQuery->delete('recognize_face_detections')
+				->andWhere(
+					$deleteQuery->expr()->neq('id', $deleteQuery->createParameter('min_id')),
+					$deleteQuery->expr()->eq('file_id', $deleteQuery->createParameter('file_id')),
+					$deleteQuery->expr()->eq('user_id', $deleteQuery->createParameter('user_id')),
+					$deleteQuery->expr()->eq('x', $deleteQuery->createParameter('x')),
+					$deleteQuery->expr()->eq('y', $deleteQuery->createParameter('y')),
+					$deleteQuery->expr()->eq('height', $deleteQuery->createParameter('height')),
+					$deleteQuery->expr()->eq('width', $deleteQuery->createParameter('width'))
+				);
+
+			while (
+				/** @var array{min_id: int, file_id: int, user_id: string, x: float, y: float, height: float, width: float} $row */
+				$row = $result->fetch()
+			) {
+				$deleteQuery->setParameter('min_id', $row['min_id'], IQueryBuilder::PARAM_INT);
+				$deleteQuery->setParameter('file_id', $row['file_id'], IQueryBuilder::PARAM_INT);
+				$deleteQuery->setParameter('user_id', $row['user_id']);
+				$deleteQuery->setParameter('x', $row['x']);
+				$deleteQuery->setParameter('y', $row['y']);
+				$deleteQuery->setParameter('height', $row['height']);
+				$deleteQuery->setParameter('width', $row['width']);
+				$deleteQuery->executeStatement();
 			}
-
-			$qb = $this->db->getQueryBuilder();
-			$qb->delete('recognize_face_detections')
-				->where($qb->expr()->notIn('id', $qb->createFunction('(' . $sql .')')));
-
-			$qb->executeStatement();
+			$result->closeCursor();
 		} catch (\Throwable $e) {
 			$output->warning('Failed to automatically remove duplicate face detections for recognize.');
-			$this->logger->error('Failed to automatically remove duplicate face detections', ['exception' => $e]);
+			throw new \Exception('Failed to automatically remove duplicate face detections', previous: $e);
 		}
 	}
 }
