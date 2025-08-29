@@ -41,6 +41,6 @@ final class Version010000001Date20250727094821 extends SimpleMigrationStep {
 				$changed = true;
 			}
 		}
-		return $changed ? $schema : null;;
+		return $changed ? $schema : null;
 	}
 }
