@@ -38,7 +38,7 @@ final class Version010000001Date20250727094721 extends SimpleMigrationStep {
 			$table = $schema->getTable('recognize_face_detections');
 			if (!$table->hasColumn('face_vector')) {
 				$table->addColumn('face_vector', Types::TEXT, [
-					'notnull' => true,
+					'notnull' => false,
 				]);
 				return $schema;
 			}
