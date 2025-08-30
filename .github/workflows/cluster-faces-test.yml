@@ -74,7 +74,7 @@ jobs:
         run: sudo apt update && sudo apt install -y ssl-cert
 
       - name: Set up php ${{ matrix.php-versions }}
-        uses: shivammathur/setup-php@cf4cade2721270509d5b1c766ab3549210a39a2a # v2.33.0
+        uses: shivammathur/setup-php@ec406be512d7077f68eed36e63f4d91bc006edc4 # v2.35.4
         with:
           php-version: ${{ matrix.php-versions }}
           tools: phpunit
