@@ -11,6 +11,7 @@
     "Status" : "Состояние",
     "The machine learning models have been downloaded successfully." : "Модели машинного обучения загружены успешно.",
     "The machine learning models still need to be downloaded." : "Необходима загрузка моделей машинного обучения.",
+    "The systemtags app is currently disabled. Some features of this app will not work." : "Приложение systemtags в настоящее время отключено. Некоторые функции этого приложения не будут работать.",
     "Could not execute the Node.js binary. You may need to set the path to a working binary manually." : "Не удалось запустить выполнение двоичного файла Node.js. Попробуйте указать путь до бинарного файла вручную.",
     "Background Jobs are not executed via cron. Recognize requires background jobs to be executed via cron." : "Фоновые задания не выполняются через cron. Распознавание требует выполнения фоновых заданий через cron.",
     "The app is installed and will automatically classify files in background processes." : "Приложение установлено и выполняет распознавание файлов в фоновом режиме.",
