@@ -7,7 +7,7 @@
 
 This app goes through your media collection and adds fitting tags, automatically categorizing your photos and music.
 
-* 📷 👪 Recognizes faces from contact photos
+* 📷 👪 Recognizes faces and groups photos by faces that appear in them (GUI in the photos app and the memories app)
 * 📷 🏔 Recognizes animals, landscapes, food, vehicles, buildings and other objects
 * 📷 🗼 Recognizes landmarks and monuments
 * 👂 🎵 Recognizes music genres
