@@ -75,7 +75,7 @@ Requirements:
 The app does not send any sensitive data to cloud providers or similar services. All processing is done on your Nextcloud machine, using Tensorflow.js running in Node.js.
 
 ]]></description>
-	<version>10.0.0-dev.0</version>
+	<version>10.0.4</version>
 	<licence>agpl</licence>
 	<author mail="mklehr@gmx.net">Marcel Klehr</author>
 	<types>

@@ -27,13 +27,20 @@ final class Version010000001Date20250727094821 extends SimpleMigrationStep {
 		/** @var ISchemaWrapper $schema */
 		$schema = $schemaClosure();
 
+		$changed = false;
 		if ($schema->hasTable('recognize_face_detections')) {
 			$table = $schema->getTable('recognize_face_detections');
 			if ($table->hasColumn('vector')) {
 				$table->dropColumn('vector');
-				return $schema;
+				$changed = true;
+			}
+			if ($table->hasColumn('face_vector')) {
+				$table->modifyColumn('face_vector', [
+					'notnull' => true,
+				]);
+				$changed = true;
 			}
 		}
-		return null;
+		return $changed ? $schema : null;
 	}
 }

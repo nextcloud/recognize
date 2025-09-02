@@ -10,10 +10,12 @@ namespace OCA\Recognize\Migration;
 use Closure;
 use Doctrine\DBAL\Schema\SchemaException;
 use OCP\DB\ISchemaWrapper;
+use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\DB\Types;
 use OCP\IDBConnection;
 use OCP\Migration\IOutput;
 use OCP\Migration\SimpleMigrationStep;
+use PDO;
 
 final class Version010000001Date20250727094721 extends SimpleMigrationStep {
 
@@ -38,7 +40,7 @@ final class Version010000001Date20250727094721 extends SimpleMigrationStep {
 			$table = $schema->getTable('recognize_face_detections');
 			if (!$table->hasColumn('face_vector')) {
 				$table->addColumn('face_vector', Types::TEXT, [
-					'notnull' => true,
+					'notnull' => false,
 				]);
 				return $schema;
 			}
@@ -60,9 +62,25 @@ final class Version010000001Date20250727094721 extends SimpleMigrationStep {
 			return;
 		}
 
+		$select = $this->db->getQueryBuilder();
+		$select->select('id')
+			->from('recognize_face_detections')
+			->where($select->expr()->isNull('face_vector'))
+			->setMaxResults(1000);
+
 		$query = $this->db->getQueryBuilder();
 		$query->update('recognize_face_detections')
-			->set('face_vector', 'vector');
-		$query->executeStatement();
+			->set('face_vector', 'vector')
+			->where($query->expr()->in('id', $query->createParameter('ids')));
+
+		do {
+			$result = $select->executeQuery();
+			$ids = $result->fetchAll(PDO::FETCH_COLUMN);
+			$result->closeCursor();
+			if (empty($ids)) {
+				break;
+			}
+			$updatedRows = $query->setParameter('ids', $ids, IQueryBuilder::PARAM_INT_ARRAY)->executeStatement();
+		} while ($updatedRows > 0);
 	}
 }
