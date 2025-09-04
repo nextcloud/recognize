@@ -11,6 +11,8 @@
     "Status" : "Statut",
     "The machine learning models have been downloaded successfully." : "Les modèles de machine learning ont été téléchargés avec succès.",
     "The machine learning models still need to be downloaded." : "Les modèles de machine learning doivent encore être téléchargés.",
+    "The systemtags app is enabled." : "L'application systemtags est active.",
+    "The systemtags app is currently disabled. Some features of this app will not work." : "L'application systemtags est désactivée. Certaines fonctionnalités de cette application ne fonctionneront pas.",
     "Could not execute the Node.js binary. You may need to set the path to a working binary manually." : "Impossible de lancer l'exécutable Node.js. Il peut être nécessaire de configurer manuellement le chemin vers un exécutable fonctionnel.",
     "Background Jobs are not executed via cron. Recognize requires background jobs to be executed via cron." : "Les tâches de fond ne sont pas exécutées avec cron. Recognize nécessite que celles-ci soient exécutées par cron.",
     "The app is installed and will automatically classify files in background processes." : "Cette application est installée et va automatiquement classer les fichiers en arrière-plan.",
