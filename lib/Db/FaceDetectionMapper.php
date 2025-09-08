@@ -44,6 +44,7 @@ final class FaceDetectionMapper extends QBMapper {
 	}
 
 	/**
+	 * @param FaceDetection $entity
 	 * @throws \OCP\DB\Exception
 	 */
 	public function insert(Entity $entity): FaceDetection {

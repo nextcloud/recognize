@@ -199,12 +199,12 @@ final class FaceClusterAnalyzer {
 		}
 
 		foreach ($detections as $detection) {
-			$sum = array_map(static function ($el, $el2) {
+			$sum = array_map(static function (float $el, float $el2): float {
 				return $el + $el2;
 			}, $detection->getVector(), $sum);
 		}
 
-		$centroid = array_map(static function ($el) use ($detections) {
+		$centroid = array_map(static function (float $el) use ($detections): float {
 			return $el / (float) count($detections);
 		}, $sum);
 
