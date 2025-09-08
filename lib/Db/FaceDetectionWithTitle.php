@@ -15,8 +15,8 @@ namespace OCA\Recognize\Db;
 final class FaceDetectionWithTitle extends FaceDetection {
 	protected $title;
 
-	public static $columns = ['id', 'user_id', 'file_id', 'x', 'y', 'height', 'width', 'vector', 'cluster_id', 'title'];
-	public static $fields = ['id', 'userId', 'fileId', 'x', 'y', 'height', 'width', 'vector', 'clusterId', 'title'];
+	public static $columns = ['id', 'user_id', 'file_id', 'x', 'y', 'height', 'width', 'face_vector', 'cluster_id', 'title'];
+	public static $fields = ['id', 'userId', 'fileId', 'x', 'y', 'height', 'width', 'faceVector', 'clusterId', 'title'];
 
 	public function __construct() {
 		parent::__construct();
