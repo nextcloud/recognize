@@ -4,7 +4,7 @@ OC.L10N.register(
     "Failed to save settings" : "Не ўдалося захаваць налады",
     "never" : "ніколі",
     "{time} ago" : "{time} таму",
-    "Status" : "Стан",
+    "Status" : "Статус",
     "Face recognition" : "Распазнаванне твараў",
     "Face recognition:" : "Распазнаванне твараў:",
     "Reset" : "Скінуць",
