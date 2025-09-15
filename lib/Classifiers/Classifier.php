@@ -194,7 +194,7 @@ abstract class Classifier {
 		try {
 			$proc->start();
 
-			if ($cores !== '0') {
+			if ((int)$cores !== 0) {
 				@exec('taskset -cp ' . implode(',', range(0, (int)$cores, 1)) . ' ' . ((string)$proc->getPid()));
 			}
 
