@@ -111,7 +111,7 @@ class ClassifierTest extends TestCase {
 
 		$scheduler->setId(1);
 		$scheduler->setLastRun(0);
-		$scheduler->execute($this->jobList);
+		$scheduler->start($this->jobList);
 
 		$storageId = $this->testFile->getMountPoint()->getNumericStorageId();
 		$rootId = $this->testFile->getMountPoint()->getStorageRootId();
@@ -324,7 +324,7 @@ class ClassifierTest extends TestCase {
 		]);
 		$crawler->setId(1);
 		$crawler->setLastRun(0);
-		$crawler->execute($this->jobList);
+		$crawler->start($this->jobList);
 
 		// clean up
 		$this->jobList->remove(StorageCrawlJob::class);
@@ -339,7 +339,7 @@ class ClassifierTest extends TestCase {
 			'imagenet queue should contain exactly one image');
 
 		list($classifier) = $this->jobList->getJobs(ClassifyImagenetJob::class, 1, 0);
-		$classifier->execute($this->jobList);
+		$classifier->start($this->jobList);
 
 		/** @var \OCP\SystemTag\ISystemTagObjectMapper $objectMapper */
 		$objectMapper = \OC::$server->get(ISystemTagObjectMapper::class);
@@ -397,7 +397,7 @@ class ClassifierTest extends TestCase {
 		]);
 		$crawler->setId(1);
 		$crawler->setLastRun(0);
-		$crawler->execute($this->jobList);
+		$crawler->start($this->jobList);
 
 		// clean up
 		$this->jobList->remove(StorageCrawlJob::class);
@@ -415,7 +415,7 @@ class ClassifierTest extends TestCase {
 			'imagenet queue should contain image');
 
 		list($classifier, ) = $this->jobList->getJobs(ClassifyImagenetJob::class, 1, 0);
-		$classifier->execute($this->jobList);
+		$classifier->start($this->jobList);
 
 		self::assertTrue($this->jobList->has(ClassifyLandmarksJob::class, [
 			'storageId' => $storageId,
@@ -427,7 +427,7 @@ class ClassifierTest extends TestCase {
 			'landmarks queue should contain image');
 
 		list($classifier, ) = $this->jobList->getJobs(ClassifyLandmarksJob::class, 1, 0);
-		$classifier->execute($this->jobList);
+		$classifier->start($this->jobList);
 
 		/** @var \OCP\SystemTag\ISystemTagObjectMapper $objectMapper */
 		$objectMapper = \OC::$server->get(ISystemTagObjectMapper::class);
@@ -483,11 +483,11 @@ class ClassifierTest extends TestCase {
 		]);
 		$crawler->setId(1);
 		$crawler->setLastRun(0);
-		$crawler->execute($this->jobList);
+		$crawler->start($this->jobList);
 
 		while (count($jobs = $this->jobList->getJobs(StorageCrawlJob::class, 1, 0)) > 0) {
 			list($crawler) = $jobs;
-			$crawler->execute($this->jobList);
+			$crawler->start($this->jobList);
 		}
 
 		self::assertTrue($this->jobList->has(ClassifyFacesJob::class, [
@@ -500,7 +500,7 @@ class ClassifierTest extends TestCase {
 			'faces queue should contain images');
 
 		list($classifier, ) = $this->jobList->getJobs(ClassifyFacesJob::class, 1, 0);
-		$classifier->execute($this->jobList);
+		$classifier->start($this->jobList);
 
 		self::assertGreaterThan(10,
 			count($this->faceDetectionMapper->findByUserId(self::TEST_USER1)),
@@ -511,7 +511,7 @@ class ClassifierTest extends TestCase {
 		]), 'ClusterFacesJob should have been scheduled');
 
 		list($clusterer, ) = $this->jobList->getJobs(ClusterFacesJob::class, 1, 0);
-		$clusterer->execute($this->jobList);
+		$clusterer->start($this->jobList);
 
 		/** @var FaceClusterMapper $clusterMapper */
 		$clusterMapper = \OC::$server->get(FaceClusterMapper::class);
@@ -581,11 +581,11 @@ class ClassifierTest extends TestCase {
 		]);
 		$crawler->setId(1);
 		$crawler->setLastRun(0);
-		$crawler->execute($this->jobList);
+		$crawler->start($this->jobList);
 
 		while (count($jobs = $this->jobList->getJobs(StorageCrawlJob::class, 1, 0)) > 0) {
 			list($crawler) = $jobs;
-			$crawler->execute($this->jobList);
+			$crawler->start($this->jobList);
 		}
 
 		self::assertTrue($this->jobList->has(ClassifyMovinetJob::class, [
@@ -598,7 +598,7 @@ class ClassifierTest extends TestCase {
 			'movinet queue should contain exactly one entry');
 
 		list($classifier) = $this->jobList->getJobs(ClassifyMovinetJob::class, 1, 0);
-		$classifier->execute($this->jobList);
+		$classifier->start($this->jobList);
 
 		/** @var \OCP\SystemTag\ISystemTagObjectMapper $objectMapper */
 		$objectMapper = \OC::$server->get(ISystemTagObjectMapper::class);
@@ -665,11 +665,11 @@ class ClassifierTest extends TestCase {
 		]);
 		$crawler->setId(1);
 		$crawler->setLastRun(0);
-		$crawler->execute($this->jobList);
+		$crawler->start($this->jobList);
 
 		while (count($jobs = $this->jobList->getJobs(StorageCrawlJob::class, 1, 0)) > 0) {
 			list($crawler) = $jobs;
-			$crawler->execute($this->jobList);
+			$crawler->start($this->jobList);
 		}
 
 		self::assertTrue($this->jobList->has(ClassifyMusicnnJob::class, [
@@ -682,7 +682,7 @@ class ClassifierTest extends TestCase {
 			'movinet queue should contain exactly one entry');
 
 		list($classifier) = $this->jobList->getJobs(ClassifyMusicnnJob::class, 1, 0);
-		$classifier->execute($this->jobList);
+		$classifier->start($this->jobList);
 
 		/** @var \OCP\SystemTag\ISystemTagObjectMapper $objectMapper */
 		$objectMapper = \OC::$server->get(ISystemTagObjectMapper::class);
