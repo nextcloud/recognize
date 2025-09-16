@@ -50,10 +50,12 @@ final class InstallDeps implements IRepairStep {
 	private string $ffmpegInstallScript;
 	private string $tfjsGPUPath;
 	private IBinaryFinder $binaryFinder;
+	private string $nodeModulesDir;
 
 	public function __construct(IAppConfig $config, IClientService $clientService, LoggerInterface $logger, IBinaryFinder $binaryFinder) {
 		$this->config = $config;
 		$this->binaryDir = dirname(__DIR__, 2) . '/bin/';
+		$this->nodeModulesDir = dirname(__DIR__, 2) . '/node_modules/';
 		$this->preGypBinaryDir = dirname(__DIR__, 2) . '/node_modules/@mapbox/node-pre-gyp/bin/';
 		$this->ffmpegDir = dirname(__DIR__, 2) . '/node_modules/ffmpeg-static/';
 		$this->ffmpegInstallScript = dirname(__DIR__, 2) . '/node_modules/ffmpeg-static/install.js';
@@ -89,6 +91,7 @@ final class InstallDeps implements IRepairStep {
 			$this->runTfjsInstall($binaryPath);
 			$this->runFfmpegInstall($binaryPath);
 			$this->runTfjsGpuInstall($binaryPath);
+			$this->setNodeModulesPermissions();
 			$this->setNiceBinaryPath();
 		} catch (\Throwable $e) {
 			$output->warning('Failed to automatically install dependencies for recognize. Check the recognize admin panel for potential problems.');
@@ -264,6 +267,24 @@ final class InstallDeps implements IRepairStep {
 		foreach ($iterator as $item) {
 			if (chmod(realpath($item->getPathname()), 0755) === false) {
 				throw new \Exception('Error when setting '.$this->ffmpegDir.'* permissions');
+			}
+		}
+	}
+
+	/**
+	 * Set write permissions recursively for node_modules
+	 */
+	protected function setNodeModulesPermissions(): void {
+		$iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->nodeModulesDir));
+		/** @var \SplFileInfo $item */
+		foreach ($iterator as $item) {
+			$realpath = realpath($item->getPathname());
+			if ($realpath === false || ($item->getPerms() & 0700) === 0700) {
+				continue;
+			}
+			$mode = $item->isDir() ? 0755 : 0644;
+			if (chmod($realpath, $mode) === false) {
+				throw new \Exception('Error when setting '.$this->nodeModulesDir.'* permissions: ' . $realpath);
 			}
 		}
 	}
