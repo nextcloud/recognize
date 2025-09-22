@@ -38,7 +38,6 @@ final class Application extends App implements IBootstrap {
 		$dispatcher->addServiceListener(NodeCreatedEvent::class, FileListener::class);
 		$dispatcher->addServiceListener(NodeRenamedEvent::class, FileListener::class);
 		$dispatcher->addServiceListener(BeforeNodeRenamedEvent::class, FileListener::class);
-		$dispatcher->addServiceListener(ShareCreatedEvent::class, FileListener::class);
 		$dispatcher->addServiceListener(CacheEntryInsertedEvent::class, FileListener::class);
 		$dispatcher->addServiceListener(NodeRemovedFromCache::class, FileListener::class);
 		// These events were added mid-way through NC 30, 31
