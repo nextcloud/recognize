@@ -544,6 +544,7 @@ final class FileListener implements IEventListener {
 	private function onAccessUpdate(int $storageId, int $rootId): void {
 		$userIds = $this->getUsersWithFileAccess($rootId);
 		$files = $this->storageService->getFilesInMount($storageId, $rootId, [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
+		$userIdsToScheduleClustering = [];
 		foreach ($files as $fileInfo) {
 			$node = current($this->rootFolder->getById($fileInfo['fileid'])) ?: null;
 			$ownerId = $node?->getOwner()?->getUID();
@@ -563,9 +564,12 @@ final class FileListener implements IEventListener {
 					continue;
 				}
 				$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($fileInfo['fileid'], $ownerId, $userId);
-				$this->jobList->add(ClusterFacesJob::class, ['userId' => $userId]);
+				$userIdsToScheduleClustering[$userId] = true;
 			}
 			$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($fileInfo['fileid'], $userIds);
+		}
+		foreach (array_keys($userIdsToScheduleClustering) as $userId) {
+			$this->jobList->add(ClusterFacesJob::class, ['userId' => $userId]);
 		}
 	}
 }
