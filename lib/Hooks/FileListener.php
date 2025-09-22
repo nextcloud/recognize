@@ -548,13 +548,18 @@ final class FileListener implements IEventListener {
 			$node = current($this->rootFolder->getById($fileInfo['fileid'])) ?: null;
 			$ownerId = $node?->getOwner()?->getUID();
 			if ($ownerId === null) {
-				return;
+				continue;
+			}
+			$detectionsForFile = $this->faceDetectionMapper->findByFileId($fileInfo['fileid']);
+			$userHasDetectionForFile = [];
+			foreach ($detectionsForFile as $detection) {
+				$userHasDetectionForFile[$detection->getUserId()] = true;
 			}
 			foreach ($userIds as $userId) {
 				if ($userId === $ownerId) {
 					continue;
 				}
-				if (count($this->faceDetectionMapper->findByFileIdAndUser($fileInfo['fileid'], $userId)) > 0) {
+				if ($userHasDetectionForFile[$userId] ?? false) {
 					continue;
 				}
 				$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($fileInfo['fileid'], $ownerId, $userId);
