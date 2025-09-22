@@ -38,7 +38,7 @@ use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
 use OCP\IGroupManager;
-use OCP\Share\Events\ShareAcceptedEvent;
+use OCP\Share\Events\ShareCreatedEvent;
 use OCP\Share\Events\ShareDeletedEvent;
 use OCP\Share\IManager;
 use Psr\Log\LoggerInterface;
@@ -52,6 +52,9 @@ final class FileListener implements IEventListener {
 	/** @var list<string> */
 	private array $sourceUserIds;
 	private ?Node $source = null;
+
+	/** @var array<string, bool>  */
+	private array $addedMounts = [];
 
 	public function __construct(
 		private FaceDetectionMapper $faceDetectionMapper,
@@ -71,14 +74,14 @@ final class FileListener implements IEventListener {
 	}
 
 	/**
-	 * @param Node $node
+	 * @param int $nodeId
 	 * @return list<string>
 	 * @throws InvalidPathException
 	 * @throws NotFoundException
 	 */
-	private function getUsersWithFileAccess(Node $node): array {
+	private function getUsersWithFileAccess(int $nodeId): array {
 		$this->userMountCache->clear();
-		$mountInfos = $this->userMountCache->getMountsForFileId($node->getId());
+		$mountInfos = $this->userMountCache->getMountsForFileId($nodeId);
 		$userIds = array_map(static function (ICachedMountInfo $mountInfo) {
 			return $mountInfo->getUser()->getUID();
 		}, $mountInfos);
@@ -88,11 +91,31 @@ final class FileListener implements IEventListener {
 
 	public function handle(Event $event): void {
 		try {
-			if ($event instanceof ShareAcceptedEvent) {
+			if ($event instanceof \OCP\Files\Config\Event\UserMountAddedEvent) {
+				$rootId = $event->mountPoint->getRootId();
+				// Asynchronous, because we potentially recurse and this event needs to be handled fast
+				$this->onAccessUpdate($event->mountPoint->getStorageId(), $rootId);
+				// Remember that this mount was added in the current process (see UserMountRemovedEvent below)
+				$this->addedMounts[$event->mountPoint->getUser()->getUID() . '-' . $rootId] = true;
+			}
+
+			if ($event instanceof \OCP\Files\Config\Event\UserMountRemovedEvent) {
+				// If we just added this mount, ignore the removal, as the 'removal' event is always fired after
+				// the 'added' event in server
+				$rootId = $event->mountPoint->getRootId();
+				$mountKey = $event->mountPoint->getUser()->getUID() . '-' . $rootId;
+				if (array_key_exists($mountKey, $this->addedMounts) && $this->addedMounts[$mountKey] === true) {
+					return;
+				}
+				// Asynchronous, because we potentially recurse and this event needs to be handled fast
+				$this->onAccessUpdate($event->mountPoint->getStorageId(), $rootId);
+			}
+
+			if ($event instanceof ShareCreatedEvent) {
 				$share = $event->getShare();
 				$ownerId = $share->getShareOwner();
 				$node = $share->getNode();
-				$userIds = $this->getUsersWithFileAccess($node);
+				$userIds = $this->getUsersWithFileAccess($node->getId());
 
 				if ($node->getType() === FileInfo::TYPE_FOLDER) {
 					$mount = $node->getMountPoint();
@@ -126,7 +149,7 @@ final class FileListener implements IEventListener {
 			if ($event instanceof ShareDeletedEvent) {
 				$share = $event->getShare();
 				$node = $share->getNode();
-				$userIds = $this->getUsersWithFileAccess($node);
+				$userIds = $this->getUsersWithFileAccess($node->getId());
 
 				if ($node->getType() === FileInfo::TYPE_FOLDER) {
 					$mount = $node->getMountPoint();
@@ -159,7 +182,7 @@ final class FileListener implements IEventListener {
 				} else {
 					$this->movingDirFromIgnoredTerritory = $this->getDirIgnores($event->getSource());
 				}
-				$this->sourceUserIds = $this->getUsersWithFileAccess($event->getSource());
+				$this->sourceUserIds = $this->getUsersWithFileAccess($event->getSource()->getId());
 				$this->source = $event->getSource();
 				return;
 			}
@@ -390,7 +413,7 @@ final class FileListener implements IEventListener {
 	 * @throws Exception
 	 */
 	public function postRename(Node $source, Node $target): void {
-		$targetUserIds = $this->getUsersWithFileAccess($target);
+		$targetUserIds = $this->getUsersWithFileAccess($target->getId());
 
 		$usersToAdd = array_values(array_diff($targetUserIds, $this->sourceUserIds));
 		$existingUsers = array_diff($targetUserIds, $usersToAdd);
@@ -412,11 +435,11 @@ final class FileListener implements IEventListener {
 	private function copyFaceDetectionsForNode(string $ownerId, array $usersToAdd, array $targetUserIds, Node $node): void {
 		if ($node instanceof Folder) {
 			try {
-				foreach ($node->getDirectoryListing() as $node) {
-					if (!in_array($node->getMimetype(), Constants::IMAGE_FORMATS)) {
+				foreach ($node->getDirectoryListing() as $n) {
+					if (!in_array($n->getMimetype(), Constants::IMAGE_FORMATS)) {
 						continue;
 					}
-					$this->copyFaceDetectionsForNode($ownerId, $usersToAdd, $targetUserIds, $node);
+					$this->copyFaceDetectionsForNode($ownerId, $usersToAdd, $targetUserIds, $n);
 				}
 			} catch (NotFoundException|Exception|InvalidPathException $e) {
 				$this->logger->warning('Error in recognize file listener', ['exception' => $e]);
@@ -511,5 +534,42 @@ final class FileListener implements IEventListener {
 			return;
 		}
 		$this->ignoreService->clearCacheForStorage($storageId);
+	}
+
+	/**
+	 * @throws NotFoundException
+	 * @throws InvalidPathException
+	 * @throws Exception
+	 */
+	private function onAccessUpdate(int $storageId, int $rootId): void {
+		$userIds = $this->getUsersWithFileAccess($rootId);
+		$files = $this->storageService->getFilesInMount($storageId, $rootId, [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
+		$userIdsToScheduleClustering = [];
+		foreach ($files as $fileInfo) {
+			$node = current($this->rootFolder->getById($fileInfo['fileid'])) ?: null;
+			$ownerId = $node?->getOwner()?->getUID();
+			if ($ownerId === null) {
+				continue;
+			}
+			$detectionsForFile = $this->faceDetectionMapper->findByFileId($fileInfo['fileid']);
+			$userHasDetectionForFile = [];
+			foreach ($detectionsForFile as $detection) {
+				$userHasDetectionForFile[$detection->getUserId()] = true;
+			}
+			foreach ($userIds as $userId) {
+				if ($userId === $ownerId) {
+					continue;
+				}
+				if ($userHasDetectionForFile[$userId] ?? false) {
+					continue;
+				}
+				$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($fileInfo['fileid'], $ownerId, $userId);
+				$userIdsToScheduleClustering[$userId] = true;
+			}
+			$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($fileInfo['fileid'], $userIds);
+		}
+		foreach (array_keys($userIdsToScheduleClustering) as $userId) {
+			$this->jobList->add(ClusterFacesJob::class, ['userId' => $userId]);
+		}
 	}
 }
