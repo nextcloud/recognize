@@ -15,14 +15,19 @@ use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Db\FaceDetectionWithTitle;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
+use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\DB\Exception;
 use OCP\Files\DavUtil;
 use OCP\IPreview;
+use OCP\Security\ICrypto;
+use Psr\Log\LoggerInterface;
 use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAV\INode;
 use Sabre\DAV\PropFind;
 use Sabre\DAV\Server;
 use Sabre\DAV\ServerPlugin;
+use Sabre\HTTP\RequestInterface;
+use Sabre\HTTP\ResponseInterface;
 
 final class PropFindPlugin extends ServerPlugin {
 	public const FACE_DETECTIONS_PROPERTYNAME = '{http://nextcloud.org/ns}face-detections';
@@ -31,12 +36,17 @@ final class PropFindPlugin extends ServerPlugin {
 	public const NBITEMS_PROPERTYNAME = '{http://nextcloud.org/ns}nbItems';
 	public const FACE_PREVIEW_IMAGE_PROPERTYNAME = '{http://nextcloud.org/ns}face-preview-image';
 
+	public const API_KEY_TIMEOUT = 60 * 60 * 24;
+
 	private Server $server;
 
 	public function __construct(
 		private FaceDetectionMapper $faceDetectionMapper,
 		private IPreview $previewManager,
 		private FaceClusterMapper $faceClusterMapper,
+		private ICrypto $crypto,
+		private LoggerInterface $logger,
+		private ITimeFactory $timeFactory,
 	) {
 	}
 
@@ -45,6 +55,7 @@ final class PropFindPlugin extends ServerPlugin {
 
 		$this->server->on('propFind', [$this, 'propFind']);
 		$this->server->on('beforeMove', [$this, 'beforeMove']);
+		$this->server->on('beforeMethod:*', [$this, 'beforeMethod'], 1);
 	}
 
 
@@ -112,5 +123,39 @@ final class PropFindPlugin extends ServerPlugin {
 			}
 		}
 		return true;
+	}
+
+	public function beforeMethod(RequestInterface $request, ResponseInterface $response) {
+		if (!str_starts_with($request->getPath(), 'recognize')) {
+			return;
+		}
+		$key = $request->getHeader('X-Recognize-Api-Key');
+		if ($key === null) {
+			throw new Forbidden('You must provide a valid X-Recognize-Api-Key');
+		}
+		try {
+			$json = $this->crypto->decrypt($key);
+		} catch (\Exception $e) {
+			$this->logger->warning('Failed to decerypt recognize API key. Denying entry.', ['exception' => $e]);
+			throw new Forbidden('You must provide a valid X-Recognize-Api-Key');
+		}
+		try {
+			$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+		} catch (\JsonException $e) {
+			$this->logger->warning('Failed to decode recognize API key. Denying entry.', ['exception' => $e]);
+			throw new Forbidden('You must provide a valid X-Recognize-Api-Key');
+		}
+
+		if (!isset($data['type']) || $data['type'] !== 'recognize-api-key' || !isset($data['version']) || $data['version'] !== 1 || !isset($data['timestamp'])) {
+			$this->logger->warning('Failed to validate recognize API key.', ['data' => $data]);
+			throw new Forbidden('You must provide a valid X-Recognize-Api-Key');
+		}
+
+		if ($this->timeFactory->now()->getTimestamp() - (int)$data['timestamp'] < self::API_KEY_TIMEOUT) {
+			return;
+		}
+
+		$this->logger->info('API key is too old, denying entry', ['data' => $data]);
+		throw new Forbidden('You must provide a valid X-Recognize-Api-Key');
 	}
 }

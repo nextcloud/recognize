@@ -4,12 +4,20 @@
     <DeprecatedInterface>
       <code><![CDATA[$this->getContainer()]]></code>
     </DeprecatedInterface>
+    <MissingDependency>
+      <code><![CDATA[PropFindPlugin]]></code>
+    </MissingDependency>
     <MixedArgument>
       <code><![CDATA[Principal::class]]></code>
+      <code><![CDATA[PropFindPlugin::class]]></code>
     </MixedArgument>
     <UndefinedClass>
       <code><![CDATA[Principal]]></code>
     </UndefinedClass>
+    <UndefinedDocblockClass>
+      <code><![CDATA[$event->getServer()]]></code>
+      <code><![CDATA[$server]]></code>
+    </UndefinedDocblockClass>
   </file>
   <file src="lib/BackgroundJobs/ClassifierJob.php">
     <ArgumentTypeCoercion>
