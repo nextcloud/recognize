@@ -136,7 +136,7 @@ final class PropFindPlugin extends ServerPlugin {
 		try {
 			$json = $this->crypto->decrypt($key);
 		} catch (\Exception $e) {
-			$this->logger->warning('Failed to decerypt recognize API key. Denying entry.', ['exception' => $e]);
+			$this->logger->warning('Failed to decrypt recognize API key. Denying entry.', ['exception' => $e]);
 			throw new Forbidden('You must provide a valid X-Recognize-Api-Key');
 		}
 		try {
