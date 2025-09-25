@@ -132,8 +132,5 @@ The app does not send any sensitive data to cloud providers or similar services.
 		<collections>
 			<collection>OCA\Recognize\Dav\RootCollection</collection>
 		</collections>
-		<plugins>
-			<plugin>OCA\Recognize\Dav\Faces\PropFindPlugin</plugin>
-		</plugins>
 	</sabre>
 </info>

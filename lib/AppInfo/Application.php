@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace OCA\Recognize\AppInfo;
 
 use OCA\DAV\Connector\Sabre\Principal;
+use OCA\Recognize\Dav\Faces\PropFindPlugin;
 use OCA\Recognize\Hooks\FileListener;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
@@ -21,6 +22,7 @@ use OCP\Files\Events\Node\NodeCreatedEvent;
 use OCP\Files\Events\Node\NodeDeletedEvent;
 use OCP\Files\Events\Node\NodeRenamedEvent;
 use OCP\Files\Events\NodeRemovedFromCache;
+use OCP\SabrePluginEvent;
 use OCP\Share\Events\ShareCreatedEvent;
 use OCP\Share\Events\ShareDeletedEvent;
 
@@ -65,5 +67,16 @@ final class Application extends App implements IBootstrap {
 	 * @throws \Throwable
 	 */
 	public function boot(IBootContext $context): void {
+		$eventDispatcher = \OCP\Server::get(IEventDispatcher::class);
+		$eventDispatcher->addListener('OCA\DAV\Connector\Sabre::addPlugin', function (SabrePluginEvent $event): void {
+			$server = $event->getServer();
+
+			if ($server !== null) {
+				// We have to register the PropFindPlugin here and not info.xml,
+				// because info.xml plugins are loaded, after the
+				// beforeMethod:* hook has already been emitted.
+				$server->addPlugin($this->getContainer()->get(PropFindPlugin::class));
+			}
+		});
 	}
 }
