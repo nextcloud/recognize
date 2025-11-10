@@ -35,4 +35,5 @@ return [
 			return $content;
 		},
 	],
+	'expose-global-functions' => false,
 ];
