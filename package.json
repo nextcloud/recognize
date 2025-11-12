@@ -1,6 +1,6 @@
 {
   "name": "recognize",
-  "version": "10.1.0-dev.0",
+  "version": "11.0.0",
   "description": "Image recognition in nextcloud",
   "main": "src/classifier_imagenet.js",
   "directories": {
