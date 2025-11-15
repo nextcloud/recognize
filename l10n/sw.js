@@ -4,6 +4,7 @@ OC.L10N.register(
     "Failed to load settings" : "Failed to load settings",
     "Failed to save settings" : "Failed to save settings",
     "never" : "kamwe",
+    "{time} ago" : "{time} uliopita",
     "Status" : "Wadhifa",
     "Reset" : "Pangilia upya",
     "Landscape" : "Landscape",
