@@ -1,0 +1,26 @@
+{ "translations": {
+    "Failed to load settings" : "Failed to load settings",
+    "Failed to save settings" : "Failed to save settings",
+    "never" : "ບໍ່ເຄີຍ",
+    "Status" : "Status",
+    "Reset" : "ຕັ້ງຄ່າໃໝ່",
+    "Architecture" : "Architecture",
+    "People" : "ບຸກຄົນ",
+    "Music" : "ເພງ",
+    "Office" : "Office",
+    "Food" : "Food",
+    "Train" : "Train",
+    "Computer" : "Computer",
+    "Screen" : "ໜ້າຈໍ",
+    "Library" : "Library",
+    "Display" : "Display",
+    "Camera" : "ກ້ອງຖ່າຍຮຸບ",
+    "Info" : "ຂໍ້ມຸນ",
+    "Document" : "ເອກະສານ",
+    "Bucket" : "Bucket",
+    "Event" : "Event",
+    "Gas station" : "Gas station",
+    "Parking" : "Parking",
+    "Gallery" : "ບ່ອນເກັບຮຸບພາບ"
+},"pluralForm" :"nplurals=1; plural=0;"
+}
