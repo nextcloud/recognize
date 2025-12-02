@@ -57,7 +57,7 @@ final class ImagenetClassifier extends Classifier {
 			if (count($landmarkTags) > 0) {
 				try {
 					$this->queue->insertIntoQueue(LandmarksClassifier::MODEL_NAME, $queueFile);
-				} catch (Exception $e) {
+				} catch (\Throwable $e) {
 					$this->logger->error('Cannot insert file into queue', ['exception' => $e]);
 				}
 			}

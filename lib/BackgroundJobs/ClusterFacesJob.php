@@ -40,7 +40,7 @@ final class ClusterFacesJob extends QueuedJob {
 		$userId = (string) $argument['userId'];
 		try {
 			$this->clusterAnalyzer->calculateClusters($userId, self::BATCH_SIZE);
-		} catch (\JsonException|Exception $e) {
+		} catch (\Throwable $e) {
 			$this->settingsService->setSetting('clusterFaces.status', 'false');
 			$this->logger->error('Failed to calculate face clusters', ['exception' => $e]);
 		}
