@@ -52,6 +52,7 @@ final class SettingsService {
 		'nice_binary' => '',
 		'nice_value' => '0',
 		'concurrency.enabled' => 'false',
+		'ffmpeg_binary' => '',
 	];
 
 	/** @var array<string,string>  */

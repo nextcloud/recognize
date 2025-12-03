@@ -219,6 +219,24 @@ final class AdminController extends Controller {
 		return new JSONResponse(['nodejs' => $version]);
 	}
 
+	public function ffmpeg(): JSONResponse {
+		try {
+			exec($this->settingsService->getSetting('ffmpeg_binary') . ' -version' . ' 2>&1', $output, $returnCode);
+		} catch (\Throwable $e) {
+			return new JSONResponse(['ffmpeg' => null]);
+		}
+
+		if ($returnCode !== 0) {
+			return new JSONResponse(['ffmpeg' => false]);
+		}
+
+		if (preg_match('/version (.*?) /', trim($output[0]), $matches) !== 1) {
+			return new JSONResponse(['ffmpeg' => false]);
+		}
+		$version = $matches[1];
+		return new JSONResponse(['ffmpeg' => $version]);
+	}
+
 	public function libtensorflow(): JSONResponse {
 		try {
 			exec($this->settingsService->getSetting('node_binary') . ' ' . __DIR__ . '/../../src/test_libtensorflow.js' . ' 2>&1', $output, $returnCode);

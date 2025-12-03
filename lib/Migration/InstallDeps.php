@@ -93,6 +93,7 @@ final class InstallDeps implements IRepairStep {
 			$this->runTfjsGpuInstall($binaryPath);
 			$this->setNodeModulesPermissions();
 			$this->setNiceBinaryPath();
+			$this->setFfmpegBinaryPath();
 		} catch (\Throwable $e) {
 			$output->warning('Failed to automatically install dependencies for recognize. Check the recognize admin panel for potential problems.');
 			$this->logger->error('Failed to automatically install dependencies for recognize. Check the recognize admin panel for potential problems.', ['exception' => $e]);
@@ -232,6 +233,22 @@ final class InstallDeps implements IRepairStep {
 		if ($returnCode !== 0) {
 			$this->logger->error('Failed to install ffmpeg: '.trim(implode("\n", $output)));
 			throw new \Exception('Failed to install ffmpeg: '.trim(implode("\n", $output)));
+		}
+	}
+
+	protected function setFfmpegBinaryPath() : void {
+		/* use nice binary from settings if available */
+		if ($this->config->getAppValueString('ffmpeg_binary', '') !== '') {
+			$ffmpeg_path = $this->config->getAppValueString('ffmpeg_binary');
+		} else {
+			/* returns the path to the nice binary or false if not found */
+			$ffmpeg_path = $this->binaryFinder->findBinaryPath('ffmpeg');
+		}
+
+		if ($ffmpeg_path !== false) {
+			$this->config->setAppValueString('ffmpeg_binary', $ffmpeg_path);
+		} else {
+			$this->config->setAppValueString('ffmpeg_binary', __DIR__ . '/../../node_modules/ffmpeg-static/ffmpeg');
 		}
 	}
 

@@ -12,7 +12,6 @@ use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
 use OCA\Recognize\Service\TagManager;
 use OCP\AppFramework\Services\IAppConfig;
-use OCP\DB\Exception;
 use OCP\Files\IRootFolder;
 use OCP\IPreview;
 use OCP\ITempManager;

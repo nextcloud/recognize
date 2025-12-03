@@ -13,7 +13,6 @@ use OCA\Recognize\Service\SettingsService;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\IJobList;
 use OCP\BackgroundJob\QueuedJob;
-use OCP\DB\Exception;
 use Psr\Log\LoggerInterface;
 
 final class ClusterFacesJob extends QueuedJob {

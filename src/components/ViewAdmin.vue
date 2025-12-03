@@ -329,6 +329,23 @@
 			</p>
 			<p>{{ t('recognize', 'For Nextcloud Snap users, you need to adjust this path to point to the snap\'s "current" directory as the pre-configured path will change with each update. For example, set it to "/var/snap/nextcloud/current/nextcloud/extra-apps/recognize/bin/node" instead of "/var/snap/nextcloud/9337974/nextcloud/extra-apps/recognize/bin/node"') }}</p>
 		</NcSettingsSection>
+    <NcSettingsSection :name="t('recognize', 'FFMPEG')">
+      <p v-if="ffmpeg === undefined">
+        <span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking FFMPEG') }}
+      </p>
+      <NcNoteCard v-else-if="ffmpeg === false" type="warning">
+        {{ t('recognize', 'Could not execute the ffmpeg binary. You may need to set the path to a working binary manually.') }}
+      </NcNoteCard>
+      <NcNoteCard v-else type="success">
+        {{ t('recognize', 'ffmpeg {version} binary was installed successfully.', { version: ffmpeg }) }}
+      </NcNoteCard>
+      <p>
+        {{ t('recognize', 'If the shipped ffmpeg binary doesn\'t work on your system for some reason you can set the path to a custom ffmpeg binary.') }}
+      </p>
+      <p>
+        <NcTextField :value.sync="settings['ffmpeg_binary']" @update:value="onChange" />
+      </p>
+    </NcSettingsSection>
 		<NcSettingsSection :name="t('recognize', 'Classifier process priority')">
 			<p v-if="nice === undefined">
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking Nice binary') }}
@@ -400,7 +417,7 @@ import { generateUrl } from '@nextcloud/router'
 import { loadState } from '@nextcloud/initial-state'
 import humanizeDuration from 'humanize-duration'
 
-const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'faces.batchSize', 'imagenet.batchSize', 'landmarks.batchSize', 'movinet.batchSize', 'musicnn.batchSize', 'clusterFaces.status', 'clusterFaces.lastRun', 'nice_binary', 'nice_value', 'concurrency.enabled']
+const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'ffmpeg_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'faces.batchSize', 'imagenet.batchSize', 'landmarks.batchSize', 'movinet.batchSize', 'musicnn.batchSize', 'clusterFaces.status', 'clusterFaces.lastRun', 'nice_binary', 'nice_value', 'concurrency.enabled']
 
 const BOOLEAN_SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'clusterFaces.status', 'concurrency.enabled']
 
@@ -427,6 +444,7 @@ export default {
 			libtensorflow: undefined,
 			wasmtensorflow: undefined,
 			gputensorflow: undefined,
+      ffmpeg: undefined,
 			cron: undefined,
 			modelsDownloaded: null,
 			imagenetJobs: null,
@@ -470,6 +488,7 @@ export default {
 		this.getMusl()
 		this.getNice()
 		this.getNodejsStatus()
+		this.getFfmpegStatus()
 		this.getLibtensorflowStatus()
 		this.getWasmtensorflowStatus()
 		this.getGputensorflowStatus()
@@ -585,6 +604,11 @@ export default {
 			const { nodejs } = resp.data
 			this.nodejs = nodejs
 		},
+    async getFfmpegStatus() {
+      const resp = await axios.get(generateUrl('/apps/recognize/admin/ffmpeg'))
+      const { ffmpeg } = resp.data
+      this.ffmpeg = ffmpeg
+    },
 		async getLibtensorflowStatus() {
 			const resp = await axios.get(generateUrl('/apps/recognize/admin/libtensorflow'))
 			const { libtensorflow } = resp.data
