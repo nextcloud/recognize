@@ -28,7 +28,7 @@ class AccessUpdateService {
 	) {
 	}
 
-	public function processAccessUpdates(int $storageId) {
+	public function processAccessUpdates(int $storageId): void {
 		try {
 			$updates = $this->accessUpdateMapper->findByStorageId($storageId, self::BATCH_SIZE);
 		} catch (Exception $e) {

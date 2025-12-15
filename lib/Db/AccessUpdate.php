@@ -19,8 +19,8 @@ use OCP\AppFramework\Db\Entity;
  * @method setRootId(int $rootId)
  */
 final class AccessUpdate extends Entity {
-	protected $storageId;
-	protected $rootId;
+	protected ?int $storageId = null;
+	protected ?int $rootId = null;
 
 	/**
 	 * @var string[]

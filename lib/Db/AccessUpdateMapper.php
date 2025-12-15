@@ -9,6 +9,7 @@ namespace OCA\Recognize\Db;
 
 use OCA\Recognize\BackgroundJobs\ProcessAccessUpdatesJob;
 use OCP\AppFramework\Db\DoesNotExistException;
+use OCP\AppFramework\Db\Entity;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 use OCP\AppFramework\Db\QBMapper;
 use OCP\BackgroundJob\IJobList;
@@ -54,6 +55,7 @@ final class AccessUpdateMapper extends QBMapper {
 			->from($this->getTableName())
 			->where($qb->expr()->eq('storage_id', $qb->createPositionalParameter($storageId, IQueryBuilder::PARAM_INT)));
 		$result = $qb->executeQuery();
+		/** @var int|false $count */
 		$count = $result->fetchOne();
 		$result->closeCursor();
 		if ($count === false) {
@@ -70,7 +72,7 @@ final class AccessUpdateMapper extends QBMapper {
 	 * @throws MultipleObjectsReturnedException
 	 * @throws Exception
 	 */
-	public function findByStorageIdAndRootId(int $storageId, int $rootId): AccessUpdate {
+	public function findByStorageIdAndRootId(int $storageId, int $rootId): Entity {
 		$qb = $this->db->getQueryBuilder();
 		$qb->selectDistinct(AccessUpdate::$columns)
 			->from($this->getTableName())
@@ -86,7 +88,7 @@ final class AccessUpdateMapper extends QBMapper {
 	 * @throws Exception
 	 * @throws MultipleObjectsReturnedException
 	 */
-	public function insertAccessUpdate(int $storageId, int $rootId): AccessUpdate {
+	public function insertAccessUpdate(int $storageId, int $rootId): Entity {
 		try {
 			$accessUpdate = $this->findByStorageIdAndRootId($storageId, $rootId);
 		} catch (DoesNotExistException $e) {
@@ -95,7 +97,7 @@ final class AccessUpdateMapper extends QBMapper {
 			$accessUpdate->setRootId($rootId);
 			$this->insert($accessUpdate);
 			if (!$this->jobList->has(ProcessAccessUpdatesJob::class, [ 'storage_id' => $storageId ])) {
-				$this->jobList->add(self::class, [ 'storage_id' => $storageId ]);
+				$this->jobList->add(ProcessAccessUpdatesJob::class, [ 'storage_id' => $storageId ]);
 			}
 		}
 		return $accessUpdate;

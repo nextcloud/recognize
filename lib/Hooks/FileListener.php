@@ -18,7 +18,6 @@ use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Service\IgnoreService;
 use OCA\Recognize\Service\QueueService;
-use OCA\Recognize\Service\StorageService;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 use OCP\BackgroundJob\IJobList;
 use OCP\DB\Exception;
@@ -39,8 +38,6 @@ use OCP\Files\InvalidPathException;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
-use OCP\IGroupManager;
-use OCP\Share\IManager;
 use Psr\Log\LoggerInterface;
 
 /**

@@ -34,6 +34,7 @@ final class Version011000001Date20251215094821 extends SimpleMigrationStep {
 			$table->addColumn('id', Types::BIGINT, ['autoincrement' => true]);
 			$table->addColumn('storage_id', Types::BIGINT, ['notnull' => true]);
 			$table->addColumn('root_id', Types::BIGINT, ['notnull' => true]);
+			$table->setPrimaryKey(['id']);
 			$table->addUniqueIndex(['storage_id', 'root_id'], 'recognize_au_unique');
 			$changed = true;
 		}
