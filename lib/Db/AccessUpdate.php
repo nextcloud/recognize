@@ -1,0 +1,49 @@
+<?php
+
+/*
+ * Copyright (c) 2022 The Recognize contributors.
+ * This file is licensed under the Affero General Public License version 3 or later. See the COPYING file.
+ */
+declare(strict_types=1);
+namespace OCA\Recognize\Db;
+
+use OCP\AppFramework\Db\Entity;
+
+/**
+ * Class AccessUpdate
+ *
+ * @package OCA\Recognize\Db
+ * @method int getStorageId()
+ * @method setStorageId(int $storageId)
+ * @method int getRootId()
+ * @method setRootId(int $rootId)
+ */
+final class AccessUpdate extends Entity {
+	protected $storageId;
+	protected $rootId;
+
+	/**
+	 * @var string[]
+	 */
+	public static array $columns = ['id', 'storage_id', 'root_id'];
+
+	/**
+	 * @var string[]
+	 */
+	public static array $fields = ['id', 'storageId', 'rootId'];
+
+	public function __construct() {
+		// add types in constructor
+		$this->addType('id', 'integer');
+		$this->addType('storageId', 'integer');
+		$this->addType('rootId', 'integer');
+	}
+
+	public function toArray(): array {
+		$array = [];
+		foreach (self::$fields as $field) {
+			$array[$field] = $this->{$field};
+		}
+		return $array;
+	}
+}
