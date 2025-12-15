@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="6.13.1@1e3b7f0a8ab32b23197b91107adc0a7ed8a05b51">
+<files psalm-version="6.14.2@bbd217fc98c0daa0a13aea2a7f119d03ba3fc9a0">
   <file src="lib/AppInfo/Application.php">
     <DeprecatedInterface>
       <code><![CDATA[$this->getContainer()]]></code>
@@ -207,9 +207,6 @@
       <code><![CDATA[$labelToSetId[$label]]]></code>
       <code><![CDATA[$labelToSetId[$lastLabel]]]></code>
     </MixedArrayOffset>
-    <MixedArrayTypeCoercion>
-      <code><![CDATA[$labelToSetId[$lastLabel]]]></code>
-    </MixedArrayTypeCoercion>
     <MixedAssignment>
       <code><![CDATA[$label]]></code>
       <code><![CDATA[$lastLabel]]></code>
@@ -710,6 +707,14 @@
       <code><![CDATA[file_get_contents(__DIR__ . '/../../src/things.json')]]></code>
     </PossiblyFalseArgument>
   </file>
+  <file src="lib/Controller/AdminController.php">
+    <InvalidArrayAccess>
+      <code><![CDATA[$output[0]]]></code>
+    </InvalidArrayAccess>
+    <MixedArgument>
+      <code><![CDATA[$output[0]]]></code>
+    </MixedArgument>
+  </file>
   <file src="lib/Dav/Faces/FacePhoto.php">
     <UndefinedClass>
       <code><![CDATA[IFile]]></code>
@@ -758,9 +763,6 @@
     <MixedAssignment>
       <code><![CDATA[$array[$field]]]></code>
     </MixedAssignment>
-    <PropertyNotSetInConstructor>
-      <code><![CDATA[FaceCluster]]></code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Db/FaceClusterMapper.php">
     <InvalidDocblock>
@@ -799,9 +801,6 @@
     <MixedReturnStatement>
       <code><![CDATA[$this->getter('faceVector')]]></code>
     </MixedReturnStatement>
-    <PropertyNotSetInConstructor>
-      <code><![CDATA[FaceDetection]]></code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Db/FaceDetectionMapper.php">
     <InvalidDocblock>
@@ -851,9 +850,6 @@
     <MissingPropertyType>
       <code><![CDATA[$title]]></code>
     </MissingPropertyType>
-    <PropertyNotSetInConstructor>
-      <code><![CDATA[FaceDetectionWithTitle]]></code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Db/QueueFile.php">
     <MissingPropertyType>
@@ -977,8 +973,6 @@
   </file>
   <file src="lib/Hooks/FileListener.php">
     <PossiblyNullArgument>
-      <code><![CDATA[$mount->getNumericStorageId()]]></code>
-      <code><![CDATA[$mount->getNumericStorageId()]]></code>
       <code><![CDATA[$node->getMountPoint()->getNumericStorageId()]]></code>
     </PossiblyNullArgument>
   </file>
@@ -1019,6 +1013,11 @@
     <MixedArgument>
       <code><![CDATA[IQueryBuilder::PARAM_INT_ARRAY]]></code>
     </MixedArgument>
+  </file>
+  <file src="lib/Service/AccessUpdateService.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[AccessUpdateService]]></code>
+    </ClassMustBeFinal>
   </file>
   <file src="lib/Service/DownloadModelsService.php">
     <MixedArgument>

@@ -38,12 +38,4 @@ final class AccessUpdate extends Entity {
 		$this->addType('storageId', 'integer');
 		$this->addType('rootId', 'integer');
 	}
-
-	public function toArray(): array {
-		$array = [];
-		foreach (self::$fields as $field) {
-			$array[$field] = $this->{$field};
-		}
-		return $array;
-	}
 }

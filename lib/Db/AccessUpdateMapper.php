@@ -18,7 +18,7 @@ use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 
 /**
- * @psalm-extends QBMapper<AccessUpdate>
+ * @template-extends QBMapper<AccessUpdate>
  */
 final class AccessUpdateMapper extends QBMapper {
 	public function __construct(

@@ -40,7 +40,7 @@ final class ProcessAccessUpdatesJob extends TimedJob {
 		try {
 			$count = $this->accessUpdateMapper->countByStorageId($storageId);
 		} catch (Exception $e) {
-			$this->logger->error('Failed to count access updates' . $e->getMessage(), ['exception' => $e]);
+			$this->logger->error('Failed to count access updates: ' . $e->getMessage(), ['exception' => $e]);
 			$count = 1;
 		}
 		if ($count === 0) {
