@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2022 The Recognize contributors.
+ * Copyright (c) 2025 The Recognize contributors.
  * This file is licensed under the Affero General Public License version 3 or later. See the COPYING file.
  */
 declare(strict_types=1);
@@ -10,7 +10,7 @@ namespace OCA\Recognize\Db;
 use OCP\AppFramework\Db\Entity;
 
 /**
- * Class AccessUpdate
+ * Class FsCreation
  *
  * @package OCA\Recognize\Db
  * @method int getStorageId()
@@ -18,7 +18,7 @@ use OCP\AppFramework\Db\Entity;
  * @method int getRootId()
  * @method setRootId(int $rootId)
  */
-final class AccessUpdate extends Entity {
+final class FsCreation extends Entity {
 	protected ?int $storageId = null;
 	protected ?int $rootId = null;
 
@@ -31,6 +31,8 @@ final class AccessUpdate extends Entity {
 	 * @var string[]
 	 */
 	public static array $fields = ['id', 'storageId', 'rootId'];
+
+	public static string $tableName = 'recognize_fs_creations';
 
 	public function __construct() {
 		// add types in constructor
