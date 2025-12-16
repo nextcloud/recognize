@@ -30,10 +30,10 @@ final class FsActionMapper extends QBMapper {
 	}
 
 	/**
-	 * @template CLASS FsAccessUpdate|FsCreation|FsDeletion|FsMove
-	 * @template-param class-string<CLASS> $className
-	 * @return list<CLASS>
-	 * @throws \OCP\DB\Exception
+	 * @param class-string<FsCreation|FsDeletion|FsMove|FsAccessUpdate> $className
+	 * @param int $storageId
+	 * @param int $limit
+	 * @return list<FsCreation|FsDeletion|FsMove|FsAccessUpdate>
 	 * @throws \Exception
 	 */
 	public function findByStorageId(string $className, int $storageId, int $limit = 0): array {
@@ -51,9 +51,8 @@ final class FsActionMapper extends QBMapper {
 	}
 
 	/**
-	 * @template CLASS FsAccessUpdate|FsCreation|FsDeletion|FsMove
-	 * @template-param class-string<CLASS> $className
-	 * @return list<CLASS>
+	 * @param class-string<FsCreation|FsDeletion|FsMove|FsAccessUpdate> $className
+	 * @return list<FsCreation|FsDeletion|FsMove|FsAccessUpdate>
 	 * @throws \OCP\DB\Exception
 	 * @throws \Exception
 	 */
@@ -71,11 +70,9 @@ final class FsActionMapper extends QBMapper {
 	}
 
 	/**
-	 * @template CLASS FsAccessUpdate|FsCreation|FsDeletion|FsMove
-	 * @template-param class-string<CLASS> $className
-	 * @param string $className
+	 * @param class-string<FsCreation|FsDeletion|FsMove|FsAccessUpdate> $className
 	 * @param int $nodeId
-	 * @return Entity
+	 * @return FsCreation|FsDeletion|FsMove|FsAccessUpdate
 	 * @throws DoesNotExistException
 	 * @throws Exception
 	 * @throws MultipleObjectsReturnedException
@@ -92,9 +89,7 @@ final class FsActionMapper extends QBMapper {
 	}
 
 	/**
-	 * @template CLASS FsAccessUpdate|FsCreation|FsDeletion|FsMove
-	 * @template-param class-string<CLASS> $className
-	 * @param string $className
+	 * @param class-string<FsCreation|FsDeletion|FsMove|FsAccessUpdate> $className
 	 * @param int $storageId
 	 * @return int
 	 * @throws Exception
@@ -115,9 +110,7 @@ final class FsActionMapper extends QBMapper {
 	}
 
 	/**
-	 * @template CLASS FsAccessUpdate|FsCreation|FsDeletion|FsMove
-	 * @template-param class-string<CLASS> $className
-	 * @param string $className
+	 * @param class-string<FsCreation|FsDeletion|FsMove|FsAccessUpdate> $className
 	 * @return int
 	 * @throws Exception
 	 */
@@ -136,12 +129,10 @@ final class FsActionMapper extends QBMapper {
 	}
 
 	/**
-	 * @template CLASS FsAccessUpdate|FsCreation|FsDeletion|FsMove
-	 * @template-param class-string<CLASS> $className
-	 * @param string $className
+	 * @param class-string<FsCreation|FsDeletion|FsMove|FsAccessUpdate> $className
 	 * @param int $storageId
 	 * @param int $rootId
-	 * @return FsAccessUpdate
+	 * @return FsCreation|FsDeletion|FsMove|FsAccessUpdate
 	 * @throws DoesNotExistException
 	 * @throws Exception
 	 * @throws MultipleObjectsReturnedException
@@ -161,7 +152,7 @@ final class FsActionMapper extends QBMapper {
 	/**
 	 * @param int $storageId
 	 * @param int $rootId
-	 * @return FsAccessUpdate
+	 * @return FsCreation|FsDeletion|FsMove|FsAccessUpdate
 	 * @throws Exception
 	 * @throws MultipleObjectsReturnedException
 	 */
@@ -184,34 +175,34 @@ final class FsActionMapper extends QBMapper {
 	/**
 	 * @param int $storageId
 	 * @param int $rootId
-	 * @return FsAccessUpdate
+	 * @return FsCreation|FsDeletion|FsMove|FsAccessUpdate
 	 * @throws Exception
 	 * @throws MultipleObjectsReturnedException
 	 */
 	public function insertCreation(int $storageId, int $rootId): Entity {
 		try {
-			$accessUpdate = $this->findByStorageIdAndRootId(FsCreation::class, $storageId, $rootId);
+			$creation = $this->findByStorageIdAndRootId(FsCreation::class, $storageId, $rootId);
 		} catch (DoesNotExistException $e) {
-			$accessUpdate = new FsCreation();
-			$accessUpdate->setStorageId($storageId);
-			$accessUpdate->setRootId($rootId);
-			$this->insert($accessUpdate);
+			$creation = new FsCreation();
+			$creation->setStorageId($storageId);
+			$creation->setRootId($rootId);
+			$this->insert($creation);
 			$arguments = [ 'type' => FsCreation::class, 'storage_id' => $storageId ];
 			if (!$this->jobList->has(ProcessFsActionsJob::class, $arguments)) {
 				$this->jobList->add(ProcessFsActionsJob::class, $arguments);
 			}
 		}
-		return $accessUpdate;
+		return $creation;
 	}
 
 
 	/**
 	 * @param int $storageId
 	 * @param int $nodeId
-	 * @return FsAccessUpdate
+	 * @return FsCreation|FsDeletion|FsMove|FsAccessUpdate
 	 * @throws Exception|MultipleObjectsReturnedException
 	 */
-	public function insertDeletion(int $storageId, int $nodeId): Entity {
+	public function insertDeletion(int $storageId, int $nodeId): FsCreation|FsDeletion|FsMove|FsAccessUpdate {
 		try {
 			$deletion = $this->findByNodeId(FsDeletion::class, $nodeId);
 		} catch (DoesNotExistException $e) {
@@ -230,9 +221,9 @@ final class FsActionMapper extends QBMapper {
 	/**
 	 * @param int $nodeId
 	 * @param string $owner
-	 * @param array $addedUsers
-	 * @param array $targetUsers
-	 * @return FsAccessUpdate
+	 * @param list<string> $addedUsers
+	 * @param list<string> $targetUsers
+	 * @return FsCreation|FsDeletion|FsMove|FsAccessUpdate
 	 * @throws Exception|MultipleObjectsReturnedException
 	 */
 	public function insertMove(int $nodeId, string $owner, array $addedUsers, array $targetUsers): Entity {
@@ -254,13 +245,14 @@ final class FsActionMapper extends QBMapper {
 	}
 
 	/**
-	 * @param Entity $entity
-	 * @return FsAccessUpdate
+	 * @param FsCreation|FsDeletion|FsMove|FsAccessUpdate $entity
+	 * @return FsCreation|FsDeletion|FsMove|FsAccessUpdate
 	 * @throws Exception
 	 */
 	public function insert(Entity $entity): Entity {
 		// get updated fields to save, fields have to be set using a setter to
 		// be saved
+		/** @var array<string, mixed> $properties */
 		$properties = $entity->getUpdatedFields();
 
 		$qb = $this->db->getQueryBuilder();
@@ -278,6 +270,7 @@ final class FsActionMapper extends QBMapper {
 
 		$qb->executeStatement();
 
+		/** @psalm-suppress DocblockTypeContradiction */
 		if ($entity->id === null) {
 			// When autoincrement is used id is always an int
 			$entity->setId($qb->getLastInsertId());
@@ -290,9 +283,9 @@ final class FsActionMapper extends QBMapper {
 	 * Returns an db result and throws exceptions when there are more or less
 	 * results
 	 *
-	 * @param string $className
+	 * @param class-string<FsCreation|FsDeletion|FsMove|FsAccessUpdate> $className
 	 * @param IQueryBuilder $query
-	 * @return Entity the entity
+	 * @return FsCreation|FsDeletion|FsMove|FsAccessUpdate the entity
 	 * @throws DoesNotExistException if the item does not exist
 	 * @throws Exception
 	 * @throws MultipleObjectsReturnedException if more than one item exist
@@ -304,9 +297,9 @@ final class FsActionMapper extends QBMapper {
 	/**
 	 * Runs a sql query and returns an array of items
 	 *
-	 * @param string $className
+	 * @param class-string<FsCreation|FsDeletion|FsMove|FsAccessUpdate> $className
 	 * @param IQueryBuilder $query
-	 * @return list<Entity> all fetched entities
+	 * @return list<FsCreation|FsDeletion|FsMove|FsAccessUpdate> all fetched entities
 	 */
 	protected function findItems(string $className, IQueryBuilder $query): array {
 		$result = $query->executeQuery();
@@ -321,6 +314,9 @@ final class FsActionMapper extends QBMapper {
 		}
 	}
 
+	/**
+	 * @param class-string<FsCreation|FsDeletion|FsMove|FsAccessUpdate> $className
+	 */
 	protected function mapRowToItem(string $className, array $row): Entity {
 		unset($row['DOCTRINE_ROWNUM']); // remove doctrine/dbal helper column
 		return \call_user_func($className. '::fromRow', $row);
@@ -329,8 +325,8 @@ final class FsActionMapper extends QBMapper {
 	/**
 	 * Deletes an item from the table
 	 *
-	 * @param Entity $entity the entity that should be deleted
-	 * @return Entity the deleted entity
+	 * @param FsCreation|FsDeletion|FsMove|FsAccessUpdate $entity the entity that should be deleted
+	 * @return FsCreation|FsDeletion|FsMove|FsAccessUpdate the deleted entity
 	 * @throws Exception
 	 */
 	public function delete(Entity $entity): Entity {

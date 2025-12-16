@@ -27,7 +27,7 @@ use OCP\Files\Node;
 use OCP\Files\NotFoundException;
 use Psr\Log\LoggerInterface;
 
-class FsActionService {
+final class FsActionService {
 	public const BATCH_SIZE = 1000;
 	public function __construct(
 		private FsActionMapper      $fsActionMapper,
@@ -42,6 +42,9 @@ class FsActionService {
 	) {
 	}
 
+	/**
+	 * @param class-string<FsCreation|FsDeletion|FsMove|FsAccessUpdate> $className
+	 */
 	public function processActionsByClassAndStorageId(string $className, int $storageId): void {
 		try {
 			$actions = $this->fsActionMapper->findByStorageId($className, $storageId, self::BATCH_SIZE);
@@ -52,6 +55,9 @@ class FsActionService {
 		$this->processActions($actions);
 	}
 
+	/**
+	 * @param class-string<FsCreation|FsDeletion|FsMove|FsAccessUpdate> $className
+	 */
 	public function processActionsByClass(string $className): void {
 		try {
 			$actions = $this->fsActionMapper->find($className, self::BATCH_SIZE);
@@ -62,6 +68,9 @@ class FsActionService {
 		$this->processActions($actions);
 	}
 
+	/**
+	 * @param array<FsCreation|FsDeletion|FsMove|FsAccessUpdate> $actions
+	 */
 	public function processActions(array $actions): void {
 		foreach ($actions as $action) {
 			switch ($action::class) {
@@ -191,10 +200,11 @@ class FsActionService {
 		}
 
 		$queueFile = new QueueFile();
-		if ($node->getMountPoint()->getNumericStorageId() === null) {
+		$storageId = $node->getMountPoint()->getNumericStorageId();
+		if ($storageId === null) {
 			return;
 		}
-		$queueFile->setStorageId($node->getMountPoint()->getNumericStorageId());
+		$queueFile->setStorageId($storageId);
 		$queueFile->setRootId($node->getMountPoint()->getStorageRootId());
 
 		if ($this->isFileIgnored($node)) {

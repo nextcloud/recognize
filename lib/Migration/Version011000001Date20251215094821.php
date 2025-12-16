@@ -48,7 +48,7 @@ final class Version011000001Date20251215094821 extends SimpleMigrationStep {
 			$changed = true;
 		}
 		if (!$schema->hasTable('recognize_fs_deletions')) {
-			$table = $schema->createTable('recognize_fs_creations');
+			$table = $schema->createTable('recognize_fs_deletions');
 			$table->addColumn('id', Types::BIGINT, ['autoincrement' => true]);
 			$table->addColumn('storage_id', Types::BIGINT, ['notnull' => true]);
 			$table->addColumn('node_id', Types::BIGINT, ['notnull' => true]);
@@ -63,7 +63,7 @@ final class Version011000001Date20251215094821 extends SimpleMigrationStep {
 			$table->addColumn('owner', Types::TEXT, ['notnull' => true]);
 			$table->addColumn('added_users', Types::TEXT, ['notnull' => true]);
 			$table->addColumn('target_users', Types::TEXT, ['notnull' => true]);
-			$table->setPrimaryKey(['id'], 'recognize_fs_del_pk');
+			$table->setPrimaryKey(['id'], 'recognize_fs_mov_pk');
 			$table->addUniqueIndex(['node_id'], 'recognize_fs_mov_uniq');
 			$changed = true;
 		}

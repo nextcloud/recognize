@@ -256,12 +256,17 @@ final class FileListener implements IEventListener {
 
 	/**
 	 * @throws \OCP\Files\InvalidPathException
+	 * @throws NotFoundException
 	 */
 	public function postInsert(Node $node, bool $recurse = true, ?array $mimeTypes = null): void {
 		if ($node->getType() !== FileInfo::TYPE_FOLDER && $mimeTypes !== null && !in_array($node->getMimetype(), $mimeTypes)) {
 			return;
 		}
-		$this->fsActionMapper->insertCreation($node->getMountPoint()->getNumericStorageId(), $node->getId());
+		$storageId = $node->getMountPoint()->getNumericStorageId();
+		if ($storageId === null) {
+			return;
+		}
+		$this->fsActionMapper->insertCreation($storageId, $node->getId());
 	}
 
 	/**

@@ -45,12 +45,18 @@ final class FsMove extends Entity {
 		$this->addType('targetUsers', 'string');
 	}
 
+	/**
+	 * @return list<string>
+	 */
 	public function getAddedUsers(): array {
-		return explode(',', $this->addedUsers);
+		return explode(',', $this->addedUsers ?? '');
 	}
 
+	/**
+	 * @return list<string>
+	 */
 	public function getTargetUsers(): array {
-		return explode(',', $this->targetUsers);
+		return explode(',', $this->targetUsers ?? '');
 	}
 
 	/**

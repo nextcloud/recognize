@@ -7,7 +7,11 @@
 declare(strict_types=1);
 namespace OCA\Recognize\BackgroundJobs;
 
+use OCA\Recognize\Db\FsAccessUpdate;
 use OCA\Recognize\Db\FsActionMapper;
+use OCA\Recognize\Db\FsCreation;
+use OCA\Recognize\Db\FsDeletion;
+use OCA\Recognize\Db\FsMove;
 use OCA\Recognize\Service\FsActionService;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\IJobList;
@@ -30,7 +34,7 @@ final class ProcessFsActionsJob extends TimedJob {
 	}
 
 	/**
-	 * @param array{storage_id:int, type: string} $argument
+	 * @param array{storage_id:int, type: class-string<FsAccessUpdate|FsCreation|FsDeletion|FsMove>} $argument
 	 * @return void
 	 */
 	protected function run($argument): void {
