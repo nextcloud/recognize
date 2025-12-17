@@ -23,8 +23,6 @@ use OCP\Files\Events\Node\NodeDeletedEvent;
 use OCP\Files\Events\Node\NodeRenamedEvent;
 use OCP\Files\Events\NodeRemovedFromCache;
 use OCP\SabrePluginEvent;
-use OCP\Share\Events\ShareCreatedEvent;
-use OCP\Share\Events\ShareDeletedEvent;
 
 final class Application extends App implements IBootstrap {
 	public const APP_ID = 'recognize';
@@ -42,16 +40,10 @@ final class Application extends App implements IBootstrap {
 		$dispatcher->addServiceListener(BeforeNodeRenamedEvent::class, FileListener::class);
 		$dispatcher->addServiceListener(CacheEntryInsertedEvent::class, FileListener::class);
 		$dispatcher->addServiceListener(NodeRemovedFromCache::class, FileListener::class);
-		// These events were added mid-way through NC 30, 31
-		if (class_exists('OCP\Files\Config\Event\UserMountAddedEvent')) {
-			$dispatcher->addServiceListener('OCP\Files\Config\Event\UserMountAddedEvent', FileListener::class);
-			$dispatcher->addServiceListener('OCP\Files\Config\Event\UserMountRemovedEvent', FileListener::class);
-			// it is not fired as of now, Added and Removed events are fired instead in that order
-			// $context->addServiceListener('OCP\Files\Config\Event\UserMountUpdatedEvent', FileListener::class);
-		} else {
-			$dispatcher->addServiceListener(ShareCreatedEvent::class, FileListener::class);
-			$dispatcher->addServiceListener(ShareDeletedEvent::class, FileListener::class);
-		}
+		$dispatcher->addServiceListener('OCP\Files\Config\Event\UserMountAddedEvent', FileListener::class);
+		$dispatcher->addServiceListener('OCP\Files\Config\Event\UserMountRemovedEvent', FileListener::class);
+		// it is not fired as of now, Added and Removed events are fired instead in that order
+		// $context->addServiceListener('OCP\Files\Config\Event\UserMountUpdatedEvent', FileListener::class);
 	}
 
 	public function register(IRegistrationContext $context): void {
