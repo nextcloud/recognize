@@ -11,6 +11,8 @@
     "There are queued files in the face recognition queue but no background job is scheduled to process them." : "Tööde järjekorda on lisatud mitu näotuvastusülesannet, aga ühtegi taustatöötluse protsessi pole nende töötlemiseks ajastatud.",
     "Reset" : "Lähtesta",
     "Resource usage" : "Ressursikasutus",
+    "FFMPEG" : "FFMPEG",
+    "Checking FFMPEG" : "Kontrollin FFMPEG olekut",
     "Cat" : "Kass",
     "Architecture" : "Arhitektuur",
     "Landscape" : "Horisontaalne",
