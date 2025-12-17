@@ -138,14 +138,19 @@ final class FsActionMapper extends QBMapper {
 	 * @throws MultipleObjectsReturnedException
 	 */
 	public function findByStorageIdAndRootId(string $className, int $storageId, int $rootId): Entity {
-		if (!in_array('storage_id', $className::$columns, true) || !in_array('node_id', $className::$columns, true)) {
-			throw new \Exception('entity does not have all required columns: storage_id, node_id');
+		if (!in_array('storage_id', $className::$columns, true) || (!in_array('root_id', $className::$columns, true) && !in_array('node_id', $className::$columns, true))) {
+			throw new \Exception('entity does not have all required columns: storage_id, node_id/root_id');
 		}
 		$qb = $this->db->getQueryBuilder();
 		$qb->selectDistinct($className::$columns)
 			->from($className::$tableName)
-			->where($qb->expr()->eq('storage_id', $qb->createPositionalParameter($storageId, IQueryBuilder::PARAM_INT)))
-			->andWhere($qb->expr()->eq('root_id', $qb->createPositionalParameter($rootId, IQueryBuilder::PARAM_INT)));
+			->where($qb->expr()->eq('storage_id', $qb->createPositionalParameter($storageId, IQueryBuilder::PARAM_INT)));
+		if (in_array('root_id', $className::$columns, true)) {
+			$qb->andWhere($qb->expr()->eq('root_id', $qb->createPositionalParameter($rootId, IQueryBuilder::PARAM_INT)));
+		}
+		if (in_array('node_id', $className::$columns, true)) {
+			$qb->andWhere($qb->expr()->eq('node_id', $qb->createPositionalParameter($rootId, IQueryBuilder::PARAM_INT)));
+		}
 		return $this->findItem($className, $qb);
 	}
 
