@@ -91,6 +91,7 @@ class ClassifierTest extends TestCase {
 				// noop
 			}
 		}
+		\OCP\Server::get(\OCA\Files_Trashbin\Trashbin::class)->deleteAll();
 		$this->queue->clearQueue(ImagenetClassifier::MODEL_NAME);
 		$this->queue->clearQueue(LandmarksClassifier::MODEL_NAME);
 		$this->queue->clearQueue(MovinetClassifier::MODEL_NAME);
