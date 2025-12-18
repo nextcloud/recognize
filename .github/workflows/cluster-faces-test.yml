@@ -206,6 +206,7 @@ jobs:
       - name: Run clustering
         if: steps.clustering-cache.outputs.cache-hit != 'true'
         run: |
+          ./occ upgrade # in case server master has new migrations in the meantime
           ./occ recognize:cluster-faces -b 10000
           ./occ recognize:cluster-faces -b 10000
           ./occ recognize:cluster-faces -b 10000
