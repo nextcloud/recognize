@@ -10,5 +10,9 @@ require_once __DIR__ . '/../../../tests/bootstrap.php';
 use OCA\Recognize\AppInfo\Application;
 use OCP\App\IAppManager;
 
-\OC::$server->get(IAppManager::class)->loadApp(Application::APP_ID);
-OC_Hook::clear();
+\OCP\Server::get(IAppManager::class)->loadApp(Application::APP_ID);
+
+// Make sure hooks are registered:
+\OCP\Server::get(\OC\Files\Node\HookConnector::class)->viewToNode();
+// Do not clear hooks, we need them for our tests!
+// OC_Hook::clear();

@@ -195,7 +195,9 @@ class ClassifierTest extends TestCase {
 
 	private function runFsActionJobs() {
 		while ($job = $this->jobList->getNext(jobClasses:[ProcessFsActionsJob::class])) {
+			$this->jobList->resetBackgroundJob($job);
 			$job->start($this->jobList);
+			$this->jobList->resetBackgroundJob($job);
 		}
 	}
 
