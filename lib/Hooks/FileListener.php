@@ -7,18 +7,10 @@
 declare(strict_types=1);
 namespace OCA\Recognize\Hooks;
 
-use OCA\Recognize\BackgroundJobs\ClusterFacesJob;
-use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
-use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
-use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
-use OCA\Recognize\Classifiers\Video\MovinetClassifier;
 use OCA\Recognize\Constants;
-use OCA\Recognize\Db\FaceDetectionMapper;
-use OCA\Recognize\Db\QueueFile;
+use OCA\Recognize\Db\FsActionMapper;
 use OCA\Recognize\Service\IgnoreService;
-use OCA\Recognize\Service\QueueService;
-use OCA\Recognize\Service\StorageService;
-use OCP\BackgroundJob\IJobList;
+use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 use OCP\DB\Exception;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
@@ -37,10 +29,6 @@ use OCP\Files\InvalidPathException;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
-use OCP\IGroupManager;
-use OCP\Share\Events\ShareCreatedEvent;
-use OCP\Share\Events\ShareDeletedEvent;
-use OCP\Share\IManager;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -57,16 +45,11 @@ final class FileListener implements IEventListener {
 	private array $addedMounts = [];
 
 	public function __construct(
-		private FaceDetectionMapper $faceDetectionMapper,
-		private LoggerInterface $logger,
-		private QueueService $queue,
-		private IgnoreService $ignoreService,
-		private StorageService $storageService,
-		private IRootFolder $rootFolder,
-		private IUserMountCache $userMountCache,
-		private IManager $shareManager,
-		private IGroupManager $groupManager,
-		private IJobList $jobList,
+		private LoggerInterface     $logger,
+		private IgnoreService       $ignoreService,
+		private IRootFolder         $rootFolder,
+		private IUserMountCache     $userMountCache,
+		private FsActionMapper      $fsActionMapper,
 	) {
 		$this->movingFromIgnoredTerritory = null;
 		$this->movingDirFromIgnoredTerritory = null;
@@ -110,60 +93,7 @@ final class FileListener implements IEventListener {
 				// Asynchronous, because we potentially recurse and this event needs to be handled fast
 				$this->onAccessUpdate($event->mountPoint->getStorageId(), $rootId);
 			}
-
-			if ($event instanceof ShareCreatedEvent) {
-				$share = $event->getShare();
-				$ownerId = $share->getShareOwner();
-				$node = $share->getNode();
-				$userIds = $this->getUsersWithFileAccess($node->getId());
-
-				if ($node->getType() === FileInfo::TYPE_FOLDER) {
-					$mount = $node->getMountPoint();
-					if ($mount->getNumericStorageId() === null) {
-						return;
-					}
-					$files = $this->storageService->getFilesInMount($mount->getNumericStorageId(), $node->getId(), [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
-					foreach ($files as $fileInfo) {
-						foreach ($userIds as $userId) {
-							if ($userId === $ownerId) {
-								continue;
-							}
-							if (count($this->faceDetectionMapper->findByFileIdAndUser($node->getId(), $userId)) > 0) {
-								continue;
-							}
-							$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($fileInfo['fileid'], $ownerId, $userId);
-						}
-					}
-				} else {
-					foreach ($userIds as $userId) {
-						if ($userId === $ownerId) {
-							continue;
-						}
-						if (count($this->faceDetectionMapper->findByFileIdAndUser($node->getId(), $userId)) > 0) {
-							continue;
-						}
-						$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($node->getId(), $ownerId, $userId);
-					}
-				}
-			}
-			if ($event instanceof ShareDeletedEvent) {
-				$share = $event->getShare();
-				$node = $share->getNode();
-				$userIds = $this->getUsersWithFileAccess($node->getId());
-
-				if ($node->getType() === FileInfo::TYPE_FOLDER) {
-					$mount = $node->getMountPoint();
-					if ($mount->getNumericStorageId() === null) {
-						return;
-					}
-					$files = $this->storageService->getFilesInMount($mount->getNumericStorageId(), $node->getId(), [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
-					foreach ($files as $fileInfo) {
-						$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($fileInfo['fileid'], $userIds);
-					}
-				} else {
-					$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($node->getId(), $userIds);
-				}
-			}
+			
 			if ($event instanceof BeforeNodeRenamedEvent) {
 				$this->movingFromIgnoredTerritory = null;
 				$this->movingDirFromIgnoredTerritory = [];
@@ -265,8 +195,8 @@ final class FileListener implements IEventListener {
 				return;
 			}
 			if ($event instanceof CacheEntryInsertedEvent) {
-				$node = current($this->rootFolder->getById($event->getFileId()));
-				if ($node === false) {
+				$node = $this->rootFolder->getFirstNodeById($event->getFileId());
+				if ($node === null) {
 					return;
 				}
 				if ($node instanceof Folder) {
@@ -284,8 +214,8 @@ final class FileListener implements IEventListener {
 				if ($cacheEntry === false) {
 					return;
 				}
-				$node = current($this->rootFolder->getById($cacheEntry->getId()));
-				if ($node === false) {
+				$node = $this->rootFolder->getFirstNodeById($cacheEntry->getId());
+				if ($node === null) {
 					return;
 				}
 				if (in_array($node->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
@@ -302,6 +232,7 @@ final class FileListener implements IEventListener {
 
 	public function postDelete(Node $node, bool $recurse = true, ?array $mimeTypes = null): void {
 		if ($node->getType() === FileInfo::TYPE_FOLDER) {
+			// We have to recurse synchronously here, because the nodes will be gone by the time the deletion action is handled
 			if (!$recurse) {
 				return;
 			}
@@ -320,91 +251,30 @@ final class FileListener implements IEventListener {
 			return;
 		}
 
-		// Try Deleting possibly existing face detections
-		try {
-			/**
-			 * @var \OCA\Recognize\Db\FaceDetection[] $faceDetections
-			 */
-			$faceDetections = $this->faceDetectionMapper->findByFileId($node->getId());
-			foreach ($faceDetections as $detection) {
-				$this->logger->debug('Delete face detection ' . $detection->getId());
-				$this->faceDetectionMapper->delete($detection);
-			}
-		} catch (NotFoundException $e) {
-			$this->logger->debug($e->getMessage(), ['exception' => $e]);
-		} catch (Exception|InvalidPathException $e) {
-			$this->logger->warning($e->getMessage(), ['exception' => $e]);
-		}
-
-		// Try removing file from possibly existing queue entries
-		try {
-			$this->queue->removeFileFromAllQueues($node->getId());
-		} catch (NotFoundException $e) {
-			$this->logger->debug($e->getMessage(), ['exception' => $e]);
-		} catch (Exception|InvalidPathException $e) {
-			$this->logger->warning($e->getMessage(), ['exception' => $e]);
-		}
+		$this->fsActionMapper->insertDeletion($node->getMountPoint()->getNumericStorageId(), $node->getId());
 	}
 
 	/**
 	 * @throws \OCP\Files\InvalidPathException
+	 * @throws NotFoundException
 	 */
 	public function postInsert(Node $node, bool $recurse = true, ?array $mimeTypes = null): void {
-		if ($node->getType() === FileInfo::TYPE_FOLDER) {
-			if (!$recurse) {
-				return;
-			}
-			// For normal inserts we probably get one event per node, but, when removing an ignore file,
-			// we only get the folder passed here, so we recurse.
-			try {
-				/** @var Folder $node */
-				foreach ($node->getDirectoryListing() as $child) {
-					$this->postInsert($child);
-				}
-			} catch (NotFoundException $e) {
-				$this->logger->debug($e->getMessage(), ['exception' => $e]);
-			}
+		if ($node->getType() !== FileInfo::TYPE_FOLDER && $mimeTypes !== null && !in_array($node->getMimetype(), $mimeTypes)) {
 			return;
 		}
-
-		if ($mimeTypes !== null && !in_array($node->getMimetype(), $mimeTypes)) {
+		$storageId = $node->getMountPoint()->getNumericStorageId();
+		if ($storageId === null) {
 			return;
 		}
-
-		$queueFile = new QueueFile();
-		if ($node->getMountPoint()->getNumericStorageId() === null) {
+		if (preg_match('#^/[^/]*?/files($|/)#', $node->getPath()) !== 1 && preg_match('#^/groupfolders/#', $node->getPath()) !== 1) {
 			return;
 		}
-		$queueFile->setStorageId($node->getMountPoint()->getNumericStorageId());
-		$queueFile->setRootId($node->getMountPoint()->getStorageRootId());
-
-		if ($this->isFileIgnored($node)) {
+		$owner = $node->getOwner();
+		if ($owner === null) {
+			$this->logger->info('Node has no owner: ' . $node->getPath() . ' - Ignoring.');
 			return;
 		}
-
-		try {
-			$queueFile->setFileId($node->getId());
-		} catch (InvalidPathException|NotFoundException $e) {
-			$this->logger->warning($e->getMessage(), ['exception' => $e]);
-			return;
-		}
-
-		$queueFile->setUpdate(false);
-		try {
-			if (in_array($node->getMimetype(), Constants::IMAGE_FORMATS)) {
-				$this->queue->insertIntoQueue(ImagenetClassifier::MODEL_NAME, $queueFile);
-				$this->queue->insertIntoQueue(ClusteringFaceClassifier::MODEL_NAME, $queueFile);
-			}
-			if (in_array($node->getMimetype(), Constants::VIDEO_FORMATS)) {
-				$this->queue->insertIntoQueue(MovinetClassifier::MODEL_NAME, $queueFile);
-			}
-			if (in_array($node->getMimetype(), Constants::AUDIO_FORMATS)) {
-				$this->queue->insertIntoQueue(MusicnnClassifier::MODEL_NAME, $queueFile);
-			}
-		} catch (Exception $e) {
-			$this->logger->error('Failed to add file to queue', ['exception' => $e]);
-			return;
-		}
+		$this->fsActionMapper->insertCreation($storageId, $node->getId(), $owner->getUID());
 	}
 
 	/**
@@ -419,41 +289,13 @@ final class FileListener implements IEventListener {
 		$existingUsers = array_diff($targetUserIds, $usersToAdd);
 		$sourceOwner = $source->getOwner();
 		$targetOwner = $target->getOwner();
-		$ownerId = $sourceOwner !== null ? $sourceOwner->getUID() : ($targetOwner ? $targetOwner->getUID() : $existingUsers[0]);
+		$ownerId = $sourceOwner?->getUID() ?? $targetOwner?->getUID() ?? $existingUsers[0];
 
-		$this->copyFaceDetectionsForNode($ownerId, $usersToAdd, $targetUserIds, $target);
-	}
-
-	/**
-	 * @param string $ownerId
-	 * @param list<string> $usersToAdd
-	 * @param list<string> $targetUserIds
-	 * @param Node $node
-	 * @return void
-	 * @throws Exception|InvalidPathException|NotFoundException
-	 */
-	private function copyFaceDetectionsForNode(string $ownerId, array $usersToAdd, array $targetUserIds, Node $node): void {
-		if ($node instanceof Folder) {
-			try {
-				foreach ($node->getDirectoryListing() as $n) {
-					if (!in_array($n->getMimetype(), Constants::IMAGE_FORMATS)) {
-						continue;
-					}
-					$this->copyFaceDetectionsForNode($ownerId, $usersToAdd, $targetUserIds, $n);
-				}
-			} catch (NotFoundException|Exception|InvalidPathException $e) {
-				$this->logger->warning('Error in recognize file listener', ['exception' => $e]);
-			}
+		if (preg_match('#^/[^/]*?/files/#', $target->getPath()) !== 1 && preg_match('#^/groupfolders/#', $target->getPath()) !== 1) {
 			return;
 		}
-		foreach ($usersToAdd as $userId) {
-			if (count($this->faceDetectionMapper->findByFileIdAndUser($node->getId(), $userId)) > 0) {
-				continue;
-			}
-			$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($node->getId(), $ownerId, $userId);
-			$this->jobList->add(ClusterFacesJob::class, ['userId' => $userId]);
-		}
-		$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($node->getId(), $targetUserIds);
+
+		$this->fsActionMapper->insertMove($target->getId(), $ownerId, $usersToAdd, $targetUserIds);
 	}
 
 	/**
@@ -537,39 +379,14 @@ final class FileListener implements IEventListener {
 	}
 
 	/**
-	 * @throws NotFoundException
-	 * @throws InvalidPathException
 	 * @throws Exception
+	 * @throws MultipleObjectsReturnedException
 	 */
 	private function onAccessUpdate(int $storageId, int $rootId): void {
-		$userIds = $this->getUsersWithFileAccess($rootId);
-		$files = $this->storageService->getFilesInMount($storageId, $rootId, [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
-		$userIdsToScheduleClustering = [];
-		foreach ($files as $fileInfo) {
-			$node = current($this->rootFolder->getById($fileInfo['fileid'])) ?: null;
-			$ownerId = $node?->getOwner()?->getUID();
-			if ($ownerId === null) {
-				continue;
-			}
-			$detectionsForFile = $this->faceDetectionMapper->findByFileId($fileInfo['fileid']);
-			$userHasDetectionForFile = [];
-			foreach ($detectionsForFile as $detection) {
-				$userHasDetectionForFile[$detection->getUserId()] = true;
-			}
-			foreach ($userIds as $userId) {
-				if ($userId === $ownerId) {
-					continue;
-				}
-				if ($userHasDetectionForFile[$userId] ?? false) {
-					continue;
-				}
-				$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($fileInfo['fileid'], $ownerId, $userId);
-				$userIdsToScheduleClustering[$userId] = true;
-			}
-			$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($fileInfo['fileid'], $userIds);
+		$node = $this->rootFolder->getFirstNodeById($rootId);
+		if (!$node || (preg_match('#^/[^/]*?/files($|/)#', $node->getPath()) !== 1 && preg_match('#^/groupfolders/#', $node->getPath()) !== 1)) {
+			return;
 		}
-		foreach (array_keys($userIdsToScheduleClustering) as $userId) {
-			$this->jobList->add(ClusterFacesJob::class, ['userId' => $userId]);
-		}
+		$this->fsActionMapper->insertAccessUpdate($storageId, $rootId);
 	}
 }

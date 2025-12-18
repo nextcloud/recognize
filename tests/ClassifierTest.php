@@ -6,6 +6,7 @@ use OCA\Recognize\BackgroundJobs\ClassifyLandmarksJob;
 use OCA\Recognize\BackgroundJobs\ClassifyMovinetJob;
 use OCA\Recognize\BackgroundJobs\ClassifyMusicnnJob;
 use OCA\Recognize\BackgroundJobs\ClusterFacesJob;
+use OCA\Recognize\BackgroundJobs\ProcessFsActionsJob;
 use OCA\Recognize\BackgroundJobs\SchedulerJob;
 use OCA\Recognize\BackgroundJobs\StorageCrawlJob;
 use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
@@ -90,6 +91,7 @@ class ClassifierTest extends TestCase {
 				// noop
 			}
 		}
+		\OCP\Server::get(\OCA\Files_Trashbin\Trashbin::class)->deleteAll();
 		$this->queue->clearQueue(ImagenetClassifier::MODEL_NAME);
 		$this->queue->clearQueue(LandmarksClassifier::MODEL_NAME);
 		$this->queue->clearQueue(MovinetClassifier::MODEL_NAME);
@@ -153,35 +155,54 @@ class ClassifierTest extends TestCase {
 		$storageId = $this->testFile->getMountPoint()->getNumericStorageId();
 		$rootId = $this->testFile->getMountPoint()->getStorageRootId();
 
-		self::assertCount(1, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'one element should have been added to imagenet queue');
+		var_dump([ 'testFile' => $this->testFile->getId(), 'ignoredFile' => $this->ignoredFile->getId() ]);
+
+		$this->runFsActionJobs();
+		$queue = $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100);
+		self::assertCount(1, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'one element should have been added to imagenet queue: ' . var_export($queue, true) . var_export(array_map(fn (QueueFile $queueFile) => $this->rootFolder->getFirstNodeById($queueFile->getFileId())?->getPath(), $queue), true));
 
 		$this->testFile->delete();
 
+		$this->runFsActionJobs();
 		self::assertCount(0, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'entry should have been removed from imagenet queue');
 
 		$ignoreFile->delete();
 
+		$this->runFsActionJobs();
 		self::assertCount(1, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'one element should have been added to imagenet queue after deleting ignore file');
 
 		$ignoreFile = $this->userFolder->newFile('/test/' . $ignoreFileName, '');
 
+		$this->runFsActionJobs();
 		self::assertCount(0, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'entry should have been removed from imagenet queue after creating ignore file');
 
 		$this->ignoredFile->move($this->userFolder->getPath() . '/alpine-2.jpg');
 
+		$this->runFsActionJobs();
 		self::assertCount(1, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'one element should have been added to imagenet queue after moving it out of ignored territory');
 
 		$ignoreFile->move($this->userFolder->getPath() . '/' . $ignoreFileName);
 
+		$this->runFsActionJobs();
 		self::assertCount(0, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'entry should have been removed from imagenet queue after moving ignore file');
 
 		$ignoreFile->move($this->userFolder->getPath() . '/test/' . $ignoreFileName);
 
+		$this->runFsActionJobs();
 		self::assertCount(1, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'one element should have been added to imagenet queue after moving ignore file');
 
 		$this->ignoredFile->move($this->userFolder->getPath() . '/test/ignore/alpine-2.jpg');
 
+		$this->runFsActionJobs();
 		self::assertCount(0, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'entry should have been removed from imagenet queue after moving it into ignored territory');
+	}
+
+	private function runFsActionJobs() {
+		while ($job = $this->jobList->getNext(jobClasses:[ProcessFsActionsJob::class])) {
+			$this->jobList->resetBackgroundJob($job);
+			$job->start($this->jobList);
+			$this->jobList->resetBackgroundJob($job);
+		}
 	}
 
 	/**
@@ -206,34 +227,42 @@ class ClassifierTest extends TestCase {
 		$storageId = $this->testFile->getMountPoint()->getNumericStorageId();
 		$rootId = $this->testFile->getMountPoint()->getStorageRootId();
 
+		$this->runFsActionJobs();
 		self::assertCount(1, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'one element should have been added to imagenet queue');
 
 		$folder->delete();
 
+		$this->runFsActionJobs();
 		self::assertCount(0, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'entry should have been removed from imagenet queue');
 
 		$ignoreFile->delete();
 
+		$this->runFsActionJobs();
 		self::assertCount(1, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'one element should have been added to imagenet queue after deleting ignore file');
 
 		$ignoreFile = $this->userFolder->newFile('/test/' . $ignoreFileName, '');
 
+		$this->runFsActionJobs();
 		self::assertCount(0, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'entry should have been removed from imagenet queue after creating ignore file');
 
 		$ignoredFolder->move($this->userFolder->getPath() . '/folder2');
 
+		$this->runFsActionJobs();
 		self::assertCount(1, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'one element should have been added to imagenet queue after moving it out of ignored territory');
 
 		$ignoreFile->move($this->userFolder->getPath() . '/' . $ignoreFileName);
 
+		$this->runFsActionJobs();
 		self::assertCount(0, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'entry should have been removed from imagenet queue after moving ignore file');
 
 		$ignoreFile->move($this->userFolder->getPath() . '/test/' . $ignoreFileName);
 
+		$this->runFsActionJobs();
 		self::assertCount(1, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'one element should have been added to imagenet queue after moving ignore file');
 
 		$ignoredFolder->move($this->userFolder->getPath() . '/test/ignore/folder');
 
+		$this->runFsActionJobs();
 		self::assertCount(0, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'entry should have been removed from imagenet queue after moving it into ignored territory');
 	}
 

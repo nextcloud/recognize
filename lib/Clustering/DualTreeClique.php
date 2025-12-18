@@ -64,7 +64,7 @@ final class DualTreeClique extends Clique {
 
 		$labels = $this->dataset->labels();
 		$lastLabel = array_pop($labels);
-		if (!isset($labelToSetId[$lastLabel])) {
+		if (!isset($lastLabel) || !isset($labelToSetId[$lastLabel])) {
 			return null;
 		}
 		$setId = $labelToSetId[$lastLabel];
