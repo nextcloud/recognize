@@ -851,6 +851,27 @@
       <code><![CDATA[$title]]></code>
     </MissingPropertyType>
   </file>
+  <file src="lib/Db/FsActionMapper.php">
+    <LessSpecificReturnStatement>
+      <code><![CDATA[$entities]]></code>
+      <code><![CDATA[$this->mapRowToItem($className, $this->findOneQuery($query))]]></code>
+    </LessSpecificReturnStatement>
+    <MixedArgument>
+      <code><![CDATA[$row]]></code>
+    </MixedArgument>
+    <MixedAssignment>
+      <code><![CDATA[$row]]></code>
+      <code><![CDATA[$updated]]></code>
+      <code><![CDATA[$value]]></code>
+    </MixedAssignment>
+    <MixedReturnStatement>
+      <code><![CDATA[\call_user_func($className. '::fromRow', $row)]]></code>
+    </MixedReturnStatement>
+    <MoreSpecificReturnType>
+      <code><![CDATA[FsCreation|FsDeletion|FsMove|FsAccessUpdate]]></code>
+      <code><![CDATA[list<FsCreation|FsDeletion|FsMove|FsAccessUpdate>]]></code>
+    </MoreSpecificReturnType>
+  </file>
   <file src="lib/Db/QueueFile.php">
     <MissingPropertyType>
       <code><![CDATA[$fileId]]></code>
@@ -1013,11 +1034,6 @@
     <MixedArgument>
       <code><![CDATA[IQueryBuilder::PARAM_INT_ARRAY]]></code>
     </MixedArgument>
-  </file>
-  <file src="lib/Service/AccessUpdateService.php">
-    <ClassMustBeFinal>
-      <code><![CDATA[AccessUpdateService]]></code>
-    </ClassMustBeFinal>
   </file>
   <file src="lib/Service/DownloadModelsService.php">
     <MixedArgument>
