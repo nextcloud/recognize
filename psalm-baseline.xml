@@ -1077,6 +1077,17 @@
       <code><![CDATA[$clusterId]]></code>
     </PossiblyFalseArgument>
   </file>
+  <file src="lib/Service/FsActionService.php">
+    <UndefinedClass>
+      <code><![CDATA[$e]]></code>
+      <code><![CDATA[NoUserException]]></code>
+      <code><![CDATA[SetupManager]]></code>
+    </UndefinedClass>
+    <UndefinedDocblockClass>
+      <code><![CDATA[$setupManager]]></code>
+      <code><![CDATA[\OCP\Server::get(SetupManager::class)]]></code>
+    </UndefinedDocblockClass>
+  </file>
   <file src="lib/Service/IgnoreService.php">
     <MixedAssignment>
       <code><![CDATA[$result]]></code>
