@@ -19,6 +19,7 @@ OC.L10N.register(
     "Document" : "Nyaraka",
     "Bucket" : "Bucket",
     "Event" : "Tukio",
+    "Sign" : "Sign",
     "Gallery" : "Matunzio"
 },
 "nplurals=2; plural=(n != 1);");
