@@ -1,5 +1,9 @@
 {
     "require": {
         "vimeo/psalm": "6.*"
+    },
+    "require-dev": {
+        "sabre/dav": "^4.7",
+        "nextcloud/ocp": "dev-master"
     }
 }

@@ -20,54 +20,51 @@ use Sabre\DAV\Exception\NotFound;
 use Sabre\DAV\ICollection;
 
 final class RecognizeHome implements ICollection {
-	private array $principalInfo;
-	private FaceClusterMapper $faceClusterMapper;
-	private IUser $user;
-	private FaceDetectionMapper $faceDetectionMapper;
-	private IRootFolder $rootFolder;
-	private ITagManager $tagManager;
-	private IPreview $previewManager;
-
-	public function __construct(array $principalInfo, FaceClusterMapper $faceClusterMapper, IUser $user, FaceDetectionMapper $faceDetectionMapper, IRootFolder $rootFolder, ITagManager $tagManager, IPreview $previewManager) {
-		$this->principalInfo = $principalInfo;
-		$this->faceClusterMapper = $faceClusterMapper;
-		$this->user = $user;
-		$this->faceDetectionMapper = $faceDetectionMapper;
-		$this->rootFolder = $rootFolder;
-		$this->tagManager = $tagManager;
-		$this->previewManager = $previewManager;
+	/**
+	 * @param array{uri: string} $principalInfo
+	 */
+	public function __construct(
+		private readonly array $principalInfo,
+		private readonly FaceClusterMapper $faceClusterMapper,
+		private readonly IUser $user,
+		private readonly FaceDetectionMapper $faceDetectionMapper,
+		private readonly IRootFolder $rootFolder,
+		private readonly ITagManager $tagManager,
+		private readonly IPreview $previewManager,
+	) {
 	}
 
 	public function getName(): string {
+		/** @var string $name */
 		[, $name] = \Sabre\Uri\split($this->principalInfo['uri']);
 		return $name;
 	}
 
-	public function setName($name) {
+	public function setName($name): never {
 		throw new Forbidden('Permission denied to rename this folder');
 	}
 
-	public function delete() {
+	public function delete(): never {
 		throw new Forbidden();
 	}
 
-	public function createFile($name, $data = null) {
+	public function createFile($name, $data = null): never {
 		throw new Forbidden('Not allowed to create files in this folder');
 	}
 
-	public function createDirectory($name) {
+	public function createDirectory($name): never {
 		throw new Forbidden('Permission denied to create folders in this folder');
 	}
 
-	private function getFacesHome() {
+	private function getFacesHome(): FacesHome {
 		return new FacesHome($this->faceClusterMapper, $this->user, $this->faceDetectionMapper, $this->rootFolder, $this->tagManager, $this->previewManager);
 	}
 
-	private function getUnassignedFacesHome() {
+	private function getUnassignedFacesHome(): UnassignedFacesHome {
 		return new UnassignedFacesHome($this->user, $this->faceDetectionMapper, $this->rootFolder, $this->tagManager, $this->previewManager);
 	}
 
-	public function getChild($name) {
+	public function getChild($name): UnassignedFacesHome|FacesHome {
 		if ($name === 'faces') {
 			return $this->getFacesHome();
 		}

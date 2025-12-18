@@ -22,6 +22,7 @@ final class UnassignedFacesHome implements ICollection {
 	private IUser $user;
 	private FaceDetectionMapper $faceDetectionMapper;
 	private IRootFolder $rootFolder;
+	/** @var list<UnassignedFacePhoto>  */
 	private array $children = [];
 	private ITagManager $tagManager;
 	private IPreview $previewManager;
@@ -34,7 +35,7 @@ final class UnassignedFacesHome implements ICollection {
 		$this->previewManager = $previewManager;
 	}
 
-	public function delete() {
+	public function delete(): never {
 		throw new Forbidden();
 	}
 
@@ -42,28 +43,25 @@ final class UnassignedFacesHome implements ICollection {
 		return 'unassigned-faces';
 	}
 
-	public function setName($name) {
+	public function setName($name): never {
 		throw new Forbidden('Permission denied to rename this folder');
 	}
 
-	public function createDirectory($name) {
+	public function createDirectory($name): never {
 		throw new Forbidden('Not allowed to create directories in this folder');
 	}
 
-	public function createFile($name, $data = null) {
+	public function createFile($name, $data = null): never {
 		throw new Forbidden('Not allowed to create files in this folder');
 	}
 
 	/**
-	 * @param $name
-	 * @return FacePhoto
 	 * @throws NotFound
 	 * @throws \OCP\AppFramework\Db\MultipleObjectsReturnedException
 	 * @throws \OCP\DB\Exception
 	 * @throws \OCP\Files\NotPermittedException
-	 * @throws \OC\User\NoUserException
 	 */
-	public function getChild($name): FacePhoto {
+	public function getChild($name): UnassignedFacePhoto {
 		if (count($this->children) !== 0) {
 			foreach ($this->getChildren() as $child) {
 				if ($child->getName() === $name) {
@@ -95,8 +93,8 @@ final class UnassignedFacesHome implements ICollection {
 	}
 
 	/**
+	 * @return list<UnassignedFacePhoto>
 	 * @throws \OCP\Files\NotPermittedException
-	 * @throws \OC\User\NoUserException
 	 */
 	public function getChildren(): array {
 		if (count($this->children) !== 0) {
@@ -105,9 +103,9 @@ final class UnassignedFacesHome implements ICollection {
 
 		$detections = $this->faceDetectionMapper->findRejectedByUserId($this->user->getUID());
 		$detectionsWithFile = array_filter($detections, fn (FaceDetection $detection): bool => current($this->rootFolder->getUserFolder($this->user->getUID())->getById($detection->getFileId())) !== false);
-		$this->children = array_map(function (FaceDetection $detection) {
-			return new UnassignedFacePhoto($this->faceDetectionMapper, $detection, $this->rootFolder->getUserFolder($this->user->getUID()), $this->tagManager, $this->previewManager);
-		}, $detectionsWithFile);
+		$this->children = array_values(array_map(fn (FaceDetection $detection): UnassignedFacePhoto
+			=> new UnassignedFacePhoto($this->faceDetectionMapper, $detection, $this->rootFolder->getUserFolder($this->user->getUID()), $this->tagManager, $this->previewManager),
+			$detectionsWithFile));
 
 		return $this->children;
 	}

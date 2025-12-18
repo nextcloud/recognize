@@ -35,6 +35,10 @@ final class RootCollection extends AbstractPrincipalCollection {
 		$this->previewManager = $previewManager;
 	}
 
+	/**
+	 * @param array{uri: string} $principalInfo
+	 * @throws Forbidden
+	 */
 	public function getChildForPrincipal(array $principalInfo): RecognizeHome {
 		[, $name] = \Sabre\Uri\split($principalInfo['uri']);
 		$user = $this->userSession->getUser();
@@ -44,7 +48,7 @@ final class RootCollection extends AbstractPrincipalCollection {
 		return new RecognizeHome($principalInfo, $this->faceClusterMapper, $user, $this->faceDetectionMapper, $this->rootFolder, $this->tagManager, $this->previewManager);
 	}
 
-	public function getName() {
+	public function getName(): string {
 		return 'recognize';
 	}
 }

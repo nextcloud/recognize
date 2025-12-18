@@ -13,7 +13,7 @@ use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 
 /**
- * @psalm-extends QBMapper<FaceCluster>
+ * @template-extends QBMapper<FaceCluster>
  */
 final class FaceClusterMapper extends QBMapper {
 	public function __construct(IDBConnection $db) {
@@ -90,6 +90,7 @@ final class FaceClusterMapper extends QBMapper {
 	}
 
 	public function delete(Entity $entity): Entity {
+		/** @var FaceCluster $entity */
 		$qb = $this->db->getQueryBuilder();
 		$qb->update('recognize_face_detections')
 			->set('cluster_id', $qb->createPositionalParameter(-1, IQueryBuilder::PARAM_INT))

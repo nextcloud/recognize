@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace OCA\Recognize\BackgroundJobs;
 
 use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
+use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
 use OCA\Recognize\Service\SettingsService;
@@ -28,14 +29,14 @@ final class ClassifyLandmarksJob extends ClassifierJob {
 	}
 
 	/**
-	 * @inheritDoc
+	 * @param array{storageId: int, rootId: int} $argument
 	 */
 	protected function run($argument): void {
 		$this->runClassifier(self::MODEL_NAME, $argument);
 	}
 
 	/**
-	 * @param list<\OCA\Recognize\Db\QueueFile> $files
+	 * @param list<QueueFile> $files
 	 * @return void
 	 */
 	protected function classify(array $files) : void {

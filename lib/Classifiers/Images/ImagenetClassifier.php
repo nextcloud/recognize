@@ -15,6 +15,7 @@ use OCP\AppFramework\Services\IAppConfig;
 use OCP\Files\IRootFolder;
 use OCP\IPreview;
 use OCP\ITempManager;
+use Override;
 
 final class ImagenetClassifier extends Classifier {
 	public const IMAGE_TIMEOUT = 480; // seconds
@@ -30,11 +31,7 @@ final class ImagenetClassifier extends Classifier {
 		$this->queue = $queue;
 	}
 
-	/**
-	 * @param \OCA\Recognize\Db\QueueFile[] $queueFiles
-	 * @return void
-	 * @throws \ErrorException|\RuntimeException
-	 */
+	#[Override]
 	public function classify(array $queueFiles): void {
 		if ($this->config->getAppValueString('tensorflow.purejs', 'false') === 'true') {
 			$timeout = self::IMAGE_PUREJS_TIMEOUT;

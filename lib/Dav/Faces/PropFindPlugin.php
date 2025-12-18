@@ -50,16 +50,16 @@ final class PropFindPlugin extends ServerPlugin {
 	) {
 	}
 
-	public function initialize(Server $server) {
+	public function initialize(Server $server): void {
 		$this->server = $server;
 
-		$this->server->on('propFind', [$this, 'propFind']);
-		$this->server->on('beforeMove', [$this, 'beforeMove']);
-		$this->server->on('beforeMethod:*', [$this, 'beforeMethod'], 1);
+		$this->server->on('propFind', $this->propFind(...));
+		$this->server->on('beforeMove', $this->beforeMove(...));
+		$this->server->on('beforeMethod:*', $this->beforeMethod(...), 1);
 	}
 
 
-	public function propFind(PropFind $propFind, INode $node) {
+	public function propFind(PropFind $propFind, INode $node): void {
 		if ($node instanceof FacePhoto) {
 			$propFind->handle(self::FACE_DETECTIONS_PROPERTYNAME, function () use ($node) {
 				return json_encode(
@@ -82,6 +82,7 @@ final class PropFindPlugin extends ServerPlugin {
 			});
 
 			foreach ($node->getFile()->getFileInfo()->getMetadata() as $metadataKey => $metadataValue) {
+				/** @var string $metadataKey */
 				$propFind->handle(FilesPlugin::FILE_METADATA_PREFIX.$metadataKey, $metadataValue);
 			}
 		}
@@ -106,7 +107,7 @@ final class PropFindPlugin extends ServerPlugin {
 		}
 	}
 
-	public function beforeMove($source, $target) {
+	public function beforeMove(string $source, string $target): bool {
 		// recognize/{userId}/faces/{name}
 		if (str_starts_with($source, 'recognize') && str_starts_with($target, 'recognize')) {
 			$sourceParts = explode('/', $source);
@@ -125,7 +126,7 @@ final class PropFindPlugin extends ServerPlugin {
 		return true;
 	}
 
-	public function beforeMethod(RequestInterface $request, ResponseInterface $response) {
+	public function beforeMethod(RequestInterface $request, ResponseInterface $response): void {
 		if (!str_starts_with($request->getPath(), 'recognize')) {
 			return;
 		}

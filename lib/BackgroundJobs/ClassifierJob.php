@@ -7,6 +7,7 @@
 declare(strict_types=1);
 namespace OCA\Recognize\BackgroundJobs;
 
+use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Service\QueueService;
 use OCA\Recognize\Service\SettingsService;
 use OCP\AppFramework\Utility\ITimeFactory;
@@ -33,6 +34,9 @@ abstract class ClassifierJob extends TimedJob {
 		$this->setAllowParallelRuns($settingsService->getSetting('concurrency.enabled') === 'true');
 	}
 
+	/**
+	 * @param array{storageId: int, rootId: int} $argument
+	 */
 	protected function runClassifier(string $model, array $argument): void {
 		sleep(10);
 		if ($this->settingsService->getSetting('concurrency.enabled') !== 'true' && $this->anyOtherClassifierJobsRunning()) {
@@ -40,9 +44,6 @@ abstract class ClassifierJob extends TimedJob {
 			return;
 		}
 
-		/**
-		 * @var int $storageId
-		 */
 		$storageId = $argument['storageId'];
 		$rootId = $argument['rootId'];
 		if ($this->settingsService->getSetting($model.'.enabled') !== 'true') {
@@ -100,22 +101,15 @@ abstract class ClassifierJob extends TimedJob {
 		}
 	}
 
-	/**
-	 * @return int
-	 */
 	abstract protected function getBatchSize(): int;
 
 	/**
-	 * @param list<OCA\Recognize\Db\QueueFile> $files
-	 * @return void
+	 * @param list<QueueFile> $files
 	 * @throws \RuntimeException|\ErrorException
 	 */
 	abstract protected function classify(array $files) : void;
 
-	/**
-	 * @return bool
-	 */
-	private function anyOtherClassifierJobsRunning() {
+	private function anyOtherClassifierJobsRunning(): bool {
 		foreach ([
 			ClassifyFacesJob::class,
 			ClassifyImagenetJob::class,

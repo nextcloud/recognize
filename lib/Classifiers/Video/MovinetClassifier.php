@@ -16,6 +16,7 @@ use OCP\AppFramework\Services\IAppConfig;
 use OCP\Files\IRootFolder;
 use OCP\IPreview;
 use OCP\ITempManager;
+use Override;
 
 final class MovinetClassifier extends Classifier {
 	public const VIDEO_TIMEOUT = 480; // seconds
@@ -28,11 +29,7 @@ final class MovinetClassifier extends Classifier {
 		$this->tagManager = $tagManager;
 	}
 
-	/**
-	 * @param \OCA\Recognize\Db\QueueFile[] $queueFiles
-	 * @return void
-	 * @throws \ErrorException|\RuntimeException|Exception
-	 */
+	#[Override]
 	public function classify(array $queueFiles): void {
 		if ($this->config->getAppValueString('tensorflow.purejs', 'false') === 'true') {
 			throw new Exception('Movinet does not support WASM mode');

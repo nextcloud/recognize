@@ -28,11 +28,9 @@ final class ClassifyMusicnnJob extends ClassifierJob {
 	}
 
 	/**
-	 * @inheritDoc
-	 *
-	 * @return void
+	 * @param array{storageId: int, rootId: int} $argument
 	 */
-	protected function run($argument) {
+	protected function run($argument): void {
 		$this->runClassifier(self::MODEL_NAME, $argument);
 	}
 

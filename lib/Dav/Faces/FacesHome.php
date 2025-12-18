@@ -37,7 +37,7 @@ final class FacesHome implements ICollection {
 		$this->previewManager = $previewManager;
 	}
 
-	public function delete() {
+	public function delete(): never {
 		throw new Forbidden();
 	}
 
@@ -45,7 +45,7 @@ final class FacesHome implements ICollection {
 		return 'faces';
 	}
 
-	public function setName($name) {
+	public function setName($name): never {
 		throw new Forbidden('Permission denied to rename this folder');
 	}
 
@@ -62,7 +62,7 @@ final class FacesHome implements ICollection {
 		$this->faceClusterMapper->insert($entity);
 	}
 
-	public function createFile($name, $data = null) {
+	public function createFile($name, $data = null): never {
 		throw new Forbidden('Not allowed to create files in this folder');
 	}
 

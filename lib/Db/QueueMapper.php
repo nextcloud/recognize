@@ -20,7 +20,7 @@ use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 
 /**
- * @psalm-extends QBMapper<QueueFile>
+ * @template-extends QBMapper<QueueFile>
  */
 final class QueueMapper extends QBMapper {
 	public const MODELS = [
@@ -147,11 +147,11 @@ final class QueueMapper extends QBMapper {
 	 *
 	 * @throws \OCP\DB\Exception
 	 */
-	public function count(string $model) : int {
+	public function count(string $model): int {
 		$qb = $this->db->getQueryBuilder();
 		$result = $qb->select($qb->func()->count('id'))
 			->from($this->getQueueTable($model))
 			->executeQuery();
-		return $result->fetchOne();
+		return (int)$result->fetchOne();
 	}
 }

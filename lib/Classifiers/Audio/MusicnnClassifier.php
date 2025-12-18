@@ -15,6 +15,7 @@ use OCP\AppFramework\Services\IAppConfig;
 use OCP\Files\IRootFolder;
 use OCP\IPreview;
 use OCP\ITempManager;
+use Override;
 
 final class MusicnnClassifier extends Classifier {
 	public const AUDIO_TIMEOUT = 40; // seconds
@@ -28,11 +29,7 @@ final class MusicnnClassifier extends Classifier {
 		$this->tagManager = $tagManager;
 	}
 
-	/**
-	 * @param \OCA\Recognize\Db\QueueFile[] $queueFiles
-	 * @return void
-	 * @throws \ErrorException|\RuntimeException
-	 */
+	#[Override]
 	public function classify(array $queueFiles): void {
 		if ($this->config->getAppValueString('tensorflow.purejs', 'false') === 'true') {
 			$timeout = self::AUDIO_PUREJS_TIMEOUT;

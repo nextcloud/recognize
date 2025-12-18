@@ -28,10 +28,9 @@ final class MaintenanceJob extends TimedJob {
 	}
 
 	/**
-	 * @param mixed $argument
-	 * @return void
+	 * @param array{storageId: int, rootId: int} $argument
 	 */
-	protected function run($argument) {
+	protected function run($argument): void {
 		// Trigger clustering in case it's stuck
 		try {
 			$users = $this->faceDetectionMapper->getUsersForUnclustered();

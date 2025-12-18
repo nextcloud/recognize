@@ -298,7 +298,9 @@ final class FsActionMapper extends QBMapper {
 	 * @throws MultipleObjectsReturnedException if more than one item exist
 	 */
 	protected function findItem(string $className, IQueryBuilder $query): Entity {
-		return $this->mapRowToItem($className, $this->findOneQuery($query));
+		/** @var FsCreation|FsDeletion|FsMove|FsAccessUpdate $item */
+		$item = $this->mapRowToItem($className, $this->findOneQuery($query));
+		return $item;
 	}
 
 	/**
@@ -312,8 +314,10 @@ final class FsActionMapper extends QBMapper {
 		$result = $query->executeQuery();
 		try {
 			$entities = [];
-			while ($row = $result->fetch()) {
-				$entities[] = $this->mapRowToItem($className, $row);
+			while ($row = $result->fetchAssociative()) {
+				/** @var FsCreation|FsDeletion|FsMove|FsAccessUpdate $item */
+				$item = $this->mapRowToItem($className, $row);
+				$entities[] = $item;
 			}
 			return $entities;
 		} finally {

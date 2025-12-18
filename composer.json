@@ -14,7 +14,6 @@
         }
     },
     "require-dev": {
-        "nextcloud/ocp": "dev-master",
         "symfony/console": "^6.4",
         "symfony/process": "^6.4"
     },
