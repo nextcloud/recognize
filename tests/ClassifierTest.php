@@ -154,8 +154,11 @@ class ClassifierTest extends TestCase {
 		$storageId = $this->testFile->getMountPoint()->getNumericStorageId();
 		$rootId = $this->testFile->getMountPoint()->getStorageRootId();
 
+		var_dump([ 'testFile' => $this->testFile->getId(), 'ignoredFile' => $this->ignoredFile->getId() ]);
+
 		$this->runFsActionJobs();
-		self::assertCount(1, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'one element should have been added to imagenet queue');
+		$queue = $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100);
+		self::assertCount(1, $this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100), 'one element should have been added to imagenet queue: ' . var_export($queue, true) . var_export(array_map(fn(QueueFile $queueFile) => $this->rootFolder->getFirstNodeById($queueFile->getFileId())?->getPath(), $queue), true));
 
 		$this->testFile->delete();
 
