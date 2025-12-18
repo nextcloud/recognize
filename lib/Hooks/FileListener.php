@@ -266,6 +266,9 @@ final class FileListener implements IEventListener {
 		if ($storageId === null) {
 			return;
 		}
+		if (preg_match('#^/[^/]*?/files($|/)#', $node->getPath()) !== 1 && preg_match('#^/groupfolders/#', $node->getPath()) !== 1) {
+			return;
+		}
 		$this->fsActionMapper->insertCreation($storageId, $node->getId());
 	}
 
@@ -282,6 +285,10 @@ final class FileListener implements IEventListener {
 		$sourceOwner = $source->getOwner();
 		$targetOwner = $target->getOwner();
 		$ownerId = $sourceOwner?->getUID() ?? $targetOwner?->getUID() ?? $existingUsers[0];
+
+		if (preg_match('#^/[^/]*?/files/#', $target->getPath()) !== 1 && preg_match('#^/groupfolders/#', $target->getPath()) !== 1) {
+			return;
+		}
 
 		$this->fsActionMapper->insertMove($target->getId(), $ownerId, $usersToAdd, $targetUserIds);
 	}
@@ -371,6 +378,10 @@ final class FileListener implements IEventListener {
 	 * @throws MultipleObjectsReturnedException
 	 */
 	private function onAccessUpdate(int $storageId, int $rootId): void {
+		$node = $this->rootFolder->getFirstNodeById($rootId);
+		if (!$node || (preg_match('#^/[^/]*?/files($|/)#', $node->getPath()) !== 1 && preg_match('#^/groupfolders/#', $node->getPath()) !== 1)) {
+			return;
+		}
 		$this->fsActionMapper->insertAccessUpdate($storageId, $rootId);
 	}
 }
