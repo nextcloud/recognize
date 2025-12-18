@@ -17,20 +17,23 @@ use OCP\AppFramework\Db\Entity;
  * @method setStorageId(int $storageId)
  * @method int getRootId()
  * @method setRootId(int $rootId)
+ * @method string getUserId()
+ * @method setUserId(string $userId)
  */
 final class FsCreation extends Entity {
 	protected ?int $storageId = null;
 	protected ?int $rootId = null;
+	protected ?string $userId = null;
 
 	/**
 	 * @var string[]
 	 */
-	public static array $columns = ['id', 'storage_id', 'root_id'];
+	public static array $columns = ['id', 'storage_id', 'root_id', 'user_id'];
 
 	/**
 	 * @var string[]
 	 */
-	public static array $fields = ['id', 'storageId', 'rootId'];
+	public static array $fields = ['id', 'storageId', 'rootId', 'userId'];
 
 	public static string $tableName = 'recognize_fs_creations';
 
@@ -39,5 +42,6 @@ final class FsCreation extends Entity {
 		$this->addType('id', 'integer');
 		$this->addType('storageId', 'integer');
 		$this->addType('rootId', 'integer');
+		$this->addType('userId', 'string');
 	}
 }

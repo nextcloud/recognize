@@ -195,8 +195,8 @@ final class FileListener implements IEventListener {
 				return;
 			}
 			if ($event instanceof CacheEntryInsertedEvent) {
-				$node = current($this->rootFolder->getById($event->getFileId()));
-				if ($node === false) {
+				$node = $this->rootFolder->getFirstNodeById($event->getFileId());
+				if ($node === null) {
 					return;
 				}
 				if ($node instanceof Folder) {
@@ -214,8 +214,8 @@ final class FileListener implements IEventListener {
 				if ($cacheEntry === false) {
 					return;
 				}
-				$node = current($this->rootFolder->getById($cacheEntry->getId()));
-				if ($node === false) {
+				$node = $this->rootFolder->getFirstNodeById($cacheEntry->getId());
+				if ($node === null) {
 					return;
 				}
 				if (in_array($node->getName(), [...Constants::IGNORE_MARKERS_ALL, ...Constants::IGNORE_MARKERS_IMAGE, ...Constants::IGNORE_MARKERS_AUDIO, ...Constants::IGNORE_MARKERS_VIDEO], true)) {
@@ -269,7 +269,12 @@ final class FileListener implements IEventListener {
 		if (preg_match('#^/[^/]*?/files($|/)#', $node->getPath()) !== 1 && preg_match('#^/groupfolders/#', $node->getPath()) !== 1) {
 			return;
 		}
-		$this->fsActionMapper->insertCreation($storageId, $node->getId());
+		$owner = $node->getOwner();
+		if ($owner === null) {
+			$this->logger->info('Node has no owner: ' . $node->getPath() . ' - Ignoring.');
+			return;
+		}
+		$this->fsActionMapper->insertCreation($storageId, $node->getId(), $owner->getUID());
 	}
 
 	/**

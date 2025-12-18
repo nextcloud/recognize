@@ -180,17 +180,19 @@ final class FsActionMapper extends QBMapper {
 	/**
 	 * @param int $storageId
 	 * @param int $rootId
+	 * @param string $userId
 	 * @return FsCreation|FsDeletion|FsMove|FsAccessUpdate
 	 * @throws Exception
 	 * @throws MultipleObjectsReturnedException
 	 */
-	public function insertCreation(int $storageId, int $rootId): Entity {
+	public function insertCreation(int $storageId, int $rootId, string $userId): Entity {
 		try {
 			$creation = $this->findByStorageIdAndRootId(FsCreation::class, $storageId, $rootId);
 		} catch (DoesNotExistException $e) {
 			$creation = new FsCreation();
 			$creation->setStorageId($storageId);
 			$creation->setRootId($rootId);
+			$creation->setUserId($userId);
 			$this->insert($creation);
 			$arguments = [ 'type' => FsCreation::class, 'storage_id' => $storageId ];
 			if (!$this->jobList->has(ProcessFsActionsJob::class, $arguments)) {

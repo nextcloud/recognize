@@ -2,6 +2,8 @@
 
 namespace OCA\Recognize\Service;
 
+use OC\Files\SetupManager;
+use OC\User\NoUserException;
 use OCA\Recognize\BackgroundJobs\ClusterFacesJob;
 use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
 use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
@@ -25,6 +27,7 @@ use OCP\Files\InvalidPathException;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
+use OCP\Files\NotPermittedException;
 use Psr\Log\LoggerInterface;
 
 final class FsActionService {
@@ -72,10 +75,25 @@ final class FsActionService {
 	 * @param array<FsCreation|FsDeletion|FsMove|FsAccessUpdate> $actions
 	 */
 	public function processActions(array $actions): void {
+		$lastUserId = null;
 		foreach ($actions as $action) {
 			switch ($action::class) {
 				case FsCreation::class:
-					$rootNode = $this->rootFolder->getFirstNodeById($action->getRootId());
+					$this->logger->debug('Processing FsCreation action for storageId ' . $action->getStorageId() . ' and rootId ' . $action->getRootId());
+					// Tear down to avoid memory leaks and OOMs
+					// The fs event table is sorted by user ID, so we only need to tear down when the user ID changes
+					$actionUserId = $action->getUserId();
+					if ($actionUserId !== $lastUserId) {
+						$lastUserId = $actionUserId;
+						$setupManager = \OCP\Server::get(SetupManager::class);
+						$setupManager->tearDown();
+					}
+					try {
+						$rootNode = $this->rootFolder->getUserFolder($actionUserId)->getFirstNodeById($action->getRootId());
+					} catch (NotPermittedException|NoUserException $e) {
+						$this->logger->warning('Failed to find root node for creation action: ' . $e->getMessage(), ['exception' => $e]);
+						break;
+					}
 					if ($rootNode === null) {
 						$this->logger->info('Failed to find root node for creation action', ['nodeId' => $action->getRootId(), 'storageId' => $action->getStorageId()]);
 						break;
@@ -88,9 +106,11 @@ final class FsActionService {
 					break;
 
 				case FsDeletion::class:
+					$this->logger->debug('Processing FsDeletion action for nodeId ' . $action->getNodeId());
 					$this->onDeletion($action->getNodeId()); // todo add mimetypes filter here
 					break;
 				case FsAccessUpdate::class:
+					$this->logger->debug('Processing FsAccessUpdate action for storageId ' . $action->getStorageId() . ' and rootId ' . $action->getRootId());
 					try {
 						$this->onAccessUpdate($action->getStorageId(), $action->getRootId());
 					} catch (Exception|InvalidPathException|NotFoundException $e) {
@@ -98,6 +118,7 @@ final class FsActionService {
 					}
 					break;
 				case FsMove::class:
+					$this->logger->debug('Processing FsMove action for nodeId ' . $action->getNodeId());
 					$node = $this->rootFolder->getFirstNodeById($action->getNodeId());
 					if ($node === null) {
 						$this->logger->info('Failed to find root node for move action', ['nodeId' => $action->getNodeId()]);
@@ -202,12 +223,14 @@ final class FsActionService {
 		$queueFile = new QueueFile();
 		$storageId = $node->getMountPoint()->getNumericStorageId();
 		if ($storageId === null) {
+			$this->logger->debug('Storage ID is null for node ' . $node->getId());
 			return;
 		}
 		$queueFile->setStorageId($storageId);
 		$queueFile->setRootId($node->getMountPoint()->getStorageRootId());
 
 		if ($this->isFileIgnored($node)) {
+			$this->logger->debug('File ignored, skipping: ' . $node->getId());
 			return;
 		}
 

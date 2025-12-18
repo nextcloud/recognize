@@ -43,6 +43,7 @@ final class Version011000001Date20251215094821 extends SimpleMigrationStep {
 			$table->addColumn('id', Types::BIGINT, ['autoincrement' => true]);
 			$table->addColumn('storage_id', Types::BIGINT, ['notnull' => true]);
 			$table->addColumn('root_id', Types::BIGINT, ['notnull' => true]);
+			$table->addColumn('user_id', Types::STRING, ['notnull' => true]);
 			$table->setPrimaryKey(['id'], 'recognize_fs_cr_pk');
 			$table->addUniqueIndex(['storage_id', 'root_id'], 'recognize_fs_cr_unique');
 			$changed = true;
