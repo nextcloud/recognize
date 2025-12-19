@@ -1,7 +1,14 @@
 {
     "require": {
-        "vimeo/psalm": "6.*"
+        "vimeo/psalm": "6.*",
+        "symfony/console": "6.*",
+        "symfony/process": "6.*"
     },
+	"config": {
+		"platform": {
+			"php": "8.2.27"
+		}
+	},
     "require-dev": {
         "sabre/dav": "^4.7",
         "nextcloud/ocp": "dev-master"

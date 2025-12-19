@@ -27,6 +27,7 @@
         <directory name="vendor" />
 		<directory name="vendor-bin/psalm/vendor/sabre" />
 		<directory name="vendor-bin/psalm/vendor/nextcloud/ocp" />
+		<directory name="vendor-bin/psalm/vendor/symfony" />
     </extraFiles>
     <issueHandlers>
         <UndefinedClass>
