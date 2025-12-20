@@ -179,7 +179,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * fix(FileListener): Listen to file movements across share boundaries
 * fix plsatform check (Thanks to @mr-bryn)
 * Fixed spelling mistake in appinfo/routes.php (Thanks to @asp.nut)
-* fix(InstallDeps): Use ffmpegDir to install ffmpeg
+* fix(InstallDeps): Use ffmpegDir to install FFmpeg
 
 ## [6.1.0] - 2024-02-28
 
@@ -397,7 +397,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Copy face detections to sharees on ShareCreated; Delete them on ShareDeleted
  - Add face detections for all users that can see the file
  - Implement code paths for moving files
- - limit ffmpeg CPU core usage according to settings
+ - limit FFmpeg CPU core usage according to settings
  - Utilize mozart to avoid dependency hell
  - Update translations from Transifex
  - Add note about 1-core policy for WASM
@@ -433,7 +433,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
  - Add Migration step: Add index for detections#file_id column
- - Run custom ffmpeg install in InstallDeps (Support musicnn,movinet on ARM)
+ - Run custom FFmpeg install in InstallDeps (Support musicnn,movinet on ARM)
  - MusicnnClassifier: Increase WASM timeout
  - ClusteringFaceClassifier: Filter out non-straight faces
  - Set max execution time for classifier cron job
@@ -675,7 +675,7 @@ Drop support for Nextcloud 24
 - ViewAdmin: Clarify node path setting description
 - ViewAdmin: Add examples for each tagging setting
 - ViewAdmin: Update Note about background job interval
-- InstallDeps: Fix ffmpeg
+- InstallDeps: Fix FFmpeg
 - Settings: Allow enabling geo tagging
 - Fine-tune musicnn
 
