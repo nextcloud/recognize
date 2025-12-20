@@ -331,16 +331,16 @@
 		</NcSettingsSection>
 		<NcSettingsSection :name="t('recognize', 'FFMPEG')">
 			<p v-if="ffmpeg === undefined">
-				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking FFMPEG') }}
+				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking FFmpeg') }}
 			</p>
 			<NcNoteCard v-else-if="ffmpeg === false" type="warning">
-				{{ t('recognize', 'Could not execute the ffmpeg binary. You may need to set the path to a working binary manually.') }}
+				{{ t('recognize', 'Could not execute the FFmpeg binary. You may need to set the path to a working binary manually.') }}
 			</NcNoteCard>
 			<NcNoteCard v-else type="success">
-				{{ t('recognize', 'ffmpeg {version} binary was installed successfully.', { version: ffmpeg }) }}
+				{{ t('recognize', 'FFmpeg {version} binary was installed successfully.', { version: ffmpeg }) }}
 			</NcNoteCard>
 			<p>
-				{{ t('recognize', 'If the shipped ffmpeg binary doesn\'t work on your system for some reason you can set the path to a custom ffmpeg binary.') }}
+				{{ t('recognize', 'If the shipped FFmpeg binary doesn\'t work on your system for some reason you can set the path to a custom FFmpeg binary.') }}
 			</p>
 			<p>
 				<NcTextField :value.sync="settings['ffmpeg_binary']" @update:value="onChange" />
