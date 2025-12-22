@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [11.0.1] - 2025-11-12
+
+### Fixed
+
+* fix(l10n): Update translations from Transifex
+* refactor(Application): Use modern SabrePluginAddEvent
+* fix(FileListener): Do not consider events in trashbin
+* refactor: Process all fs events asynchronously
+* fix(ffmpeg): Autodetect system installed ffmpeg and allow manually setting ffmpeg path
+* fix(ClusteringFaceClassifier): Make sure to schedule clustering job
+* fix: Improve error handling
+
+
 ## [11.0.0] - 2025-11-12
 
 ### Breaking changes
