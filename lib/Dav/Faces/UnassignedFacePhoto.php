@@ -12,6 +12,7 @@ use OCA\Recognize\Db\FaceDetectionMapper;
 use OCP\Files\Folder;
 use OCP\IPreview;
 use OCP\ITagManager;
+use Override;
 use Sabre\DAV\Exception\Forbidden;
 
 final class UnassignedFacePhoto extends FacePhoto {
@@ -20,11 +21,8 @@ final class UnassignedFacePhoto extends FacePhoto {
 		parent::__construct($detectionMapper, $faceDetection, $userFolder, $tagManager, $preview);
 	}
 
-	/**
-	 * @inheritDoc
-	 * @throws \OCP\DB\Exception
-	 */
-	public function delete() {
+	#[Override]
+	public function delete(): never {
 		throw new Forbidden('Cannot delete unassigned photos');
 	}
 }

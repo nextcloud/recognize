@@ -42,7 +42,6 @@ final class StorageCrawlJob extends QueuedJob {
 
 	/**
 	 * @param array{storage_id:int, root_id:int, override_root:int, last_file_id:int, models?: list<string>} $argument
-	 * @return void
 	 */
 	protected function run($argument): void {
 		$storageId = $argument['storage_id'];
@@ -63,6 +62,8 @@ final class StorageCrawlJob extends QueuedJob {
 		// Remove current iteration
 		$this->jobList->remove(self::class, $argument);
 
+		/** @var ?QueueFile $queueFile */
+		$queueFile = null;
 		$i = 0;
 		foreach ($this->storageService->getFilesInMount($storageId, $overrideRoot, $models, $lastFileId, self::BATCH_SIZE) as $file) {
 			$i++;
@@ -102,7 +103,7 @@ final class StorageCrawlJob extends QueuedJob {
 			}
 		}
 
-		if ($i > 0) {
+		if ($queueFile) {
 			// Schedule next iteration
 			$this->jobList->add(self::class, [
 				'storage_id' => $storageId,

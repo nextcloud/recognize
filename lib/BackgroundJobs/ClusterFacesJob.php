@@ -31,12 +31,10 @@ final class ClusterFacesJob extends QueuedJob {
 	}
 
 	/**
-	 * @inheritDoc
-	 *
-	 * @return void
+	 * @param array{storageId: int, rootId: int, userId: string} $argument
 	 */
-	protected function run($argument) {
-		$userId = (string) $argument['userId'];
+	protected function run($argument): void {
+		$userId = $argument['userId'];
 		try {
 			$this->clusterAnalyzer->calculateClusters($userId, self::BATCH_SIZE);
 		} catch (\Throwable $e) {

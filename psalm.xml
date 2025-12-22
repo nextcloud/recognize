@@ -12,15 +12,22 @@
 >
     <stubs>
         <file name="tests/stub.phpstub" preloadClasses="true"/>
+		<file name="tests/stubs/oca_dav_events_sabrepluginaddevent.php"/>
+		<file name="tests/stubs/oca_dav_connector_sabre_filesplugin.php"/>
+		<file name="tests/stubs/oca_dav_connector_sabre_principal.php"/>
     </stubs>
     <projectFiles>
         <directory name="lib" />
         <ignoreFiles>
             <directory name="vendor" />
+            <directory name="vendor-bin" />
         </ignoreFiles>
     </projectFiles>
     <extraFiles>
         <directory name="vendor" />
+		<directory name="vendor-bin/psalm/vendor/sabre" />
+		<directory name="vendor-bin/psalm/vendor/nextcloud/ocp" />
+		<directory name="vendor-bin/psalm/vendor/symfony" />
     </extraFiles>
     <issueHandlers>
         <UndefinedClass>

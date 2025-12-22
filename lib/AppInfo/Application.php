@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace OCA\Recognize\AppInfo;
 
 use OCA\DAV\Connector\Sabre\Principal;
+use OCA\DAV\Events\SabrePluginAddEvent;
 use OCA\Recognize\Dav\Faces\PropFindPlugin;
 use OCA\Recognize\Hooks\FileListener;
 use OCP\AppFramework\App;
@@ -22,7 +23,6 @@ use OCP\Files\Events\Node\NodeCreatedEvent;
 use OCP\Files\Events\Node\NodeDeletedEvent;
 use OCP\Files\Events\Node\NodeRenamedEvent;
 use OCP\Files\Events\NodeRemovedFromCache;
-use OCP\SabrePluginEvent;
 
 final class Application extends App implements IBootstrap {
 	public const APP_ID = 'recognize';
@@ -60,15 +60,13 @@ final class Application extends App implements IBootstrap {
 	 */
 	public function boot(IBootContext $context): void {
 		$eventDispatcher = \OCP\Server::get(IEventDispatcher::class);
-		$eventDispatcher->addListener('OCA\DAV\Connector\Sabre::addPlugin', function (SabrePluginEvent $event): void {
+		$eventDispatcher->addListener(SabrePluginAddEvent::class, function (SabrePluginAddEvent $event): void {
 			$server = $event->getServer();
 
-			if ($server !== null) {
-				// We have to register the PropFindPlugin here and not info.xml,
-				// because info.xml plugins are loaded, after the
-				// beforeMethod:* hook has already been emitted.
-				$server->addPlugin($this->getContainer()->get(PropFindPlugin::class));
-			}
+			// We have to register the PropFindPlugin here and not info.xml,
+			// because info.xml plugins are loaded, after the
+			// beforeMethod:* hook has already been emitted.
+			$server->addPlugin($this->getContainer()->get(PropFindPlugin::class));
 		});
 	}
 }

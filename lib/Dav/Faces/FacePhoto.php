@@ -16,6 +16,7 @@ use OCP\Files\Folder;
 use OCP\IPreview;
 use OCP\ITagManager;
 use OCP\ITags;
+use Override;
 use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAV\Exception\NotFound;
 use Sabre\DAV\IFile;
@@ -36,20 +37,15 @@ class FacePhoto implements IFile {
 		$this->preview = $preview;
 	}
 
-	/**
-	 * @inheritDoc
-	 */
-	public function getName() {
+	#[Override]
+	public function getName(): string {
 		$file = $this->getFile();
 		$detection = $this->getFaceDetection();
 		return $detection->getId() . '-' . $file->getName();
 	}
 
-	/**
-	 * @inheritDoc
-	 * @throws \OCP\DB\Exception
-	 */
-	public function delete() {
+	#[Override]
+	public function delete(): void {
 		$detections = $this->detectionMapper->findByClusterId($this->faceDetection->getClusterId());
 		if (count($detections) > 1) {
 			$centroid = FaceClusterAnalyzer::calculateCentroidOfDetections($detections);
@@ -62,17 +58,13 @@ class FacePhoto implements IFile {
 		$this->detectionMapper->update($this->faceDetection);
 	}
 
-	/**
-	 * @inheritDoc
-	 */
-	public function setName($name) {
+	#[Override]
+	public function setName($name): never {
 		throw new Forbidden('Cannot rename photos through faces API');
 	}
 
-	/**
-	 * @inheritDoc
-	 */
-	public function put($data) {
+	#[Override]
+	public function put($data): never {
 		throw new Forbidden('Can\'t write to photos trough the faces api');
 	}
 
@@ -106,31 +98,23 @@ class FacePhoto implements IFile {
 		return $this->getFile()->fopen('r');
 	}
 
-	/**
-	 * @inheritDoc
-	 */
-	public function getContentType() {
+	#[Override]
+	public function getContentType(): string {
 		return $this->getFile()->getMimeType();
 	}
 
-	/**
-	 * @inheritDoc
-	 */
-	public function getETag() {
+	#[Override]
+	public function getETag(): string {
 		return $this->getFile()->getEtag();
 	}
 
-	/**
-	 * @inheritDoc
-	 */
-	public function getSize() {
+	#[Override]
+	public function getSize(): float|int {
 		return $this->getFile()->getSize();
 	}
 
-	/**
-	 * @inheritDoc
-	 */
-	public function getLastModified() {
+	#[Override]
+	public function getLastModified(): int {
 		return $this->getFile()->getMTime();
 	}
 

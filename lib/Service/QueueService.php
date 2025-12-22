@@ -85,7 +85,7 @@ final class QueueService {
 	 * @param int $storageId
 	 * @param int $rootId
 	 * @param int $batchSize
-	 * @return array
+	 * @return list<QueueFile>
 	 * @throws \OCP\DB\Exception
 	 */
 	public function getFromQueue(string $model, int $storageId, int $rootId, int $batchSize) : array {

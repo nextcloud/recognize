@@ -28,7 +28,7 @@ final class ClassifyImagenetJob extends ClassifierJob {
 	}
 
 	/**
-	 * @inheritDoc
+	 * @param array{storageId: int, rootId: int} $argument
 	 */
 	protected function run($argument): void {
 		$this->runClassifier(self::MODEL_NAME, $argument);

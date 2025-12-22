@@ -44,6 +44,9 @@ final class SchedulerJob extends QueuedJob {
 		$this->storageService = $storageService;
 	}
 
+	/**
+	 * @param array $argument
+	 */
 	protected function run($argument): void {
 		/** @var list<string> $models */
 		$models = $argument['models'] ?? [

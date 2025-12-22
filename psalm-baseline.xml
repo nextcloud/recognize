@@ -4,116 +4,14 @@
     <DeprecatedInterface>
       <code><![CDATA[$this->getContainer()]]></code>
     </DeprecatedInterface>
-    <MissingDependency>
-      <code><![CDATA[PropFindPlugin]]></code>
-    </MissingDependency>
     <MixedArgument>
-      <code><![CDATA[Principal::class]]></code>
-      <code><![CDATA[PropFindPlugin::class]]></code>
+      <code><![CDATA[$this->getContainer()->get(PropFindPlugin::class)]]></code>
     </MixedArgument>
-    <UndefinedClass>
-      <code><![CDATA[Principal]]></code>
-    </UndefinedClass>
-    <UndefinedDocblockClass>
-      <code><![CDATA[$event->getServer()]]></code>
-      <code><![CDATA[$server]]></code>
-    </UndefinedDocblockClass>
   </file>
   <file src="lib/BackgroundJobs/ClassifierJob.php">
-    <ArgumentTypeCoercion>
-      <code><![CDATA[$files]]></code>
-    </ArgumentTypeCoercion>
-    <MixedArgument>
-      <code><![CDATA[$rootId]]></code>
-    </MixedArgument>
-    <MixedAssignment>
-      <code><![CDATA[$rootId]]></code>
-    </MixedAssignment>
     <TypeDoesNotContainType>
       <code><![CDATA[$jobClass === static::class]]></code>
     </TypeDoesNotContainType>
-    <UndefinedDocblockClass>
-      <code><![CDATA[list<OCA\Recognize\Db\QueueFile>]]></code>
-    </UndefinedDocblockClass>
-  </file>
-  <file src="lib/BackgroundJobs/ClassifyFacesJob.php">
-    <ImplementedParamTypeMismatch>
-      <code><![CDATA[$files]]></code>
-    </ImplementedParamTypeMismatch>
-    <MissingParamType>
-      <code><![CDATA[$argument]]></code>
-    </MissingParamType>
-    <MixedArgument>
-      <code><![CDATA[$argument]]></code>
-    </MixedArgument>
-  </file>
-  <file src="lib/BackgroundJobs/ClassifyImagenetJob.php">
-    <ImplementedParamTypeMismatch>
-      <code><![CDATA[$files]]></code>
-    </ImplementedParamTypeMismatch>
-    <MissingParamType>
-      <code><![CDATA[$argument]]></code>
-    </MissingParamType>
-    <MixedArgument>
-      <code><![CDATA[$argument]]></code>
-    </MixedArgument>
-  </file>
-  <file src="lib/BackgroundJobs/ClassifyLandmarksJob.php">
-    <ImplementedParamTypeMismatch>
-      <code><![CDATA[$files]]></code>
-    </ImplementedParamTypeMismatch>
-    <MissingParamType>
-      <code><![CDATA[$argument]]></code>
-    </MissingParamType>
-    <MixedArgument>
-      <code><![CDATA[$argument]]></code>
-    </MixedArgument>
-  </file>
-  <file src="lib/BackgroundJobs/ClassifyMovinetJob.php">
-    <ImplementedParamTypeMismatch>
-      <code><![CDATA[$files]]></code>
-    </ImplementedParamTypeMismatch>
-    <MissingParamType>
-      <code><![CDATA[$argument]]></code>
-    </MissingParamType>
-    <MixedArgument>
-      <code><![CDATA[$argument]]></code>
-    </MixedArgument>
-  </file>
-  <file src="lib/BackgroundJobs/ClassifyMusicnnJob.php">
-    <ImplementedParamTypeMismatch>
-      <code><![CDATA[$files]]></code>
-    </ImplementedParamTypeMismatch>
-    <MissingParamType>
-      <code><![CDATA[$argument]]></code>
-    </MissingParamType>
-    <MixedArgument>
-      <code><![CDATA[$argument]]></code>
-    </MixedArgument>
-  </file>
-  <file src="lib/BackgroundJobs/ClusterFacesJob.php">
-    <MissingParamType>
-      <code><![CDATA[$argument]]></code>
-    </MissingParamType>
-    <MixedArrayAccess>
-      <code><![CDATA[$argument['userId']]]></code>
-    </MixedArrayAccess>
-  </file>
-  <file src="lib/BackgroundJobs/SchedulerJob.php">
-    <MissingParamType>
-      <code><![CDATA[$argument]]></code>
-    </MissingParamType>
-    <MixedArrayAccess>
-      <code><![CDATA[$argument['models']]]></code>
-    </MixedArrayAccess>
-  </file>
-  <file src="lib/BackgroundJobs/StorageCrawlJob.php">
-    <MixedMethodCall>
-      <code><![CDATA[getFileId]]></code>
-    </MixedMethodCall>
-    <PossiblyUndefinedVariable>
-      <code><![CDATA[$queueFile]]></code>
-    </PossiblyUndefinedVariable>
   </file>
   <file src="lib/Classifiers/Classifier.php">
     <MixedAssignment>
@@ -716,44 +614,73 @@
     </MixedArgument>
   </file>
   <file src="lib/Dav/Faces/FacePhoto.php">
-    <UndefinedClass>
-      <code><![CDATA[IFile]]></code>
-    </UndefinedClass>
+    <ArgumentTypeCoercion>
+      <code><![CDATA[$this->faceDetection->getVector()]]></code>
+    </ArgumentTypeCoercion>
+    <InvalidReturnStatement>
+      <code><![CDATA[$this->getFile()->getSize()]]></code>
+    </InvalidReturnStatement>
+    <InvalidReturnType>
+      <code><![CDATA[float|int]]></code>
+    </InvalidReturnType>
+    <PossiblyNullArgument>
+      <code><![CDATA[$this->faceDetection->getClusterId()]]></code>
+    </PossiblyNullArgument>
   </file>
   <file src="lib/Dav/Faces/FaceRoot.php">
-    <UndefinedClass>
-      <code><![CDATA[ICollection]]></code>
-    </UndefinedClass>
+    <LessSpecificReturnStatement>
+      <code><![CDATA[$child]]></code>
+    </LessSpecificReturnStatement>
+    <MoreSpecificReturnType>
+      <code><![CDATA[FacePhoto]]></code>
+    </MoreSpecificReturnType>
   </file>
   <file src="lib/Dav/Faces/FacesHome.php">
-    <UndefinedClass>
-      <code><![CDATA[ICollection]]></code>
-    </UndefinedClass>
+    <ArgumentTypeCoercion>
+      <code><![CDATA[$cluster]]></code>
+    </ArgumentTypeCoercion>
+    <MissingReturnType>
+      <code><![CDATA[createDirectory]]></code>
+    </MissingReturnType>
   </file>
   <file src="lib/Dav/Faces/PropFindPlugin.php">
+    <MixedArgument>
+      <code><![CDATA[$node->getFile()->getFileInfo()]]></code>
+      <code><![CDATA[$node->getFile()->getFileInfo()]]></code>
+      <code><![CDATA[TagsPlugin::FAVORITE_PROPERTYNAME]]></code>
+    </MixedArgument>
+    <MixedAssignment>
+      <code><![CDATA[$metadataKey]]></code>
+      <code><![CDATA[$metadataValue]]></code>
+    </MixedAssignment>
+    <MixedMethodCall>
+      <code><![CDATA[getMetadata]]></code>
+    </MixedMethodCall>
+    <PropertyNotSetInConstructor>
+      <code><![CDATA[$server]]></code>
+    </PropertyNotSetInConstructor>
     <UndefinedClass>
-      <code><![CDATA[ServerPlugin]]></code>
+      <code><![CDATA[File]]></code>
+      <code><![CDATA[TagsPlugin]]></code>
     </UndefinedClass>
-  </file>
-  <file src="lib/Dav/Faces/UnassignedFacePhoto.php">
-    <MissingDependency>
-      <code><![CDATA[FacePhoto]]></code>
-    </MissingDependency>
-  </file>
-  <file src="lib/Dav/Faces/UnassignedFacesHome.php">
-    <UndefinedClass>
-      <code><![CDATA[ICollection]]></code>
-    </UndefinedClass>
+    <UndefinedInterfaceMethod>
+      <code><![CDATA[getFileInfo]]></code>
+      <code><![CDATA[getFileInfo]]></code>
+      <code><![CDATA[getFileInfo]]></code>
+    </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Dav/RecognizeHome.php">
-    <UndefinedClass>
-      <code><![CDATA[ICollection]]></code>
-    </UndefinedClass>
+    <InvalidReturnStatement>
+      <code><![CDATA[[$this->getFacesHome(), $this->getUnassignedFacesHome()]]]></code>
+    </InvalidReturnStatement>
+    <InvalidReturnType>
+      <code><![CDATA[FacesHome[]]]></code>
+    </InvalidReturnType>
   </file>
   <file src="lib/Dav/RootCollection.php">
-    <UndefinedClass>
-      <code><![CDATA[AbstractPrincipalCollection]]></code>
-    </UndefinedClass>
+    <MoreSpecificImplementedParamType>
+      <code><![CDATA[$principalInfo]]></code>
+    </MoreSpecificImplementedParamType>
   </file>
   <file src="lib/Db/FaceCluster.php">
     <MissingPropertyType>
@@ -763,25 +690,6 @@
     <MixedAssignment>
       <code><![CDATA[$array[$field]]]></code>
     </MixedAssignment>
-  </file>
-  <file src="lib/Db/FaceClusterMapper.php">
-    <InvalidDocblock>
-      <code><![CDATA[FaceClusterMapper]]></code>
-      <code><![CDATA[final class FaceClusterMapper extends QBMapper {]]></code>
-    </InvalidDocblock>
-    <LessSpecificReturnStatement>
-      <code><![CDATA[$this->findEntities($qb)]]></code>
-      <code><![CDATA[$this->findEntities($qb)]]></code>
-      <code><![CDATA[$this->findEntity($qb)]]></code>
-    </LessSpecificReturnStatement>
-    <MissingTemplateParam>
-      <code><![CDATA[FaceClusterMapper]]></code>
-    </MissingTemplateParam>
-    <MoreSpecificReturnType>
-      <code><![CDATA[FaceCluster]]></code>
-      <code><![CDATA[list<\OCA\Recognize\Db\FaceCluster>]]></code>
-      <code><![CDATA[list<\OCA\Recognize\Db\FaceCluster>]]></code>
-    </MoreSpecificReturnType>
   </file>
   <file src="lib/Db/FaceDetection.php">
     <MissingPropertyType>
@@ -802,75 +710,19 @@
       <code><![CDATA[$this->getter('faceVector')]]></code>
     </MixedReturnStatement>
   </file>
-  <file src="lib/Db/FaceDetectionMapper.php">
-    <InvalidDocblock>
-      <code><![CDATA[FaceDetectionMapper]]></code>
-      <code><![CDATA[final class FaceDetectionMapper extends QBMapper {]]></code>
-    </InvalidDocblock>
-    <LessSpecificReturnStatement>
-      <code><![CDATA[$duplicates[0]]]></code>
-      <code><![CDATA[$this->findEntities($qb)]]></code>
-      <code><![CDATA[$this->findEntities($qb)]]></code>
-      <code><![CDATA[$this->findEntities($qb)]]></code>
-      <code><![CDATA[$this->findEntities($qb)]]></code>
-      <code><![CDATA[$this->findEntities($qb)]]></code>
-      <code><![CDATA[$this->findEntities($qb)]]></code>
-      <code><![CDATA[$this->findEntities($qb)]]></code>
-      <code><![CDATA[$this->findEntities($qb)]]></code>
-      <code><![CDATA[$this->findEntities($qb)]]></code>
-      <code><![CDATA[$this->findEntity($qb)]]></code>
-      <code><![CDATA[$this->findEntity($qb)]]></code>
-      <code><![CDATA[$this->findEntity($qb)]]></code>
-      <code><![CDATA[parent::insert($entity)]]></code>
-      <code><![CDATA[parent::insert($entity)]]></code>
-    </LessSpecificReturnStatement>
-    <MissingTemplateParam>
-      <code><![CDATA[FaceDetectionMapper]]></code>
-    </MissingTemplateParam>
-    <MoreSpecificImplementedParamType>
-      <code><![CDATA[$entity]]></code>
-    </MoreSpecificImplementedParamType>
-    <MoreSpecificReturnType>
-      <code><![CDATA[FaceDetection]]></code>
-      <code><![CDATA[FaceDetection]]></code>
-      <code><![CDATA[FaceDetection]]></code>
-      <code><![CDATA[FaceDetection]]></code>
-      <code><![CDATA[FaceDetection[]]]></code>
-      <code><![CDATA[FaceDetection[]]]></code>
-      <code><![CDATA[\OCA\Recognize\Db\FaceDetection[]]]></code>
-      <code><![CDATA[\OCA\Recognize\Db\FaceDetection[]]]></code>
-      <code><![CDATA[\OCA\Recognize\Db\FaceDetection[]]]></code>
-      <code><![CDATA[list<\OCA\Recognize\Db\FaceDetection>]]></code>
-      <code><![CDATA[list<\OCA\Recognize\Db\FaceDetection>]]></code>
-      <code><![CDATA[list<\OCA\Recognize\Db\FaceDetection>]]></code>
-      <code><![CDATA[list<\OCA\Recognize\Db\FaceDetectionWithTitle>]]></code>
-    </MoreSpecificReturnType>
-  </file>
   <file src="lib/Db/FaceDetectionWithTitle.php">
     <MissingPropertyType>
       <code><![CDATA[$title]]></code>
     </MissingPropertyType>
   </file>
   <file src="lib/Db/FsActionMapper.php">
-    <LessSpecificReturnStatement>
-      <code><![CDATA[$entities]]></code>
-      <code><![CDATA[$this->mapRowToItem($className, $this->findOneQuery($query))]]></code>
-    </LessSpecificReturnStatement>
-    <MixedArgument>
-      <code><![CDATA[$row]]></code>
-    </MixedArgument>
     <MixedAssignment>
-      <code><![CDATA[$row]]></code>
       <code><![CDATA[$updated]]></code>
       <code><![CDATA[$value]]></code>
     </MixedAssignment>
     <MixedReturnStatement>
       <code><![CDATA[\call_user_func($className. '::fromRow', $row)]]></code>
     </MixedReturnStatement>
-    <MoreSpecificReturnType>
-      <code><![CDATA[FsCreation|FsDeletion|FsMove|FsAccessUpdate]]></code>
-      <code><![CDATA[list<FsCreation|FsDeletion|FsMove|FsAccessUpdate>]]></code>
-    </MoreSpecificReturnType>
   </file>
   <file src="lib/Db/QueueFile.php">
     <MissingPropertyType>
@@ -882,28 +734,6 @@
     <MixedAssignment>
       <code><![CDATA[$array[$field]]]></code>
     </MixedAssignment>
-  </file>
-  <file src="lib/Db/QueueMapper.php">
-    <FalsableReturnStatement>
-      <code><![CDATA[$result->fetchOne()]]></code>
-    </FalsableReturnStatement>
-    <InvalidDocblock>
-      <code><![CDATA[QueueMapper]]></code>
-      <code><![CDATA[final class QueueMapper extends QBMapper {]]></code>
-    </InvalidDocblock>
-    <LessSpecificReturnStatement>
-      <code><![CDATA[$this->findEntities($qb)]]></code>
-    </LessSpecificReturnStatement>
-    <MissingTemplateParam>
-      <code><![CDATA[QueueMapper]]></code>
-    </MissingTemplateParam>
-    <MixedReturnStatement>
-      <code><![CDATA[$result->fetchOne()]]></code>
-      <code><![CDATA[$result->fetchOne()]]></code>
-    </MixedReturnStatement>
-    <MoreSpecificReturnType>
-      <code><![CDATA[list<\OCA\Recognize\Db\QueueFile>]]></code>
-    </MoreSpecificReturnType>
   </file>
   <file src="lib/Helper/Archive.php">
     <MissingParamType>

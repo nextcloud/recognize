@@ -17,7 +17,7 @@ use OCP\IConfig;
 use OCP\IDBConnection;
 
 /**
- * @psalm-extends QBMapper<FaceDetection>
+ * @template-extends QBMapper<FaceDetection>
  */
 final class FaceDetectionMapper extends QBMapper {
 	private IConfig $config;
@@ -48,6 +48,7 @@ final class FaceDetectionMapper extends QBMapper {
 	 * @throws \OCP\DB\Exception
 	 */
 	public function insert(Entity $entity): FaceDetection {
+		/** @var FaceDetection $entity */
 		$qb = $this->db->getQueryBuilder();
 		$qb->select(FaceDetection::$columns)
 			->from('recognize_face_detections')
@@ -70,6 +71,7 @@ final class FaceDetectionMapper extends QBMapper {
 	 * @throws Exception
 	 */
 	public function insertWithoutDeduplication(Entity $entity): FaceDetection {
+		/** @var FaceDetection $entity */
 		return parent::insert($entity);
 	}
 
@@ -186,7 +188,9 @@ final class FaceDetectionMapper extends QBMapper {
 			->from('recognize_face_detections', 'd')
 			->where($qb->expr()->eq('file_id', $qb->createPositionalParameter($fileId, IQueryBuilder::PARAM_INT)))
 			->leftJoin('d', 'recognize_face_clusters', 'c', $qb->expr()->eq('d.cluster_id', 'c.id'));
-		return $this->findEntities($qb);
+		/** @var list<\OCA\Recognize\Db\FaceDetectionWithTitle> $entities */
+		$entities = $this->findEntities($qb);
+		return $entities;
 	}
 
 	/**

@@ -50,14 +50,14 @@ final class FaceRoot implements ICollection, IMoveTarget {
 	/**
 	 * @inheritDoc
 	 */
-	public function getName() {
+	public function getName(): string {
 		return $this->cluster->getTitle() !== '' ? $this->cluster->getTitle() : ''.$this->cluster->getId();
 	}
 
 	/**
 	 * @inheritDoc
 	 */
-	public function setName($name) {
+	public function setName($name): void {
 		try {
 			$this->clusterMapper->findByUserAndTitle($this->user->getUID(), basename($name));
 			throw new Forbidden('Not allowed to create duplicate names');
@@ -73,20 +73,19 @@ final class FaceRoot implements ICollection, IMoveTarget {
 	/**
 	 * @inheritDoc
 	 */
-	public function createDirectory($name) {
+	public function createDirectory($name): never {
 		throw new Forbidden('Not allowed to create directories in this folder');
 	}
 
 	/**
 	 * @inheritDoc
 	 */
-	public function createFile($name, $data = null) {
+	public function createFile($name, $data = null): never {
 		throw new Forbidden('Not allowed to create files in this folder');
 	}
 
 	/**
 	 * @throws \OCP\Files\NotPermittedException
-	 * @throws \OC\User\NoUserException
 	 */
 	public function getChildren(): array {
 		if (count($this->children) === 0) {
@@ -142,7 +141,7 @@ final class FaceRoot implements ICollection, IMoveTarget {
 	 * @inheritDoc
 	 * @throws \OCP\DB\Exception
 	 */
-	public function delete() {
+	public function delete(): void {
 		$this->clusterMapper->delete($this->cluster);
 	}
 
@@ -158,6 +157,6 @@ final class FaceRoot implements ICollection, IMoveTarget {
 		return json_encode([
 			'fileid' => $detection->getFileId(),
 			'detection' => $detection->toArray()
-		]);
+		], \JSON_THROW_ON_ERROR);
 	}
 }

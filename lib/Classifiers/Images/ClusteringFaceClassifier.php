@@ -25,6 +25,7 @@ use OCP\Files\NotFoundException;
 use OCP\IPreview;
 use OCP\ITempManager;
 use OCP\Share\IManager;
+use Override;
 
 final class ClusteringFaceClassifier extends Classifier {
 	public const IMAGE_TIMEOUT = 120; // seconds
@@ -61,12 +62,7 @@ final class ClusteringFaceClassifier extends Classifier {
 		return array_values(array_unique($userIds));
 	}
 
-	/**
-	 * @param string $user
-	 * @param \OCA\Recognize\Db\QueueFile[] $queueFiles
-	 * @return void
-	 * @throws \ErrorException
-	 */
+	#[Override]
 	public function classify(array $queueFiles): void {
 		if ($this->config->getAppValueString('tensorflow.purejs', 'false') === 'true') {
 			$timeout = self::IMAGE_PUREJS_TIMEOUT;
