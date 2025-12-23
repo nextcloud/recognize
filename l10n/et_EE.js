@@ -14,7 +14,6 @@ OC.L10N.register(
     "Reset" : "Lähtesta",
     "Resource usage" : "Ressursikasutus",
     "FFMPEG" : "FFMPEG",
-    "Checking FFMPEG" : "Kontrollin FFMPEG olekut",
     "Cat" : "Kass",
     "Architecture" : "Arhitektuur",
     "Landscape" : "Horisontaalne",

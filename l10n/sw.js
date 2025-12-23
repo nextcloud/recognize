@@ -7,6 +7,7 @@ OC.L10N.register(
     "{time} ago" : "{time} uliopita",
     "Status" : "Wadhifa",
     "Reset" : "Pangilia upya",
+    "Checking FFmpeg" : "Inaangalia FFmpeg",
     "Landscape" : "Landscape",
     "Portrait" : "Portrait",
     "People" : "Watu",

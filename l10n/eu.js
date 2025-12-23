@@ -54,6 +54,7 @@ OC.L10N.register(
     "Node.js {version} binary was installed successfully." : "Node.js {version} binarioa ondo instalatu da.",
     "Checking libtensorflow" : "libtensorflow egiaztatzen",
     "For Nextcloud Snap users, you need to adjust this path to point to the snap's \"current\" directory as the pre-configured path will change with each update. For example, set it to \"/var/snap/nextcloud/current/nextcloud/extra-apps/recognize/bin/node\" instead of \"/var/snap/nextcloud/9337974/nextcloud/extra-apps/recognize/bin/node\"" : "Nextcloud Snap erabiltzaileentzat, bide-izen hau egokitu behar duzu snap-aren \"uneko\" direktoriora seinalatzeko, aurrez konfiguratutako bidea eguneratze bakoitzean aldatuko baita. Adibidez, ezarri \"/var/snap/nextcloud/current/nextcloud/extra-apps/recognize/bin/node\"-n \"/var/snap/nextcloud/9337974/nextcloud/extra-apps/recognize/bin/node\"-ren ordez.",
+    "Checking FFmpeg" : "FFmpeg egiaztatzen",
     "Terminal commands" : "Terminaleko komandoak",
     "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "Sailkapen-lanak exekutatzeko aurretiko eredu guztiak deskargatzeko, exekutatu komando hau zerbitzariaren terminalean.",
     "You can reset the tags of all files that have been previously classified by Recognize with the following command:" : "Aurretik Recognize bidez sailkatutako fitxategi guztien etiketak berrezarri ditzakezu komando honekin:",

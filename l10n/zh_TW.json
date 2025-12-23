@@ -12,6 +12,7 @@
     "Checking Node.js" : "正在檢查 Node.js",
     "Node.js {version} binary was installed successfully." : "Node.js {version} 可執行檔已成功安裝。",
     "For Nextcloud Snap users, you need to adjust this path to point to the snap's \"current\" directory as the pre-configured path will change with each update. For example, set it to \"/var/snap/nextcloud/current/nextcloud/extra-apps/recognize/bin/node\" instead of \"/var/snap/nextcloud/9337974/nextcloud/extra-apps/recognize/bin/node\"" : "對於 Nextcloud Snap 使用者，您必須調整此路徑以指向 Snap 的「current」目錄，因為預先設定的路徑會隨著每次更新而變更。例如，將其設定為「/var/snap/nextcloud/current/nextcloud/extra-apps/recognize/bin/node」而非「/var/snap/nextcloud/9337974/nextcloud/extra-apps/recognize/bin/node」",
+    "Checking FFmpeg" : "正在檢查 FFmpeg",
     "Cat" : "貓",
     "Architecture" : "架構",
     "Farm" : "農場",

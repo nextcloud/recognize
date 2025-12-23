@@ -9,6 +9,7 @@ OC.L10N.register(
     "Reset" : "Nulstil",
     "Node.js" : "Node.js",
     "Checking Node.js" : "Tjekker Node.js",
+    "Checking FFmpeg" : "Kontrollerer FFmpeg",
     "Cat" : "Kat",
     "Architecture" : "Arkitektur",
     "Farm" : "Gård",

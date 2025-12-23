@@ -82,6 +82,7 @@ OC.L10N.register(
     "Could not load Tensorflow WASM in Node.js. Something is wrong with your setup." : "Nem sikerült a Tensorflow WADM betöltése a Node.js-be. Valami hibás a beállításaiban.",
     "Tensorflow WASM was loaded successfully into Node.js." : "A Tensorflow WASM sikeresen be lett töltve a Node.js-be.",
     "For Nextcloud Snap users, you need to adjust this path to point to the snap's \"current\" directory as the pre-configured path will change with each update. For example, set it to \"/var/snap/nextcloud/current/nextcloud/extra-apps/recognize/bin/node\" instead of \"/var/snap/nextcloud/9337974/nextcloud/extra-apps/recognize/bin/node\"" : "A Nextcloud Snap felhasználók számára ezt az elérési utat úgy kell beállítania, hogy a snap \"aktuális\" könyvtárára mutasson, mivel az előre konfigurált elérési út minden frissítéssel változik. Például állítsa be a következőre: \"/var/snap/nextcloud/current/nextcloud/extra-apps/recognize/bin/node\" a \"/var/snap/nextcloud/9337974/nextcloud/extra-apps/recognize/bin/node\" helyett.",
+    "Checking FFmpeg" : "FFmpeg ellenőrzése",
     "Classifier process priority" : "Osztályozó folyamat prioritás",
     "Checking Nice binary" : "Nice futtatókörnyezet ellenőrzése",
     "Nice binary path" : "Nice futtatókörnyezet elérési útvonal",

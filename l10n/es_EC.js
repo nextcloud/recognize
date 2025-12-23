@@ -91,6 +91,7 @@ OC.L10N.register(
     "Libtensorflow was loaded successfully into Node.js." : "Libtensorflow se cargó correctamente en Node.js.",
     "Could not load Tensorflow WASM in Node.js. Something is wrong with your setup." : "No se pudo cargar TensorFlow WASM en Node.js. Algo está mal en tu configuración.",
     "Tensorflow WASM was loaded successfully into Node.js." : "TensorFlow WASM se cargó correctamente en Node.js.",
+    "Checking FFmpeg" : "Comprobando FFmpeg",
     "Classifier process priority" : "Prioridad del proceso del clasificador",
     "Checking Nice binary" : "Comprobando el binario Nice",
     "Could not find the Nice binary. You may need to set the path to a working binary manually." : "No se encontró el binario Nice. Es posible que debas establecer la ruta a un binario funcional manualmente.",
