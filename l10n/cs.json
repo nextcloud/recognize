@@ -99,6 +99,7 @@
     "For Nextcloud Snap users, you need to adjust this path to point to the snap's \"current\" directory as the pre-configured path will change with each update. For example, set it to \"/var/snap/nextcloud/current/nextcloud/extra-apps/recognize/bin/node\" instead of \"/var/snap/nextcloud/9337974/nextcloud/extra-apps/recognize/bin/node\"" : "Uživatelé Nextcloud Snap budou potřebovat upravit tento popis umístění aby ukazovatl na „current“ adresář snapu, protože přednastavený popis se změní při každé aktualizaci. Například nastavte na „/var/snap/nextcloud/current/nextcloud/extra-apps/recognize/bin/node“ namísto „/var/snap/nextcloud/9337974/nextcloud/extra-apps/recognize/bin/node“",
     "FFMPEG" : "FFMPEG",
     "Checking FFmpeg" : "Kontroluje se FFmpet",
+    "If the shipped FFmpeg binary doesn't work on your system for some reason you can set the path to a custom FFmpeg binary." : "Pokud společně s aplikací dodávaná binárka FFmpeg na vašem systému z nějakého důvodu nefunguje, je možné nastavit popis umístění uživatelsky určené binárky FFmpeg.",
     "Classifier process priority" : "Priorita procesu rozřazování",
     "Checking Nice binary" : "Kontrola spustitelného souboru s nástrojem nice",
     "Could not find the Nice binary. You may need to set the path to a working binary manually." : "Nedaří se najít spustitelný soubor s nástrojem nice. Může být třeba nastavit popis umístění funkčního programu ručně.",
