@@ -38,7 +38,6 @@ final class FsMove extends Entity {
 
 	public function __construct() {
 		// add types in constructor
-		$this->addType('id', 'integer');
 		$this->addType('nodeId', 'integer');
 		$this->addType('owner', 'string');
 		$this->addType('addedUsers', 'string');

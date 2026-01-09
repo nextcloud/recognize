@@ -34,7 +34,6 @@ final class FaceCluster extends Entity {
 
 	public function __construct() {
 		// add types in constructor
-		$this->addType('id', 'integer');
 		$this->addType('title', 'string');
 		$this->addType('userId', 'string');
 	}

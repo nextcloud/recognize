@@ -36,7 +36,6 @@ final class FsDeletion extends Entity {
 
 	public function __construct() {
 		// add types in constructor
-		$this->addType('id', 'integer');
 		$this->addType('storageId', 'integer');
 		$this->addType('nodeId', 'integer');
 	}
