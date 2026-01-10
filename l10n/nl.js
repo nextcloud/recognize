@@ -16,6 +16,7 @@ OC.L10N.register(
     "Face recognition is working. " : "Gezichtsherkenning is functioneel.",
     "An error occurred during face recognition, please check the Nextcloud logs." : "Er is een fout opgetreden bij de gezichtsherkenning, controleer alstublieft de Nextcloud logboekbestanden.",
     "Reset" : "Herstellen",
+    "Checking FFmpeg" : "FFmpeg aan het controleren",
     "Cat" : "Kat",
     "Animal" : "Dier",
     "Wildlife" : "Wild",
