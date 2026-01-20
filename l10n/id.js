@@ -5,6 +5,7 @@ OC.L10N.register(
     "never" : "tidak pernah.",
     "Status" : "Status",
     "Reset" : "Setel ulang",
+    "Architecture" : "Arsitektur",
     "Landscape" : "Lansekap",
     "Portrait" : "Potret",
     "People" : "Orang",
