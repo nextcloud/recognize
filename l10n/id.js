@@ -1,6 +1,7 @@
 OC.L10N.register(
     "recognize",
     {
+    "Failed to load settings" : "Gagal memuat pengaturan",
     "Failed to save settings" : "Gagal simpan setelan",
     "never" : "tidak pernah.",
     "Status" : "Status",
@@ -10,7 +11,9 @@ OC.L10N.register(
     "Portrait" : "Potret",
     "People" : "Orang",
     "Music" : "Musik",
+    "Office" : "Office",
     "Food" : "Makanan",
+    "Train" : "Kereta",
     "Clock" : "Jam",
     "Display" : "Tampilkan",
     "Camera" : "Kamera",
