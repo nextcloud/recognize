@@ -6,6 +6,7 @@ OC.L10N.register(
     "never" : "tidak pernah.",
     "Status" : "Status",
     "Reset" : "Setel ulang",
+    "Checking FFmpeg" : "Memeriksa FFmpeg",
     "Architecture" : "Arsitektur",
     "Landscape" : "Lansekap",
     "Portrait" : "Potret",
@@ -20,6 +21,7 @@ OC.L10N.register(
     "Info" : "Info",
     "Bucket" : "Keranjang",
     "Event" : "Acara",
+    "Sign" : "Tandatangani",
     "Gallery" : "Galeri"
 },
 "nplurals=1; plural=0;");

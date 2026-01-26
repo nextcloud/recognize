@@ -4,6 +4,7 @@
     "never" : "tidak pernah.",
     "Status" : "Status",
     "Reset" : "Setel ulang",
+    "Checking FFmpeg" : "Memeriksa FFmpeg",
     "Architecture" : "Arsitektur",
     "Landscape" : "Lansekap",
     "Portrait" : "Potret",
@@ -18,6 +19,7 @@
     "Info" : "Info",
     "Bucket" : "Keranjang",
     "Event" : "Acara",
+    "Sign" : "Tandatangani",
     "Gallery" : "Galeri"
 },"pluralForm" :"nplurals=1; plural=0;"
 }
