@@ -51,7 +51,6 @@ class FaceDetection extends Entity {
 
 	public function __construct() {
 		// add types in constructor
-		$this->addType('id', 'integer');
 		$this->addType('fileId', 'integer');
 		$this->addType('userId', 'string');
 		$this->addType('x', 'float');
