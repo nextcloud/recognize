@@ -63,7 +63,7 @@ final class SettingsService {
 		'movinet.batchSize' => '5',
 		'musicnn.batchSize' => '20',
 	];
-	public const LAZY_SETTINGS = ['tensorflow.purejs', 'node_binary', 'nice_binary', 'nice_value'];
+	public const LAZY_SETTINGS = ['tensorflow.purejs', 'node_binary', 'nice_binary', 'nice_value', 'ffmpeg_binary'];
 
 	private IAppConfig $config;
 	private IJobList $jobList;

@@ -238,17 +238,17 @@ final class InstallDeps implements IRepairStep {
 
 	protected function setFfmpegBinaryPath() : void {
 		/* use nice binary from settings if available */
-		if ($this->config->getAppValueString('ffmpeg_binary', '') !== '') {
-			$ffmpeg_path = $this->config->getAppValueString('ffmpeg_binary');
+		if ($this->config->getAppValueString('ffmpeg_binary', '', lazy: true) !== '') {
+			$ffmpeg_path = $this->config->getAppValueString('ffmpeg_binary', lazy: true);
 		} else {
 			/* returns the path to the nice binary or false if not found */
 			$ffmpeg_path = $this->binaryFinder->findBinaryPath('ffmpeg');
 		}
 
 		if ($ffmpeg_path !== false) {
-			$this->config->setAppValueString('ffmpeg_binary', $ffmpeg_path);
+			$this->config->setAppValueString('ffmpeg_binary', $ffmpeg_path, lazy: true);
 		} else {
-			$this->config->setAppValueString('ffmpeg_binary', __DIR__ . '/../../node_modules/ffmpeg-static/ffmpeg');
+			$this->config->setAppValueString('ffmpeg_binary', __DIR__ . '/../../node_modules/ffmpeg-static/ffmpeg', lazy: true);
 		}
 	}
 
