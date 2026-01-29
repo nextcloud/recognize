@@ -133,7 +133,7 @@ jobs:
       - name: Set imagenet.enabled and concurrency.enabled
         run: |
           ./occ config:app:set --value true recognize imagenet.enabled
-          ./occ config:app:set --value true recognize concurrency.enabled
+          ./occ config:app:set --lazy --value true recognize concurrency.enabled
 
       - name: Run scan
         env:

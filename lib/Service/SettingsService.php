@@ -81,6 +81,12 @@ final class SettingsService {
 		'movinet.lastFile',
 		'musicnn.lastFile',
 		'clusterFaces.lastRun',
+		'faces.batchSize',
+		'imagenet.batchSize',
+		'landmarks.batchSize',
+		'movinet.batchSize',
+		'musicnn.batchSize',
+		'concurrency.enabled'
 	];
 
 	private IAppConfig $config;
