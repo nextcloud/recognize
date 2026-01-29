@@ -74,7 +74,7 @@ final class InstallDeps implements IRepairStep {
 
 	public function run(IOutput $output): void {
 		try {
-			$existingBinary = $this->config->getAppValueString('node_binary', '');
+			$existingBinary = $this->config->getAppValueString('node_binary', '', lazy: true);
 			if ($existingBinary !== '') {
 				$version = $this->testBinary($existingBinary);
 				if ($version === null) {
@@ -86,7 +86,7 @@ final class InstallDeps implements IRepairStep {
 
 			$this->setBinariesPermissions();
 
-			$binaryPath = $this->config->getAppValueString('node_binary', '');
+			$binaryPath = $this->config->getAppValueString('node_binary', '', lazy: true);
 
 			$this->runTfjsInstall($binaryPath);
 			$this->runFfmpegInstall($binaryPath);
@@ -155,7 +155,7 @@ final class InstallDeps implements IRepairStep {
 		}
 
 		// Write the app config
-		$this->config->setAppValueString('node_binary', $binaryPath);
+		$this->config->setAppValueString('node_binary', $binaryPath, lazy: true);
 
 		$supportsAVX = $this->isAVXSupported();
 		if ($isARM || $isMusl || !$supportsAVX) {
