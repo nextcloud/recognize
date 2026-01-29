@@ -7,6 +7,8 @@ OC.L10N.register(
     "{time} ago" : "Prije {time}",
     "Status" : "Status",
     "Reset" : "Resetiraj",
+    "Landscape" : "Pejzaž",
+    "Portrait" : "Portret",
     "People" : "Ljudi",
     "Music" : "Glazba",
     "Office" : "Ured",
