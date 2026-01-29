@@ -8,11 +8,8 @@ declare(strict_types=1);
 namespace OCA\Recognize\Migration;
 
 use Closure;
-use Doctrine\DBAL\Schema\SchemaException;
 use OCA\Recognize\Service\SettingsService;
 use OCP\AppFramework\Services\IAppConfig;
-use OCP\DB\ISchemaWrapper;
-use OCP\DB\Types;
 use OCP\Migration\IOutput;
 use OCP\Migration\SimpleMigrationStep;
 
