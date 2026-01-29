@@ -160,7 +160,7 @@ final class InstallDeps implements IRepairStep {
 		$supportsAVX = $this->isAVXSupported();
 		if ($isARM || $isMusl || !$supportsAVX) {
 			$output->info('Enabling purejs mode (isMusl='.$isMusl.', isARM='.$isARM.', supportsAVX='.$supportsAVX.')');
-			$this->config->setAppValueString('tensorflow.purejs', 'true');
+			$this->config->setAppValueString('tensorflow.purejs', 'true', lazy: true);
 		}
 	}
 

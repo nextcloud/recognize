@@ -179,7 +179,7 @@ abstract class Classifier {
 		if ($this->config->getAppValueString('tensorflow.gpu', 'false') === 'true') {
 			$env['RECOGNIZE_GPU'] = 'true';
 		}
-		if ($this->config->getAppValueString('tensorflow.purejs', 'false') === 'true') {
+		if ($this->config->getAppValueString('tensorflow.purejs', 'false', lazy: true) === 'true') {
 			$env['RECOGNIZE_PUREJS'] = 'true';
 		}
 		// Set cores
