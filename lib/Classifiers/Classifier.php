@@ -164,9 +164,9 @@ abstract class Classifier {
 			'-'
 		];
 
-		if (trim($this->config->getAppValueString('nice_binary', '')) !== '') {
+		if (trim($this->config->getAppValueString('nice_binary', '', lazy: true)) !== '') {
 			$command = [
-				$this->config->getAppValueString('nice_binary'),
+				$this->config->getAppValueString('nice_binary', lazy: true),
 				"-" . $this->config->getAppValueString('nice_value', '0'),
 				...$command,
 			];
