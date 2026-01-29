@@ -159,7 +159,7 @@ abstract class Classifier {
 		$this->logger->debug('Classifying '.var_export($paths, true));
 
 		$command = [
-			$this->config->getAppValueString('node_binary'),
+			$this->config->getAppValueString('node_binary', lazy: true),
 			dirname(__DIR__, 2) . '/src/classifier_'.$model.'.js',
 			'-'
 		];
