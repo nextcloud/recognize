@@ -47,7 +47,7 @@ final class ImagenetClassifier extends Classifier {
 			$landmarkTags = array_filter($results, static function ($tagName) {
 				return in_array($tagName, LandmarksClassifier::PRECONDITION_TAGS);
 			});
-			$this->config->setAppValueString(self::MODEL_NAME.'.status', 'true');
+			$this->config->setAppValueString(self::MODEL_NAME.'.status', 'true', lazy: true);
 			$this->config->setAppValueString(self::MODEL_NAME.'.lastFile', (string)time());
 
 			if (count($landmarkTags) > 0) {

@@ -134,7 +134,7 @@ final class ClusteringFaceClassifier extends Classifier {
 					$this->logger->debug('scheduling ClusterFacesJob for user ' . $userId);
 					$this->jobList->add(ClusterFacesJob::class, ['userId' => $userId]);
 				}
-				$this->config->setAppValueString(self::MODEL_NAME . '.status', 'true');
+				$this->config->setAppValueString(self::MODEL_NAME . '.status', 'true', lazy: true);
 				$this->config->setAppValueString(self::MODEL_NAME . '.lastFile', (string)time());
 			}
 		}
