@@ -78,7 +78,7 @@ final class SettingsService {
 	 */
 	public function getSetting(string $key): string {
 		if (strpos($key, 'batchSize') !== false) {
-			return $this->config->getAppValueString($key, $this->getSetting('tensorflow.purejs') === 'false' ? self::DEFAULTS[$key] : self::PUREJS_DEFAULTS[$key]);
+			return $this->config->getAppValueString($key, $this->getSetting('tensorflow.purejs', lazy: true) === 'false' ? self::DEFAULTS[$key] : self::PUREJS_DEFAULTS[$key]);
 		}
 		return $this->config->getAppValueString($key, self::DEFAULTS[$key]);
 	}
@@ -115,7 +115,10 @@ final class SettingsService {
 					break;
 			}
 		}
-		$this->config->setAppValueString($key, $value);
+		if (in_array($key, ['tensorflow.purejs'], true)) {
+			$lazy = true;
+		}
+		$this->config->setAppValueString($key, $value, lazy: $lazy);
 	}
 
 	/**

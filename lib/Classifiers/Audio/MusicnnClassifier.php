@@ -31,7 +31,7 @@ final class MusicnnClassifier extends Classifier {
 
 	#[Override]
 	public function classify(array $queueFiles): void {
-		if ($this->config->getAppValueString('tensorflow.purejs', 'false') === 'true') {
+		if ($this->config->getAppValueString('tensorflow.purejs', 'false', lazy: true) === 'true') {
 			$timeout = self::AUDIO_PUREJS_TIMEOUT;
 		} else {
 			$timeout = self::AUDIO_TIMEOUT;
