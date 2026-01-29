@@ -75,6 +75,12 @@ final class SettingsService {
 		'landmarks.status',
 		'movinet.status',
 		'musicnn.status',
+		'faces.lastFile',
+		'imagenet.lastFile',
+		'landmarks.lastFile',
+		'movinet.lastFile',
+		'musicnn.lastFile',
+		'clusterFaces.lastRun',
 	];
 
 	private IAppConfig $config;

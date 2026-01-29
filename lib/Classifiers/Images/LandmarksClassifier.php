@@ -45,7 +45,7 @@ final class LandmarksClassifier extends Classifier {
 		foreach ($classifierProcess as $queueFile => $results) {
 			$this->tagManager->assignTags($queueFile->getFileId(), $results);
 			$this->config->setAppValueString(self::MODEL_NAME.'.status', 'true', lazy: true);
-			$this->config->setAppValueString(self::MODEL_NAME.'.lastFile', (string)time());
+			$this->config->setAppValueString(self::MODEL_NAME.'.lastFile', (string)time(), lazy: true);
 		}
 	}
 }
