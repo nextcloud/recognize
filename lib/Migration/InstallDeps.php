@@ -102,17 +102,17 @@ final class InstallDeps implements IRepairStep {
 
 	protected function setNiceBinaryPath() : void {
 		/* use nice binary from settings if available */
-		if ($this->config->getAppValueString('nice_binary', '') !== '') {
-			$nice_path = $this->config->getAppValueString('nice_binary');
+		if ($this->config->getAppValueString('nice_binary', '', lazy: true) !== '') {
+			$nice_path = $this->config->getAppValueString('nice_binary', lazy: true);
 		} else {
 			/* returns the path to the nice binary or false if not found */
 			$nice_path = $this->binaryFinder->findBinaryPath('nice');
 		}
 
 		if ($nice_path !== false) {
-			$this->config->setAppValueString('nice_binary', $nice_path);
+			$this->config->setAppValueString('nice_binary', $nice_path, lazy: true);
 		} else {
-			$this->config->setAppValueString('nice_binary', '');
+			$this->config->setAppValueString('nice_binary', '', lazy: true);
 		}
 	}
 

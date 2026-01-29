@@ -63,7 +63,7 @@ final class SettingsService {
 		'movinet.batchSize' => '5',
 		'musicnn.batchSize' => '20',
 	];
-	public const LAZY_SETTINGS = ['tensorflow.purejs', 'node_binary'];
+	public const LAZY_SETTINGS = ['tensorflow.purejs', 'node_binary', 'nice_binary'];
 
 	private IAppConfig $config;
 	private IJobList $jobList;
@@ -79,7 +79,7 @@ final class SettingsService {
 	 */
 	public function getSetting(string $key): string {
 		if (strpos($key, 'batchSize') !== false) {
-			return $this->config->getAppValueString($key, $this->getSetting('tensorflow.purejs', lazy: true) === 'false' ? self::DEFAULTS[$key] : self::PUREJS_DEFAULTS[$key]);
+			return $this->config->getAppValueString($key, $this->getSetting('tensorflow.purejs') === 'false' ? self::DEFAULTS[$key] : self::PUREJS_DEFAULTS[$key]);
 		}
 		$lazy = false;
 		if (in_array($key, self::LAZY_SETTINGS, true)) {
