@@ -168,7 +168,7 @@ final class FsActionService {
 		$files = $this->storageService->getFilesInMount($storageId, $rootId, [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
 		$userIdsToScheduleClustering = [];
 		foreach ($files as $fileInfo) {
-			$node = current($this->rootFolder->getById($fileInfo['fileid'])) ?: null;
+			$node = $this->rootFolder->getFirstNodeById($fileInfo['fileid']) ?: null;
 			$ownerId = $node?->getOwner()?->getUID();
 			if ($ownerId === null) {
 				continue;

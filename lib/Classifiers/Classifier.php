@@ -78,8 +78,8 @@ abstract class Classifier {
 			if ($this->maxExecutionTime > 0 && time() - $startTime > $this->maxExecutionTime) {
 				return;
 			}
-			$files = $this->rootFolder->getById($queueFile->getFileId());
-			if (count($files) === 0) {
+			$file = $this->rootFolder->getFirstNodeById($queueFile->getFileId());
+			if ($file === null) {
 				try {
 					$this->logger->debug('removing '.$queueFile->getFileId().' from '.$model.' queue because it couldn\'t be found');
 					$this->queue->removeFromQueue($model, $queueFile);
@@ -89,8 +89,8 @@ abstract class Classifier {
 				continue;
 			}
 			try {
-				if ($files[0]->getSize() == 0) {
-					$this->logger->debug('File is empty: ' . $files[0]->getPath());
+				if ($file->getSize() == 0) {
+					$this->logger->debug('File is empty: ' . $file->getPath());
 					try {
 						$this->logger->debug('removing ' . $queueFile->getFileId() . ' from ' . $model . ' queue');
 						$this->queue->removeFromQueue($model, $queueFile);
@@ -99,14 +99,14 @@ abstract class Classifier {
 					}
 					continue;
 				}
-				$path = $this->getConvertedFilePath($files[0]);
+				$path = $this->getConvertedFilePath($file);
 				if (in_array($model, [ImagenetClassifier::MODEL_NAME, LandmarksClassifier::MODEL_NAME, ClusteringFaceClassifier::MODEL_NAME], true)) {
 					// Check file data size
 					$filesize = filesize($path);
 					if ($filesize !== false) {
 						$filesizeMb = $filesize / (1024 * 1024);
 						if ($filesizeMb > 8) {
-							$this->logger->debug('File is too large for classifier: ' . $files[0]->getPath());
+							$this->logger->debug('File is too large for classifier: ' . $file->getPath());
 							try {
 								$this->logger->debug('removing ' . $queueFile->getFileId() . ' from ' . $model . ' queue');
 								$this->queue->removeFromQueue($model, $queueFile);
@@ -119,7 +119,7 @@ abstract class Classifier {
 					// Check file dimensions
 					$dimensions = @getimagesize($path);
 					if (isset($dimensions) && $dimensions !== false && ($dimensions[0] > 1024 || $dimensions[1] > 1024)) {
-						$this->logger->debug('File dimensions are too large for classifier: ' . $files[0]->getPath());
+						$this->logger->debug('File dimensions are too large for classifier: ' . $file->getPath());
 						try {
 							$this->logger->debug('removing ' . $queueFile->getFileId() . ' from ' . $model . ' queue');
 							$this->queue->removeFromQueue($model, $queueFile);
@@ -131,7 +131,7 @@ abstract class Classifier {
 				}
 				$paths[] = $path;
 				$processedFiles[] = $queueFile;
-				$fileNames[] = $files[0]->getPath();
+				$fileNames[] = $file->getPath();
 			} catch (NotFoundException|InvalidPathException $e) {
 				$this->logger->warning('Could not find file', ['exception' => $e]);
 				try {
