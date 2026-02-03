@@ -265,7 +265,7 @@ final class FileListener implements IEventListener {
 				return;
 			}
 			if ($event instanceof CacheEntryInsertedEvent) {
-				$node = current($this->rootFolder->getById($event->getFileId()));
+				$node = $this->rootFolder->getFirstNodeById($event->getFileId());
 				if ($node === false) {
 					return;
 				}
@@ -284,7 +284,7 @@ final class FileListener implements IEventListener {
 				if ($cacheEntry === false) {
 					return;
 				}
-				$node = current($this->rootFolder->getById($cacheEntry->getId()));
+				$node = $this->rootFolder->getFirstNodeById($cacheEntry->getId());
 				if ($node === false) {
 					return;
 				}
@@ -546,7 +546,7 @@ final class FileListener implements IEventListener {
 		$files = $this->storageService->getFilesInMount($storageId, $rootId, [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
 		$userIdsToScheduleClustering = [];
 		foreach ($files as $fileInfo) {
-			$node = current($this->rootFolder->getById($fileInfo['fileid'])) ?: null;
+			$node = $this->rootFolder->getFirstNodeById($fileInfo['fileid']) ?: null;
 			$ownerId = $node?->getOwner()?->getUID();
 			if ($ownerId === null) {
 				continue;
