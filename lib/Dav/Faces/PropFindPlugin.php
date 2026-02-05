@@ -15,6 +15,7 @@ use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Db\FaceDetectionWithTitle;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
+use OCP\AppFramework\Services\IAppConfig;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\DB\Exception;
 use OCP\Files\DavUtil;
@@ -47,6 +48,7 @@ final class PropFindPlugin extends ServerPlugin {
 		private ICrypto $crypto,
 		private LoggerInterface $logger,
 		private ITimeFactory $timeFactory,
+		private IAppConfig $appConfig,
 	) {
 	}
 
@@ -128,6 +130,9 @@ final class PropFindPlugin extends ServerPlugin {
 
 	public function beforeMethod(RequestInterface $request, ResponseInterface $response): void {
 		if (!str_starts_with($request->getPath(), 'recognize')) {
+			return;
+		}
+		if ($this->appConfig->getAppValueString('require_api_key', 'true') !== 'true') {
 			return;
 		}
 		$key = $request->getHeader('X-Recognize-Api-Key');

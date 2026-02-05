@@ -161,8 +161,10 @@ jobs:
 
       - name: Set config
         run: |
-          ./occ config:app:set --value ${{ matrix.pure-js-mode }} recognize tensorflow.purejs
+          ./occ config:app:set --lazy --value ${{ matrix.pure-js-mode }} recognize tensorflow.purejs
           ./occ config:app:set --value true recognize faces.enabled
+          # Don't force API key usage to allow tests to run
+          ./occ config:app:set --value false recognize require_api_key
           # only use one core. GH actions has 2
           ./occ config:app:set --value 1 recognize tensorflow.cores
 
