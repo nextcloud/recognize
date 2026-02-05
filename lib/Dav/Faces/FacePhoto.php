@@ -70,9 +70,8 @@ class FacePhoto implements IFile {
 
 	public function getFile() : File {
 		if ($this->file === null) {
-			$nodes = $this->userFolder->getById($this->faceDetection->getFileId());
-			$node = current($nodes);
-			if ($node) {
+			$node = $this->userFolder->getFirstNodeById($this->faceDetection->getFileId());
+			if ($node !== null) {
 				if ($node instanceof File) {
 					return $this->file = $node;
 				} else {
