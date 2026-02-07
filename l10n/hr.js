@@ -26,6 +26,7 @@ OC.L10N.register(
     "Camera" : "Kamera",
     "Pizza" : "Pizza",
     "Info" : "Informacije",
+    "Document" : "Dokument",
     "Bucket" : "Bucket",
     "Gas station" : "Benzinska postaja",
     "Parking" : "Parkiralište",
