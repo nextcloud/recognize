@@ -28,6 +28,7 @@ OC.L10N.register(
     "Info" : "Informacije",
     "Document" : "Dokument",
     "Bucket" : "Bucket",
+    "Event" : "Događaj",
     "Gas station" : "Benzinska postaja",
     "Parking" : "Parkiralište",
     "Sign" : "Potpiši",
