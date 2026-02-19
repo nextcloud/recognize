@@ -7,7 +7,7 @@
 
 This app goes through your media collection and adds fitting tags, automatically categorizing your photos and music.
 
-* 📷 👪 Recognizes faces and groups photos by faces that appear in them (GUI in the photos app and the memories app)
+* 📷 👪 Recognizes faces and groups photos by faces that appear in them (GUI in the memories app)
 * 📷 🏔 Recognizes animals, landscapes, food, vehicles, buildings and other objects
 * 📷 🗼 Recognizes landmarks and monuments
 * 👂 🎵 Recognizes music genres
@@ -15,7 +15,7 @@ This app goes through your media collection and adds fitting tags, automatically
 
 ⚡ Tagging works via Nextcloud's Collaborative Tags
 * 👂 listen to your tagged music with the audioplayer app
-* 📷 view your tagged photos and videos with the photos app
+* 📷 view your tagged photos and videos with the memories app
 
 Model sizes:
 
