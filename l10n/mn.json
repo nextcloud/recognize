@@ -1,0 +1,22 @@
+{ "translations": {
+    "Failed to save settings" : "Тохиргоог хадгалж чадсангүй",
+    "never" : "—Ö—ç–∑—ç—ç —á “Ø–≥“Ø–π",
+    "{time} ago" : "{time}-н өмнө",
+    "Status" : "—Ç”©–ª”©–≤",
+    "Reset" : "—Ç–æ—Ö–∏—Ä—É—É–ª–∞—Ö",
+    "Architecture" : "Архитектур",
+    "Field" : "Талбар",
+    "Landscape" : "Ландшафт",
+    "Portrait" : "Портрет",
+    "People" : "Хүмүүс",
+    "Office" : "Office",
+    "Train" : "Галт тэрэг",
+    "Car" : "Машин",
+    "Display" : "Дэлгэц",
+    "Info" : "Info",
+    "Document" : "Баримт бичиг",
+    "Bucket" : "Bucket",
+    "Event" : "Үйл явдал",
+    "Gallery" : "–ó—É—Ä–≥–∏–π–Ω —Ü–æ–º–æ–≥"
+},"pluralForm" :"nplurals=2; plural=(n != 1);"
+}
