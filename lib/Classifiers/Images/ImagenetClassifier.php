@@ -33,7 +33,7 @@ final class ImagenetClassifier extends Classifier {
 
 	#[Override]
 	public function classify(array $queueFiles): void {
-		if ($this->config->getAppValueString('tensorflow.purejs', 'false') === 'true') {
+		if ($this->config->getAppValueString('tensorflow.purejs', 'false', lazy: true) === 'true') {
 			$timeout = self::IMAGE_PUREJS_TIMEOUT;
 		} else {
 			$timeout = self::IMAGE_TIMEOUT;
@@ -47,8 +47,8 @@ final class ImagenetClassifier extends Classifier {
 			$landmarkTags = array_filter($results, static function ($tagName) {
 				return in_array($tagName, LandmarksClassifier::PRECONDITION_TAGS);
 			});
-			$this->config->setAppValueString(self::MODEL_NAME.'.status', 'true');
-			$this->config->setAppValueString(self::MODEL_NAME.'.lastFile', (string)time());
+			$this->config->setAppValueString(self::MODEL_NAME.'.status', 'true', lazy: true);
+			$this->config->setAppValueString(self::MODEL_NAME.'.lastFile', (string)time(), lazy: true);
 
 			if (count($landmarkTags) > 0) {
 				try {

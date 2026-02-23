@@ -74,7 +74,7 @@ final class InstallDeps implements IRepairStep {
 
 	public function run(IOutput $output): void {
 		try {
-			$existingBinary = $this->config->getAppValueString('node_binary', '');
+			$existingBinary = $this->config->getAppValueString('node_binary', '', lazy: true);
 			if ($existingBinary !== '') {
 				$version = $this->testBinary($existingBinary);
 				if ($version === null) {
@@ -86,7 +86,7 @@ final class InstallDeps implements IRepairStep {
 
 			$this->setBinariesPermissions();
 
-			$binaryPath = $this->config->getAppValueString('node_binary', '');
+			$binaryPath = $this->config->getAppValueString('node_binary', '', lazy: true);
 
 			$this->runTfjsInstall($binaryPath);
 			$this->runFfmpegInstall($binaryPath);
@@ -102,17 +102,17 @@ final class InstallDeps implements IRepairStep {
 
 	protected function setNiceBinaryPath() : void {
 		/* use nice binary from settings if available */
-		if ($this->config->getAppValueString('nice_binary', '') !== '') {
-			$nice_path = $this->config->getAppValueString('nice_binary');
+		if ($this->config->getAppValueString('nice_binary', '', lazy: true) !== '') {
+			$nice_path = $this->config->getAppValueString('nice_binary', lazy: true);
 		} else {
 			/* returns the path to the nice binary or false if not found */
 			$nice_path = $this->binaryFinder->findBinaryPath('nice');
 		}
 
 		if ($nice_path !== false) {
-			$this->config->setAppValueString('nice_binary', $nice_path);
+			$this->config->setAppValueString('nice_binary', $nice_path, lazy: true);
 		} else {
-			$this->config->setAppValueString('nice_binary', '');
+			$this->config->setAppValueString('nice_binary', '', lazy: true);
 		}
 	}
 
@@ -155,12 +155,12 @@ final class InstallDeps implements IRepairStep {
 		}
 
 		// Write the app config
-		$this->config->setAppValueString('node_binary', $binaryPath);
+		$this->config->setAppValueString('node_binary', $binaryPath, lazy: true);
 
 		$supportsAVX = $this->isAVXSupported();
 		if ($isARM || $isMusl || !$supportsAVX) {
 			$output->info('Enabling purejs mode (isMusl='.$isMusl.', isARM='.$isARM.', supportsAVX='.$supportsAVX.')');
-			$this->config->setAppValueString('tensorflow.purejs', 'true');
+			$this->config->setAppValueString('tensorflow.purejs', 'true', lazy: true);
 		}
 	}
 
@@ -238,17 +238,17 @@ final class InstallDeps implements IRepairStep {
 
 	protected function setFfmpegBinaryPath() : void {
 		/* use nice binary from settings if available */
-		if ($this->config->getAppValueString('ffmpeg_binary', '') !== '') {
-			$ffmpeg_path = $this->config->getAppValueString('ffmpeg_binary');
+		if ($this->config->getAppValueString('ffmpeg_binary', '', lazy: true) !== '') {
+			$ffmpeg_path = $this->config->getAppValueString('ffmpeg_binary', lazy: true);
 		} else {
 			/* returns the path to the nice binary or false if not found */
 			$ffmpeg_path = $this->binaryFinder->findBinaryPath('ffmpeg');
 		}
 
 		if ($ffmpeg_path !== false) {
-			$this->config->setAppValueString('ffmpeg_binary', $ffmpeg_path);
+			$this->config->setAppValueString('ffmpeg_binary', $ffmpeg_path, lazy: true);
 		} else {
-			$this->config->setAppValueString('ffmpeg_binary', __DIR__ . '/../../node_modules/ffmpeg-static/ffmpeg');
+			$this->config->setAppValueString('ffmpeg_binary', __DIR__ . '/../../node_modules/ffmpeg-static/ffmpeg', lazy: true);
 		}
 	}
 

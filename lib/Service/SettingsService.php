@@ -63,6 +63,31 @@ final class SettingsService {
 		'movinet.batchSize' => '5',
 		'musicnn.batchSize' => '20',
 	];
+	public const LAZY_SETTINGS = [
+		'tensorflow.purejs',
+		'node_binary',
+		'nice_binary',
+		'nice_value',
+		'ffmpeg_binary',
+		'clusterFaces.status',
+		'faces.status',
+		'imagenet.status',
+		'landmarks.status',
+		'movinet.status',
+		'musicnn.status',
+		'faces.lastFile',
+		'imagenet.lastFile',
+		'landmarks.lastFile',
+		'movinet.lastFile',
+		'musicnn.lastFile',
+		'clusterFaces.lastRun',
+		'faces.batchSize',
+		'imagenet.batchSize',
+		'landmarks.batchSize',
+		'movinet.batchSize',
+		'musicnn.batchSize',
+		'concurrency.enabled'
+	];
 
 	private IAppConfig $config;
 	private IJobList $jobList;
@@ -80,7 +105,11 @@ final class SettingsService {
 		if (strpos($key, 'batchSize') !== false) {
 			return $this->config->getAppValueString($key, $this->getSetting('tensorflow.purejs') === 'false' ? self::DEFAULTS[$key] : self::PUREJS_DEFAULTS[$key]);
 		}
-		return $this->config->getAppValueString($key, self::DEFAULTS[$key]);
+		$lazy = false;
+		if (in_array($key, self::LAZY_SETTINGS, true)) {
+			$lazy = true;
+		}
+		return $this->config->getAppValueString($key, self::DEFAULTS[$key], lazy: $lazy);
 	}
 
 	/**
@@ -115,7 +144,11 @@ final class SettingsService {
 					break;
 			}
 		}
-		$this->config->setAppValueString($key, $value);
+		$lazy = false;
+		if (in_array($key, self::LAZY_SETTINGS, true)) {
+			$lazy = true;
+		}
+		$this->config->setAppValueString($key, $value, lazy: $lazy);
 	}
 
 	/**

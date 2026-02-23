@@ -33,7 +33,7 @@ final class LandmarksClassifier extends Classifier {
 
 	#[Override]
 	public function classify(array $queueFiles): void {
-		if ($this->config->getAppValueString('tensorflow.purejs', 'false') === 'true') {
+		if ($this->config->getAppValueString('tensorflow.purejs', 'false', lazy: true) === 'true') {
 			$timeout = self::IMAGE_PUREJS_TIMEOUT;
 		} else {
 			$timeout = self::IMAGE_TIMEOUT;
@@ -44,8 +44,8 @@ final class LandmarksClassifier extends Classifier {
 		/** @var list<string> $results */
 		foreach ($classifierProcess as $queueFile => $results) {
 			$this->tagManager->assignTags($queueFile->getFileId(), $results);
-			$this->config->setAppValueString(self::MODEL_NAME.'.status', 'true');
-			$this->config->setAppValueString(self::MODEL_NAME.'.lastFile', (string)time());
+			$this->config->setAppValueString(self::MODEL_NAME.'.status', 'true', lazy: true);
+			$this->config->setAppValueString(self::MODEL_NAME.'.lastFile', (string)time(), lazy: true);
 		}
 	}
 }

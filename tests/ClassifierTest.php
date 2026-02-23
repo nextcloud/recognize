@@ -395,7 +395,7 @@ class ClassifierTest extends TestCase {
 	}
 
 	public function testLandmarksPipeline() : void {
-		if ($this->config->getAppValueString('tensorflow.purejs', 'false') === 'true') {
+		if ($this->config->getAppValueString('tensorflow.purejs', 'false', lazy: true) === 'true') {
 			// landmarks will fail with purejs/WASM mode, sadly, because we use a worse imagenet model in WASM mode
 			self::markTestSkipped();
 		}
@@ -582,7 +582,7 @@ class ClassifierTest extends TestCase {
 	 * @throws \Psr\Container\NotFoundExceptionInterface
 	 */
 	public function testMovinetPipeline(string $ignoreFileName) : void {
-		if ($this->config->getAppValueString('tensorflow.purejs', 'false') === 'true') {
+		if ($this->config->getAppValueString('tensorflow.purejs', 'false', lazy: true) === 'true') {
 			// Cannot run musicnn with purejs/WASM mode
 			self::markTestSkipped();
 		}
@@ -664,7 +664,7 @@ class ClassifierTest extends TestCase {
 	 * @throws \Psr\Container\NotFoundExceptionInterface
 	 */
 	public function testMusicnnPipeline(string $ignoreFileName) : void {
-		if ($this->config->getAppValueString('tensorflow.purejs', 'false') === 'true') {
+		if ($this->config->getAppValueString('tensorflow.purejs', 'false', lazy: true) === 'true') {
 			// Cannot run musicnn with purejs/WASM mode
 			self::markTestSkipped();
 		}
@@ -736,7 +736,7 @@ class ClassifierTest extends TestCase {
 	 * @throws \OCP\Files\NotPermittedException
 	 */
 	public function testClassifier($file, $model, $tag) : void {
-		if ($this->config->getAppValueString('tensorflow.purejs', 'false') === 'true' && in_array($model, ['movinet', 'musicnn'])) {
+		if ($this->config->getAppValueString('tensorflow.purejs', 'false', lazy: true) === 'true' && in_array($model, ['movinet', 'musicnn'])) {
 			// Cannot run musicnn/movinet with purejs/WASM mode
 			self::markTestSkipped();
 		}

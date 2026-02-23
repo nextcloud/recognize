@@ -155,7 +155,7 @@ jobs:
 
       - name: Set pure-js mode
         run: |
-          ./occ config:app:set --value ${{ matrix.pure-js-mode }} recognize tensorflow.purejs
+          ./occ config:app:set --lazy --value ${{ matrix.pure-js-mode }} recognize tensorflow.purejs
 
       - name: Set imagenet.enabled
         run: |

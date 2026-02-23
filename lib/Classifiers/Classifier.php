@@ -159,15 +159,15 @@ abstract class Classifier {
 		$this->logger->debug('Classifying '.var_export($paths, true));
 
 		$command = [
-			$this->config->getAppValueString('node_binary'),
+			$this->config->getAppValueString('node_binary', lazy: true),
 			dirname(__DIR__, 2) . '/src/classifier_'.$model.'.js',
 			'-'
 		];
 
-		if (trim($this->config->getAppValueString('nice_binary', '')) !== '') {
+		if (trim($this->config->getAppValueString('nice_binary', '', lazy: true)) !== '') {
 			$command = [
-				$this->config->getAppValueString('nice_binary'),
-				"-" . $this->config->getAppValueString('nice_value', '0'),
+				$this->config->getAppValueString('nice_binary', lazy: true),
+				"-" . $this->config->getAppValueString('nice_value', '0', lazy: true),
 				...$command,
 			];
 		}
@@ -179,7 +179,7 @@ abstract class Classifier {
 		if ($this->config->getAppValueString('tensorflow.gpu', 'false') === 'true') {
 			$env['RECOGNIZE_GPU'] = 'true';
 		}
-		if ($this->config->getAppValueString('tensorflow.purejs', 'false') === 'true') {
+		if ($this->config->getAppValueString('tensorflow.purejs', 'false', lazy: true) === 'true') {
 			$env['RECOGNIZE_PUREJS'] = 'true';
 		}
 		// Set cores
