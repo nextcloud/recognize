@@ -39,7 +39,6 @@ final class FsCreation extends Entity {
 
 	public function __construct() {
 		// add types in constructor
-		$this->addType('id', 'integer');
 		$this->addType('storageId', 'integer');
 		$this->addType('rootId', 'integer');
 		$this->addType('userId', 'string');
