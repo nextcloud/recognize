@@ -2,6 +2,7 @@ OC.L10N.register(
     "recognize",
     {
     "Recognize" : "Reconéisser",
+    "Failed to save settings" : "Fracàs de l’enregistrament dels paramètres",
     "never" : "pas jamai",
     "{time} ago" : "fa {time}",
     "Status" : "Estat",
