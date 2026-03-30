@@ -25,7 +25,7 @@
       "@composer bin all install --ansi",
       "grep -r 'OCA\\\\Recognize\\\\Vendor\\\\Rubix' ./vendor/rubix/ml/ || vendor/bin/php-scoper add-prefix --prefix='OCA\\Recognize\\Vendor' --output-dir=\".\" --working-dir=\"./vendor/\" -f --config=\"../scoper.inc.php\"",
       "composer install --no-scripts",
-      "@composer bin all update --ansi",
+      "@composer bin all install --ansi",
       "composer dump-autoload"
     ],
     "post-update-cmd": [
