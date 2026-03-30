@@ -73,13 +73,13 @@ final class TagManager {
 		}, $tags);
 		$tags[] = $this->getProcessedTag()->getId();
 		/** @var array<string, string[]> $tagsByFile */
-		$tagsByFile = $this->objectMapper->getTagIdsForObjects([$fileId], 'files');
+		$tagsByFile = $this->objectMapper->getTagIdsForObjects([(string)$fileId], 'files');
 		$oldTags = $tagsByFile[(string) $fileId];
-		$this->objectMapper->assignTags((string)$fileId, 'files', array_unique(array_merge($tags, $oldTags)));
+		$this->objectMapper->assignTags((string)$fileId, 'files', array_values(array_unique(array_merge($tags, $oldTags))));
 	}
 
 	/**
-	 * @param array $fileIds
+	 * @param list<string> $fileIds
 	 * @return array<array-key, array<array-key,ISystemTag>>
 	 */
 	public function getTagsForFiles(array $fileIds): array {

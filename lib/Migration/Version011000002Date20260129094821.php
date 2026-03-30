@@ -20,7 +20,7 @@ final class Version011000002Date20260129094821 extends SimpleMigrationStep {
 	) {
 	}
 
-	public function postSchemaChange(IOutput $output, Closure $schemaClosure, array $options) {
+	public function postSchemaChange(IOutput $output, Closure $schemaClosure, array $options): void {
 		foreach (SettingsService::LAZY_SETTINGS as $settingsKey) {
 			if ($this->appConfig->hasAppKey($settingsKey, lazy: false)) {
 				$value = $this->appConfig->getAppValueString($settingsKey);
