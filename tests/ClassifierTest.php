@@ -72,7 +72,7 @@ class ClassifierTest extends TestCase {
 
 	public function setUp(): void {
 		parent::setUp();
-		$this->rootFolder = \OC::$server->getRootFolder();
+		$this->rootFolder = \OCP\Server::get(IRootFolder::class);
 		$this->userFolder = $this->loginAndGetUserFolder(self::TEST_USER1);
 		$this->faceDetectionMapper = \OC::$server->get(FaceDetectionMapper::class);
 		$logger = \OC::$server->get(Logger::class);
