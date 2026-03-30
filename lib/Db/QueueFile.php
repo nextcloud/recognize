@@ -23,7 +23,6 @@ use OCP\AppFramework\Db\Entity;
  * @method bool getUpdate()
  */
 final class QueueFile extends Entity {
-	public $id;
 	protected $fileId;
 	protected $storageId;
 	protected $rootId;
@@ -36,7 +35,6 @@ final class QueueFile extends Entity {
 
 	public function __construct() {
 		// add types in constructor
-		$this->addType('id', 'integer');
 		$this->addType('fileId', 'integer');
 		$this->addType('storageId', 'integer');
 		$this->addType('rootId', 'integer');
