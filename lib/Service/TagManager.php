@@ -91,7 +91,7 @@ final class TagManager {
 	}
 
 	/**
-	 * @return array<string>
+	 * @return list<string>
 	 */
 	public function findClassifiedFiles(): array {
 		return $this->objectMapper->getObjectIdsForTags($this->getProcessedTag()->getId(), 'files');
@@ -107,7 +107,7 @@ final class TagManager {
 		$processedId = $this->getProcessedTag()->getId();
 		foreach ($classifiedChunks as $classifiedChunk) {
 			/** @var array<string,string[]> $tagIdsByFile */
-			$tagIdsByFile = $this->objectMapper->getTagIdsForObjects($classifiedChunk, 'files');
+			$tagIdsByFile = $this->objectMapper->getTagIdsForObjects(array_values($classifiedChunk), 'files');
 			$missedChunk = array_keys(array_filter($tagIdsByFile, function ($tags) use ($processedId) : bool {
 				return count($tags) === 1 && $tags[0] !== $processedId;
 			}));

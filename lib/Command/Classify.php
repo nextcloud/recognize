@@ -123,7 +123,7 @@ final class Classify extends Command {
 					}
 					// if retry flag is set, skip other classifiers for tagged files
 					if ($input->getOption('retry')) {
-						$fileTags = $this->tagManager->getTagsForFiles([$lastFileId]);
+						$fileTags = $this->tagManager->getTagsForFiles([(string)$lastFileId]);
 						// check if processed tag is already in the tags
 						if (in_array($processedTag, $fileTags[$lastFileId])) {
 							continue;
