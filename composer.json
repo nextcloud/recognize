@@ -6,7 +6,7 @@
     "rubix/ml": "2.x",
     "amphp/parallel": "1.4.x",
     "wamania/php-stemmer": "4.0 as 3.0",
-    "bamarni/composer-bin-plugin": "^1.8"
+    "bamarni/composer-bin-plugin": "1.8.x"
   },
   "autoload": {
     "psr-4": {
@@ -22,13 +22,11 @@
     "psalm:update-baseline:force": "psalm --threads=1 --update-baseline --set-baseline=psalm-baseline.xml",
     "test:unit": "phpunit --config tests/phpunit.xml",
     "post-install-cmd": [
-      "composer install --no-scripts",
       "@composer bin all install --ansi",
       "grep -r 'OCA\\\\Recognize\\\\Vendor\\\\Rubix' ./vendor/rubix/ml/ || (vendor/bin/php-scoper add-prefix --prefix='OCA\\Recognize\\Vendor' --output-dir=\"/tmp/scoped-vendor\" --working-dir=\"./vendor/\" -f --config=\"../scoper.inc.php\" && cp -rf /tmp/scoped-vendor/* ./vendor/ && rm -rf /tmp/scoped-vendor)",
       "composer dump-autoload"
     ],
     "post-update-cmd": [
-      "composer install --no-scripts",
       "@composer bin all install --ansi",
       "grep -r 'OCA\\\\Recognize\\\\Vendor\\\\Rubix' ./vendor/rubix/ml/ || (vendor/bin/php-scoper add-prefix --prefix='OCA\\Recognize\\Vendor' --output-dir=\"/tmp/scoped-vendor\" --working-dir=\"./vendor/\" -f --config=\"../scoper.inc.php\" && cp -rf /tmp/scoped-vendor/* ./vendor/ && rm -rf /tmp/scoped-vendor)",
       "composer dump-autoload"
