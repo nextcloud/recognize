@@ -763,6 +763,14 @@
     </MissingParamType>
   </file>
   <file src="lib/Helper/TAR.php">
+    <DeprecatedClass>
+      <code><![CDATA[\OCP\Files::rmdirr($tmp . $path)]]></code>
+      <code><![CDATA[\OCP\Files::rmdirr($tmp)]]></code>
+    </DeprecatedClass>
+    <DeprecatedMethod>
+      <code><![CDATA[\OCP\Files::rmdirr($tmp . $path)]]></code>
+      <code><![CDATA[\OCP\Files::rmdirr($tmp)]]></code>
+    </DeprecatedMethod>
     <MissingParamType>
       <code><![CDATA[$path]]></code>
       <code><![CDATA[$tmpFile]]></code>
@@ -777,6 +785,9 @@
     </MissingReturnType>
     <MixedArgument>
       <code><![CDATA[$path]]></code>
+      <code><![CDATA[$this->path]]></code>
+      <code><![CDATA[$this->path]]></code>
+      <code><![CDATA[$this->path]]></code>
       <code><![CDATA[$this->path]]></code>
       <code><![CDATA[$tmpFile]]></code>
       <code><![CDATA[$tmpFile]]></code>
@@ -795,15 +806,24 @@
       <code><![CDATA[$header]]></code>
       <code><![CDATA[$header]]></code>
       <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
       <code><![CDATA[$stat]]></code>
       <code><![CDATA[$stat]]></code>
+      <code><![CDATA[$success]]></code>
+      <code><![CDATA[$success]]></code>
+      <code><![CDATA[$this->tar]]></code>
       <code><![CDATA[$this->tar]]></code>
       <code><![CDATA[$this->tar]]></code>
     </MixedAssignment>
+    <MixedMethodCall>
+      <code><![CDATA[createModify]]></code>
+    </MixedMethodCall>
     <MixedReturnStatement>
+      <code><![CDATA[$result]]></code>
       <code><![CDATA[$result]]></code>
       <code><![CDATA[$stat['mtime']]]></code>
       <code><![CDATA[$stat['size']]]></code>
+      <code><![CDATA[$success]]></code>
       <code><![CDATA[$this->fileList]]></code>
       <code><![CDATA[$this->tar->extract($dest)]]></code>
       <code><![CDATA[$this->tar->extractInString($path)]]></code>
@@ -819,6 +839,8 @@
     <PossiblyNullPropertyAssignmentValue>
       <code><![CDATA[null]]></code>
       <code><![CDATA[null]]></code>
+      <code><![CDATA[null]]></code>
+      <code><![CDATA[null]]></code>
     </PossiblyNullPropertyAssignmentValue>
     <RedundantConditionGivenDocblockType>
       <code><![CDATA[$this->tar]]></code>
@@ -828,11 +850,19 @@
     </RiskyTruthyFalsyComparison>
     <UndefinedClass>
       <code><![CDATA[?\PEAR_Error]]></code>
+      <code><![CDATA[CallbackWrapper]]></code>
+      <code><![CDATA[\Archive_Tar]]></code>
       <code><![CDATA[\Archive_Tar]]></code>
       <code><![CDATA[\Archive_Tar]]></code>
       <code><![CDATA[\Archive_Tar]]></code>
     </UndefinedClass>
     <UndefinedDocblockClass>
+      <code><![CDATA[$this->tar]]></code>
+      <code><![CDATA[$this->tar]]></code>
+      <code><![CDATA[$this->tar]]></code>
+      <code><![CDATA[$this->tar]]></code>
+      <code><![CDATA[$this->tar]]></code>
+      <code><![CDATA[$this->tar]]></code>
       <code><![CDATA[$this->tar]]></code>
       <code><![CDATA[$this->tar]]></code>
       <code><![CDATA[$this->tar]]></code>
