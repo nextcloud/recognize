@@ -24,7 +24,6 @@ npm-update:
 
 composer-install:
 	composer install
-	composer install
 
 install-binaries:
 	mkdir -p bin
