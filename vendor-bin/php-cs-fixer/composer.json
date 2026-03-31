@@ -2,5 +2,10 @@
     "require": {
         "friendsofphp/php-cs-fixer": "3.x",
         "nextcloud/coding-standard": "1.x"
+    },
+    "config": {
+        "platform": {
+            "php": "8.2"
+        }
     }
 }

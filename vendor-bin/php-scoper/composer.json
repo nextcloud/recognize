@@ -4,10 +4,7 @@
     },
     "config": {
         "platform": {
-            "php": "8.4"
-        },
-        "allow-plugins": {
-            "cweagans/composer-patches": true
+            "php": "8.2"
         }
     },
     "minimum-stability": "dev"
