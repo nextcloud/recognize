@@ -228,7 +228,7 @@ jobs:
       - name: Install xq
         if: steps.clustering-cache.outputs.cache-hit != 'true'
         run: |
-          pip install xq --break-system-packages
+          pip install yq --break-system-packages
 
       - name: Download face assignments
         if: steps.clustering-cache.outputs.cache-hit != 'true'
