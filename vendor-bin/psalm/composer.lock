@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8ae5dc98cc7f96b10e055d03ff9e9288",
+    "content-hash": "27861af2fa93d4fa4c1ace04b24fd74b",
     "packages": [
         {
             "name": "amphp/amp",
@@ -3405,12 +3405,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nextcloud-deps/ocp.git",
-                "reference": "cd912d2ba9fca6027ee4d0a55fd06c41c75af4d2"
+                "reference": "50fef0ff2189206a5228b81044f1730c2aa4b396"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nextcloud-deps/ocp/zipball/cd912d2ba9fca6027ee4d0a55fd06c41c75af4d2",
-                "reference": "cd912d2ba9fca6027ee4d0a55fd06c41c75af4d2",
+                "url": "https://api.github.com/repos/nextcloud-deps/ocp/zipball/50fef0ff2189206a5228b81044f1730c2aa4b396",
+                "reference": "50fef0ff2189206a5228b81044f1730c2aa4b396",
                 "shasum": ""
             },
             "require": {
@@ -3446,7 +3446,7 @@
                 "issues": "https://github.com/nextcloud-deps/ocp/issues",
                 "source": "https://github.com/nextcloud-deps/ocp/tree/master"
             },
-            "time": "2026-03-27T01:17:33+00:00"
+            "time": "2026-03-31T01:18:57+00:00"
         },
         {
             "name": "psr/clock",
@@ -4002,7 +4002,7 @@
     "platform": {},
     "platform-dev": {},
     "platform-overrides": {
-        "php": "8.2.27"
+        "php": "8.2.30"
     },
     "plugin-api-version": "2.6.0"
 }
