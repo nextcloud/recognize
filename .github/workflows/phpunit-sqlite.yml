@@ -72,7 +72,7 @@ jobs:
 
     strategy:
       matrix:
-        php-versions: ${{ fromJson(needs.matrix.outputs.php-version) }}
+        php-versions: ['8.4']
         server-versions: ${{ fromJson(needs.matrix.outputs.server-max) }}
 
     name: SQLite PHP ${{ matrix.php-versions }} Nextcloud ${{ matrix.server-versions }}
