@@ -34,6 +34,7 @@
 namespace OCA\Recognize\Helper;
 
 use Icewind\Streams\CallbackWrapper;
+use OCP\ITempManager;
 
 final class TAR extends Archive {
 	public const PLAIN = 0;
@@ -91,7 +92,7 @@ final class TAR extends Archive {
 	 * @return bool
 	 */
 	public function addFolder($path) {
-		$tmpBase = \OC::$server->getTempManager()->getTemporaryFolder();
+		$tmpBase = \OCP\Server::get(ITempManager::class)->getTemporaryFolder();
 		$path = rtrim($path, '/') . '/';
 		if ($this->fileExists($path)) {
 			return false;
