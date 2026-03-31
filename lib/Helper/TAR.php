@@ -144,7 +144,10 @@ final class TAR extends Archive {
 	 */
 	public function rename($source, $dest) {
 		//no proper way to delete, rename entire archive, rename file and remake archive
-		$tmp = \OC::$server->getTempManager()->getTemporaryFolder();
+		$tmp = \OCP\Server::get(ITempManager::class)->getTemporaryFolder();
+		if ($tmp === false) {
+			return false;
+		}
 		$this->tar->extract($tmp);
 		rename($tmp . $source, $tmp . $dest);
 		$this->tar = null;
@@ -263,7 +266,10 @@ final class TAR extends Archive {
 	 * @return bool
 	 */
 	public function extractFile($path, $dest) {
-		$tmp = \OC::$server->getTempManager()->getTemporaryFolder();
+		$tmp = \OCP\Server::get(ITempManager::class)->getTemporaryFolder();
+		if ($tmp === false) {
+			return false;
+		}
 		if (!$this->fileExists($path)) {
 			return false;
 		}
@@ -340,7 +346,10 @@ final class TAR extends Archive {
 		$this->fileList = false;
 		$this->cachedHeaders = false;
 		//no proper way to delete, extract entire archive, delete file and remake archive
-		$tmp = \OC::$server->getTempManager()->getTemporaryFolder();
+		$tmp = \OCP\Server::get(ITempManager::class)->getTemporaryFolder();
+		if ($tmp === false) {
+			return false;
+		}
 		$this->tar->extract($tmp);
 		\OCP\Files::rmdirr($tmp . $path);
 		$this->tar = null;
@@ -363,7 +372,10 @@ final class TAR extends Archive {
 		} else {
 			$ext = '';
 		}
-		$tmpFile = \OC::$server->getTempManager()->getTemporaryFile($ext);
+		$tmpFile = \OCP\Server::get(ITempManager::class)->getTemporaryFile($ext);
+		if ($tmpFile === false) {
+			return false;
+		}
 		if ($this->fileExists($path)) {
 			$this->extractFile($path, $tmpFile);
 		} elseif ($mode == 'r' or $mode == 'rb') {
