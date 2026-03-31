@@ -1,11 +1,11 @@
 {
     "require": {
-        "humbug/php-scoper": "0.18.x",
+        "humbug/php-scoper": "0.18.19",
         "cweagans/composer-patches": "^1.7"
     },
     "config": {
         "platform": {
-            "php": "8.2"
+            "php": "8.4"
         },
         "allow-plugins": {
             "cweagans/composer-patches": true
