@@ -93,6 +93,9 @@ final class TAR extends Archive {
 	 */
 	public function addFolder($path) {
 		$tmpBase = \OCP\Server::get(ITempManager::class)->getTemporaryFolder();
+		if ($tmpBase === false) {
+			return false;
+		}
 		$path = rtrim($path, '/') . '/';
 		if ($this->fileExists($path)) {
 			return false;
