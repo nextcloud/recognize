@@ -8,8 +8,7 @@ on:
   push:
     branches:
       - main
-      - stable8
-      - stable9
+      - stable*
     paths:
       - 'lib/**'
       - 'src/**'
@@ -131,9 +130,15 @@ jobs:
           ./occ app:enable -vvv -f ${{ env.APP_NAME }}
           php -S localhost:8080 &
 
-      - name: Install
+      - name: Checkout app
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: nextcloud/viewer
+          path: apps/viewer
+
+      - name: Install viewer
         run: |
-          ./occ app:enable -vvv ${{ env.APP_NAME }}
+          ./occ app:enable -vvv viewer
 
       - name: Remove unnecessary models to make space
         run: |
@@ -161,8 +166,10 @@ jobs:
 
       - name: Set config
         run: |
-          ./occ config:app:set --value ${{ matrix.pure-js-mode }} recognize tensorflow.purejs
+          ./occ config:app:set --lazy --value ${{ matrix.pure-js-mode }} recognize tensorflow.purejs
           ./occ config:app:set --value true recognize faces.enabled
+          # Don't force API key usage to allow tests to run
+          ./occ config:app:set --value false recognize require_api_key
           # only use one core. GH actions has 2
           ./occ config:app:set --value 1 recognize tensorflow.cores
 
@@ -221,7 +228,7 @@ jobs:
       - name: Install xq
         if: steps.clustering-cache.outputs.cache-hit != 'true'
         run: |
-          pip install xq --break-system-packages
+          pip install yq --break-system-packages
 
       - name: Download face assignments
         if: steps.clustering-cache.outputs.cache-hit != 'true'

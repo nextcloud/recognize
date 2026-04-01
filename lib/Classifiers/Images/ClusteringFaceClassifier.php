@@ -64,7 +64,7 @@ final class ClusteringFaceClassifier extends Classifier {
 
 	#[Override]
 	public function classify(array $queueFiles): void {
-		if ($this->config->getAppValueString('tensorflow.purejs', 'false') === 'true') {
+		if ($this->config->getAppValueString('tensorflow.purejs', 'false', lazy: true) === 'true') {
 			$timeout = self::IMAGE_PUREJS_TIMEOUT;
 		} else {
 			$timeout = self::IMAGE_TIMEOUT;
@@ -134,8 +134,8 @@ final class ClusteringFaceClassifier extends Classifier {
 					$this->logger->debug('scheduling ClusterFacesJob for user ' . $userId);
 					$this->jobList->add(ClusterFacesJob::class, ['userId' => $userId]);
 				}
-				$this->config->setAppValueString(self::MODEL_NAME . '.status', 'true');
-				$this->config->setAppValueString(self::MODEL_NAME . '.lastFile', (string)time());
+				$this->config->setAppValueString(self::MODEL_NAME . '.status', 'true', lazy: true);
+				$this->config->setAppValueString(self::MODEL_NAME . '.lastFile', (string)time(), lazy: true);
 			}
 		}
 		$this->logger->debug('face classifier end');

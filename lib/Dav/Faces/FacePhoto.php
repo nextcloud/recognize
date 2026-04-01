@@ -123,6 +123,9 @@ class FacePhoto implements IFile {
 
 	public function isFavorite(): bool {
 		$tagger = $this->tagManager->load('files');
+		if ($tagger === null) {
+			return false;
+		}
 		$tags = $tagger->getTagsForObjects([$this->getFile()->getId()]);
 
 		if ($tags === false || empty($tags)) {

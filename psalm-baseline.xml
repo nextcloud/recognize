@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="6.14.2@bbd217fc98c0daa0a13aea2a7f119d03ba3fc9a0">
+<files psalm-version="6.16.1@f1f5de594dc76faf8784e02d3dc4716c91c6f6ac">
   <file src="lib/AppInfo/Application.php">
     <DeprecatedInterface>
       <code><![CDATA[$this->getContainer()]]></code>
@@ -646,16 +646,8 @@
   <file src="lib/Dav/Faces/PropFindPlugin.php">
     <MixedArgument>
       <code><![CDATA[$node->getFile()->getFileInfo()]]></code>
-      <code><![CDATA[$node->getFile()->getFileInfo()]]></code>
       <code><![CDATA[TagsPlugin::FAVORITE_PROPERTYNAME]]></code>
     </MixedArgument>
-    <MixedAssignment>
-      <code><![CDATA[$metadataKey]]></code>
-      <code><![CDATA[$metadataValue]]></code>
-    </MixedAssignment>
-    <MixedMethodCall>
-      <code><![CDATA[getMetadata]]></code>
-    </MixedMethodCall>
     <PropertyNotSetInConstructor>
       <code><![CDATA[$server]]></code>
     </PropertyNotSetInConstructor>
@@ -664,8 +656,6 @@
       <code><![CDATA[TagsPlugin]]></code>
     </UndefinedClass>
     <UndefinedInterfaceMethod>
-      <code><![CDATA[getFileInfo]]></code>
-      <code><![CDATA[getFileInfo]]></code>
       <code><![CDATA[getFileInfo]]></code>
     </UndefinedInterfaceMethod>
   </file>
@@ -690,6 +680,9 @@
     <MixedAssignment>
       <code><![CDATA[$array[$field]]]></code>
     </MixedAssignment>
+    <PropertyNotSetInConstructor>
+      <code><![CDATA[FaceCluster]]></code>
+    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Db/FaceDetection.php">
     <MissingPropertyType>
@@ -709,11 +702,22 @@
     <MixedReturnStatement>
       <code><![CDATA[$this->getter('faceVector')]]></code>
     </MixedReturnStatement>
+    <PropertyNotSetInConstructor>
+      <code><![CDATA[FaceDetection]]></code>
+    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Db/FaceDetectionWithTitle.php">
     <MissingPropertyType>
       <code><![CDATA[$title]]></code>
     </MissingPropertyType>
+    <PropertyNotSetInConstructor>
+      <code><![CDATA[FaceDetectionWithTitle]]></code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="lib/Db/FsAccessUpdate.php">
+    <PropertyNotSetInConstructor>
+      <code><![CDATA[FsAccessUpdate]]></code>
+    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Db/FsActionMapper.php">
     <MixedAssignment>
@@ -723,6 +727,21 @@
     <MixedReturnStatement>
       <code><![CDATA[\call_user_func($className. '::fromRow', $row)]]></code>
     </MixedReturnStatement>
+  </file>
+  <file src="lib/Db/FsCreation.php">
+    <PropertyNotSetInConstructor>
+      <code><![CDATA[FsCreation]]></code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="lib/Db/FsDeletion.php">
+    <PropertyNotSetInConstructor>
+      <code><![CDATA[FsDeletion]]></code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="lib/Db/FsMove.php">
+    <PropertyNotSetInConstructor>
+      <code><![CDATA[FsMove]]></code>
+    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Db/QueueFile.php">
     <MissingPropertyType>
@@ -734,6 +753,9 @@
     <MixedAssignment>
       <code><![CDATA[$array[$field]]]></code>
     </MixedAssignment>
+    <PropertyNotSetInConstructor>
+      <code><![CDATA[QueueFile]]></code>
+    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Helper/Archive.php">
     <MissingParamType>
@@ -741,6 +763,14 @@
     </MissingParamType>
   </file>
   <file src="lib/Helper/TAR.php">
+    <DeprecatedClass>
+      <code><![CDATA[\OCP\Files::rmdirr($tmp . $path)]]></code>
+      <code><![CDATA[\OCP\Files::rmdirr($tmp)]]></code>
+    </DeprecatedClass>
+    <DeprecatedMethod>
+      <code><![CDATA[\OCP\Files::rmdirr($tmp . $path)]]></code>
+      <code><![CDATA[\OCP\Files::rmdirr($tmp)]]></code>
+    </DeprecatedMethod>
     <MissingParamType>
       <code><![CDATA[$path]]></code>
       <code><![CDATA[$tmpFile]]></code>
@@ -755,6 +785,9 @@
     </MissingReturnType>
     <MixedArgument>
       <code><![CDATA[$path]]></code>
+      <code><![CDATA[$this->path]]></code>
+      <code><![CDATA[$this->path]]></code>
+      <code><![CDATA[$this->path]]></code>
       <code><![CDATA[$this->path]]></code>
       <code><![CDATA[$tmpFile]]></code>
       <code><![CDATA[$tmpFile]]></code>
@@ -773,15 +806,24 @@
       <code><![CDATA[$header]]></code>
       <code><![CDATA[$header]]></code>
       <code><![CDATA[$result]]></code>
+      <code><![CDATA[$result]]></code>
       <code><![CDATA[$stat]]></code>
       <code><![CDATA[$stat]]></code>
+      <code><![CDATA[$success]]></code>
+      <code><![CDATA[$success]]></code>
+      <code><![CDATA[$this->tar]]></code>
       <code><![CDATA[$this->tar]]></code>
       <code><![CDATA[$this->tar]]></code>
     </MixedAssignment>
+    <MixedMethodCall>
+      <code><![CDATA[createModify]]></code>
+    </MixedMethodCall>
     <MixedReturnStatement>
+      <code><![CDATA[$result]]></code>
       <code><![CDATA[$result]]></code>
       <code><![CDATA[$stat['mtime']]]></code>
       <code><![CDATA[$stat['size']]]></code>
+      <code><![CDATA[$success]]></code>
       <code><![CDATA[$this->fileList]]></code>
       <code><![CDATA[$this->tar->extract($dest)]]></code>
       <code><![CDATA[$this->tar->extractInString($path)]]></code>
@@ -797,6 +839,8 @@
     <PossiblyNullPropertyAssignmentValue>
       <code><![CDATA[null]]></code>
       <code><![CDATA[null]]></code>
+      <code><![CDATA[null]]></code>
+      <code><![CDATA[null]]></code>
     </PossiblyNullPropertyAssignmentValue>
     <RedundantConditionGivenDocblockType>
       <code><![CDATA[$this->tar]]></code>
@@ -806,11 +850,19 @@
     </RiskyTruthyFalsyComparison>
     <UndefinedClass>
       <code><![CDATA[?\PEAR_Error]]></code>
+      <code><![CDATA[CallbackWrapper]]></code>
+      <code><![CDATA[\Archive_Tar]]></code>
       <code><![CDATA[\Archive_Tar]]></code>
       <code><![CDATA[\Archive_Tar]]></code>
       <code><![CDATA[\Archive_Tar]]></code>
     </UndefinedClass>
     <UndefinedDocblockClass>
+      <code><![CDATA[$this->tar]]></code>
+      <code><![CDATA[$this->tar]]></code>
+      <code><![CDATA[$this->tar]]></code>
+      <code><![CDATA[$this->tar]]></code>
+      <code><![CDATA[$this->tar]]></code>
+      <code><![CDATA[$this->tar]]></code>
       <code><![CDATA[$this->tar]]></code>
       <code><![CDATA[$this->tar]]></code>
       <code><![CDATA[$this->tar]]></code>
@@ -943,7 +995,6 @@
       <code><![CDATA[$ignoreFileidsExpr[]]]></code>
       <code><![CDATA[$ignoreFileidsExpr[]]]></code>
       <code><![CDATA[$ignoreFileidsExpr[]]]></code>
-      <code><![CDATA[$res]]></code>
       <code><![CDATA[$result]]></code>
     </MixedAssignment>
     <MixedMethodCall>
@@ -952,23 +1003,16 @@
       <code><![CDATA[andWhere]]></code>
       <code><![CDATA[andWhere]]></code>
       <code><![CDATA[andWhere]]></code>
-      <code><![CDATA[andWhere]]></code>
-      <code><![CDATA[andWhere]]></code>
       <code><![CDATA[andX]]></code>
       <code><![CDATA[andX]]></code>
       <code><![CDATA[andX]]></code>
       <code><![CDATA[andX]]></code>
       <code><![CDATA[closeCursor]]></code>
       <code><![CDATA[closeCursor]]></code>
-      <code><![CDATA[closeCursor]]></code>
-      <code><![CDATA[eq]]></code>
-      <code><![CDATA[eq]]></code>
       <code><![CDATA[eq]]></code>
       <code><![CDATA[eq]]></code>
       <code><![CDATA[executeQuery]]></code>
       <code><![CDATA[executeQuery]]></code>
-      <code><![CDATA[executeQuery]]></code>
-      <code><![CDATA[fetch]]></code>
       <code><![CDATA[fetch]]></code>
       <code><![CDATA[fetch]]></code>
       <code><![CDATA[gt]]></code>
@@ -989,10 +1033,6 @@
       <code><![CDATA[$qb->expr()->notLike('path', $qb->createNamedParameter($path ? $path . '/%' : '%'))]]></code>
       <code><![CDATA[$qb->expr()->notLike('path', $qb->createNamedParameter($path ? $path . '/%' : '%'))]]></code>
     </MixedReturnStatement>
-    <RedundantCastGivenDocblockType>
-      <code><![CDATA[(int)$row['root_id']]]></code>
-      <code><![CDATA[(int)$row['storage_id']]]></code>
-    </RedundantCastGivenDocblockType>
   </file>
   <file src="lib/Service/TagManager.php">
     <PossiblyFalseArgument>

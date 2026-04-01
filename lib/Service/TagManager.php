@@ -73,13 +73,13 @@ final class TagManager {
 		}, $tags);
 		$tags[] = $this->getProcessedTag()->getId();
 		/** @var array<string, string[]> $tagsByFile */
-		$tagsByFile = $this->objectMapper->getTagIdsForObjects([$fileId], 'files');
+		$tagsByFile = $this->objectMapper->getTagIdsForObjects([(string)$fileId], 'files');
 		$oldTags = $tagsByFile[(string) $fileId];
-		$this->objectMapper->assignTags((string)$fileId, 'files', array_unique(array_merge($tags, $oldTags)));
+		$this->objectMapper->assignTags((string)$fileId, 'files', array_values(array_unique(array_merge($tags, $oldTags))));
 	}
 
 	/**
-	 * @param array $fileIds
+	 * @param list<string> $fileIds
 	 * @return array<array-key, array<array-key,ISystemTag>>
 	 */
 	public function getTagsForFiles(array $fileIds): array {
@@ -91,7 +91,7 @@ final class TagManager {
 	}
 
 	/**
-	 * @return array<string>
+	 * @return list<string>
 	 */
 	public function findClassifiedFiles(): array {
 		return $this->objectMapper->getObjectIdsForTags($this->getProcessedTag()->getId(), 'files');
@@ -107,7 +107,7 @@ final class TagManager {
 		$processedId = $this->getProcessedTag()->getId();
 		foreach ($classifiedChunks as $classifiedChunk) {
 			/** @var array<string,string[]> $tagIdsByFile */
-			$tagIdsByFile = $this->objectMapper->getTagIdsForObjects($classifiedChunk, 'files');
+			$tagIdsByFile = $this->objectMapper->getTagIdsForObjects(array_values($classifiedChunk), 'files');
 			$missedChunk = array_keys(array_filter($tagIdsByFile, function ($tags) use ($processedId) : bool {
 				return count($tags) === 1 && $tags[0] !== $processedId;
 			}));

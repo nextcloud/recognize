@@ -78,7 +78,7 @@ final class StorageCrawlJob extends QueuedJob {
 						$this->queue->insertIntoQueue(ImagenetClassifier::MODEL_NAME, $queueFile);
 					}
 					if (!in_array(ImagenetClassifier::MODEL_NAME, $models) && in_array(LandmarksClassifier::MODEL_NAME, $models)) {
-						$tags = $this->tagManager->getTagsForFiles([$queueFile->getFileId()]);
+						$tags = $this->tagManager->getTagsForFiles([(string)$queueFile->getFileId()]);
 						$fileTags = $tags[$queueFile->getFileId()];
 						$landmarkTags = array_filter($fileTags, function ($tag) {
 							return in_array($tag->getName(), LandmarksClassifier::PRECONDITION_TAGS);

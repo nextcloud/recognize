@@ -16,6 +16,7 @@ use OCA\Recognize\Classifiers\Video\MovinetClassifier;
 use OCA\Recognize\Constants;
 use OCP\DB\Exception;
 use OCP\DB\QueryBuilder\IQueryBuilder;
+use OCP\Files\Cache\IFileAccess;
 use OCP\Files\IMimeTypeLoader;
 use OCP\FilesMetadata\IFilesMetadataManager;
 use OCP\IDBConnection;
@@ -39,6 +40,7 @@ final class StorageService {
 		private IgnoreService $ignoreService,
 		private IMimeTypeLoader $mimeTypes,
 		private IFilesMetadataManager $metadataManager,
+		private IFileAccess $fileAccess,
 	) {
 	}
 
@@ -47,46 +49,13 @@ final class StorageService {
 	 * @throws \OCP\DB\Exception
 	 */
 	public function getMounts(): \Generator {
-		$qb = $this->db->getQueryBuilder();
-		$qb->selectDistinct(['root_id', 'storage_id', 'mount_provider_class']) // to avoid scanning each occurrence of a groupfolder
-			->from('mounts')
-			->where($qb->expr()->in('mount_provider_class', $qb->createPositionalParameter(self::ALLOWED_MOUNT_TYPES, IQueryBuilder::PARAM_STR_ARRAY)));
-		$result = $qb->executeQuery();
-
-
-		while (
-			/** @var array{storage_id:int, root_id:int,mount_provider_class:string} $row */
-			$row = $result->fetch()
-		) {
-			$storageId = (int)$row['storage_id'];
-			$rootId = (int)$row['root_id'];
-			$overrideRoot = $rootId;
-			if (in_array($row['mount_provider_class'], self::HOME_MOUNT_TYPES)) {
-				// Only crawl files, not cache or trashbin
-				$qb = new CacheQueryBuilder($this->db->getQueryBuilder(), $this->metadataManager);
-				try {
-					$res = $qb->selectFileCache()
-						->andWhere($qb->expr()->eq('filecache.storage', $qb->createNamedParameter($storageId, IQueryBuilder::PARAM_INT)))
-						->andWhere($qb->expr()->eq('filecache.path', $qb->createNamedParameter('files')))
-						->executeQuery();
-					/** @var array|false $root */
-					$root = $res->fetch();
-					$res->closeCursor();
-					if ($root !== false) {
-						$overrideRoot = intval($root['fileid']);
-					}
-				} catch (Exception $e) {
-					$this->logger->error('Could not fetch home storage files root for storage '.$storageId, ['exception' => $e]);
-					continue;
-				}
-			}
+		foreach ($this->fileAccess->getDistinctMounts(self::ALLOWED_MOUNT_TYPES) as $mount) {
 			yield [
-				'storage_id' => $storageId,
-				'root_id' => $rootId,
-				'override_root' => $overrideRoot,
+				'storage_id' => $mount['storage_id'],
+				'root_id' => $mount['root_id'],
+				'override_root' => $mount['overridden_root'],
 			];
 		}
-		$result->closeCursor();
 	}
 
 	/**
