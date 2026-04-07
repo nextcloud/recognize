@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [12.0.0] - 2026-04-07
+
+### Breaking changes
+
+- Drop support for Nextcloud 33
+
+### Fixed
+
+* fix: Add migration changing non-lazy config entries to lazy
+* fix(l10n): Update translations from Transifex
+* perf: Port away from more getById
+* fix: Migrate `getById` to `getFirstNodeById`
+* fix: do not declare the id column type
+* fix: Do not attempt to classify TIFF files
+
 ## [11.0.1] - 2025-11-12
 
 ### Fixed
