@@ -61,15 +61,15 @@
 				</NcNoteCard>
 			</template>
 			<p>
-				<NcCheckboxRadioSwitch :checked.sync="settings['faces.enabled']" type="switch" @update:checked="onChange">
+				<NcCheckboxRadioSwitch v-model="settings['faces.enabled']" type="switch" @update:model-value="onChange">
 					{{ t('recognize', 'Enable face recognition (groups photos by faces that appear in them; UI is in the photos app)') }}
 				</NcCheckboxRadioSwitch>
 				<NcTextField :disabled="!settings['faces.enabled']"
-					:value.sync="settings['faces.batchSize']"
+					v-model="settings['faces.batchSize']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~500 or more, in WASM mode ~50 is recommended)')"
 					:title="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~500 or more, in WASM mode ~50 is recommended)')"
-					@update:value="onChange" />
+					@update:model-value="onChange" />
 			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :name="t('recognize', 'Object detection & landmark recognition')">
@@ -109,30 +109,30 @@
 			</template>
 
 			<p>
-				<NcCheckboxRadioSwitch :checked.sync="settings['imagenet.enabled']" type="switch" @update:checked="onChange">
+				<NcCheckboxRadioSwitch v-model="settings['imagenet.enabled']" type="switch" @update:model-value="onChange">
 					{{ t('recognize', 'Enable object recognition (e.g. food, vehicles, landscapes)') }}
 				</NcCheckboxRadioSwitch>
 				<NcTextField :disabled="!settings['imagenet.enabled']"
-					:value.sync="settings['imagenet.batchSize']"
+					v-model="settings['imagenet.batchSize']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
 					:title="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
-					@update:value="onChange" />
+					@update:model-value="onChange" />
 			</p>
 			<p>&nbsp;</p>
 			<p>
-				<NcCheckboxRadioSwitch :checked.sync="settings['landmarks.enabled']"
+				<NcCheckboxRadioSwitch v-model="settings['landmarks.enabled']"
 					type="switch"
 					:disabled="!settings['imagenet.enabled']"
-					@update:checked="onChange">
+					@update:model-value="onChange">
 					{{ t('recognize', 'Enable landmark recognition (e.g. Eiffel Tower, Golden Gate Bridge)') }}
 				</NcCheckboxRadioSwitch>
 				<NcTextField :disabled="!settings['imagenet.enabled'] || !settings['landmarks.enabled']"
-					:value.sync="settings['landmarks.batchSize']"
+					v-model="settings['landmarks.batchSize']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
 					:title="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
-					@update:value="onChange" />
+					@update:model-value="onChange" />
 			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :name="t('recognize', 'Audio tagging')">
@@ -154,15 +154,15 @@
 				</NcNoteCard>
 			</template>
 			<p>
-				<NcCheckboxRadioSwitch :checked.sync="settings['musicnn.enabled']" type="switch" @update:checked="onChange">
+				<NcCheckboxRadioSwitch v-model="settings['musicnn.enabled']" type="switch" @update:model-value="onChange">
 					{{ t('recognize', 'Enable music genre recognition (e.g. pop, rock, folk, metal, new age)') }}
 				</NcCheckboxRadioSwitch>
 				<NcTextField :disabled="!settings['musicnn.enabled']"
-					:value.sync="settings['musicnn.batchSize']"
+					v-model="settings['musicnn.batchSize']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
 					:title="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
-					@update:value="onChange" />
+					@update:model-value="onChange" />
 			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :name="t('recognize', 'Video tagging')">
@@ -184,18 +184,18 @@
 				</NcNoteCard>
 			</template>
 			<p>
-				<NcCheckboxRadioSwitch :checked.sync="settings['movinet.enabled']"
+				<NcCheckboxRadioSwitch v-model="settings['movinet.enabled']"
 					type="switch"
 					:disabled="(platform !== 'x86_64' || settings['tensorflow.purejs']) && !settings['movinet.enabled']"
-					@update:checked="onChange">
+					@update:model-value="onChange">
 					{{ t('recognize', 'Enable human action recognition (e.g. arm wrestling, dribbling basketball, hula hooping)') }}
 				</NcCheckboxRadioSwitch>
 				<NcTextField :disabled="!settings['movinet.enabled']"
-					:value.sync="settings['movinet.batchSize']"
+					v-model="settings['movinet.batchSize']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~20 or more, in WASM mode ~5 is recommended)')"
 					:title="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~20 or more, in WASM mode ~5 is recommended)')"
-					@update:value="onChange" />
+					@update:model-value="onChange" />
 			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :name="t('recognize', 'Reset')">
@@ -222,21 +222,21 @@
 		<NcSettingsSection :name="t('recognize', 'Resource usage') ">
 			<p>{{ t('recognize', 'By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used. (Note: In WASM mode, currently only 1 core can be used at all times.)') }}</p>
 			<p>
-				<NcTextField :value.sync="settings['tensorflow.cores']"
+				<NcTextField v-model="settings['tensorflow.cores']"
 					type="number"
 					:min="0"
 					:step="1"
 					:max="32"
 					:label="t('recognize', 'Number of CPU Cores (0 for no limit)')"
 					:label-visible="true"
-					@update:value="onChange" />
+					@update:model-value="onChange" />
 			</p>
 			<p>&nbsp;</p>
 			<p>{{ t('recognize', 'By default, recognize will only ever run one classifier process at a time. If you have a lot of resources available and want to run as many processes in parallel as possible, you can turn on concurrency here.') }}</p>
 			<p>
-				<NcCheckboxRadioSwitch :checked.sync="settings['concurrency.enabled']"
+				<NcCheckboxRadioSwitch v-model="settings['concurrency.enabled']"
 					type="switch"
-					@update:checked="onChange">
+					@update:model-value="onChange">
 					{{ t('recognize', 'Enable unlimited concurrency of classifier processes') }}
 				</NcCheckboxRadioSwitch>
 			</p>
@@ -262,7 +262,7 @@
 				</ul>
 			</template>
 			<p>
-				<NcCheckboxRadioSwitch :checked.sync="settings['tensorflow.purejs']" type="switch" @update:checked="onChange">
+				<NcCheckboxRadioSwitch v-model="settings['tensorflow.purejs']" type="switch" @update:model-value="onChange">
 					{{ t('recognize', 'Enable WASM mode') }}
 				</NcCheckboxRadioSwitch>
 			</p>
@@ -272,10 +272,10 @@
 		</NcSettingsSection>
 		<NcSettingsSection :name="t('recognize', 'Tensorflow GPU mode')">
 			<p>
-				<NcCheckboxRadioSwitch :checked.sync="settings['tensorflow.gpu']"
+				<NcCheckboxRadioSwitch v-model="settings['tensorflow.gpu']"
 					type="switch"
 					:disabled="settings['tensorflow.purejs']"
-					@update:checked="onChange">
+					@update:model-value="onChange">
 					{{ t('recognize', 'Enable GPU mode') }}
 				</NcCheckboxRadioSwitch>
 			</p>
@@ -325,7 +325,7 @@
 				{{ t('recognize', 'If the shipped Node.js binary doesn\'t work on your system for some reason you can set the path to a custom node.js binary. Currently supported is Node v20.9 and newer v20 releases.') }}
 			</p>
 			<p>
-				<NcTextField :value.sync="settings['node_binary']" @update:value="onChange" />
+				<NcTextField v-model="settings['node_binary']" @update:model-value="onChange" />
 			</p>
 			<p>{{ t('recognize', 'For Nextcloud Snap users, you need to adjust this path to point to the snap\'s "current" directory as the pre-configured path will change with each update. For example, set it to "/var/snap/nextcloud/current/nextcloud/extra-apps/recognize/bin/node" instead of "/var/snap/nextcloud/9337974/nextcloud/extra-apps/recognize/bin/node"') }}</p>
 		</NcSettingsSection>
@@ -343,7 +343,7 @@
 				{{ t('recognize', 'If the shipped FFmpeg binary doesn\'t work on your system for some reason you can set the path to a custom FFmpeg binary.') }}
 			</p>
 			<p>
-				<NcTextField :value.sync="settings['ffmpeg_binary']" @update:value="onChange" />
+				<NcTextField v-model="settings['ffmpeg_binary']" @update:model-value="onChange" />
 			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :name="t('recognize', 'Classifier process priority')">
@@ -357,23 +357,23 @@
 				{{ t('recognize', 'Nice binary path') }}
 			</p>
 			<p>
-				<NcTextField :value.sync="settings['nice_binary']"
+				<NcTextField v-model="settings['nice_binary']"
 					:label-visible="true"
 					:label="t('recognize', 'Nice binary path')"
-					@update:value="onChange" />
+					@update:model-value="onChange" />
 			</p>
 			<p>&nbsp;</p>
 			<p>
 				{{ t('recognize', 'Nice value to set the priority of the Node.js processes. The value can only be from 0 to 19 since the Node.js process runs without superuser privileges. The higher the nice value, the lower the priority of the process.') }}
 			</p>
 			<p>
-				<NcTextField :value.sync="settings['nice_value']"
+				<NcTextField v-model="settings['nice_value']"
 					type="number"
 					:min="0"
 					:max="19"
 					:step="1"
 					:disabled="nice === false"
-					@update:value="onChange" />
+					@update:model-value="onChange" />
 			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :name="t('recognize', 'Terminal commands') ">
