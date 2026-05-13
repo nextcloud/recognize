@@ -15,7 +15,7 @@ use OCP\TaskProcessing\EShapeType;
 use OCP\TaskProcessing\ITaskType;
 use OCP\TaskProcessing\ShapeDescriptor;
 
-class AudioClassificationTaskType implements ITaskType {
+final class AudioClassificationTaskType implements ITaskType {
 	public const ID = Application::APP_ID . ':audio:classification';
 
 	public function __construct(

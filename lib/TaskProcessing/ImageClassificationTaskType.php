@@ -15,7 +15,7 @@ use OCP\TaskProcessing\EShapeType;
 use OCP\TaskProcessing\ITaskType;
 use OCP\TaskProcessing\ShapeDescriptor;
 
-class ImageClassificationTaskType implements ITaskType {
+final class ImageClassificationTaskType implements ITaskType {
 	public const ID = Application::APP_ID . ':image:classification';
 
 	public function __construct(

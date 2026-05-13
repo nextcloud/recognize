@@ -15,7 +15,7 @@ use OCP\TaskProcessing\EShapeType;
 use OCP\TaskProcessing\ITaskType;
 use OCP\TaskProcessing\ShapeDescriptor;
 
-class VideoClassificationTaskType implements ITaskType {
+final class VideoClassificationTaskType implements ITaskType {
 	public const ID = Application::APP_ID . ':video:classification';
 
 	public function __construct(

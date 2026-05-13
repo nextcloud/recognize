@@ -15,7 +15,7 @@ use OCP\TaskProcessing\EShapeType;
 use OCP\TaskProcessing\ITaskType;
 use OCP\TaskProcessing\ShapeDescriptor;
 
-class ImageFaceRecognitionTaskType implements ITaskType {
+final class ImageFaceRecognitionTaskType implements ITaskType {
 	public const ID = Application::APP_ID . ':image:facerecognition';
 
 	public function __construct(
