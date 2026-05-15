@@ -7,6 +7,8 @@ updates:
     day: saturday
     time: "03:00"
     timezone: Europe/Paris
+  cooldown:
+    default-days: 10
   open-pull-requests-limit: 10
 - package-ecosystem: npm
   directory: "/"
@@ -15,6 +17,8 @@ updates:
     day: saturday
     time: "03:00"
     timezone: Europe/Paris
+  cooldown:
+    default-days: 10
   open-pull-requests-limit: 10
 - package-ecosystem: "github-actions"
   directory: "/"
@@ -23,4 +27,6 @@ updates:
     day: saturday
     time: "03:00"
     timezone: Europe/Paris
+  cooldown:
+    default-days: 10
   open-pull-requests-limit: 10
