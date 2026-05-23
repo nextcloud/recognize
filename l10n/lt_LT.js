@@ -60,6 +60,7 @@ OC.L10N.register(
     "Furniture" : "Baldai",
     "Train" : "Traukinys",
     "Car" : "Automobilis",
+    "Historic" : "Istorinis",
     "Electronics" : "Elektronika",
     "Church" : "Bažnyčia",
     "Candle" : "Žvakė",
