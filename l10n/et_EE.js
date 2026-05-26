@@ -1,6 +1,7 @@
 OC.L10N.register(
     "recognize",
     {
+    "Recognize" : "Tuvasta",
     "Failed to load settings" : "Seadistuste laadimine ei õnnestunud",
     "Failed to save settings" : "Seadistuste salvestamine ei õnnestunud",
     "never" : "mitte kunagi",
