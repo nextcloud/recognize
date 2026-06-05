@@ -26,6 +26,7 @@ OC.L10N.register(
     "Food" : "Toit",
     "Train" : "Rong",
     "Car" : "Auto",
+    "Historic" : "Ajalooline",
     "Computer" : "Arvuti",
     "Flag" : "Märgi",
     "Library" : "Raamatukogu",
