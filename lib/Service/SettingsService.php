@@ -53,6 +53,10 @@ final class SettingsService {
 		'nice_value' => '0',
 		'concurrency.enabled' => 'false',
 		'ffmpeg_binary' => '',
+		// Classifier execution backend: 'local' (run node.js locally) or 'exapp' (offload to an External App / container)
+		'classifier.backend' => 'local',
+		// The appId of the recognize ExApp to offload classification to when classifier.backend === 'exapp'
+		'exapp.id' => 'recognize_exapp',
 	];
 
 	/** @var array<string,string>  */
@@ -86,7 +90,9 @@ final class SettingsService {
 		'landmarks.batchSize',
 		'movinet.batchSize',
 		'musicnn.batchSize',
-		'concurrency.enabled'
+		'concurrency.enabled',
+		'classifier.backend',
+		'exapp.id',
 	];
 
 	private IAppConfig $config;

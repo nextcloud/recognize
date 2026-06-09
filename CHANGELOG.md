@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+* feat: Optionally offload classification to an External App (ExApp) backend, so the machine learning inference can run on a different, more powerful machine — optionally with GPU support ([#73](https://github.com/nextcloud/recognize/issues/73)). The "Recognize classification backend" ExApp is installable from the Nextcloud App Store / External Apps page (requires AppAPI). Select the backend under Admin settings → Recognize → Classification backend. The ExApp sources, manifest and release workflows live in `exapp/`.
+
 ## [12.0.0] - 2026-04-07
 
 ### Breaking changes

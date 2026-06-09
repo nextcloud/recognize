@@ -12,6 +12,7 @@ use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
 use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
 use OCA\Recognize\Constants;
 use OCA\Recognize\Db\QueueFile;
+use OCA\Recognize\Service\ExAppService;
 use OCA\Recognize\Service\QueueService;
 use OCP\AppFramework\Services\IAppConfig;
 use OCP\DB\Exception;
@@ -158,6 +159,54 @@ abstract class Classifier {
 
 		$this->logger->debug('Classifying '.var_export($paths, true));
 
+		// Pick the execution backend: either run node.js locally (default) or
+		// offload the inference to an External App / container.
+		// See https://github.com/nextcloud/recognize/issues/73
+		if ($this->config->getAppValueString('classifier.backend', 'local', lazy: true) === 'exapp') {
+			$lines = $this->runExApp($model, $paths, $timeout);
+		} else {
+			$lines = $this->runLocally($model, $paths, $timeout, $startTime);
+		}
+
+		$i = 0;
+		foreach ($lines as $result) {
+			if ($this->maxExecutionTime > 0 && time() - $startTime > $this->maxExecutionTime) {
+				$this->cleanUpTmpFiles();
+				return;
+			}
+			$this->logger->debug('Result for ' . $fileNames[$i] .'(' . basename($paths[$i]) . ') = ' . $result);
+			try {
+				// decode json
+				$results = json_decode($result, true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
+				yield $processedFiles[$i] => $results;
+				$this->queue->removeFromQueue($model, $processedFiles[$i]);
+			} catch (\JsonException $e) {
+				$this->logger->warning('JSON exception');
+				$this->logger->warning($e->getMessage(), ['exception' => $e]);
+				$this->logger->warning($result);
+			} catch (Exception $e) {
+				$this->logger->warning($e->getMessage(), ['exception' => $e]);
+			}
+			$i++;
+		}
+		$this->cleanUpTmpFiles();
+		if ($i !== count($paths)) {
+			throw new \ErrorException('Classifier process error');
+		}
+	}
+
+	/**
+	 * Run the classifier node.js process locally and yield each valid JSON result line.
+	 *
+	 * @param string $model
+	 * @param list<string> $paths
+	 * @param int $timeout
+	 * @param int $startTime
+	 * @return \Generator
+	 * @psalm-return \Generator<int, string, mixed, void>
+	 * @throws \ErrorException|\RuntimeException
+	 */
+	private function runLocally(string $model, array $paths, int $timeout, int $startTime): \Generator {
 		$command = [
 			$this->config->getAppValueString('node_binary', lazy: true),
 			dirname(__DIR__, 2) . '/src/classifier_'.$model.'.js',
@@ -197,18 +246,14 @@ abstract class Classifier {
 				@exec('taskset -cp ' . implode(',', range(0, (int)$cores, 1)) . ' ' . ((string)$proc->getPid()));
 			}
 
-			$i = 0;
-			$errOut = '';
 			$buffer = '';
 			foreach ($proc as $type => $data) {
 				if ($type !== $proc::OUT) {
-					$errOut .= $data;
 					$this->logger->debug('Classifier process output: '.$data);
 					continue;
 				}
 				if ($this->maxExecutionTime > 0 && time() - $startTime > $this->maxExecutionTime) {
 					$proc->stop(10, 9);
-					$this->cleanUpTmpFiles();
 					return;
 				}
 				$buffer .= $data;
@@ -228,36 +273,90 @@ abstract class Classifier {
 						$buffer .= "\n".$result;
 						continue;
 					}
-					$this->logger->debug('Result for ' . $fileNames[$i] .'(' . basename($paths[$i]) . ') = ' . $result);
-					try {
-						// decode json
-						$results = json_decode($result, true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
-						yield $processedFiles[$i] => $results;
-						$this->queue->removeFromQueue($model, $processedFiles[$i]);
-					} catch (\JsonException $e) {
-						$this->logger->warning('JSON exception');
-						$this->logger->warning($e->getMessage(), ['exception' => $e]);
-						$this->logger->warning($result);
-					} catch (Exception $e) {
-						$this->logger->warning($e->getMessage(), ['exception' => $e]);
-					}
-					$i++;
+					yield $result;
 				}
 			}
 			$proc->stop();
-			$this->cleanUpTmpFiles();
-			if ($i !== count($paths)) {
-				$this->logger->warning('Classifier process output: '.$errOut);
-				throw new \ErrorException('Classifier process error');
-			}
 		} catch (ProcessTimedOutException $e) {
-			$this->cleanUpTmpFiles();
 			$this->logger->warning($proc->getErrorOutput());
 			throw new \RuntimeException('Classifier process timeout');
 		} catch (RuntimeException $e) {
-			$this->cleanUpTmpFiles();
 			$this->logger->warning($proc->getErrorOutput());
 			throw new \ErrorException('Classifier process could not be started');
+		}
+	}
+
+	/**
+	 * Offload the classification to a recognize ExApp (container) via AppAPI.
+	 *
+	 * The converted/downscaled image files are uploaded to the ExApp, which runs
+	 * the same classifier_<model>.js scripts and returns one JSON result line per
+	 * input file in the original order, just like the local node.js process.
+	 *
+	 * @param string $model
+	 * @param list<string> $paths
+	 * @param int $timeout
+	 * @return \Generator
+	 * @psalm-return \Generator<int, string, mixed, void>
+	 * @throws \ErrorException
+	 */
+	private function runExApp(string $model, array $paths, int $timeout): \Generator {
+		$exAppService = \OCP\Server::get(ExAppService::class);
+		$appId = $this->config->getAppValueString('exapp.id', 'recognize_exapp', lazy: true);
+
+		if (!$exAppService->isExAppEnabled($appId)) {
+			throw new \ErrorException('Recognize ExApp "' . $appId . '" is not deployed or not enabled');
+		}
+
+		$this->logger->debug('Offloading classification of ' . count($paths) . ' files to ExApp ' . $appId);
+
+		// Build a multipart request: the model name plus each image file's bytes.
+		$multipart = [
+			['name' => 'model', 'contents' => $model],
+		];
+		foreach ($paths as $index => $path) {
+			$contents = @file_get_contents($path);
+			if ($contents === false) {
+				throw new \ErrorException('Could not read file for ExApp classification: ' . $path);
+			}
+			$multipart[] = [
+				'name' => 'files[' . $index . ']',
+				'contents' => $contents,
+				'filename' => basename($path),
+			];
+		}
+
+		try {
+			$response = $exAppService->request($appId, '/classify', 'POST', [], [
+				'multipart' => $multipart,
+				'timeout' => count($paths) * $timeout,
+			]);
+		} catch (\Throwable $e) {
+			$this->logger->warning('ExApp classification request failed', ['exception' => $e]);
+			throw new \ErrorException('ExApp classification failed: ' . $e->getMessage());
+		}
+
+		// The ExApp returns the newline-delimited JSON results, one line per file,
+		// in the same order as the uploaded files.
+		if (is_array($response)) {
+			$body = isset($response['body']) && is_string($response['body']) ? $response['body'] : '';
+		} else {
+			$status = $response->getStatusCode();
+			$body = $response->getBody();
+			if (!is_string($body)) {
+				$body = (string)$body;
+			}
+			if ($status >= 400) {
+				$this->logger->warning('ExApp classification returned status ' . $status . ': ' . $body);
+				throw new \ErrorException('ExApp classification returned status ' . $status);
+			}
+		}
+
+		foreach (explode("\n", $body) as $result) {
+			if (trim($result) === '') {
+				continue;
+			}
+			yield $result;
 		}
 	}
 
