@@ -203,7 +203,7 @@ abstract class Classifier {
 	 * @param int $timeout
 	 * @param int $startTime
 	 * @return \Generator
-	 * @psalm-return \Generator<int, string, mixed, void>
+	 * @psalm-return \Generator<int, string, mixed, null>
 	 * @throws \ErrorException|\RuntimeException
 	 */
 	private function runLocally(string $model, array $paths, int $timeout, int $startTime): \Generator {
@@ -297,7 +297,7 @@ abstract class Classifier {
 	 * @param list<string> $paths
 	 * @param int $timeout
 	 * @return \Generator
-	 * @psalm-return \Generator<int, string, mixed, void>
+	 * @psalm-return \Generator<int, string, mixed, null>
 	 * @throws \ErrorException
 	 */
 	private function runExApp(string $model, array $paths, int $timeout): \Generator {

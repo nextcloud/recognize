@@ -27,7 +27,7 @@ use Psr\Log\LoggerInterface;
  * the app_api app is not installed, so recognize keeps working with the local
  * node.js backend.
  */
-class ExAppService {
+final class ExAppService {
 	private const APP_API_APP_ID = 'app_api';
 	private const APP_API_PUBLIC_FUNCTIONS = 'OCA\\AppAPI\\PublicFunctions';
 
@@ -56,7 +56,10 @@ class ExAppService {
 			return null;
 		}
 		try {
-			/** @psalm-suppress UndefinedClass */
+			/**
+			 * @psalm-suppress UndefinedClass AppAPI is an optional dependency
+			 * @psalm-suppress MixedReturnStatement
+			 */
 			return \OCP\Server::get(self::APP_API_PUBLIC_FUNCTIONS);
 		} catch (\Throwable $e) {
 			$this->logger->warning('Could not load AppAPI PublicFunctions', ['exception' => $e]);
@@ -74,7 +77,11 @@ class ExAppService {
 			return null;
 		}
 		try {
-			/** @psalm-suppress UndefinedClass */
+			/**
+			 * @psalm-suppress UndefinedClass AppAPI is an optional dependency
+			 * @psalm-suppress MixedReturnStatement
+			 * @psalm-suppress MixedMethodCall
+			 */
 			return $publicFunctions->getExApp($appId);
 		} catch (\Throwable $e) {
 			$this->logger->warning('Could not query ExApp ' . $appId, ['exception' => $e]);
@@ -104,13 +111,18 @@ class ExAppService {
 			throw new \RuntimeException('AppAPI is not available, cannot reach ExApp ' . $appId);
 		}
 
-		/** @psalm-suppress UndefinedClass */
+		/**
+		 * @psalm-suppress UndefinedClass AppAPI is an optional dependency
+		 * @psalm-suppress MixedAssignment
+		 * @psalm-suppress MixedMethodCall
+		 */
 		$response = $publicFunctions->exAppRequest($appId, $route, null, $method, $params, $options);
 
 		if (is_array($response) && isset($response['error'])) {
-			throw new \RuntimeException('ExApp request to ' . $appId . $route . ' failed: ' . $response['error']);
+			throw new \RuntimeException('ExApp request to ' . $appId . $route . ' failed: ' . (string)$response['error']);
 		}
 
+		/** @psalm-suppress MixedReturnStatement */
 		return $response;
 	}
 }

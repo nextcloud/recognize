@@ -236,7 +236,7 @@ final class AdminController extends Controller {
 		$appId = $this->settingsService->getSetting('exapp.id');
 		$exApp = $this->exAppService->getExApp($appId);
 
-		if ($exApp === null || !($exApp['enabled'] ?? false)) {
+		if ($exApp === null || !(bool)($exApp['enabled'] ?? false)) {
 			return new JSONResponse(['exapp' => false]);
 		}
 
