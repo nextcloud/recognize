@@ -446,6 +446,10 @@ class ClassifierTest extends TestCase {
 		list($classifier, ) = $this->jobList->getJobs(ClassifyImagenetJob::class, 1, 0);
 		$classifier->start($this->jobList);
 
+		self::assertCount(0,
+			$this->queue->getFromQueue(ImagenetClassifier::MODEL_NAME, $storageId, $rootId, 100),
+			'imagenet queue should be empty after classifying an image that is forwarded to landmarks');
+
 		self::assertTrue($this->jobList->has(ClassifyLandmarksJob::class, [
 			'storageId' => $storageId,
 			'rootId' => $rootId

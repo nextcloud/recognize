@@ -133,8 +133,9 @@ final class QueueMapper extends QBMapper {
 				'update' => $qb->createPositionalParameter($file->getUpdate(), IQueryBuilder::PARAM_BOOL)
 			])
 			->executeStatement();
-		$file->setId($qb->getLastInsertId());
-		return $file;
+		$insertedFile = clone $file;
+		$insertedFile->setId($qb->getLastInsertId());
+		return $insertedFile;
 	}
 
 	public function clearQueue(string $model): void {
