@@ -19,6 +19,7 @@ use OCA\Recognize\BackgroundJobs\SchedulerJob;
 use OCA\Recognize\BackgroundJobs\StorageCrawlJob;
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetectionMapper;
+use OCA\Recognize\Service\ExAppService;
 use OCA\Recognize\Service\QueueService;
 use OCA\Recognize\Service\SettingsService;
 use OCA\Recognize\Service\TagManager;
@@ -43,8 +44,9 @@ final class AdminController extends Controller {
 	private IAppConfig $config;
 	private FaceDetectionMapper $faceDetections;
 	private IBinaryFinder $binaryFinder;
+	private ExAppService $exAppService;
 
-	public function __construct(string $appName, IRequest $request, TagManager $tagManager, IJobList $jobList, SettingsService $settingsService, QueueService $queue, FaceClusterMapper $clusterMapper, FaceDetectionMapper $detectionMapper, IAppConfig $config, FaceDetectionMapper $faceDetections, IBinaryFinder $binaryFinder) {
+	public function __construct(string $appName, IRequest $request, TagManager $tagManager, IJobList $jobList, SettingsService $settingsService, QueueService $queue, FaceClusterMapper $clusterMapper, FaceDetectionMapper $detectionMapper, IAppConfig $config, FaceDetectionMapper $faceDetections, IBinaryFinder $binaryFinder, ExAppService $exAppService) {
 		parent::__construct($appName, $request);
 		$this->tagManager = $tagManager;
 		$this->jobList = $jobList;
@@ -55,6 +57,7 @@ final class AdminController extends Controller {
 		$this->config = $config;
 		$this->faceDetections = $faceDetections;
 		$this->binaryFinder = $binaryFinder;
+		$this->exAppService = $exAppService;
 	}
 
 	public function reset(): JSONResponse {
@@ -217,6 +220,34 @@ final class AdminController extends Controller {
 
 		$version = trim(implode("\n", $output));
 		return new JSONResponse(['nodejs' => $version]);
+	}
+
+	/**
+	 * Test connectivity to the configured recognize ExApp.
+	 *
+	 * Returns the ExApp version string on success, false if the ExApp is not
+	 * deployed/enabled, or null if AppAPI is not installed at all.
+	 */
+	public function exapp(): JSONResponse {
+		if (!$this->exAppService->isAppApiAvailable()) {
+			return new JSONResponse(['exapp' => null]);
+		}
+
+		$appId = $this->settingsService->getSetting('exapp.id');
+		$exApp = $this->exAppService->getExApp($appId);
+
+		if ($exApp === null || !(bool)($exApp['enabled'] ?? false)) {
+			return new JSONResponse(['exapp' => false]);
+		}
+
+		// Ping the ExApp's status route to make sure it is actually reachable.
+		try {
+			$response = $this->exAppService->request($appId, '/heartbeat', 'GET', [], ['timeout' => 5]);
+		} catch (\Throwable $e) {
+			return new JSONResponse(['exapp' => false]);
+		}
+
+		return new JSONResponse(['exapp' => $exApp['version'] ?? true]);
 	}
 
 	public function ffmpeg(): JSONResponse {

@@ -286,7 +286,54 @@
 				<a href="https://github.com/nextcloud/recognize/wiki/GPU-mode">{{ t('recognize', 'Learn how to setup GPU mode with Recognize') }}</a>
 			</p>
 		</NcSettingsSection>
-		<NcSettingsSection :name="t('recognize', 'Node.js')">
+		<NcSettingsSection :name="t('recognize', 'Classification backend')">
+			<p>
+				{{ t('recognize', 'By default, classification runs locally using the Node.js binary shipped with this app. Alternatively, you can offload classification to an External App (a container that can run on a different, more powerful machine, optionally with GPU support).') }}
+			</p>
+			<p>
+				<NcCheckboxRadioSwitch :model-value="settings['classifier.backend']"
+					value="local"
+					name="classifier_backend"
+					type="radio"
+					@update:model-value="onChangeBackend">
+					{{ t('recognize', 'Run classification locally (Node.js)') }}
+				</NcCheckboxRadioSwitch>
+				<NcCheckboxRadioSwitch :model-value="settings['classifier.backend']"
+					value="exapp"
+					name="classifier_backend"
+					type="radio"
+					:disabled="exapp === null"
+					@update:model-value="onChangeBackend">
+					{{ t('recognize', 'Offload classification to an External App') }}
+				</NcCheckboxRadioSwitch>
+			</p>
+			<template v-if="settings['classifier.backend'] === 'exapp'">
+				<NcNoteCard v-if="exapp === null" type="warning">
+					{{ t('recognize', 'The AppAPI app is not installed. It is required to use an External App as classification backend.') }}
+					<a href="https://apps.nextcloud.com/apps/app_api">{{ t('recognize', 'Install AppAPI') }}</a>
+				</NcNoteCard>
+				<p v-else-if="exapp === undefined">
+					<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking External App') }}
+				</p>
+				<NcNoteCard v-else-if="exapp === false" type="warning">
+					{{ t('recognize', 'The configured External App could not be reached. Install the "Recognize classification backend" app from the External Apps page and make sure it is deployed and enabled via AppAPI.') }}
+					<a href="https://apps.nextcloud.com/apps/recognize_exapp">{{ t('recognize', 'View on the App Store') }}</a>
+				</NcNoteCard>
+				<NcNoteCard v-else type="success">
+					{{ t('recognize', 'The External App is deployed and reachable (version {version}).', { version: exapp }) }}
+				</NcNoteCard>
+				<p>
+					{{ t('recognize', 'App ID of the recognize External App to use:') }}
+				</p>
+				<p>
+					<NcTextField v-model="settings['exapp.id']"
+						:label-visible="true"
+						:label="t('recognize', 'External App ID')"
+						@update:model-value="onChangeExAppId" />
+				</p>
+			</template>
+		</NcSettingsSection>
+		<NcSettingsSection v-if="settings['classifier.backend'] !== 'exapp'" :name="t('recognize', 'Node.js')">
 			<p v-if="nodejs === undefined">
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking Node.js') }}
 			</p>
@@ -417,7 +464,7 @@ import { generateUrl } from '@nextcloud/router'
 import { loadState } from '@nextcloud/initial-state'
 import humanizeDuration from 'humanize-duration'
 
-const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'ffmpeg_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'faces.batchSize', 'imagenet.batchSize', 'landmarks.batchSize', 'movinet.batchSize', 'musicnn.batchSize', 'clusterFaces.status', 'clusterFaces.lastRun', 'nice_binary', 'nice_value', 'concurrency.enabled']
+const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'ffmpeg_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'faces.batchSize', 'imagenet.batchSize', 'landmarks.batchSize', 'movinet.batchSize', 'musicnn.batchSize', 'clusterFaces.status', 'clusterFaces.lastRun', 'nice_binary', 'nice_value', 'concurrency.enabled', 'classifier.backend', 'exapp.id']
 
 const BOOLEAN_SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'clusterFaces.status', 'concurrency.enabled']
 
@@ -445,6 +492,7 @@ export default {
 			wasmtensorflow: undefined,
 			gputensorflow: undefined,
 			ffmpeg: undefined,
+			exapp: undefined,
 			cron: undefined,
 			modelsDownloaded: null,
 			imagenetJobs: null,
@@ -488,6 +536,7 @@ export default {
 		this.getMusl()
 		this.getNice()
 		this.getNodejsStatus()
+		this.getExAppStatus()
 		this.getFfmpegStatus()
 		this.getLibtensorflowStatus()
 		this.getWasmtensorflowStatus()
@@ -609,6 +658,12 @@ export default {
 			const { ffmpeg } = resp.data
 			this.ffmpeg = ffmpeg
 		},
+		async getExAppStatus() {
+			this.exapp = undefined
+			const resp = await axios.get(generateUrl('/apps/recognize/admin/exapp'))
+			const { exapp } = resp.data
+			this.exapp = exapp
+		},
 		async getLibtensorflowStatus() {
 			const resp = await axios.get(generateUrl('/apps/recognize/admin/libtensorflow'))
 			const { libtensorflow } = resp.data
@@ -641,6 +696,19 @@ export default {
 			setTimeout(() => {
 				this.submit()
 			}, 1000)
+		},
+
+		onChangeBackend(value) {
+			this.settings['classifier.backend'] = value
+			if (value === 'exapp') {
+				this.getExAppStatus()
+			}
+			this.onChange()
+		},
+
+		onChangeExAppId() {
+			this.getExAppStatus()
+			this.onChange()
 		},
 
 		async submit() {

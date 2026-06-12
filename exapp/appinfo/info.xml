@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!--
+  - SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+  - SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+<info>
+	<id>recognize_exapp</id>
+	<name>Recognize classification backend</name>
+	<summary>Run the Recognize machine learning classifiers in a container, optionally with GPU</summary>
+	<description><![CDATA[
+**Requires [`AppAPI`](https://apps.nextcloud.com/apps/app_api) and the [Recognize](https://apps.nextcloud.com/apps/recognize) app to work.**
+
+External App (ExApp) that runs the Recognize machine learning classifiers, so the
+inference workload can be offloaded from the Nextcloud server to a different, more
+powerful machine — optionally one with a GPU.
+
+This is useful when:
+
+* your Nextcloud server is small (e.g. a low-power VM, SBC or NAS) and you want to
+  run classification on a beefier machine,
+* you run Nextcloud in a musl/Alpine container (incl. the official Docker image and
+  Nextcloud AIO) where libtensorflow does not run natively,
+* you want to use a GPU for classification without setting up GPU passthrough for
+  the whole Nextcloud container.
+
+After installing this app from the External Apps page, open **Administration
+settings → Recognize → Classification backend** and select *"Offload classification
+to an External App"*.
+
+See https://github.com/nextcloud/recognize/issues/73
+	]]></description>
+	<version>12.1.0</version>
+	<licence>agpl</licence>
+	<author mail="mklehr@gmx.net" homepage="https://github.com/marcelklehr">Marcel Klehr</author>
+	<namespace>RecognizeExApp</namespace>
+	<category>ai</category>
+	<category>multimedia</category>
+	<website>https://github.com/nextcloud/recognize</website>
+	<bugs>https://github.com/nextcloud/recognize/issues</bugs>
+	<repository type="git">https://github.com/nextcloud/recognize.git</repository>
+	<screenshot>https://raw.githubusercontent.com/nextcloud/recognize/main/screenshots/Logo.png</screenshot>
+	<dependencies>
+		<nextcloud min-version="30" max-version="35"/>
+	</dependencies>
+	<external-app>
+		<docker-install>
+			<registry>ghcr.io</registry>
+			<image>nextcloud/recognize_exapp</image>
+			<image-tag>12.1.0</image-tag>
+		</docker-install>
+		<!-- No special scopes required: recognize only POSTs image bytes and reads
+		     back JSON results; the ExApp never accesses Nextcloud data itself. -->
+		<system>false</system>
+		<environment-variables>
+			<variable>
+				<name>RECOGNIZE_GPU</name>
+				<display-name>Enable GPU mode</display-name>
+				<description>Set to "true" to use the GPU for classification. Requires the GPU image variant and a working CUDA/cuDNN setup with GPU passthrough into the container.</description>
+			</variable>
+		</environment-variables>
+	</external-app>
+</info>

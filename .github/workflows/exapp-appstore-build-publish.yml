@@ -1,0 +1,108 @@
+# SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Packages the Recognize ExApp manifest and uploads it to the Nextcloud App Store.
+# The Docker image itself is built and pushed by exapp-publish-docker.yml; the App
+# Store only stores the manifest (appinfo/info.xml) and points at the registry.
+
+name: Build and publish Recognize ExApp
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  APP_ID: recognize_exapp
+
+jobs:
+  build_and_publish:
+    runs-on: ubuntu-latest
+    if: ${{ github.repository_owner == 'nextcloud' }}
+    steps:
+      - name: Check actor permission
+        uses: skjnldsv/check-actor-permission@v3.0
+        with:
+          require: write
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          path: recognize
+
+      - name: Stage ExApp for packaging
+        run: cp -r recognize/exapp "$APP_ID"
+
+      - name: Get app version number
+        id: app-version
+        uses: skjnldsv/xpath-action@v1.0.0
+        with:
+          filename: ${{ env.APP_ID }}/appinfo/info.xml
+          expression: "//info//version/text()"
+
+      - name: Get appinfo data
+        id: appinfo
+        uses: skjnldsv/xpath-action@v1.0.0
+        with:
+          filename: ${{ env.APP_ID }}/appinfo/info.xml
+          expression: "//info//dependencies//nextcloud/@min-version"
+
+      - name: Install Krankerl
+        run: |
+          wget -q https://github.com/ChristophWurst/krankerl/releases/download/v0.14.0/krankerl_0.14.0_amd64.deb
+          sudo dpkg -i krankerl_0.14.0_amd64.deb
+
+      - name: Package ${{ env.APP_ID }} with krankerl
+        run: |
+          cd "$APP_ID"
+          krankerl package
+
+      - name: Checkout server
+        continue-on-error: true
+        id: server-checkout
+        run: |
+          NCVERSION='${{ fromJSON(steps.appinfo.outputs.result).nextcloud.min-version }}'
+          wget --quiet "https://download.nextcloud.com/server/releases/latest-$NCVERSION.zip"
+          unzip "latest-$NCVERSION.zip"
+
+      - name: Checkout server master fallback
+        uses: actions/checkout@v4
+        if: ${{ steps.server-checkout.outcome != 'success' }}
+        with:
+          persist-credentials: false
+          submodules: true
+          repository: nextcloud/server
+          path: nextcloud
+
+      - name: Sign app
+        run: |
+          cd "$APP_ID/build/artifacts"
+          tar -xvf "$APP_ID.tar.gz"
+          cd ../../../
+          echo '${{ secrets.APP_PRIVATE_KEY }}' > "$APP_ID.key"
+          wget --quiet "https://github.com/nextcloud/app-certificate-requests/raw/master/$APP_ID/$APP_ID.crt"
+          php nextcloud/occ integrity:sign-app --privateKey="$APP_ID.key" --certificate="$APP_ID.crt" --path="$APP_ID/build/artifacts/$APP_ID"
+          cd "$APP_ID/build/artifacts"
+          tar -zcvf "$APP_ID.tar.gz" "$APP_ID"
+
+      - name: Attach tarball to github release
+        uses: svenstaro/upload-release-action@v2
+        id: attach_to_release
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ env.APP_ID }}/build/artifacts/${{ env.APP_ID }}.tar.gz
+          asset_name: ${{ env.APP_ID }}-${{ github.ref_name }}.tar.gz
+          tag: ${{ github.ref }}
+          overwrite: true
+
+      - name: Upload app to Nextcloud appstore
+        uses: nextcloud-releases/nextcloud-appstore-push-action@v1.0.3
+        with:
+          app_name: ${{ env.APP_ID }}
+          appstore_token: ${{ secrets.APPSTORE_TOKEN }}
+          download_url: ${{ steps.attach_to_release.outputs.browser_download_url }}
+          app_private_key: ${{ secrets.APP_PRIVATE_KEY }}
