@@ -27,9 +27,9 @@ namespace OCA\Recognize\Migration;
 
 use OCA\Recognize\Helper\TAR;
 use OCP\AppFramework\Services\IAppConfig;
-use OCP\IConfig;
 use OCP\Http\Client\IClientService;
 use OCP\IBinaryFinder;
+use OCP\IConfig;
 use OCP\Migration\IOutput;
 use OCP\Migration\IRepairStep;
 use Psr\Log\LoggerInterface;
