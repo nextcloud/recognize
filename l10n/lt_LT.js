@@ -90,6 +90,8 @@ OC.L10N.register(
     "Mountain" : "Kalnas",
     "Festival" : "Festivalis",
     "Event" : "Įvykis",
+    "Gas station" : "Degalinė",
+    "Parking" : "Parkavimas",
     "Public transport" : "Viešasis transportas",
     "Toy" : "Žaislas",
     "Vase" : "Vaza",
