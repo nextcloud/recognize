@@ -29,6 +29,7 @@ use OCA\Recognize\Helper\TAR;
 use OCP\AppFramework\Services\IAppConfig;
 use OCP\Http\Client\IClientService;
 use OCP\IBinaryFinder;
+use OCP\IConfig;
 use OCP\Migration\IOutput;
 use OCP\Migration\IRepairStep;
 use Psr\Log\LoggerInterface;
@@ -39,6 +40,7 @@ final class InstallDeps implements IRepairStep {
 	public const NODE_SERVER_UNOFFICIAL = 'https://unofficial-builds.nodejs.org/download/release/';
 
 	protected IAppConfig $config;
+	private IConfig $systemConfig;
 	private string $binaryDir;
 	private string $preGypBinaryDir;
 	private string $ffmpegDir;
@@ -52,8 +54,9 @@ final class InstallDeps implements IRepairStep {
 	private IBinaryFinder $binaryFinder;
 	private string $nodeModulesDir;
 
-	public function __construct(IAppConfig $config, IClientService $clientService, LoggerInterface $logger, IBinaryFinder $binaryFinder) {
+	public function __construct(IAppConfig $config, IConfig $systemConfig, IClientService $clientService, LoggerInterface $logger, IBinaryFinder $binaryFinder) {
 		$this->config = $config;
+		$this->systemConfig = $systemConfig;
 		$this->binaryDir = dirname(__DIR__, 2) . '/bin/';
 		$this->nodeModulesDir = dirname(__DIR__, 2) . '/node_modules/';
 		$this->preGypBinaryDir = dirname(__DIR__, 2) . '/node_modules/@mapbox/node-pre-gyp/bin/';
@@ -185,10 +188,25 @@ final class InstallDeps implements IRepairStep {
 		return trim(implode("\n", $output));
 	}
 
+
+	/**
+	 * Build proxy environment variable prefix from Nextcloud system config.
+	 *
+	 * @return string Empty string or "HTTPS_PROXY=... HTTP_PROXY=... " prefix
+	 */
+	protected function getProxyEnv() : string {
+		$proxy = $this->systemConfig->getSystemValueString('proxy', '');
+		if ($proxy === '') {
+			return '';
+		}
+		return 'HTTPS_PROXY=' . escapeshellarg($proxy) . ' '
+			 . 'HTTP_PROXY=' . escapeshellarg($proxy) . ' ';
+	}
+
 	protected function runTfjsInstall(string $nodeBinary) : void {
 		$oriCwd = getcwd();
 		chdir($this->tfjsPath);
-		$cmd = 'PATH='.escapeshellcmd($this->preGypBinaryDir).':'.escapeshellcmd($this->binaryDir).':$PATH ' . escapeshellcmd($nodeBinary) . ' ' . escapeshellarg($this->tfjsInstallScript) . ' cpu ' . escapeshellarg('download');
+		$cmd = $this->getProxyEnv() . 'PATH='.escapeshellcmd($this->preGypBinaryDir).':'.escapeshellcmd($this->binaryDir).':$PATH ' . escapeshellcmd($nodeBinary) . ' ' . escapeshellarg($this->tfjsInstallScript) . ' cpu ' . escapeshellarg('download');
 		try {
 			exec($cmd . ' 2>&1', $output, $returnCode); // Appending  2>&1 to avoid leaking sterr
 		} catch (\Throwable $e) {
@@ -205,7 +223,7 @@ final class InstallDeps implements IRepairStep {
 	protected function runTfjsGpuInstall(string $nodeBinary) : void {
 		$oriCwd = getcwd();
 		chdir($this->tfjsGPUPath);
-		$cmd = 'PATH='.escapeshellcmd($this->preGypBinaryDir).':'.escapeshellcmd($this->binaryDir).':$PATH ' . escapeshellcmd($nodeBinary) . ' ' . escapeshellarg($this->tfjsGpuInstallScript) . ' gpu ' . escapeshellarg('download');
+		$cmd = $this->getProxyEnv() . 'PATH='.escapeshellcmd($this->preGypBinaryDir).':'.escapeshellcmd($this->binaryDir).':$PATH ' . escapeshellcmd($nodeBinary) . ' ' . escapeshellarg($this->tfjsGpuInstallScript) . ' gpu ' . escapeshellarg('download');
 		try {
 			exec($cmd . ' 2>&1', $output, $returnCode); // Appending  2>&1 to avoid leaking sterr
 		} catch (\Throwable $e) {
@@ -222,7 +240,7 @@ final class InstallDeps implements IRepairStep {
 	protected function runFfmpegInstall(string $nodeBinary): void {
 		$oriCwd = getcwd();
 		chdir($this->ffmpegDir);
-		$cmd = escapeshellcmd($nodeBinary) . ' ' . escapeshellarg($this->ffmpegInstallScript);
+		$cmd = $this->getProxyEnv() . escapeshellcmd($nodeBinary) . ' ' . escapeshellarg($this->ffmpegInstallScript);
 		try {
 			exec($cmd . ' 2>&1', $output, $returnCode); // Appending  2>&1 to avoid leaking sterr
 		} catch (\Throwable $e) {
