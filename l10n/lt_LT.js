@@ -58,6 +58,7 @@ OC.L10N.register(
     "Office" : "Biuras",
     "Food" : "Maistas",
     "Furniture" : "Baldai",
+    "Book" : "Knyga",
     "Train" : "Traukinys",
     "Car" : "Automobilis",
     "Historic" : "Istorinis",
