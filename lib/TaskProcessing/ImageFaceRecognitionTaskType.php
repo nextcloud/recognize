@@ -64,7 +64,7 @@ final class ImageFaceRecognitionTaskType implements ITaskType {
 		return [
 			'output' => new ShapeDescriptor(
 				$this->l->t('Faces'),
-				$this->l->t('The detected faces. Each input image is mapped to a text containing JSON-encoded embedding vectors separated by line breaks.'),
+				$this->l->t('The detected faces. Each input image is mapped to a text containing JSON-encoded face descriptions ({x,y,width,height,score,vector,angle} ) separated by line breaks.'),
 				EShapeType::ListOfTexts,
 			),
 		];

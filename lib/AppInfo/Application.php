@@ -11,6 +11,7 @@ use OCA\DAV\Connector\Sabre\Principal;
 use OCA\DAV\Events\SabrePluginAddEvent;
 use OCA\Recognize\Dav\Faces\PropFindPlugin;
 use OCA\Recognize\Hooks\FileListener;
+use OCA\Recognize\TaskProcessing\TaskResultListener;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
@@ -23,6 +24,8 @@ use OCP\Files\Events\Node\NodeCreatedEvent;
 use OCP\Files\Events\Node\NodeDeletedEvent;
 use OCP\Files\Events\Node\NodeRenamedEvent;
 use OCP\Files\Events\NodeRemovedFromCache;
+use OCP\TaskProcessing\Events\TaskFailedEvent;
+use OCP\TaskProcessing\Events\TaskSuccessfulEvent;
 
 final class Application extends App implements IBootstrap {
 	public const APP_ID = 'recognize';
@@ -44,6 +47,9 @@ final class Application extends App implements IBootstrap {
 		$dispatcher->addServiceListener('OCP\Files\Config\Event\UserMountRemovedEvent', FileListener::class);
 		// it is not fired as of now, Added and Removed events are fired instead in that order
 		// $context->addServiceListener('OCP\Files\Config\Event\UserMountUpdatedEvent', FileListener::class);
+
+		$dispatcher->addServiceListener(TaskSuccessfulEvent::class, TaskResultListener::class);
+		$dispatcher->addServiceListener(TaskFailedEvent::class, TaskResultListener::class);
 	}
 
 	public function register(IRegistrationContext $context): void {
