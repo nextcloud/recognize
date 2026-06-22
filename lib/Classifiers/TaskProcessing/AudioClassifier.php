@@ -7,12 +7,13 @@ declare(strict_types=1);
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-namespace OCA\Recognize\TaskProcessing\Classifiers;
+namespace OCA\Recognize\Classifiers\TaskProcessing;
 
+use OCA\Recognize\Classifiers\AbstractTaskProcessingClassifier;
 use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
 use OCA\Recognize\TaskProcessing\AudioClassificationTaskType;
 
-final class AudioClassifier extends AbstractClassifier {
+final class AudioClassifier extends AbstractTaskProcessingClassifier {
 	protected function getTaskTypeId(): string {
 		return AudioClassificationTaskType::ID;
 	}

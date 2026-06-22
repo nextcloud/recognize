@@ -7,7 +7,7 @@ declare(strict_types=1);
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-namespace OCA\Recognize\TaskProcessing\Classifiers;
+namespace OCA\Recognize\Classifiers;
 
 use OCA\Recognize\AppInfo\Application;
 use OCA\Recognize\Db\QueueFile;
@@ -19,7 +19,7 @@ use OCP\TaskProcessing\IManager as ITaskProcessingManager;
 use OCP\TaskProcessing\Task;
 use Psr\Log\LoggerInterface;
 
-abstract class AbstractClassifier {
+abstract class AbstractTaskProcessingClassifier {
 	public function __construct(
 		protected LoggerInterface $logger,
 		protected ITaskProcessingManager $taskProcessingManager,
