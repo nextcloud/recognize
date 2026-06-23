@@ -42,6 +42,7 @@
       "php": "8.2.0"
     },
     "allow-plugins": {
+      "bamarni/composer-bin-plugin": true,
       "composer/package-versions-deprecated": true
     },
     "autoloader-suffix": "Recognize",

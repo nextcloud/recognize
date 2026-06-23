@@ -15,6 +15,7 @@ use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
 use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
 use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
 use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
+use OCA\Recognize\Classifiers\TaskProcessing\ImageFaceRecognitionClassifier;
 use OCA\Recognize\Classifiers\Video\MovinetClassifier;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
@@ -27,9 +28,11 @@ use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
 use OCP\Files\Config\ICachedMountInfo;
 use OCP\Files\Config\IUserMountCache;
+use OCP\IUserManager;
 use OCP\TaskProcessing\Events\TaskFailedEvent;
 use OCP\TaskProcessing\Events\TaskSuccessfulEvent;
 use OCP\TaskProcessing\Task;
+use OCP\IUserSession;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -49,6 +52,8 @@ final class TaskResultListener implements IEventListener {
 		private IAppConfig $config,
 		private IJobList $jobList,
 		private QueueService $queue,
+		private IUserSession $userSession,
+		private IUserManager $userManager,
 	) {
 	}
 
@@ -89,6 +94,8 @@ final class TaskResultListener implements IEventListener {
 
 		$fileIds = array_map('intval', array_values($input));
 		$results = array_values($output);
+
+		$this->userSession->setUser($this->userManager->get($task->getUserId()));
 
 		switch ($task->getTaskTypeId()) {
 			case ImageClassificationTaskType::ID:
@@ -188,13 +195,7 @@ final class TaskResultListener implements IEventListener {
 				if (!is_array($face)) {
 					continue;
 				}
-				if (isset($face['score']) && (float)$face['score'] < ClusteringFaceClassifier::MIN_FACE_RECOGNITION_SCORE) {
-					continue;
-				}
-				if (isset($face['angle']['roll'], $face['angle']['yaw'])
-					&& (abs((float)$face['angle']['roll']) > ClusteringFaceClassifier::MAX_FACE_ROLL
-						|| abs((float)$face['angle']['yaw']) > ClusteringFaceClassifier::MAX_FACE_YAW)
-				) {
+				if (isset($face['score']) && (float)$face['score'] < ImageFaceRecognitionClassifier::MIN_FACE_RECOGNITION_SCORE) {
 					continue;
 				}
 				// Accept either a full face object {x,y,width,height,score,vector,angle}
