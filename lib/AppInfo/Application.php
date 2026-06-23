@@ -11,7 +11,11 @@ use OCA\DAV\Connector\Sabre\Principal;
 use OCA\DAV\Events\SabrePluginAddEvent;
 use OCA\Recognize\Dav\Faces\PropFindPlugin;
 use OCA\Recognize\Hooks\FileListener;
+use OCA\Recognize\TaskProcessing\AudioClassificationTaskType;
+use OCA\Recognize\TaskProcessing\ImageClassificationTaskType;
+use OCA\Recognize\TaskProcessing\ImageFaceRecognitionTaskType;
 use OCA\Recognize\TaskProcessing\TaskResultListener;
+use OCA\Recognize\TaskProcessing\VideoClassificationTaskType;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
@@ -59,6 +63,11 @@ final class Application extends App implements IBootstrap {
 
 		/** Register $principalBackend for the DAV collection */
 		$context->registerServiceAlias('principalBackend', Principal::class);
+
+		$context->registerTaskProcessingTaskType(ImageClassificationTaskType::class);
+		$context->registerTaskProcessingTaskType(VideoClassificationTaskType::class);
+		$context->registerTaskProcessingTaskType(AudioClassificationTaskType::class);
+		$context->registerTaskProcessingTaskType(ImageFaceRecognitionTaskType::class);
 	}
 
 	/**
