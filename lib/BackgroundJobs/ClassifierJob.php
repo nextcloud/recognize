@@ -29,7 +29,7 @@ abstract class ClassifierJob extends TimedJob {
 		private SettingsService $settingsService,
 	) {
 		parent::__construct($time);
-		$this->setInterval(60 * 5);
+		$this->setInterval(60);
 		$this->setTimeSensitivity(self::TIME_INSENSITIVE);
 		$this->setAllowParallelRuns($settingsService->getSetting('concurrency.enabled') === 'true');
 	}
@@ -38,10 +38,13 @@ abstract class ClassifierJob extends TimedJob {
 	 * @param array{storageId: int, rootId: int} $argument
 	 */
 	protected function runClassifier(string $model, array $argument): void {
-		sleep(10);
-		if ($this->settingsService->getSetting('concurrency.enabled') !== 'true' && $this->anyOtherClassifierJobsRunning()) {
-			$this->logger->debug('Stalling job '.static::class.' with argument ' . var_export($argument, true) . ' because other classifiers are already reserved');
-			return;
+		$taskProcessingMode = $this->settingsService->getSetting('taskprocessing.enabled') === 'true';
+		if (!$taskProcessingMode) {
+			sleep(10);
+			if ($this->settingsService->getSetting('concurrency.enabled') !== 'true' && $this->anyOtherClassifierJobsRunning()) {
+				$this->logger->debug('Stalling job '.static::class.' with argument ' . var_export($argument, true) . ' because other classifiers are already reserved');
+				return;
+			}
 		}
 
 		$storageId = $argument['storageId'];

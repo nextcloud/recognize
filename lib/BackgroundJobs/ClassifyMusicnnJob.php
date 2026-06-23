@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace OCA\Recognize\BackgroundJobs;
 
 use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
+use OCA\Recognize\Classifiers\TaskProcessing\AudioClassifier as TaskProcessingAudioClassifier;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
 use OCA\Recognize\Service\SettingsService;
@@ -20,11 +21,13 @@ final class ClassifyMusicnnJob extends ClassifierJob {
 
 	private SettingsService $settingsService;
 	private MusicnnClassifier $musicnn;
+	private TaskProcessingAudioClassifier $tpAudio;
 
-	public function __construct(ITimeFactory $time, Logger $logger, QueueService $queue, SettingsService $settingsService, MusicnnClassifier $musicnn, IUserMountCache $mountCache, IJobList $jobList) {
+	public function __construct(ITimeFactory $time, Logger $logger, QueueService $queue, SettingsService $settingsService, MusicnnClassifier $musicnn, TaskProcessingAudioClassifier $tpAudio, IUserMountCache $mountCache, IJobList $jobList) {
 		parent::__construct($time, $logger, $queue, $mountCache, $jobList, $settingsService);
 		$this->settingsService = $settingsService;
 		$this->musicnn = $musicnn;
+		$this->tpAudio = $tpAudio;
 	}
 
 	/**
@@ -39,6 +42,10 @@ final class ClassifyMusicnnJob extends ClassifierJob {
 	 * @return void
 	 */
 	protected function classify(array $files) : void {
+		if ($this->settingsService->getSetting('taskprocessing.enabled') === 'true') {
+			$this->tpAudio->classify($files);
+			return;
+		}
 		$this->musicnn->classify($files);
 	}
 

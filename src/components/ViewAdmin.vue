@@ -21,13 +21,13 @@
 			<NcNoteCard v-else-if="!tagsEnabled" type="warning">
 				{{ t('recognize', 'The systemtags app is currently disabled. Some features of this app will not work.') }}
 			</NcNoteCard>
-			<NcNoteCard v-if="nodejs === false" type="warning">
+			<NcNoteCard v-if="!settings['taskprocessing.enabled'] && nodejs === false" type="warning">
 				{{ t('recognize', 'Could not execute the Node.js binary. You may need to set the path to a working binary manually.') }}
 			</NcNoteCard>
 			<NcNoteCard v-if="cron !== undefined && cron !== 'cron'" type="error">
 				{{ t('recognize', 'Background Jobs are not executed via cron. Recognize requires background jobs to be executed via cron.') }}
 			</NcNoteCard>
-			<template v-if="nodejs && (libtensorflow || wasmtensorflow) && cron === 'cron'">
+			<template v-if="readyToClassify">
 				<template v-if="settings['faces.enabled'] || settings['imagenet.enabled'] || settings['musicnn.enabled'] || settings['movinet.enabled']">
 					<NcNoteCard show-alert type="success">
 						{{ t('recognize', 'The app is installed and will automatically classify files in background processes.') }}
@@ -37,6 +37,22 @@
 					{{ t('recognize', 'None of the tagging options below are currently selected. The app will currently do nothing.') }}
 				</p>
 			</template>
+		</NcSettingsSection>
+		<NcSettingsSection :name="t('recognize', 'Classifier backend')">
+			<NcNoteCard v-if="recognizeBackendInstalled" type="success">
+				{{ t('recognize', 'The recognize_backend ExApp is installed; TaskProcessing mode is recommended.') }}
+			</NcNoteCard>
+			<NcNoteCard v-else-if="settings['taskprocessing.enabled']" type="warning">
+				{{ t('recognize', 'TaskProcessing mode is enabled, but no recognize_backend ExApp was detected. Make sure a TaskProcessing provider for the recognize task types is installed and enabled.') }}
+			</NcNoteCard>
+			<p>
+				<NcCheckboxRadioSwitch v-model="settings['taskprocessing.enabled']" type="switch" @update:model-value="onChange">
+					{{ t('recognize', 'Use Nextcloud TaskProcessing for classification') }}
+				</NcCheckboxRadioSwitch>
+			</p>
+			<p>
+				{{ t('recognize', 'When enabled, Recognize hands files off to a Nextcloud TaskProcessing provider (typically the recognize_backend ExApp) instead of running TensorFlow locally. Hardware checks and Node.js / FFmpeg requirements no longer apply in this mode.') }}
+			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :name="t('recognize', 'Face recognition')">
 			<template v-if="settings['faces.enabled']">
@@ -186,7 +202,7 @@
 			<p>
 				<NcCheckboxRadioSwitch v-model="settings['movinet.enabled']"
 					type="switch"
-					:disabled="(platform !== 'x86_64' || settings['tensorflow.purejs']) && !settings['movinet.enabled']"
+					:disabled="!settings['taskprocessing.enabled'] && (platform !== 'x86_64' || settings['tensorflow.purejs']) && !settings['movinet.enabled']"
 					@update:model-value="onChange">
 					{{ t('recognize', 'Enable human action recognition (e.g. arm wrestling, dribbling basketball, hula hooping)') }}
 				</NcCheckboxRadioSwitch>
@@ -219,7 +235,7 @@
 				{{ t('recognize', 'Clear queues and background jobs') }}
 			</button>
 		</NcSettingsSection>
-		<NcSettingsSection :name="t('recognize', 'Resource usage') ">
+		<NcSettingsSection v-if="!settings['taskprocessing.enabled']" :name="t('recognize', 'Resource usage') ">
 			<p>{{ t('recognize', 'By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used. (Note: In WASM mode, currently only 1 core can be used at all times.)') }}</p>
 			<p>
 				<NcTextField v-model="settings['tensorflow.cores']"
@@ -241,7 +257,7 @@
 				</NcCheckboxRadioSwitch>
 			</p>
 		</NcSettingsSection>
-		<NcSettingsSection :name="t('recognize', 'Tensorflow WASM mode')">
+		<NcSettingsSection v-if="!settings['taskprocessing.enabled']" :name="t('recognize', 'Tensorflow WASM mode')">
 			<p v-if="avx === undefined || platform === undefined || musl === undefined">
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking CPU') }}
 			</p>
@@ -270,7 +286,7 @@
 				{{ t('recognize', 'Recognize uses Tensorflow for running the machine learning models. Not all installations support Tensorflow, either because the CPU does not support AVX instructions, or because the platform is not x86 (ie. on a Raspberry Pi, which is ARM), or because the Operating System that your nextcloud runs on (when using docker, then that is the OS within the docker image) does not come with GNU lib C (for example Alpine Linux, which is also used by Nextcloud AIO). In most cases, even if your installation does not support native Tensorflow operation, you can still run Tensorflow using WebAssembly (WASM) in Node.js. This is somewhat slower but still works.') }}
 			</p>
 		</NcSettingsSection>
-		<NcSettingsSection :name="t('recognize', 'Tensorflow GPU mode')">
+		<NcSettingsSection v-if="!settings['taskprocessing.enabled']" :name="t('recognize', 'Tensorflow GPU mode')">
 			<p>
 				<NcCheckboxRadioSwitch v-model="settings['tensorflow.gpu']"
 					type="switch"
@@ -286,7 +302,7 @@
 				<a href="https://github.com/nextcloud/recognize/wiki/GPU-mode">{{ t('recognize', 'Learn how to setup GPU mode with Recognize') }}</a>
 			</p>
 		</NcSettingsSection>
-		<NcSettingsSection :name="t('recognize', 'Node.js')">
+		<NcSettingsSection v-if="!settings['taskprocessing.enabled']" :name="t('recognize', 'Node.js')">
 			<p v-if="nodejs === undefined">
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking Node.js') }}
 			</p>
@@ -329,7 +345,7 @@
 			</p>
 			<p>{{ t('recognize', 'For Nextcloud Snap users, you need to adjust this path to point to the snap\'s "current" directory as the pre-configured path will change with each update. For example, set it to "/var/snap/nextcloud/current/nextcloud/extra-apps/recognize/bin/node" instead of "/var/snap/nextcloud/9337974/nextcloud/extra-apps/recognize/bin/node"') }}</p>
 		</NcSettingsSection>
-		<NcSettingsSection :name="t('recognize', 'FFMPEG')">
+		<NcSettingsSection v-if="!settings['taskprocessing.enabled']" :name="t('recognize', 'FFMPEG')">
 			<p v-if="ffmpeg === undefined">
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking FFmpeg') }}
 			</p>
@@ -346,7 +362,7 @@
 				<NcTextField v-model="settings['ffmpeg_binary']" @update:model-value="onChange" />
 			</p>
 		</NcSettingsSection>
-		<NcSettingsSection :name="t('recognize', 'Classifier process priority')">
+		<NcSettingsSection v-if="!settings['taskprocessing.enabled']" :name="t('recognize', 'Classifier process priority')">
 			<p v-if="nice === undefined">
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking Nice binary') }}
 			</p>
@@ -417,9 +433,9 @@ import { generateUrl } from '@nextcloud/router'
 import { loadState } from '@nextcloud/initial-state'
 import humanizeDuration from 'humanize-duration'
 
-const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'ffmpeg_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'faces.batchSize', 'imagenet.batchSize', 'landmarks.batchSize', 'movinet.batchSize', 'musicnn.batchSize', 'clusterFaces.status', 'clusterFaces.lastRun', 'nice_binary', 'nice_value', 'concurrency.enabled']
+const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'ffmpeg_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'faces.batchSize', 'imagenet.batchSize', 'landmarks.batchSize', 'movinet.batchSize', 'musicnn.batchSize', 'clusterFaces.status', 'clusterFaces.lastRun', 'nice_binary', 'nice_value', 'concurrency.enabled', 'taskprocessing.enabled']
 
-const BOOLEAN_SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'clusterFaces.status', 'concurrency.enabled']
+const BOOLEAN_SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'clusterFaces.status', 'concurrency.enabled', 'taskprocessing.enabled']
 
 const MAX_RELATIVE_DATE = 1000 * 60 * 60 * 24 * 7 // one week
 
@@ -454,10 +470,20 @@ export default {
 			musicnnJobs: null,
 			clusterFacesJobs: null,
 			tagsEnabled: null,
+			recognizeBackendInstalled: false,
 		}
 	},
 
 	computed: {
+		readyToClassify() {
+			if (this.cron !== 'cron') {
+				return false
+			}
+			if (this.settings['taskprocessing.enabled']) {
+				return true
+			}
+			return Boolean(this.nodejs && (this.libtensorflow || this.wasmtensorflow))
+		},
 		pureJSReasons() {
 			const reasons = []
 			if (!this.avx) {
@@ -482,6 +508,7 @@ export default {
 	async created() {
 		this.modelsDownloaded = loadState('recognize', 'modelsDownloaded')
 		this.tagsEnabled = loadState('recognize', 'tagsEnabled')
+		this.recognizeBackendInstalled = loadState('recognize', 'recognizeBackendInstalled', false)
 		this.getCount()
 		this.getAVX()
 		this.getPlatform()
