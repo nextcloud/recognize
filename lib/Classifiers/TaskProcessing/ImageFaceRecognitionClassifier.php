@@ -14,7 +14,7 @@ use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
 use OCA\Recognize\TaskProcessing\ImageFaceRecognitionTaskType;
 
 final class ImageFaceRecognitionClassifier extends AbstractTaskProcessingClassifier {
-	const MIN_FACE_RECOGNITION_SCORE = 0.6;
+	public const MIN_FACE_RECOGNITION_SCORE = 0.6;
 
 	public const MIN_DATASET_SIZE = 120;
 	public const MIN_DETECTION_SIZE = 0.03;

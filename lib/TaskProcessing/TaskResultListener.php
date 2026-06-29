@@ -29,10 +29,10 @@ use OCP\EventDispatcher\IEventListener;
 use OCP\Files\Config\ICachedMountInfo;
 use OCP\Files\Config\IUserMountCache;
 use OCP\IUserManager;
+use OCP\IUserSession;
 use OCP\TaskProcessing\Events\TaskFailedEvent;
 use OCP\TaskProcessing\Events\TaskSuccessfulEvent;
 use OCP\TaskProcessing\Task;
-use OCP\IUserSession;
 use Psr\Log\LoggerInterface;
 
 /**
