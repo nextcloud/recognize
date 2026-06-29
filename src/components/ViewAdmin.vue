@@ -401,10 +401,10 @@
 			<p>{{ t('recognize', 'To download all models preliminary to executing the classification jobs, run the following command on the server terminal.') }}</p>
 			<pre><code>occ recognize:download-models</code></pre>
 			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'To trigger a full classification run, run the following command on the server terminal. (The classification will run in multiple background jobs which can run in parallel.)') }}</p>
+			<p>{{ t('recognize', 'To trigger a full classification run in the background, run the following command on the server terminal. (The classification will run in multiple background jobs which can run in parallel.)') }}</p>
 			<pre><code>occ recognize:recrawl</code></pre>
 			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'To run a full classification run on the terminal, run the following. (The classification will run in sequence inside your terminal.)') }}</p>
+			<p>{{ t('recognize', 'To run a full classification run on the terminal, run the following. (The classification will run in sequence inside your terminal; doesn\'t work with task processing mode)') }}</p>
 			<pre><code>occ recognize:classify</code></pre>
 			<p>&nbsp;</p>
 			<p>{{ t('recognize', 'Before running a full initial classification run on the terminal, you should stop all background processing that Recognize scheduled upon installation to avoid interference.') }}</p>
