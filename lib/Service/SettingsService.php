@@ -131,7 +131,9 @@ final class SettingsService {
 	 */
 	public function isRecognizeBackendInstalled(): bool {
 		try {
-			/** @var \OCA\AppAPI\PublicFunctions $publicFunctions */
+			/**
+			 * @var \OCA\AppAPI\PublicFunctions $publicFunctions
+			 */
 			$publicFunctions = Server::get(\OCA\AppAPI\PublicFunctions::class);
 		} catch (\Throwable $e) {
 			return false;

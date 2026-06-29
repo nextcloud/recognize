@@ -78,6 +78,10 @@ abstract class AbstractTaskProcessingClassifier {
 			throw new \RuntimeException('Could not schedule ' . $this->getTaskTypeId() . ' task', 0, $e);
 		}
 
+		/**
+		 * @psalm-suppress PossiblyNullOperand
+		 * @psalm-suppress InvalidOperand
+		 */
 		$this->logger->debug('Scheduled ' . $this->getTaskTypeId() . ' task #' . $task->getId() . ' for ' . count($fileIds) . ' files');
 
 		// Once scheduled, files leave the queue. The TaskResultListener applies results when the task completes.

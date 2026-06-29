@@ -73,6 +73,10 @@ final class TaskResultListener implements IEventListener {
 			return;
 		}
 		$model = $this->modelForTaskType($task->getTaskTypeId());
+		/**
+		 * @psalm-suppress PossiblyNullOperand
+		 * @psalm-suppress InvalidOperand
+		 */
 		$this->logger->warning('TaskProcessing task ' . $task->getTaskTypeId() . ' (id=' . $task->getId() . ') failed: ' . $event->getErrorMessage());
 		if ($model !== null) {
 			$this->config->setAppValueString($model . '.status', 'false');
@@ -88,14 +92,29 @@ final class TaskResultListener implements IEventListener {
 		$input = $task->getInput()['input'] ?? null;
 		$output = ($task->getOutput() ?? [])['output'] ?? null;
 		if (!is_array($input) || !is_array($output)) {
+			/**
+			 * @psalm-suppress PossiblyNullOperand
+			 * @psalm-suppress InvalidOperand
+			 */
 			$this->logger->warning('TaskProcessing task ' . $task->getTaskTypeId() . ' (id=' . $task->getId() . ') has unexpected input/output shape');
 			return;
 		}
 
+		/** @psalm-suppress RedundantFunctionCallGivenDocblockType */
 		$fileIds = array_map('intval', array_values($input));
+		/** @psalm-suppress RedundantFunctionCallGivenDocblockType */
 		$results = array_values($output);
 
-		$this->userSession->setUser($this->userManager->get($task->getUserId()));
+		$userId = $task->getUserId();
+		if ($userId === null) {
+			/**
+			 * @psalm-suppress PossiblyNullOperand
+			 * @psalm-suppress InvalidOperand
+			 */
+			$this->logger->warning('TaskProcessing task ' . $task->getTaskTypeId() . ' (id=' . $task->getId() . ') has no user set, skipping this task');
+			return;
+		}
+		$this->userSession->setUser($this->userManager->get($userId));
 
 		switch ($task->getTaskTypeId()) {
 			case ImageClassificationTaskType::ID:
