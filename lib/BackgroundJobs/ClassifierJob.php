@@ -56,9 +56,10 @@ abstract class ClassifierJob extends TimedJob {
 			return;
 		}
 		$this->logger->debug('Classifying files of storage '.$storageId. ' using '.$model);
+		$batchSize = $taskProcessingMode ? 500 : $this->getBatchSize();
 		try {
-			$this->logger->debug('fetching '.$this->getBatchSize().' files from '.$model.' queue');
-			$files = $this->queue->getFromQueue($model, $storageId, $rootId, $this->getBatchSize());
+			$this->logger->debug('fetching '.$batchSize.' files from '.$model.' queue');
+			$files = $this->queue->getFromQueue($model, $storageId, $rootId, $batchSize);
 		} catch (Exception $e) {
 			$this->settingsService->setSetting($model.'.status', 'false');
 			$this->logger->error('Cannot retrieve items from '.$model.' queue', ['exception' => $e]);

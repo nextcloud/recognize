@@ -80,7 +80,8 @@
 				<NcCheckboxRadioSwitch v-model="settings['faces.enabled']" type="switch" @update:model-value="onChange">
 					{{ t('recognize', 'Enable face recognition (groups photos by faces that appear in them; UI is in the photos app)') }}
 				</NcCheckboxRadioSwitch>
-				<NcTextField :disabled="!settings['faces.enabled']"
+				<NcTextField v-if="!settings['taskprocessing.enabled']"
+					:disabled="!settings['faces.enabled']"
 					v-model="settings['faces.batchSize']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~500 or more, in WASM mode ~50 is recommended)')"
@@ -128,7 +129,8 @@
 				<NcCheckboxRadioSwitch v-model="settings['imagenet.enabled']" type="switch" @update:model-value="onChange">
 					{{ t('recognize', 'Enable object recognition (e.g. food, vehicles, landscapes)') }}
 				</NcCheckboxRadioSwitch>
-				<NcTextField :disabled="!settings['imagenet.enabled']"
+				<NcTextField v-if="!settings['taskprocessing.enabled']"
+					:disabled="!settings['imagenet.enabled']"
 					v-model="settings['imagenet.batchSize']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
@@ -143,7 +145,8 @@
 					@update:model-value="onChange">
 					{{ t('recognize', 'Enable landmark recognition (e.g. Eiffel Tower, Golden Gate Bridge)') }}
 				</NcCheckboxRadioSwitch>
-				<NcTextField :disabled="!settings['imagenet.enabled'] || !settings['landmarks.enabled']"
+				<NcTextField v-if="!settings['taskprocessing.enabled']"
+					:disabled="!settings['imagenet.enabled'] || !settings['landmarks.enabled']"
 					v-model="settings['landmarks.batchSize']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
@@ -173,7 +176,8 @@
 				<NcCheckboxRadioSwitch v-model="settings['musicnn.enabled']" type="switch" @update:model-value="onChange">
 					{{ t('recognize', 'Enable music genre recognition (e.g. pop, rock, folk, metal, new age)') }}
 				</NcCheckboxRadioSwitch>
-				<NcTextField :disabled="!settings['musicnn.enabled']"
+				<NcTextField v-if="!settings['taskprocessing.enabled']"
+					:disabled="!settings['musicnn.enabled']"
 					v-model="settings['musicnn.batchSize']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
@@ -206,7 +210,8 @@
 					@update:model-value="onChange">
 					{{ t('recognize', 'Enable human action recognition (e.g. arm wrestling, dribbling basketball, hula hooping)') }}
 				</NcCheckboxRadioSwitch>
-				<NcTextField :disabled="!settings['movinet.enabled']"
+				<NcTextField v-if="!settings['taskprocessing.enabled']"
+					:disabled="!settings['movinet.enabled']"
 					v-model="settings['movinet.batchSize']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~20 or more, in WASM mode ~5 is recommended)')"
