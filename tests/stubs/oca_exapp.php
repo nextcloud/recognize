@@ -10,7 +10,8 @@ declare(strict_types=1);
 namespace OCA\AppAPI\Db;
 
 class ExApp implements \JsonSerializable {
-	public function jsonSerialize(): array {}
+	public function jsonSerialize(): array {
+	}
 }
 
 namespace OCA\AppAPI\Service;
@@ -21,7 +22,8 @@ use OCP\Http\Client\IResponse;
 use OCP\IRequest;
 
 class ExAppService {
-	public function getExApp(string $appId): ?ExApp {}
+	public function getExApp(string $appId): ?ExApp {
+	}
 }
 
 class AppAPIService {
@@ -33,7 +35,8 @@ class AppAPIService {
 		array $params = [],
 		array $options = [],
 		?IRequest $request = null,
-	): array|IResponse {}
+	): array|IResponse {
+	}
 
 	public function requestToExAppAsync(
 		ExApp $exApp,
@@ -43,7 +46,8 @@ class AppAPIService {
 		array $params = [],
 		array $options = [],
 		?IRequest $request = null,
-	): IPromise {}
+	): IPromise {
+	}
 }
 
 namespace OCA\AppAPI;
@@ -73,7 +77,8 @@ readonly class PublicFunctions {
 		array $params = [],
 		array $options = [],
 		?IRequest $request = null,
-	): array|IResponse {}
+	): array|IResponse {
+	}
 
 	/**
 	 * Request to ExApp with AppAPI auth headers and ExApp user initialization
@@ -88,7 +93,8 @@ readonly class PublicFunctions {
 		array $params = [],
 		array $options = [],
 		?IRequest $request = null,
-	): array|IResponse {}
+	): array|IResponse {
+	}
 
 	/**
 	 * Async request to ExApp with AppAPI auth headers
@@ -103,7 +109,8 @@ readonly class PublicFunctions {
 		array $params = [],
 		array $options = [],
 		?IRequest $request = null,
-	): IPromise {}
+	): IPromise {
+	}
 
 	/**
 	 * Async request to ExApp with AppAPI auth headers and ExApp user initialization
@@ -120,7 +127,8 @@ readonly class PublicFunctions {
 		array $params = [],
 		array $options = [],
 		?IRequest $request = null,
-	): IPromise {}
+	): IPromise {
+	}
 
 	/**
 	 * Get basic ExApp info by appid
@@ -129,5 +137,6 @@ readonly class PublicFunctions {
 	 *
 	 * @return array|null ExApp info (appid, version, name, enabled) or null if no ExApp found
 	 */
-	public function getExApp(string $appId): ?array {}
+	public function getExApp(string $appId): ?array {
+	}
 }
