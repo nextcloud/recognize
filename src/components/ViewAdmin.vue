@@ -66,7 +66,7 @@
 					{{ t('recognize', 'Waiting for status reports on face recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs.') }}
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued" type="info">
-					{{ t('recognize', 'Face recognition:') }} {{ countQueued.faces }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['faces.lastFile']) }}<span v-if="facesJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ facesJobs.scheduled }}, {{ facesJobs.lastRun ? t('recognize', 'Last background job execution: ') + showDate(facesJobs.lastRun) : '' }}</span>
+					{{ t('recognize', 'Face recognition:') }} {{ countQueued.faces }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['faces.lastFile']) }}<span v-if="facesJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ facesJobs.scheduled }}, {{ facesJobs.lastRun ? t('recognize', 'Last background job execution: ') + showDate(facesJobs.lastRun) : '' }}</span><span v-if="settings['taskprocessing.enabled'] && facesTpStats">, {{ t('recognize', 'TaskProcessing tasks: ') }} {{ facesTpStats.scheduled }} {{ t('recognize', 'scheduled') }}, {{ facesTpStats.running }} {{ t('recognize', 'running') }}</span>
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued && countQueued.faces && facesJobs && !facesJobs.scheduled" show-alert type="error">
 					{{ t('recognize', 'There are queued files in the face recognition queue but no background job is scheduled to process them.') }}
@@ -101,7 +101,7 @@
 					{{ t('recognize', 'Waiting for status reports on object recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs.') }}
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued" type="info">
-					{{ t('recognize', 'Object recognition:') }} {{ countQueued.imagenet }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['imagenet.lastFile']) }}<span v-if="imagenetJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ imagenetJobs.scheduled }}, {{ imagenetJobs.lastRun ? t('recognize', 'Last background job execution: ') + showDate(imagenetJobs.lastRun) : '' }}</span>
+					{{ t('recognize', 'Object recognition:') }} {{ countQueued.imagenet }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['imagenet.lastFile']) }}<span v-if="imagenetJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ imagenetJobs.scheduled }}, {{ imagenetJobs.lastRun ? t('recognize', 'Last background job execution: ') + showDate(imagenetJobs.lastRun) : '' }}</span><span v-if="settings['taskprocessing.enabled'] && imagenetTpStats">, {{ t('recognize', 'TaskProcessing tasks: ') }} {{ imagenetTpStats.scheduled }} {{ t('recognize', 'scheduled') }}, {{ imagenetTpStats.running }} {{ t('recognize', 'running') }}</span>
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued && countQueued.imagenet && imagenetJobs && !imagenetJobs.scheduled" show-alert type="error">
 					{{ t('recognize', 'There are queued files in the object detection queue but no background job is scheduled to process them.') }}
@@ -166,7 +166,7 @@
 					{{ t('recognize', 'Waiting for status reports on audio recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs.') }}
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued" type="info">
-					{{ t('recognize', 'Music genre recognition:') }} {{ countQueued.musicnn }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['musicnn.lastFile']) }}<span v-if="musicnnJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ musicnnJobs.scheduled }}, {{ musicnnJobs.lastRun ? t('recognize', 'Last background job execution: ') + showDate(musicnnJobs.lastRun) : '' }}</span>
+					{{ t('recognize', 'Music genre recognition:') }} {{ countQueued.musicnn }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['musicnn.lastFile']) }}<span v-if="musicnnJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ musicnnJobs.scheduled }}, {{ musicnnJobs.lastRun ? t('recognize', 'Last background job execution: ') + showDate(musicnnJobs.lastRun) : '' }}</span><span v-if="settings['taskprocessing.enabled'] && musicnnTpStats">, {{ t('recognize', 'TaskProcessing tasks: ') }} {{ musicnnTpStats.scheduled }} {{ t('recognize', 'scheduled') }}, {{ musicnnTpStats.running }} {{ t('recognize', 'running') }}</span>
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued && countQueued.musicnn && musicnnJobs && !musicnnJobs.scheduled" show-alert type="error">
 					{{ t('recognize', 'There are queued files but no background job is scheduled to process them.') }}
@@ -197,7 +197,7 @@
 					{{ t('recognize', 'Waiting for status reports on video recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs.') }}
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued" type="info">
-					{{ t('recognize', 'Video recognition:') }} {{ countQueued.movinet }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['movinet.lastFile']) }}<span v-if="movinetJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ movinetJobs.scheduled }}, {{ movinetJobs.lastRun ? t('recognize', 'Last background job execution: ') + showDate(movinetJobs.lastRun) : '' }}</span>
+					{{ t('recognize', 'Video recognition:') }} {{ countQueued.movinet }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['movinet.lastFile']) }}<span v-if="movinetJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ movinetJobs.scheduled }}, {{ movinetJobs.lastRun ? t('recognize', 'Last background job execution: ') + showDate(movinetJobs.lastRun) : '' }}</span><span v-if="settings['taskprocessing.enabled'] && movinetTpStats">, {{ t('recognize', 'TaskProcessing tasks: ') }} {{ movinetTpStats.scheduled }} {{ t('recognize', 'scheduled') }}, {{ movinetTpStats.running }} {{ t('recognize', 'running') }}</span>
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued && countQueued.movinet && movinetJobs && !movinetJobs.scheduled" show-alert type="error">
 					{{ t('recognize', 'There are queued files but no background job is scheduled to process them.') }}
@@ -434,9 +434,16 @@
 <script>
 import { NcNoteCard, NcSettingsSection, NcCheckboxRadioSwitch, NcTextField } from '@nextcloud/vue'
 import axios from '@nextcloud/axios'
-import { generateUrl } from '@nextcloud/router'
+import { generateOcsUrl, generateUrl } from '@nextcloud/router'
 import { loadState } from '@nextcloud/initial-state'
 import humanizeDuration from 'humanize-duration'
+
+const TASK_PROCESSING_TASK_TYPES = {
+	imagenet: 'recognize:image:classification',
+	faces: 'recognize:image:facerecognition',
+	movinet: 'recognize:video:classification',
+	musicnn: 'recognize:audio:classification',
+}
 
 const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'ffmpeg_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'faces.batchSize', 'imagenet.batchSize', 'landmarks.batchSize', 'movinet.batchSize', 'musicnn.batchSize', 'clusterFaces.status', 'clusterFaces.lastRun', 'nice_binary', 'nice_value', 'concurrency.enabled', 'taskprocessing.enabled']
 
@@ -474,6 +481,10 @@ export default {
 			movinetJobs: null,
 			musicnnJobs: null,
 			clusterFacesJobs: null,
+			imagenetTpStats: null,
+			facesTpStats: null,
+			movinetTpStats: null,
+			musicnnTpStats: null,
 			tagsEnabled: null,
 			recognizeBackendInstalled: false,
 		}
@@ -531,6 +542,10 @@ export default {
 		this.getJobsStatus('movinet')
 		this.getJobsStatus('musicnn')
 		this.getJobsStatus('clusterFaces')
+		this.getTaskProcessingStats('imagenet')
+		this.getTaskProcessingStats('faces')
+		this.getTaskProcessingStats('movinet')
+		this.getTaskProcessingStats('musicnn')
 
 		setInterval(async () => {
 			this.getCount()
@@ -546,6 +561,10 @@ export default {
 			this.getJobsStatus('movinet')
 			this.getJobsStatus('musicnn')
 			this.getJobsStatus('clusterFaces')
+			this.getTaskProcessingStats('imagenet')
+			this.getTaskProcessingStats('faces')
+			this.getTaskProcessingStats('movinet')
+			this.getTaskProcessingStats('musicnn')
 		}, 5 * 60 * 1000)
 
 		try {
@@ -665,6 +684,26 @@ export default {
 			const resp = await axios.get(generateUrl(`/apps/recognize/admin/jobs/${task}`))
 			const { scheduled, lastRun } = resp.data
 			this[task + 'Jobs'] = { scheduled, lastRun }
+		},
+		async getTaskProcessingStats(classifier) {
+			const taskTypeId = TASK_PROCESSING_TASK_TYPES[classifier]
+			if (!taskTypeId) {
+				return
+			}
+			try {
+				const url = generateOcsUrl('/taskprocessing/queue_stats')
+					+ '?taskTypeIds[]=' + encodeURIComponent(taskTypeId)
+				const resp = await axios.get(url, {
+					headers: { 'OCS-APIRequest': 'true', Accept: 'application/json' },
+				})
+				const data = resp.data?.ocs?.data ?? {}
+				this[classifier + 'TpStats'] = {
+					scheduled: data.scheduled_count ?? 0,
+					running: data.running_count ?? 0,
+				}
+			} catch (e) {
+				this[classifier + 'TpStats'] = null
+			}
 		},
 		onChange() {
 			if (this.timeout) {
