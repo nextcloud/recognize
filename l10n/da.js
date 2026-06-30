@@ -24,6 +24,7 @@ OC.L10N.register(
     "Book" : "Bog",
     "Train" : "Tog",
     "Car" : "Bil",
+    "Historic" : "Historisk",
     "Clock" : "Ur",
     "Screen" : "Skærm",
     "Display" : "Vis",
@@ -38,6 +39,7 @@ OC.L10N.register(
     "Bucket" : "Spand",
     "Festival" : "Festival",
     "Event" : "Begivenhed",
+    "Sign" : "Signér",
     "Gallery" : "Galleri",
     "Park" : "Park"
 },

@@ -22,6 +22,7 @@
     "Book" : "Bog",
     "Train" : "Tog",
     "Car" : "Bil",
+    "Historic" : "Historisk",
     "Clock" : "Ur",
     "Screen" : "Skærm",
     "Display" : "Vis",
@@ -36,6 +37,7 @@
     "Bucket" : "Spand",
     "Festival" : "Festival",
     "Event" : "Begivenhed",
+    "Sign" : "Signér",
     "Gallery" : "Galleri",
     "Park" : "Park"
 },"pluralForm" :"nplurals=2; plural=(n != 1);"

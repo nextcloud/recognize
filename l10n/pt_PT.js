@@ -56,6 +56,7 @@ OC.L10N.register(
     "Train" : "Comboio",
     "Butcher" : "Açougueiro",
     "Car" : "Carro",
+    "Historic" : "Histórico",
     "Boat" : "Barco",
     "Church" : "Igreja",
     "Keyboard" : "Teclado",
