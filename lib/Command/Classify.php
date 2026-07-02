@@ -58,7 +58,7 @@ final class Classify extends Command {
 	 */
 	protected function configure() {
 		$this->setName('recognize:classify')
-			->setDescription('Classify all files with the current settings in one go (will likely take a long time)')
+			->setDescription('Classify all files with the current settings in one go on the terminal (will likely take a long time; doesn\'t work with TaskProcessing mode)')
 			->addOption('retry', null, InputOption::VALUE_NONE, "Only classify untagged images");
 	}
 

@@ -41,7 +41,7 @@ final class Recrawl extends Command {
 	 */
 	protected function configure() {
 		$this->setName('recognize:recrawl')
-			->setDescription('Go through all files again');
+			->setDescription('Trigger a full classification run in the background');
 	}
 
 	/**

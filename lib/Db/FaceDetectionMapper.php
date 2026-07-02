@@ -7,7 +7,9 @@
 declare(strict_types=1);
 namespace OCA\Recognize\Db;
 
+use OCA\Recognize\Classifiers\TaskProcessing\ImageFaceRecognitionClassifier;
 use OCA\Recognize\Service\FaceClusterAnalyzer;
+use OCA\Recognize\Service\SettingsService;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\Entity;
 use OCP\AppFramework\Db\QBMapper;
@@ -21,11 +23,20 @@ use OCP\IDBConnection;
  */
 final class FaceDetectionMapper extends QBMapper {
 	private IConfig $config;
+	private SettingsService $settingsService;
 
-	public function __construct(IDBConnection $db, IConfig $config) {
+	public function __construct(IDBConnection $db, IConfig $config, SettingsService $settingsService) {
 		parent::__construct($db, 'recognize_face_detections', FaceDetection::class);
 		$this->db = $db;
 		$this->config = $config;
+		$this->settingsService = $settingsService;
+	}
+
+	private function getMinDetectionSize(): float {
+		if ($this->settingsService->getSetting('taskprocessing.enabled') === 'true') {
+			return ImageFaceRecognitionClassifier::MIN_DETECTION_SIZE;
+		}
+		return FaceClusterAnalyzer::MIN_DETECTION_SIZE;
 	}
 
 	/**
@@ -329,12 +340,13 @@ final class FaceDetectionMapper extends QBMapper {
 	}
 
 	public function countUnclustered(): int {
+		$minDetectionSize = $this->getMinDetectionSize();
 		$qb = $this->db->getQueryBuilder();
 		$qb->select($qb->func()->count('id'))
 			->from('recognize_face_detections')
 			->where($qb->expr()->isNull('cluster_id'))
-			->andWhere($qb->expr()->gte('height', $qb->createPositionalParameter(FaceClusterAnalyzer::MIN_DETECTION_SIZE)))
-			->andWhere($qb->expr()->gte('width', $qb->createPositionalParameter(FaceClusterAnalyzer::MIN_DETECTION_SIZE)));
+			->andWhere($qb->expr()->gte('height', $qb->createPositionalParameter($minDetectionSize)))
+			->andWhere($qb->expr()->gte('width', $qb->createPositionalParameter($minDetectionSize)));
 		$result = $qb->executeQuery();
 		/** @var int|string $count */
 		$count = $result->fetch(\PDO::FETCH_COLUMN);
@@ -347,12 +359,13 @@ final class FaceDetectionMapper extends QBMapper {
 	 * @throws \OCP\DB\Exception
 	 */
 	public function getUsersForUnclustered(): array {
+		$minDetectionSize = $this->getMinDetectionSize();
 		$qb = $this->db->getQueryBuilder();
 		$qb->selectDistinct('user_id')
 			->from('recognize_face_detections')
 			->where($qb->expr()->isNull('cluster_id'))
-			->andWhere($qb->expr()->gte('height', $qb->createPositionalParameter(FaceClusterAnalyzer::MIN_DETECTION_SIZE)))
-			->andWhere($qb->expr()->gte('width', $qb->createPositionalParameter(FaceClusterAnalyzer::MIN_DETECTION_SIZE)));
+			->andWhere($qb->expr()->gte('height', $qb->createPositionalParameter($minDetectionSize)))
+			->andWhere($qb->expr()->gte('width', $qb->createPositionalParameter($minDetectionSize)));
 		$result = $qb->executeQuery();
 		/** @var array<string> $users */
 		$users = $result->fetchAll(\PDO::FETCH_COLUMN);
