@@ -106,18 +106,37 @@ final class FaceRoot implements ICollection, IMoveTarget {
 					return $child;
 				}
 			}
+			// Fallback: check against file basename only
+			foreach ($this->getChildren() as $child) {
+				if ($child->getName() === $name || $child->getFile()->getName() === $name) {
+					return $child;
+				}
+			}
 			throw new NotFound("$name not found");
 		}
 		[$detectionId,] = explode('-', $name);
-		try {
-			$detection = $this->detectionMapper->find((int)$detectionId);
-		} catch (DoesNotExistException $e) {
-			throw new NotFound();
+		if (is_numeric($detectionId)) {
+			try {
+				$detection = $this->detectionMapper->find((int)$detectionId);
+			} catch (DoesNotExistException $e) {
+				throw new NotFound();
+			}
+			if ($detection->getClusterId() !== $this->cluster->getId()) {
+				throw new NotFound();
+			}
+			return new FacePhoto($this->detectionMapper, $detection, $this->rootFolder->getUserFolder($this->user->getUID()), $this->tagManager, $this->previewManager);
 		}
-		if ($detection->getClusterId() !== $this->cluster->getId()) {
-			throw new NotFound();
+
+		$userFolder = $this->rootFolder->getUserFolder($this->user->getUID());
+		$detections = $this->detectionMapper->findByClusterId($this->cluster->getId());
+		$matching = array_values(array_filter($detections, function (FaceDetection $detection) use ($userFolder, $name) {
+			$file = $userFolder->getFirstNodeById($detection->getFileId());
+			return $file !== null && $file->getName() === $name;
+		}));
+		if (count($matching) === 0) {
+			throw new NotFound("$name not found");
 		}
-		return new FacePhoto($this->detectionMapper, $detection, $this->rootFolder->getUserFolder($this->user->getUID()), $this->tagManager, $this->previewManager);
+		return new FacePhoto($this->detectionMapper, $matching[0], $userFolder, $this->tagManager, $this->previewManager);
 	}
 
 	public function childExists($name): bool {
