@@ -400,7 +400,7 @@ jobs:
           # Run cron a few times so SchedulerJob -> StorageCrawlJob -> Classify*Job run
           # in sequence and schedule the TaskProcessing tasks for the uploaded files.
           for i in $(seq 1 12); do
-            ./occ background:cron
+            php cron.php -v
             sleep 30
           done
 
@@ -412,7 +412,7 @@ jobs:
           NEXT_WAIT_TIME=0
           DETECTIONS=0
           until [ $NEXT_WAIT_TIME -eq 60 ] || [ "$DETECTIONS" -gt 0 ]; do
-            ./occ background:cron
+            php cron.php -v
             DETECTIONS=$(sqlite3 data/nextcloud.db "select count(*) from oc_recognize_face_detections;" 2>/dev/null || echo 0)
             echo "face detections so far: $DETECTIONS (iteration $NEXT_WAIT_TIME)"
             sleep 30
