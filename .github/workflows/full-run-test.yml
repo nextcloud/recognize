@@ -208,3 +208,253 @@ jobs:
         if: always()
         run: |
           cat data/nextcloud.log
+
+  taskprocessing:
+    runs-on: ubuntu-latest
+
+    strategy:
+      # do not stop on another job's failure
+      fail-fast: false
+      matrix:
+        php-versions: ['8.3']
+        databases: ['sqlite']
+        # recognize_backend requires Nextcloud >= 32, so only test against master here
+        server-versions: ['master']
+        imagenet-enabled: ['true']
+        faces-enabled: ['true']
+        musicnn-enabled: ['true']
+        movinet-enabled: ['true']
+
+    name: Test classify in taskprocessing mode on ${{ matrix.databases }}-${{ matrix.server-versions }} imagenet:${{ matrix.imagenet-enabled }},faces:${{ matrix.faces-enabled }},movinet:${{ matrix.movinet-enabled }},musicnn:${{ matrix.musicnn-enabled }}
+
+    env:
+      MYSQL_PORT: 4444
+      PGSQL_PORT: 4445
+
+      # recognize_backend ExApp (deployed via AppAPI's manual_install deploy daemon)
+      PYTHONUNBUFFERED: 1
+      APP_HOST: 0.0.0.0
+      APP_ID: recognize_backend
+      APP_PORT: 9031
+      APP_SECRET: 12345
+      APP_VERSION: 1.0.0
+      NEXTCLOUD_URL: http://localhost:8080
+      # No NVIDIA driver on the runner; the backend falls back to CPU automatically
+      COMPUTE_DEVICE: CPU
+
+    timeout-minutes: 90 # model download + CPU inference is slow on the first (uncached) run
+
+    services:
+      mysql:
+        image: mariadb:10.5
+        ports:
+          - 4444:3306/tcp
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+        options: --health-cmd="mysqladmin ping" --health-interval 5s --health-timeout 2s --health-retries 5
+      postgres:
+        image: postgres
+        ports:
+          - 4445:5432/tcp
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: rootpassword
+          POSTGRES_DB: nextcloud
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 2s --health-retries 5
+
+    steps:
+      - name: Checkout server
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: nextcloud/server
+          ref: ${{ matrix.server-versions }}
+
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
+      - name: Set up php ${{ matrix.php-versions }}
+        uses: shivammathur/setup-php@cf4cade2721270509d5b1c766ab3549210a39a2a # v2.33.0
+        with:
+          php-version: ${{ matrix.php-versions }}
+          tools: phpunit
+          extensions: mbstring, iconv, fileinfo, intl, sqlite, pdo_mysql, pdo_sqlite, pgsql, pdo_pgsql, gd, zip
+
+      - name: Checkout app
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          path: apps/${{ env.APP_NAME }}
+
+      - name: Read package.json node and npm engines version
+        uses: skjnldsv/read-package-engines-version-actions@06d6baf7d8f41934ab630e97d9e6c0bc9c9ac5e4 # v3
+        id: versions
+        with:
+          path: apps/${{ env.APP_NAME }}
+          fallbackNode: '^12'
+          fallbackNpm: '^6'
+
+      - name: Set up node ${{ steps.versions.outputs.nodeVersion }}
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: ${{ steps.versions.outputs.nodeVersion }}
+
+      - name: Set up npm ${{ steps.versions.outputs.npmVersion }}
+        run: npm i -g npm@"${{ steps.versions.outputs.npmVersion }}"
+
+      - name: Install app
+        working-directory: apps/${{ env.APP_NAME }}
+        run: |
+          composer install --no-dev
+          make all
+          make remove-binaries
+          rm -rf models # Make it download from github
+          wget https://github.com/nextcloud/recognize/releases/download/v3.4.0/test-files.zip
+          unzip test-files.zip -d tests/res/
+
+      - name: Set up Nextcloud and install app
+        run: |
+          sleep 25
+          mkdir data
+          ./occ maintenance:install --verbose --database=${{ matrix.databases }} --database-name=nextcloud --database-host=127.0.0.1 --database-port=$MYSQL_PORT --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass password
+          ./occ app:enable -vvv -f ${{ env.APP_NAME }}
+          php -S localhost:8080 &
+
+      - name: Checkout app_api
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          path: apps/app_api
+          repository: nextcloud/app_api
+          ref: ${{ matrix.server-versions == 'master' && 'main' || matrix.server-versions }}
+
+      - name: Enable app_api
+        run: ./occ app:enable -vvv -f app_api
+
+      - name: Checkout recognize_backend
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          path: recognize_backend
+          repository: nextcloud/recognize_backend
+          ref: main
+
+      - name: Set up python 3.11
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: recognize_backend/requirements.txt
+
+      - name: Install recognize_backend dependencies
+        working-directory: recognize_backend
+        run: |
+          # onnxruntime-gpu needs CUDA libs at import time; swap in the CPU build for the runner
+          sed -i 's/^onnxruntime-gpu.*/onnxruntime/' requirements.txt
+          pip install -r requirements.txt
+
+      - name: Cache recognize_backend models
+        uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        id: models-cache-restore
+        with:
+          path: recognize_backend-persistent_storage/
+          key: ${{ runner.os }}-recognize-backend-models-v1
+
+      - name: Run recognize_backend
+        working-directory: recognize_backend/lib
+        env:
+          APP_PERSISTENT_STORAGE: ${{ github.workspace }}/recognize_backend-persistent_storage
+          HF_HOME: ${{ github.workspace }}/recognize_backend-persistent_storage/huggingface
+          INSIGHTFACE_HOME: ${{ github.workspace }}/recognize_backend-persistent_storage/insightface
+        run: |
+          mkdir -p "$APP_PERSISTENT_STORAGE"
+          python3 main.py > "$GITHUB_WORKSPACE/backend_logs" 2>&1 &
+
+      - name: Register recognize_backend with AppAPI
+        run: |
+          ./occ app_api:daemon:register --net host manual_install "Manual Install" manual-install http localhost http://localhost:8080
+          ./occ app_api:app:register ${{ env.APP_ID }} manual_install --json-info \
+            "{\"appid\":\"${{ env.APP_ID }}\",\"name\":\"Recognize Backend\",\"daemon_config_name\":\"manual_install\",\"version\":\"${{ env.APP_VERSION }}\",\"secret\":\"${{ env.APP_SECRET }}\",\"port\":${{ env.APP_PORT }},\"scopes\":[\"TASK_PROCESSING\",\"FILES\"],\"system_app\":1}" \
+            --force-scopes --wait-finish
+
+      - name: Upload photos
+        run: |
+          find apps/${{ env.APP_NAME }}/tests/res/ -type f -exec curl -u 'admin:password' -T "{}" 'http://localhost:8080/remote.php/webdav/' \;
+
+      - name: Enable taskprocessing mode
+        run: |
+          ./occ config:app:set --value true recognize taskprocessing.enabled
+          ./occ config:app:set --value ${{ matrix.imagenet-enabled }} recognize imagenet.enabled
+          ./occ config:app:set --value ${{ matrix.faces-enabled }} recognize faces.enabled
+          ./occ config:app:set --value ${{ matrix.musicnn-enabled }} recognize musicnn.enabled
+          ./occ config:app:set --value ${{ matrix.movinet-enabled }} recognize movinet.enabled
+
+      - name: Schedule classification tasks
+        env:
+          GITHUB_REF: ${{ github.ref }}
+        run: |
+          ./occ files:scan admin
+          # recognize:classify does not work in taskprocessing mode; instead let the
+          # background jobs crawl the storages and schedule TaskProcessing tasks.
+          ./occ recognize:recrawl
+          # Run cron a few times so SchedulerJob -> StorageCrawlJob -> Classify*Job run
+          # in sequence and schedule the TaskProcessing tasks for the uploaded files.
+          for i in $(seq 1 12); do
+            ./occ background:cron
+            sleep 30
+          done
+
+      - name: Wait for tasks to be processed by recognize_backend
+        run: |
+          set -x
+          # The backend downloads the models on the first run and processes the tasks;
+          # TaskResultListener applies the results as each task succeeds.
+          NEXT_WAIT_TIME=0
+          DETECTIONS=0
+          until [ $NEXT_WAIT_TIME -eq 60 ] || [ "$DETECTIONS" -gt 0 ]; do
+            ./occ background:cron
+            DETECTIONS=$(sqlite3 data/nextcloud.db "select count(*) from oc_recognize_face_detections;" 2>/dev/null || echo 0)
+            echo "face detections so far: $DETECTIONS (iteration $NEXT_WAIT_TIME)"
+            sleep 30
+            NEXT_WAIT_TIME=$((NEXT_WAIT_TIME + 1))
+          done
+          # Fail if the backend never produced any results
+          [ "$DETECTIONS" -gt 0 ]
+
+      - name: Save recognize_backend models cache
+        if: always() && steps.models-cache-restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: recognize_backend-persistent_storage/
+          key: ${{ steps.models-cache-restore.outputs.cache-primary-key }}
+
+      - name: Cluster faces
+        run: |
+          ./occ recognize:cluster-faces
+
+      - name: Install cadaver
+        if: ${{ matrix.faces-enabled }}
+        run: |
+          sudo apt -y install cadaver
+
+      - name: Test webdav access
+        if: ${{ matrix.faces-enabled }}
+        run: |
+          cat > ~/.netrc <<EOF
+          machine localhost
+          login admin
+          password password
+          EOF
+          cadaver http://localhost:8080/remote.php/dav/recognize/admin/ <<EOF
+          mv unassigned-faces/* faces/0/
+          mkdir faces/toot
+          mv faces/0/* faces/toot/
+          mv faces/toot/ faces/blah/
+          EOF
+
+      - name: Print logs
+        if: always()
+        run: |
+          cat data/nextcloud.log
+          echo '-------------------- recognize_backend logs --------------------'
+          cat "$GITHUB_WORKSPACE/backend_logs" || echo "No backend logs"
