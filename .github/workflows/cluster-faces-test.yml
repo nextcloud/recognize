@@ -655,6 +655,9 @@ jobs:
         if: steps.db-cache.outputs.cache-hit != 'true'
         working-directory: recognize_backend
         run: |
+          # onnxruntime-gpu pulls in several GB of NVIDIA CUDA wheels that fill
+          # up the runner disk; swap in the CPU build like the full-run test does.
+          sed -i 's/^onnxruntime-gpu.*/onnxruntime/' requirements.txt
           python3 -m pip install --upgrade pip
           python3 -m pip install -r requirements.txt
 
