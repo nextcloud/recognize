@@ -320,7 +320,8 @@ jobs:
           mkdir data
           ./occ maintenance:install --verbose --database=${{ matrix.databases }} --database-name=nextcloud --database-host=127.0.0.1 --database-port=$MYSQL_PORT --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass password
           ./occ app:enable -vvv -f ${{ env.APP_NAME }}
-          php -S localhost:8080 &
+          # 4 workers by default
+          composer run serve &
 
       - name: Checkout app_api
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
