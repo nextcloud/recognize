@@ -659,6 +659,10 @@ jobs:
           # up the runner disk; swap in the CPU build like the full-run test does.
           sed -i 's/^onnxruntime-gpu.*/onnxruntime/' requirements.txt
           python3 -m pip install --upgrade pip
+          # The default PyPI torch wheels bundle ~5GB of NVIDIA CUDA libraries and
+          # blow up the runner disk. Install the CPU-only build first so the torch
+          # constraints in requirements.txt are already satisfied.
+          python3 -m pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision torchaudio
           python3 -m pip install -r requirements.txt
 
       - name: Run ExApp
