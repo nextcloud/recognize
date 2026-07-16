@@ -103,12 +103,10 @@ abstract class AbstractTaskProcessingClassifier {
 	 * @param list<QueueFile> $queueFiles
 	 */
 	private function dropFromQueue(array $queueFiles): void {
-		foreach ($queueFiles as $qf) {
-			try {
-				$this->queue->removeFromQueue($this->getModelName(), $qf);
-			} catch (Exception $e) {
-				$this->logger->warning('Could not remove file ' . $qf->getFileId() . ' from ' . $this->getModelName() . ' queue', ['exception' => $e]);
-			}
+		try {
+			$this->queue->removeFilesFromQueue($this->getModelName(), $queueFiles);
+		} catch (Exception $e) {
+			$this->logger->warning('Could not remove ' . count($queueFiles) . ' files from ' . $this->getModelName() . ' queue', ['exception' => $e]);
 		}
 	}
 }
