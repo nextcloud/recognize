@@ -148,7 +148,7 @@ jobs:
         id: photos-cache
         with:
           path: data/admin/files/
-          key: https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip
+          key: https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip-half
 
       - name: Upload photos
         if: steps.photos-cache.outputs.cache-hit != 'true'
@@ -158,11 +158,21 @@ jobs:
           wget https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip
           unzip IMDb-Face.zip
           rm IMDb-Face.zip
+          # Drop every other identity directory to roughly halve the dataset so
+          # the classification run stays within the job time limit. Deterministic
+          # (sorted glob) so both jobs cache an identical set under the same key.
+          cd IMDb-Face
+          i=0
+          for d in */; do
+            if [ $((i % 2)) -eq 1 ]; then rm -rf "$d"; fi
+            i=$((i + 1))
+          done
+          echo "Kept $(ls -d */ | wc -l) identity directories"
 
       - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         with:
           path: data/admin/files/
-          key: https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip
+          key: https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip-half
 
       - name: Set config
         run: |
@@ -184,8 +194,11 @@ jobs:
         env:
           GITHUB_REF: ${{ github.ref }}
         run: |
+          disk_free() { df -h / | awk 'NR==2 {print $4" free ("$5" used)"}'; }
+          echo "disk before classification: $(disk_free)"
           ./occ files:scan admin
           ./occ recognize:classify
+          echo "disk after classification: $(disk_free)"
 
       - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         with:
@@ -597,7 +610,7 @@ jobs:
         id: photos-cache
         with:
           path: data/admin/files/
-          key: https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip
+          key: https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip-half
 
       - name: Upload photos
         if: steps.photos-cache.outputs.cache-hit != 'true'
@@ -607,11 +620,21 @@ jobs:
           wget https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip
           unzip IMDb-Face.zip
           rm IMDb-Face.zip
+          # Drop every other identity directory to roughly halve the dataset so
+          # the classification run stays within the job time limit. Deterministic
+          # (sorted glob) so both jobs cache an identical set under the same key.
+          cd IMDb-Face
+          i=0
+          for d in */; do
+            if [ $((i % 2)) -eq 1 ]; then rm -rf "$d"; fi
+            i=$((i + 1))
+          done
+          echo "Kept $(ls -d */ | wc -l) identity directories"
 
       - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         with:
           path: data/admin/files/
-          key: https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip
+          key: https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip-half
 
       - name: Set config
         run: |
@@ -695,6 +718,9 @@ jobs:
       - name: Run classification via TaskProcessing
         if: steps.db-cache.outputs.cache-hit != 'true'
         run: |
+          # Probe available disk so we can tell whether runs die on ENOSPC.
+          disk_free() { df -h / | awk 'NR==2 {print $4" free ("$5" used)"}'; }
+          echo "disk before classification: $(disk_free)"
           ./occ upgrade # in case server master has new migrations in the meantime
           ./occ files:scan admin
           # Kick off a full classification run: SchedulerJob -> StorageCrawlJob
@@ -708,7 +734,7 @@ jobs:
             php cron.php || true
             QUEUE=$(sqlite3 data/nextcloud.db "select count(*) from oc_recognize_queue_faces;")
             CRAWL=$(sqlite3 data/nextcloud.db "select count(*) from oc_jobs where class like '%StorageCrawlJob' or class like '%SchedulerJob';")
-            echo "round $i: faces queue=$QUEUE, pending crawl/scheduler jobs=$CRAWL"
+            echo "round $i: faces queue=$QUEUE, pending crawl/scheduler jobs=$CRAWL, disk=$(disk_free)"
             if [ "$QUEUE" -eq 0 ] && [ "$CRAWL" -eq 0 ] && [ "$i" -gt 3 ]; then break; fi
             sleep 10
           done
@@ -716,10 +742,11 @@ jobs:
           # tasks (status 0=unknown, 1=scheduled, 2=running are still pending).
           for i in $(seq 1 240); do
             PENDING=$(sqlite3 data/nextcloud.db "select count(*) from oc_taskprocessing_tasks where app_id = 'recognize' and status in (0, 1, 2);")
-            echo "wait $i: pending recognize taskprocessing tasks=$PENDING"
+            echo "wait $i: pending recognize taskprocessing tasks=$PENDING, disk=$(disk_free)"
             if [ "$PENDING" -eq 0 ]; then break; fi
             sleep 30
           done
+          echo "disk after classification: $(disk_free)"
           FAILED=$(sqlite3 data/nextcloud.db "select count(*) from oc_taskprocessing_tasks where app_id = 'recognize' and status = 4;")
           echo "failed recognize taskprocessing tasks: $FAILED"
 
