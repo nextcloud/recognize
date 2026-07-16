@@ -567,6 +567,15 @@ jobs:
           # 4 workers by default
           composer run serve &
 
+      - name: Enable SQLite WAL mode
+        if: ${{ matrix.databases == 'sqlite' }}
+        run: |
+          # WAL lets the ExApp's readers and cron's writers proceed concurrently
+          # instead of serializing on SQLite's single-writer lock, which otherwise
+          # stalls task scheduling for many minutes per cron run. The mode is
+          # persisted in the database header, so it survives across connections.
+          sqlite3 data/nextcloud.db "PRAGMA journal_mode=WAL;"
+
       - name: Enable app_api
         run: ./occ app:enable -vvv -f app_api
 
