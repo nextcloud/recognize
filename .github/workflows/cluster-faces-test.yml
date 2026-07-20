@@ -731,6 +731,9 @@ jobs:
           # Drive the background jobs by running cron in a loop until the faces
           # queue is drained and no crawl/scheduler jobs remain.
           for i in $(seq 1 180); do
+            # Clustering is done explicitly in the "Run clustering" step below, so
+            # drop these jobs before each cron run to keep classification cron fast.
+            sqlite3 data/nextcloud.db "delete from oc_jobs where class like '%ClusterFacesJob';" || true
             php cron.php || true
             QUEUE=$(sqlite3 data/nextcloud.db "select count(*) from oc_recognize_queue_faces;")
             CRAWL=$(sqlite3 data/nextcloud.db "select count(*) from oc_jobs where class like '%StorageCrawlJob' or class like '%SchedulerJob';")
