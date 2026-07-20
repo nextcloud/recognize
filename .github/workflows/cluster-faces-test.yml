@@ -589,6 +589,18 @@ jobs:
           # persisted in the database header, so it survives across connections.
           sqlite3 data/nextcloud.db "PRAGMA journal_mode=WAL;"
 
+      - name: Free up disk space
+        run: |
+          # This job installs the Python ML stack (torch, onnxruntime, insightface
+          # models) on top of the dataset, which the pure-PHP job does not. On a
+          # tight runner that pushes the disk to ~97% during classification, which
+          # aborts the crawl, stalls the ExApp task and locks the (WAL) SQLite DB.
+          # Drop preinstalled toolchains we don't use to reclaim ~20-30 GB up front.
+          echo "disk before cleanup: $(df -h / | awk 'NR==2 {print $4" free ("$5" used)"}')"
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/.ghcup /opt/hostedtoolcache/CodeQL /usr/local/share/powershell /usr/local/share/chromium || true
+          sudo docker image prune --all --force || true
+          echo "disk after cleanup: $(df -h / | awk 'NR==2 {print $4" free ("$5" used)"}')"
+
       - name: Enable app_api
         run: ./occ app:enable -vvv -f app_api
 
@@ -720,6 +732,10 @@ jobs:
         run: |
           # Probe available disk so we can tell whether runs die on ENOSPC.
           disk_free() { df -h / | awk 'NR==2 {print $4" free ("$5" used)"}'; }
+          # Query the DB with a busy timeout so a transient WAL lock (the ExApp and
+          # cron write concurrently) makes the poll wait instead of failing with
+          # "database is locked" (exit 5), which would otherwise kill the step.
+          sq() { sqlite3 -cmd ".timeout 60000" data/nextcloud.db "$1"; }
           echo "disk before classification: $(disk_free)"
           ./occ upgrade # in case server master has new migrations in the meantime
           ./occ files:scan admin
@@ -733,10 +749,10 @@ jobs:
           for i in $(seq 1 180); do
             # Clustering is done explicitly in the "Run clustering" step below, so
             # drop these jobs before each cron run to keep classification cron fast.
-            sqlite3 data/nextcloud.db "delete from oc_jobs where class like '%ClusterFacesJob';" || true
+            sq "delete from oc_jobs where class like '%ClusterFacesJob';" || true
             php cron.php || true
-            QUEUE=$(sqlite3 data/nextcloud.db "select count(*) from oc_recognize_queue_faces;")
-            CRAWL=$(sqlite3 data/nextcloud.db "select count(*) from oc_jobs where class like '%StorageCrawlJob' or class like '%SchedulerJob';")
+            QUEUE=$(sq "select count(*) from oc_recognize_queue_faces;")
+            CRAWL=$(sq "select count(*) from oc_jobs where class like '%StorageCrawlJob' or class like '%SchedulerJob';")
             echo "round $i: faces queue=$QUEUE, pending crawl/scheduler jobs=$CRAWL, disk=$(disk_free)"
             if [ "$QUEUE" -eq 0 ] && [ "$CRAWL" -eq 0 ] && [ "$i" -gt 3 ]; then break; fi
             sleep 10
@@ -744,13 +760,13 @@ jobs:
           # Wait for the ExApp to finish processing all scheduled TaskProcessing
           # tasks (status 0=unknown, 1=scheduled, 2=running are still pending).
           for i in $(seq 1 240); do
-            PENDING=$(sqlite3 data/nextcloud.db "select count(*) from oc_taskprocessing_tasks where app_id = 'recognize' and status in (0, 1, 2);")
+            PENDING=$(sq "select count(*) from oc_taskprocessing_tasks where app_id = 'recognize' and status in (0, 1, 2);")
             echo "wait $i: pending recognize taskprocessing tasks=$PENDING, disk=$(disk_free)"
             if [ "$PENDING" -eq 0 ]; then break; fi
             sleep 30
           done
           echo "disk after classification: $(disk_free)"
-          FAILED=$(sqlite3 data/nextcloud.db "select count(*) from oc_taskprocessing_tasks where app_id = 'recognize' and status = 4;")
+          FAILED=$(sq "select count(*) from oc_taskprocessing_tasks where app_id = 'recognize' and status = 4;")
           echo "failed recognize taskprocessing tasks: $FAILED"
 
       - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
