@@ -657,11 +657,19 @@ jobs:
           # instead of running TensorFlow locally.
           ./occ config:app:set --value true recognize taskprocessing.enabled
 
+      # Resolve the recognize_backend HEAD commit so it can be part of the
+      # detection cache key: the ExApp does the actual face detection, so a
+      # change there must invalidate the cached detections. The checkout below
+      # happens after the cache restore, so resolve the SHA up front here.
+      - name: Resolve recognize_backend commit
+        id: backend-sha
+        run: echo "sha=$(git ls-remote https://github.com/nextcloud/recognize_backend HEAD | cut -f1)" >> "$GITHUB_OUTPUT"
+
       - uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         id: db-cache
         with:
           path: data/nextcloud.db
-          key: ${{ runner.os }}-${{ matrix.server-versions }}-taskprocessing-${{ hashFiles('data/admin/files/**', 'apps/recognize/lib/Classifiers/AbstractTaskProcessingClassifier.php', 'apps/recognize/lib/Classifiers/TaskProcessing/**', 'apps/recognize/lib/TaskProcessing/**', 'apps/recognize/lib/Db/FaceDetectionMapper.php') }}
+          key: ${{ runner.os }}-${{ matrix.server-versions }}-taskprocessing-${{ steps.backend-sha.outputs.sha }}-${{ hashFiles('data/admin/files/**', 'apps/recognize/lib/Classifiers/AbstractTaskProcessingClassifier.php', 'apps/recognize/lib/Classifiers/TaskProcessing/**', 'apps/recognize/lib/TaskProcessing/**', 'apps/recognize/lib/Db/FaceDetectionMapper.php') }}
 
       # The remaining classification steps only run on a cache miss. When the
       # detection database is restored from cache we can skip deploying the
