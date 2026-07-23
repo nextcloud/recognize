@@ -665,11 +665,23 @@ jobs:
         id: backend-sha
         run: echo "sha=$(git ls-remote https://github.com/nextcloud/recognize_backend HEAD | cut -f1)" >> "$GITHUB_OUTPUT"
 
+      # The cache stores a VACUUM INTO snapshot (nextcloud-cache.db), not the
+      # live data/nextcloud.db: the running dev server / ExApp mutate the live DB
+      # while actions/cache tars it, which failed the save with "tar exit code 1".
       - uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         id: db-cache
         with:
-          path: data/nextcloud.db
+          path: nextcloud-cache.db
           key: ${{ runner.os }}-${{ matrix.server-versions }}-taskprocessing-${{ steps.backend-sha.outputs.sha }}-${{ hashFiles('data/admin/files/**', 'apps/recognize/lib/Classifiers/AbstractTaskProcessingClassifier.php', 'apps/recognize/lib/Classifiers/TaskProcessing/**', 'apps/recognize/lib/TaskProcessing/**', 'apps/recognize/lib/Db/FaceDetectionMapper.php') }}
+
+      # On a cache hit, replace the freshly-installed DB with the cached detection
+      # snapshot so clustering and the detection summary run against it. Drop any
+      # stale WAL sidecars from the fresh install so SQLite reads the snapshot.
+      - name: Restore detection DB from snapshot
+        if: steps.db-cache.outputs.cache-hit == 'true'
+        run: |
+          rm -f data/nextcloud.db-wal data/nextcloud.db-shm
+          cp nextcloud-cache.db data/nextcloud.db
 
       # The remaining classification steps only run on a cache miss. When the
       # detection database is restored from cache we can skip deploying the
@@ -777,9 +789,18 @@ jobs:
           FAILED=$(sq "select count(*) from oc_taskprocessing_tasks where app_id = 'recognize' and status = 4;")
           echo "failed recognize taskprocessing tasks: $FAILED"
 
+      # VACUUM INTO writes a consistent point-in-time copy (WAL folded in) that
+      # actions/cache can tar without the running dev server / ExApp mutating it
+      # mid-read (which previously failed the save with "tar exit code 1").
+      - name: Snapshot detection DB for caching
+        if: steps.db-cache.outputs.cache-hit != 'true'
+        run: |
+          sqlite3 -cmd ".timeout 60000" data/nextcloud.db "VACUUM INTO 'nextcloud-cache.db';"
+
       - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        if: steps.db-cache.outputs.cache-hit != 'true'
         with:
-          path: data/nextcloud.db
+          path: nextcloud-cache.db
           key: ${{ steps.db-cache.outputs.cache-primary-key }}
 
       - name: Reduce space
