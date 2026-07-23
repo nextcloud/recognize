@@ -21,13 +21,13 @@
 			<NcNoteCard v-else-if="!tagsEnabled" type="warning">
 				{{ t('recognize', 'The systemtags app is currently disabled. Some features of this app will not work.') }}
 			</NcNoteCard>
-			<NcNoteCard v-if="nodejs === false" type="warning">
+			<NcNoteCard v-if="!settings['taskprocessing.enabled'] && nodejs === false" type="warning">
 				{{ t('recognize', 'Could not execute the Node.js binary. You may need to set the path to a working binary manually.') }}
 			</NcNoteCard>
 			<NcNoteCard v-if="cron !== undefined && cron !== 'cron'" type="error">
 				{{ t('recognize', 'Background Jobs are not executed via cron. Recognize requires background jobs to be executed via cron.') }}
 			</NcNoteCard>
-			<template v-if="nodejs && (libtensorflow || wasmtensorflow) && cron === 'cron'">
+			<template v-if="readyToClassify">
 				<template v-if="settings['faces.enabled'] || settings['imagenet.enabled'] || settings['musicnn.enabled'] || settings['movinet.enabled']">
 					<NcNoteCard show-alert type="success">
 						{{ t('recognize', 'The app is installed and will automatically classify files in background processes.') }}
@@ -37,6 +37,22 @@
 					{{ t('recognize', 'None of the tagging options below are currently selected. The app will currently do nothing.') }}
 				</p>
 			</template>
+		</NcSettingsSection>
+		<NcSettingsSection :name="t('recognize', 'Classifier backend')">
+			<NcNoteCard v-if="recognizeBackendInstalled" type="success">
+				{{ t('recognize', 'The recognize_backend ExApp is installed; TaskProcessing mode is recommended.') }}
+			</NcNoteCard>
+			<NcNoteCard v-else-if="settings['taskprocessing.enabled']" type="warning">
+				{{ t('recognize', 'TaskProcessing mode is enabled, but no recognize_backend ExApp was detected. Make sure a TaskProcessing provider for the recognize task types is installed and enabled.') }}
+			</NcNoteCard>
+			<p>
+				<NcCheckboxRadioSwitch v-model="settings['taskprocessing.enabled']" type="switch" @update:model-value="onChange">
+					{{ t('recognize', 'Use Nextcloud TaskProcessing for classification') }}
+				</NcCheckboxRadioSwitch>
+			</p>
+			<p>
+				{{ t('recognize', 'When enabled, Recognize hands files off to a Nextcloud TaskProcessing provider (typically the recognize_backend ExApp) instead of running TensorFlow locally. Hardware checks and Node.js / FFmpeg requirements no longer apply in this mode.') }}
+			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :name="t('recognize', 'Face recognition')">
 			<template v-if="settings['faces.enabled']">
@@ -50,7 +66,7 @@
 					{{ t('recognize', 'Waiting for status reports on face recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs.') }}
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued" type="info">
-					{{ t('recognize', 'Face recognition:') }} {{ countQueued.faces }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['faces.lastFile']) }}<span v-if="facesJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ facesJobs.scheduled }}, {{ facesJobs.lastRun ? t('recognize', 'Last background job execution: ') + showDate(facesJobs.lastRun) : '' }}</span>
+					{{ t('recognize', 'Face recognition:') }} {{ countQueued.faces }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['faces.lastFile']) }}<span v-if="facesJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ facesJobs.scheduled }}, {{ facesJobs.lastRun ? t('recognize', 'Last background job execution: ') + showDate(facesJobs.lastRun) : '' }}</span><span v-if="settings['taskprocessing.enabled'] && facesTpStats">, {{ t('recognize', 'TaskProcessing tasks: ') }} {{ facesTpStats.scheduled }} {{ t('recognize', 'scheduled') }}, {{ facesTpStats.running }} {{ t('recognize', 'running') }}</span>
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued && countQueued.faces && facesJobs && !facesJobs.scheduled" show-alert type="error">
 					{{ t('recognize', 'There are queued files in the face recognition queue but no background job is scheduled to process them.') }}
@@ -64,7 +80,8 @@
 				<NcCheckboxRadioSwitch v-model="settings['faces.enabled']" type="switch" @update:model-value="onChange">
 					{{ t('recognize', 'Enable face recognition (groups photos by faces that appear in them; UI is in the photos app)') }}
 				</NcCheckboxRadioSwitch>
-				<NcTextField :disabled="!settings['faces.enabled']"
+				<NcTextField v-if="!settings['taskprocessing.enabled']"
+					:disabled="!settings['faces.enabled']"
 					v-model="settings['faces.batchSize']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~500 or more, in WASM mode ~50 is recommended)')"
@@ -84,7 +101,7 @@
 					{{ t('recognize', 'Waiting for status reports on object recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs.') }}
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued" type="info">
-					{{ t('recognize', 'Object recognition:') }} {{ countQueued.imagenet }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['imagenet.lastFile']) }}<span v-if="imagenetJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ imagenetJobs.scheduled }}, {{ imagenetJobs.lastRun ? t('recognize', 'Last background job execution: ') + showDate(imagenetJobs.lastRun) : '' }}</span>
+					{{ t('recognize', 'Object recognition:') }} {{ countQueued.imagenet }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['imagenet.lastFile']) }}<span v-if="imagenetJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ imagenetJobs.scheduled }}, {{ imagenetJobs.lastRun ? t('recognize', 'Last background job execution: ') + showDate(imagenetJobs.lastRun) : '' }}</span><span v-if="settings['taskprocessing.enabled'] && imagenetTpStats">, {{ t('recognize', 'TaskProcessing tasks: ') }} {{ imagenetTpStats.scheduled }} {{ t('recognize', 'scheduled') }}, {{ imagenetTpStats.running }} {{ t('recognize', 'running') }}</span>
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued && countQueued.imagenet && imagenetJobs && !imagenetJobs.scheduled" show-alert type="error">
 					{{ t('recognize', 'There are queued files in the object detection queue but no background job is scheduled to process them.') }}
@@ -112,7 +129,8 @@
 				<NcCheckboxRadioSwitch v-model="settings['imagenet.enabled']" type="switch" @update:model-value="onChange">
 					{{ t('recognize', 'Enable object recognition (e.g. food, vehicles, landscapes)') }}
 				</NcCheckboxRadioSwitch>
-				<NcTextField :disabled="!settings['imagenet.enabled']"
+				<NcTextField v-if="!settings['taskprocessing.enabled']"
+					:disabled="!settings['imagenet.enabled']"
 					v-model="settings['imagenet.batchSize']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
@@ -127,7 +145,8 @@
 					@update:model-value="onChange">
 					{{ t('recognize', 'Enable landmark recognition (e.g. Eiffel Tower, Golden Gate Bridge)') }}
 				</NcCheckboxRadioSwitch>
-				<NcTextField :disabled="!settings['imagenet.enabled'] || !settings['landmarks.enabled']"
+				<NcTextField v-if="!settings['taskprocessing.enabled']"
+					:disabled="!settings['imagenet.enabled'] || !settings['landmarks.enabled']"
 					v-model="settings['landmarks.batchSize']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
@@ -147,7 +166,7 @@
 					{{ t('recognize', 'Waiting for status reports on audio recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs.') }}
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued" type="info">
-					{{ t('recognize', 'Music genre recognition:') }} {{ countQueued.musicnn }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['musicnn.lastFile']) }}<span v-if="musicnnJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ musicnnJobs.scheduled }}, {{ musicnnJobs.lastRun ? t('recognize', 'Last background job execution: ') + showDate(musicnnJobs.lastRun) : '' }}</span>
+					{{ t('recognize', 'Music genre recognition:') }} {{ countQueued.musicnn }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['musicnn.lastFile']) }}<span v-if="musicnnJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ musicnnJobs.scheduled }}, {{ musicnnJobs.lastRun ? t('recognize', 'Last background job execution: ') + showDate(musicnnJobs.lastRun) : '' }}</span><span v-if="settings['taskprocessing.enabled'] && musicnnTpStats">, {{ t('recognize', 'TaskProcessing tasks: ') }} {{ musicnnTpStats.scheduled }} {{ t('recognize', 'scheduled') }}, {{ musicnnTpStats.running }} {{ t('recognize', 'running') }}</span>
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued && countQueued.musicnn && musicnnJobs && !musicnnJobs.scheduled" show-alert type="error">
 					{{ t('recognize', 'There are queued files but no background job is scheduled to process them.') }}
@@ -157,7 +176,8 @@
 				<NcCheckboxRadioSwitch v-model="settings['musicnn.enabled']" type="switch" @update:model-value="onChange">
 					{{ t('recognize', 'Enable music genre recognition (e.g. pop, rock, folk, metal, new age)') }}
 				</NcCheckboxRadioSwitch>
-				<NcTextField :disabled="!settings['musicnn.enabled']"
+				<NcTextField v-if="!settings['taskprocessing.enabled']"
+					:disabled="!settings['musicnn.enabled']"
 					v-model="settings['musicnn.batchSize']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
@@ -177,7 +197,7 @@
 					{{ t('recognize', 'Waiting for status reports on video recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs.') }}
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued" type="info">
-					{{ t('recognize', 'Video recognition:') }} {{ countQueued.movinet }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['movinet.lastFile']) }}<span v-if="movinetJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ movinetJobs.scheduled }}, {{ movinetJobs.lastRun ? t('recognize', 'Last background job execution: ') + showDate(movinetJobs.lastRun) : '' }}</span>
+					{{ t('recognize', 'Video recognition:') }} {{ countQueued.movinet }} {{ t('recognize', 'Queued files') }}, {{ t('recognize', 'Last classification: ') }} {{ showDate(settings['movinet.lastFile']) }}<span v-if="movinetJobs">, {{ t('recognize', 'Scheduled background jobs: ') }} {{ movinetJobs.scheduled }}, {{ movinetJobs.lastRun ? t('recognize', 'Last background job execution: ') + showDate(movinetJobs.lastRun) : '' }}</span><span v-if="settings['taskprocessing.enabled'] && movinetTpStats">, {{ t('recognize', 'TaskProcessing tasks: ') }} {{ movinetTpStats.scheduled }} {{ t('recognize', 'scheduled') }}, {{ movinetTpStats.running }} {{ t('recognize', 'running') }}</span>
 				</NcNoteCard>
 				<NcNoteCard v-if="countQueued && countQueued.movinet && movinetJobs && !movinetJobs.scheduled" show-alert type="error">
 					{{ t('recognize', 'There are queued files but no background job is scheduled to process them.') }}
@@ -186,11 +206,12 @@
 			<p>
 				<NcCheckboxRadioSwitch v-model="settings['movinet.enabled']"
 					type="switch"
-					:disabled="(platform !== 'x86_64' || settings['tensorflow.purejs']) && !settings['movinet.enabled']"
+					:disabled="!settings['taskprocessing.enabled'] && (platform !== 'x86_64' || settings['tensorflow.purejs']) && !settings['movinet.enabled']"
 					@update:model-value="onChange">
 					{{ t('recognize', 'Enable human action recognition (e.g. arm wrestling, dribbling basketball, hula hooping)') }}
 				</NcCheckboxRadioSwitch>
-				<NcTextField :disabled="!settings['movinet.enabled']"
+				<NcTextField v-if="!settings['taskprocessing.enabled']"
+					:disabled="!settings['movinet.enabled']"
 					v-model="settings['movinet.batchSize']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~20 or more, in WASM mode ~5 is recommended)')"
@@ -219,7 +240,7 @@
 				{{ t('recognize', 'Clear queues and background jobs') }}
 			</button>
 		</NcSettingsSection>
-		<NcSettingsSection :name="t('recognize', 'Resource usage') ">
+		<NcSettingsSection v-if="!settings['taskprocessing.enabled']" :name="t('recognize', 'Resource usage') ">
 			<p>{{ t('recognize', 'By default all available CPU cores will be used which may put your system under considerable load. To avoid this, you can limit the amount of CPU Cores used. (Note: In WASM mode, currently only 1 core can be used at all times.)') }}</p>
 			<p>
 				<NcTextField v-model="settings['tensorflow.cores']"
@@ -241,7 +262,7 @@
 				</NcCheckboxRadioSwitch>
 			</p>
 		</NcSettingsSection>
-		<NcSettingsSection :name="t('recognize', 'Tensorflow WASM mode')">
+		<NcSettingsSection v-if="!settings['taskprocessing.enabled']" :name="t('recognize', 'Tensorflow WASM mode')">
 			<p v-if="avx === undefined || platform === undefined || musl === undefined">
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking CPU') }}
 			</p>
@@ -270,7 +291,7 @@
 				{{ t('recognize', 'Recognize uses Tensorflow for running the machine learning models. Not all installations support Tensorflow, either because the CPU does not support AVX instructions, or because the platform is not x86 (ie. on a Raspberry Pi, which is ARM), or because the Operating System that your nextcloud runs on (when using docker, then that is the OS within the docker image) does not come with GNU lib C (for example Alpine Linux, which is also used by Nextcloud AIO). In most cases, even if your installation does not support native Tensorflow operation, you can still run Tensorflow using WebAssembly (WASM) in Node.js. This is somewhat slower but still works.') }}
 			</p>
 		</NcSettingsSection>
-		<NcSettingsSection :name="t('recognize', 'Tensorflow GPU mode')">
+		<NcSettingsSection v-if="!settings['taskprocessing.enabled']" :name="t('recognize', 'Tensorflow GPU mode')">
 			<p>
 				<NcCheckboxRadioSwitch v-model="settings['tensorflow.gpu']"
 					type="switch"
@@ -286,7 +307,7 @@
 				<a href="https://github.com/nextcloud/recognize/wiki/GPU-mode">{{ t('recognize', 'Learn how to setup GPU mode with Recognize') }}</a>
 			</p>
 		</NcSettingsSection>
-		<NcSettingsSection :name="t('recognize', 'Node.js')">
+		<NcSettingsSection v-if="!settings['taskprocessing.enabled']" :name="t('recognize', 'Node.js')">
 			<p v-if="nodejs === undefined">
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking Node.js') }}
 			</p>
@@ -329,7 +350,7 @@
 			</p>
 			<p>{{ t('recognize', 'For Nextcloud Snap users, you need to adjust this path to point to the snap\'s "current" directory as the pre-configured path will change with each update. For example, set it to "/var/snap/nextcloud/current/nextcloud/extra-apps/recognize/bin/node" instead of "/var/snap/nextcloud/9337974/nextcloud/extra-apps/recognize/bin/node"') }}</p>
 		</NcSettingsSection>
-		<NcSettingsSection :name="t('recognize', 'FFMPEG')">
+		<NcSettingsSection v-if="!settings['taskprocessing.enabled']" :name="t('recognize', 'FFMPEG')">
 			<p v-if="ffmpeg === undefined">
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking FFmpeg') }}
 			</p>
@@ -346,7 +367,7 @@
 				<NcTextField v-model="settings['ffmpeg_binary']" @update:model-value="onChange" />
 			</p>
 		</NcSettingsSection>
-		<NcSettingsSection :name="t('recognize', 'Classifier process priority')">
+		<NcSettingsSection v-if="!settings['taskprocessing.enabled']" :name="t('recognize', 'Classifier process priority')">
 			<p v-if="nice === undefined">
 				<span class="icon-loading-small" />&nbsp;&nbsp;&nbsp;&nbsp;{{ t('recognize', 'Checking Nice binary') }}
 			</p>
@@ -380,10 +401,10 @@
 			<p>{{ t('recognize', 'To download all models preliminary to executing the classification jobs, run the following command on the server terminal.') }}</p>
 			<pre><code>occ recognize:download-models</code></pre>
 			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'To trigger a full classification run, run the following command on the server terminal. (The classification will run in multiple background jobs which can run in parallel.)') }}</p>
+			<p>{{ t('recognize', 'To trigger a full classification run in the background, run the following command on the server terminal. (The classification will run in multiple background jobs which can run in parallel.)') }}</p>
 			<pre><code>occ recognize:recrawl</code></pre>
 			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'To run a full classification run on the terminal, run the following. (The classification will run in sequence inside your terminal.)') }}</p>
+			<p>{{ t('recognize', 'To run a full classification run on the terminal, run the following. (The classification will run in sequence inside your terminal; doesn\'t work with task processing mode)') }}</p>
 			<pre><code>occ recognize:classify</code></pre>
 			<p>&nbsp;</p>
 			<p>{{ t('recognize', 'Before running a full initial classification run on the terminal, you should stop all background processing that Recognize scheduled upon installation to avoid interference.') }}</p>
@@ -413,13 +434,20 @@
 <script>
 import { NcNoteCard, NcSettingsSection, NcCheckboxRadioSwitch, NcTextField } from '@nextcloud/vue'
 import axios from '@nextcloud/axios'
-import { generateUrl } from '@nextcloud/router'
+import { generateOcsUrl, generateUrl } from '@nextcloud/router'
 import { loadState } from '@nextcloud/initial-state'
 import humanizeDuration from 'humanize-duration'
 
-const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'ffmpeg_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'faces.batchSize', 'imagenet.batchSize', 'landmarks.batchSize', 'movinet.batchSize', 'musicnn.batchSize', 'clusterFaces.status', 'clusterFaces.lastRun', 'nice_binary', 'nice_value', 'concurrency.enabled']
+const TASK_PROCESSING_TASK_TYPES = {
+	imagenet: 'recognize:image:classification',
+	faces: 'recognize:image:facerecognition',
+	movinet: 'recognize:video:classification',
+	musicnn: 'recognize:audio:classification',
+}
 
-const BOOLEAN_SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'clusterFaces.status', 'concurrency.enabled']
+const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'ffmpeg_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'faces.batchSize', 'imagenet.batchSize', 'landmarks.batchSize', 'movinet.batchSize', 'musicnn.batchSize', 'clusterFaces.status', 'clusterFaces.lastRun', 'nice_binary', 'nice_value', 'concurrency.enabled', 'taskprocessing.enabled']
+
+const BOOLEAN_SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'clusterFaces.status', 'concurrency.enabled', 'taskprocessing.enabled']
 
 const MAX_RELATIVE_DATE = 1000 * 60 * 60 * 24 * 7 // one week
 
@@ -453,11 +481,25 @@ export default {
 			movinetJobs: null,
 			musicnnJobs: null,
 			clusterFacesJobs: null,
+			imagenetTpStats: null,
+			facesTpStats: null,
+			movinetTpStats: null,
+			musicnnTpStats: null,
 			tagsEnabled: null,
+			recognizeBackendInstalled: false,
 		}
 	},
 
 	computed: {
+		readyToClassify() {
+			if (this.cron !== 'cron') {
+				return false
+			}
+			if (this.settings['taskprocessing.enabled']) {
+				return true
+			}
+			return Boolean(this.nodejs && (this.libtensorflow || this.wasmtensorflow))
+		},
 		pureJSReasons() {
 			const reasons = []
 			if (!this.avx) {
@@ -482,6 +524,7 @@ export default {
 	async created() {
 		this.modelsDownloaded = loadState('recognize', 'modelsDownloaded')
 		this.tagsEnabled = loadState('recognize', 'tagsEnabled')
+		this.recognizeBackendInstalled = loadState('recognize', 'recognizeBackendInstalled', false)
 		this.getCount()
 		this.getAVX()
 		this.getPlatform()
@@ -499,6 +542,10 @@ export default {
 		this.getJobsStatus('movinet')
 		this.getJobsStatus('musicnn')
 		this.getJobsStatus('clusterFaces')
+		this.getTaskProcessingStats('imagenet')
+		this.getTaskProcessingStats('faces')
+		this.getTaskProcessingStats('movinet')
+		this.getTaskProcessingStats('musicnn')
 
 		setInterval(async () => {
 			this.getCount()
@@ -514,6 +561,10 @@ export default {
 			this.getJobsStatus('movinet')
 			this.getJobsStatus('musicnn')
 			this.getJobsStatus('clusterFaces')
+			this.getTaskProcessingStats('imagenet')
+			this.getTaskProcessingStats('faces')
+			this.getTaskProcessingStats('movinet')
+			this.getTaskProcessingStats('musicnn')
 		}, 5 * 60 * 1000)
 
 		try {
@@ -633,6 +684,26 @@ export default {
 			const resp = await axios.get(generateUrl(`/apps/recognize/admin/jobs/${task}`))
 			const { scheduled, lastRun } = resp.data
 			this[task + 'Jobs'] = { scheduled, lastRun }
+		},
+		async getTaskProcessingStats(classifier) {
+			const taskTypeId = TASK_PROCESSING_TASK_TYPES[classifier]
+			if (!taskTypeId) {
+				return
+			}
+			try {
+				const url = generateOcsUrl('/taskprocessing/queue_stats')
+					+ '?taskTypeIds[]=' + encodeURIComponent(taskTypeId)
+				const resp = await axios.get(url, {
+					headers: { 'OCS-APIRequest': 'true', Accept: 'application/json' },
+				})
+				const data = resp.data?.ocs?.data ?? {}
+				this[classifier + 'TpStats'] = {
+					scheduled: data.scheduled_count ?? 0,
+					running: data.running_count ?? 0,
+				}
+			} catch (e) {
+				this[classifier + 'TpStats'] = null
+			}
 		},
 		onChange() {
 			if (this.timeout) {

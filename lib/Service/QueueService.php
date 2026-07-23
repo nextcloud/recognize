@@ -103,6 +103,22 @@ final class QueueService {
 	}
 
 	/**
+	 * Remove a batch of queue files in as few statements as possible.
+	 *
+	 * @param string $model
+	 * @param list<\OCA\Recognize\Db\QueueFile> $queueFiles
+	 * @return void
+	 * @throws \OCP\DB\Exception
+	 */
+	public function removeFilesFromQueue(string $model, array $queueFiles) : void {
+		$ids = array_map(
+			static fn (QueueFile $qf): int => $qf->getId(),
+			$queueFiles,
+		);
+		$this->queueMapper->removeFromQueueByIds($model, $ids);
+	}
+
+	/**
 	 * @throws \OCP\DB\Exception
 	 */
 	public function removeFileFromAllQueues(int $fileId) : void {

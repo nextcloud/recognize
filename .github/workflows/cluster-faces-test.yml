@@ -25,7 +25,7 @@ jobs:
       # do not stop on another job's failure
       fail-fast: false
       matrix:
-        php-versions: ['8.2']
+        php-versions: ['8.3']
         databases: ['sqlite']
         server-versions: ['master']
         pure-js-mode: ['false']
@@ -148,7 +148,7 @@ jobs:
         id: photos-cache
         with:
           path: data/admin/files/
-          key: https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip
+          key: https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip-half
 
       - name: Upload photos
         if: steps.photos-cache.outputs.cache-hit != 'true'
@@ -158,11 +158,21 @@ jobs:
           wget https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip
           unzip IMDb-Face.zip
           rm IMDb-Face.zip
+          # Drop every other identity directory to roughly halve the dataset so
+          # the classification run stays within the job time limit. Deterministic
+          # (sorted glob) so both jobs cache an identical set under the same key.
+          cd IMDb-Face
+          i=0
+          for d in */; do
+            if [ $((i % 2)) -eq 1 ]; then rm -rf "$d"; fi
+            i=$((i + 1))
+          done
+          echo "Kept $(ls -d */ | wc -l) identity directories"
 
       - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         with:
           path: data/admin/files/
-          key: https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip
+          key: https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip-half
 
       - name: Set config
         run: |
@@ -184,8 +194,11 @@ jobs:
         env:
           GITHUB_REF: ${{ github.ref }}
         run: |
+          disk_free() { df -h / | awk 'NR==2 {print $4" free ("$5" used)"}'; }
+          echo "disk before classification: $(disk_free)"
           ./occ files:scan admin
           ./occ recognize:classify
+          echo "disk after classification: $(disk_free)"
 
       - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         with:
@@ -271,7 +284,7 @@ jobs:
       - name: Download IMDb-Face.csv
         working-directory: apps/${{ env.APP_NAME }}/tests/res
         run: |
-          wget https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face-csv.zip 
+          wget https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face-csv.zip
           unzip IMDb-Face-csv.zip
           rm IMDb-Face-csv.zip
 
@@ -282,34 +295,34 @@ jobs:
             const COLUMN_URL = 5
             const COLUMN_RECT = 3
             const COLUMN_DIMS = 4
-          
+
             const csv = fs.readFileSync(__dirname + '/apps/recognize/tests/res/IMDb-Face.csv')
               .toString('utf8')
               .split('\n')
               .map(line => line.split(','))
-            
+
             // remove csv header
             csv.shift()
-          
+
             const names = [...new Set(csv.map(image => image[COLUMN_NAME])).values()]
-              
+
             const selectedNames = names.slice(0, 2000)
-              
+
             const limitedCsv = selectedNames.flatMap(name => {
               return csv.filter(line => line[COLUMN_NAME] === name)
             })
-          
+
             const allDetections = fs.readFileSync(__dirname + '/out.txt').toString('utf8').trim().split('\n').map(line => line.split('|'))
-            
+
             const json = require(__dirname + '/out.json');
-            
+
             const facesByCluster = json
             .reduce((acc, face) => {
               const clusterId = parseInt(face.href.split('/')[6]);
               acc[clusterId] = [...(acc[clusterId] ?? []), face.realpath.split('/')[4]];
               return acc
             }, {});
-            
+
             const targetFaces = json
             .filter(face => {
               return limitedCsv
@@ -323,21 +336,21 @@ jobs:
                   return false
                 })
             })
-          
+
             const targetFacesPerIdentity = targetFaces.reduce((acc, face) => {
               const name = face.realpath.split('/')[4]
               acc[name] = acc[name] ?? []
               acc[name].push(face)
-              return acc  
+              return acc
             },{})
-          
+
             const targetFacesByCluster = targetFaces
             .reduce((acc, face) => {
               const clusterId = parseInt(face.href.split('/')[6]);
               acc[clusterId] = [...(acc[clusterId] ?? []), face.realpath.split('/')[4]];
               return acc
             }, {});
-          
+
             console.log(facesByCluster);
             console.log(targetFacesByCluster);
             const clusterTargetAccuracies = Object.entries(targetFacesByCluster)
@@ -370,15 +383,15 @@ jobs:
               )
               .filter(([name,size]) => size > 1)
               .reduce((acc, [name, size]) => {
-                acc[name] = (acc[name] ?? 0) + size 
+                acc[name] = (acc[name] ?? 0) + size
                 return acc
               }, Object.fromEntries(Object.entries(targetFacesPerIdentity).map(([key]) => [key, 0])))
-          
+
             console.log(targetFacesPerIdentity)
             console.log(clusteredTargetFacesByIdentity)
             const averageTargetFacesPerIdentity = Object.entries(targetFacesPerIdentity).reduce((acc, [name, detections]) => acc+detections.length, 0) / Object.entries(targetFacesPerIdentity).length
             const averageClusteredTargetFacesByIdentity = Object.entries(clusteredTargetFacesByIdentity).reduce((acc, [name, size]) => acc+size, 0) / Object.entries(clusteredTargetFacesByIdentity).length
-          
+
             const clusteredTargetFacesByIdentityRate = Object.entries(clusteredTargetFacesByIdentity)
               .reduce((acc, [name, size]) => acc + size / targetFacesPerIdentity[name].length, 0) / Object.entries(clusteredTargetFacesByIdentity).length
             const identitiesWithPhotos = $(find data/admin/files/IMDb-Face -type d ! -empty | wc -l)
@@ -386,7 +399,7 @@ jobs:
             const identitiesWithEnoughDetections = Object.entries(targetFacesPerIdentity).filter(([name, detections]) => detections.length > 1).length
             const identitiesWithClusters = Object.entries(clusteredTargetFacesByIdentity).filter(([name, size]) => size > 1).length
             const identitiesWithClustersRate = identitiesWithClusters / identitiesWithEnoughDetections
-          
+
             const detectedFaces = $(sqlite3 data/nextcloud.db "select count(*) from oc_recognize_face_detections where user_id = 'admin';")
             const detectedTargetFaces = allDetections.filter(detection => {
               if(detection.length < 3) return false
@@ -445,3 +458,609 @@ jobs:
               console.log('Benchmark result: Good')
             }
           "
+
+  php-taskprocessing:
+    runs-on: ubuntu-latest
+
+    strategy:
+      # do not stop on another job's failure
+      fail-fast: false
+      matrix:
+        php-versions: ['8.3']
+        databases: ['sqlite']
+        server-versions: ['master']
+
+    name: Test cluster-faces command via TaskProcessing on ${{ matrix.server-versions }}
+
+    env:
+      MYSQL_PORT: 4444
+      PGSQL_PORT: 4445
+
+      # recognize_backend ExApp (manual-install deploy daemon)
+      PYTHONUNBUFFERED: 1
+      APP_HOST: 0.0.0.0
+      APP_ID: recognize_backend
+      APP_PORT: 9031
+      APP_SECRET: 12345
+      NEXTCLOUD_URL: http://localhost:8080
+
+    services:
+      mysql:
+        image: mariadb:10.5
+        ports:
+          - 4444:3306/tcp
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+        options: --health-cmd="mysqladmin ping" --health-interval 5s --health-timeout 2s --health-retries 5
+      postgres:
+        image: postgres
+        ports:
+          - 4445:5432/tcp
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: rootpassword
+          POSTGRES_DB: nextcloud
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 2s --health-retries 5
+
+    steps:
+      - name: Checkout server
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: nextcloud/server
+          ref: ${{ matrix.server-versions }}
+
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
+      - name: install ssl-cert
+        if: env.ACT # Skip this on normal GitHub Actions
+        run: sudo apt update && sudo apt install -y ssl-cert
+
+      - name: Set up php ${{ matrix.php-versions }}
+        uses: shivammathur/setup-php@cf4cade2721270509d5b1c766ab3549210a39a2a # v2.33.0
+        with:
+          php-version: ${{ matrix.php-versions }}
+          tools: phpunit
+          extensions: mbstring, iconv, fileinfo, intl, sqlite, pdo_mysql, pdo_sqlite, pgsql, pdo_pgsql, gd, zip
+
+      - name: Checkout app
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          path: apps/${{ env.APP_NAME }}
+
+      - name: Read package.json node and npm engines version
+        uses: skjnldsv/read-package-engines-version-actions@06d6baf7d8f41934ab630e97d9e6c0bc9c9ac5e4 # v3
+        id: versions
+        with:
+          path: apps/${{ env.APP_NAME }}
+          fallbackNode: '^12'
+          fallbackNpm: '^6'
+
+      - name: Set up node ${{ steps.versions.outputs.nodeVersion }}
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: ${{ steps.versions.outputs.nodeVersion }}
+
+      - name: Set up npm ${{ steps.versions.outputs.npmVersion }}
+        run: npm i -g npm@"${{ steps.versions.outputs.npmVersion }}"
+
+      - name: install make wget unzip
+        if: env.ACT # Skip this on normal GitHub Actions
+        run: sudo apt update && sudo apt install -y make wget unzip
+
+      - name: Install app
+        working-directory: apps/${{ env.APP_NAME }}
+        run: |
+          composer install --no-dev
+          make all
+          make remove-binaries
+          make remove-devdeps
+
+      - name: Set up Nextcloud and install app
+        if: ${{ matrix.databases != 'pgsql'}}
+        run: |
+          sleep 25
+          mkdir data
+          ./occ maintenance:install --verbose --database=${{ matrix.databases }} --database-name=nextcloud --database-host=127.0.0.1 --database-port=$MYSQL_PORT --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass password
+          ./occ app:enable -vvv -f ${{ env.APP_NAME }}
+           # 4 workers by default
+          composer run serve &
+
+      - name: Set up Nextcloud and install app
+        if: ${{ matrix.databases == 'pgsql'}}
+        run: |
+          sleep 25
+          mkdir data
+          ./occ maintenance:install --verbose --database=${{ matrix.databases }} --database-name=nextcloud --database-host=127.0.0.1 --database-port=$PGSQL_PORT --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass password
+          ./occ app:enable -vvv -f ${{ env.APP_NAME }}
+          # 4 workers by default
+          composer run serve &
+
+      - name: Enable SQLite WAL mode
+        if: ${{ matrix.databases == 'sqlite' }}
+        run: |
+          # WAL lets the ExApp's readers and cron's writers proceed concurrently
+          # instead of serializing on SQLite's single-writer lock, which otherwise
+          # stalls task scheduling for many minutes per cron run. The mode is
+          # persisted in the database header, so it survives across connections.
+          sqlite3 data/nextcloud.db "PRAGMA journal_mode=WAL;"
+
+      - name: Free up disk space
+        run: |
+          # This job installs the Python ML stack (torch, onnxruntime, insightface
+          # models) on top of the dataset, which the pure-PHP job does not. On a
+          # tight runner that pushes the disk to ~97% during classification, which
+          # aborts the crawl, stalls the ExApp task and locks the (WAL) SQLite DB.
+          # Drop preinstalled toolchains we don't use to reclaim ~20-30 GB up front.
+          echo "disk before cleanup: $(df -h / | awk 'NR==2 {print $4" free ("$5" used)"}')"
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/.ghcup /opt/hostedtoolcache/CodeQL /usr/local/share/powershell /usr/local/share/chromium || true
+          sudo docker image prune --all --force || true
+          echo "disk after cleanup: $(df -h / | awk 'NR==2 {print $4" free ("$5" used)"}')"
+
+      - name: Enable app_api
+        run: ./occ app:enable -vvv -f app_api
+
+      - name: Checkout app
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: nextcloud/viewer
+          path: apps/viewer
+
+      - name: Install viewer
+        run: |
+          ./occ app:enable -vvv viewer
+
+      - name: Remove unnecessary models to make space
+        run: |
+          rm -rf apps/recognize/models
+
+      - uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        id: photos-cache
+        with:
+          path: data/admin/files/
+          key: https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip-half
+
+      - name: Upload photos
+        if: steps.photos-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p data/admin/files/
+          cd data/admin/files
+          wget https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip
+          unzip IMDb-Face.zip
+          rm IMDb-Face.zip
+          # Drop every other identity directory to roughly halve the dataset so
+          # the classification run stays within the job time limit. Deterministic
+          # (sorted glob) so both jobs cache an identical set under the same key.
+          cd IMDb-Face
+          i=0
+          for d in */; do
+            if [ $((i % 2)) -eq 1 ]; then rm -rf "$d"; fi
+            i=$((i + 1))
+          done
+          echo "Kept $(ls -d */ | wc -l) identity directories"
+
+      - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: data/admin/files/
+          key: https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip-half
+
+      - name: Set config
+        run: |
+          ./occ config:app:set --value true recognize faces.enabled
+          # Don't force API key usage to allow tests to run
+          ./occ config:app:set --value false recognize require_api_key
+          # Hand files off to the recognize_backend ExApp via TaskProcessing
+          # instead of running TensorFlow locally.
+          ./occ config:app:set --value true recognize taskprocessing.enabled
+
+      # Resolve the recognize_backend HEAD commit so it can be part of the
+      # detection cache key: the ExApp does the actual face detection, so a
+      # change there must invalidate the cached detections. The checkout below
+      # happens after the cache restore, so resolve the SHA up front here.
+      - name: Resolve recognize_backend commit
+        id: backend-sha
+        run: echo "sha=$(git ls-remote https://github.com/nextcloud/recognize_backend HEAD | cut -f1)" >> "$GITHUB_OUTPUT"
+
+      # The cache stores a VACUUM INTO snapshot (nextcloud-cache.db), not the
+      # live data/nextcloud.db: the running dev server / ExApp mutate the live DB
+      # while actions/cache tars it, which failed the save with "tar exit code 1".
+      - uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        id: db-cache
+        with:
+          path: nextcloud-cache.db
+          key: ${{ runner.os }}-${{ matrix.server-versions }}-taskprocessing-${{ steps.backend-sha.outputs.sha }}-${{ hashFiles('data/admin/files/**', 'apps/recognize/lib/Classifiers/AbstractTaskProcessingClassifier.php', 'apps/recognize/lib/Classifiers/TaskProcessing/**', 'apps/recognize/lib/TaskProcessing/**', 'apps/recognize/lib/Db/FaceDetectionMapper.php') }}
+
+      # On a cache hit, replace the freshly-installed DB with the cached detection
+      # snapshot so clustering and the detection summary run against it. Drop any
+      # stale WAL sidecars from the fresh install so SQLite reads the snapshot.
+      - name: Restore detection DB from snapshot
+        if: steps.db-cache.outputs.cache-hit == 'true'
+        run: |
+          rm -f data/nextcloud.db-wal data/nextcloud.db-shm
+          cp nextcloud-cache.db data/nextcloud.db
+
+      # The remaining classification steps only run on a cache miss. When the
+      # detection database is restored from cache we can skip deploying the
+      # ExApp entirely and go straight to clustering (pure PHP).
+
+
+      - name: Checkout recognize_backend ExApp
+        if: steps.db-cache.outputs.cache-hit != 'true'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: nextcloud/recognize_backend
+          path: recognize_backend
+
+      - name: Set up python 3.11
+        if: steps.db-cache.outputs.cache-hit != 'true'
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: recognize_backend/requirements.txt
+
+      - name: Read recognize_backend version
+        if: steps.db-cache.outputs.cache-hit != 'true'
+        id: backendinfo
+        uses: skjnldsv/xpath-action@7e6a7c379d0e9abc8acaef43df403ab4fc4f770c # master
+        with:
+          filename: recognize_backend/appinfo/info.xml
+          expression: "/info/version/text()"
+
+      - name: Install ExApp system dependencies
+        if: steps.db-cache.outputs.cache-hit != 'true'
+        run: sudo apt update && sudo apt install -y ffmpeg libsndfile1 libgl1 libglib2.0-0
+
+      - name: Install ExApp requirements
+        if: steps.db-cache.outputs.cache-hit != 'true'
+        working-directory: recognize_backend
+        run: |
+          # onnxruntime-gpu pulls in several GB of NVIDIA CUDA wheels that fill
+          # up the runner disk; swap in the CPU build like the full-run test does.
+          sed -i 's/^onnxruntime-gpu.*/onnxruntime/' requirements.txt
+          python3 -m pip install --upgrade pip
+          # The default PyPI torch wheels bundle ~5GB of NVIDIA CUDA libraries and
+          # blow up the runner disk. Install the CPU-only build first so the torch
+          # constraints in requirements.txt are already satisfied.
+          python3 -m pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision torchaudio
+          python3 -m pip install -r requirements.txt
+
+      - name: Run ExApp
+        if: steps.db-cache.outputs.cache-hit != 'true'
+        working-directory: recognize_backend/lib
+        env:
+          APP_VERSION: ${{ steps.backendinfo.outputs.result }}
+        run: |
+          python3 main.py > "$GITHUB_WORKSPACE/backend_logs" 2>&1 &
+
+      - name: Register ExApp with app_api
+        if: steps.db-cache.outputs.cache-hit != 'true'
+        run: |
+          ./occ app_api:daemon:register --net host manual_install "Manual Install" manual-install http localhost http://localhost:8080
+          ./occ app_api:app:register recognize_backend manual_install --json-info "{\"appid\":\"recognize_backend\",\"name\":\"Recognize Backend\",\"daemon_config_name\":\"manual_install\",\"version\":\"${{ steps.backendinfo.outputs.result }}\",\"secret\":\"12345\",\"port\":9031,\"scopes\":[\"TASK_PROCESSING\",\"FILES\"],\"system_app\":0}" --force-scopes --wait-finish
+
+      - name: install sqlite3
+        if: steps.db-cache.outputs.cache-hit != 'true' && env.ACT # Skip this on normal GitHub Actions
+        run: sudo apt update && sudo apt install -y sqlite3
+
+      - name: Run classification via TaskProcessing
+        if: steps.db-cache.outputs.cache-hit != 'true'
+        run: |
+          # Probe available disk so we can tell whether runs die on ENOSPC.
+          disk_free() { df -h / | awk 'NR==2 {print $4" free ("$5" used)"}'; }
+          # Query the DB with a busy timeout so a transient WAL lock (the ExApp and
+          # cron write concurrently) makes the poll wait instead of failing with
+          # "database is locked" (exit 5), which would otherwise kill the step.
+          sq() { sqlite3 -cmd ".timeout 60000" data/nextcloud.db "$1"; }
+          echo "disk before classification: $(disk_free)"
+          ./occ upgrade # in case server master has new migrations in the meantime
+          ./occ files:scan admin
+          # Kick off a full classification run: SchedulerJob -> StorageCrawlJob
+          # fills the faces queue and ClassifyFacesJob hands each batch to the
+          # recognize_backend ExApp as a TaskProcessing task. Results are written
+          # back asynchronously by the TaskResultListener when the ExApp reports.
+          ./occ recognize:recrawl
+          # Drive the background jobs by running cron in a loop until the faces
+          # queue is drained and no crawl/scheduler jobs remain.
+          for i in $(seq 1 180); do
+            # Clustering is done explicitly in the "Run clustering" step below, so
+            # drop these jobs before each cron run to keep classification cron fast.
+            sq "delete from oc_jobs where class like '%ClusterFacesJob';" || true
+            php cron.php || true
+            QUEUE=$(sq "select count(*) from oc_recognize_queue_faces;")
+            CRAWL=$(sq "select count(*) from oc_jobs where class like '%StorageCrawlJob' or class like '%SchedulerJob';")
+            echo "round $i: faces queue=$QUEUE, pending crawl/scheduler jobs=$CRAWL, disk=$(disk_free)"
+            if [ "$QUEUE" -eq 0 ] && [ "$CRAWL" -eq 0 ] && [ "$i" -gt 3 ]; then break; fi
+            sleep 10
+          done
+          # Wait for the ExApp to finish processing all scheduled TaskProcessing
+          # tasks (status 0=unknown, 1=scheduled, 2=running are still pending).
+          for i in $(seq 1 240); do
+            PENDING=$(sq "select count(*) from oc_taskprocessing_tasks where app_id = 'recognize' and status in (0, 1, 2);")
+            echo "wait $i: pending recognize taskprocessing tasks=$PENDING, disk=$(disk_free)"
+            if [ "$PENDING" -eq 0 ]; then break; fi
+            sleep 30
+          done
+          echo "disk after classification: $(disk_free)"
+          FAILED=$(sq "select count(*) from oc_taskprocessing_tasks where app_id = 'recognize' and status = 4;")
+          echo "failed recognize taskprocessing tasks: $FAILED"
+
+      # VACUUM INTO writes a consistent point-in-time copy (WAL folded in) that
+      # actions/cache can tar without the running dev server / ExApp mutating it
+      # mid-read (which previously failed the save with "tar exit code 1").
+      - name: Snapshot detection DB for caching
+        if: steps.db-cache.outputs.cache-hit != 'true'
+        run: |
+          sqlite3 -cmd ".timeout 60000" data/nextcloud.db "VACUUM INTO 'nextcloud-cache.db';"
+
+      - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        if: steps.db-cache.outputs.cache-hit != 'true'
+        with:
+          path: nextcloud-cache.db
+          key: ${{ steps.db-cache.outputs.cache-primary-key }}
+
+      - name: Reduce space
+        run: |
+          for dirname in data/admin/files/IMDb-Face/*; do truncate -s 0 "${dirname}/*"; done
+
+      - name: install sqlite3
+        if: env.ACT # Skip this on normal GitHub Actions
+        run: sudo apt update && sudo apt install -y sqlite3
+
+      - name: Create detection summary
+        run: |
+          sqlite3 data/nextcloud.db "select x, y, path from oc_recognize_face_detections d LEFT JOIN oc_filecache c ON c.fileid = d.file_id where user_id = 'admin' ORDER BY path;" > out.txt
+
+      - uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        id: clustering-cache
+        with:
+          path: out.json
+          key: ${{ runner.os }}-taskprocessing-${{ hashFiles('out.txt', 'apps/recognize/lib/Clustering/**', 'apps/recognize/lib/Dav/**', 'apps/recognize/lib/Service/FaceClusterAnalyzer.php', 'apps/recognize/lib/Command/ClusterFaces.php') }}
+
+      - name: Run clustering
+        if: steps.clustering-cache.outputs.cache-hit != 'true'
+        run: |
+          ./occ upgrade # in case server master has new migrations in the meantime
+          ./occ recognize:cluster-faces -b 10000
+          ./occ recognize:cluster-faces -b 10000
+          ./occ recognize:cluster-faces -b 10000
+          ./occ recognize:cluster-faces -b 10000
+          ./occ recognize:cluster-faces -b 10000
+          ./occ recognize:cluster-faces -b 10000
+
+      - name: install python3 python3-pip jq curl
+        if: steps.clustering-cache.outputs.cache-hit != 'true' && env.ACT # Skip this on normal GitHub Actions
+        run: sudo apt update && sudo apt install -y python3 python3-pip jq curl
+
+      - name: Install xq
+        if: steps.clustering-cache.outputs.cache-hit != 'true'
+        run: |
+          pip install yq --break-system-packages
+
+      - name: Download face assignments
+        if: steps.clustering-cache.outputs.cache-hit != 'true'
+        run: |
+          curl -u 'admin:password' --request PROPFIND 'http://localhost:8080/remote.php/dav/recognize/admin/faces/' --header 'Depth: 2' --data '<?xml version="1.0"?>
+            <d:propfind xmlns:d="DAV:"
+            xmlns:oc="http://owncloud.org/ns"
+            xmlns:nc="http://nextcloud.org/ns"
+            xmlns:ocs="http://open-collaboration-services.org/ns">
+            <d:prop>
+              <d:getcontentlength />
+              <d:getcontenttype />
+              <d:getetag />
+              <d:getlastmodified />
+              <d:resourcetype />
+              <nc:face-detections />
+              <nc:file-metadata-size />
+              <nc:has-preview />
+              <nc:realpath />
+              <oc:favorite />
+              <oc:fileid />
+              <oc:permissions />
+              <nc:nbItems />
+            </d:prop>
+            </d:propfind>' > out.xml
+          cat out.xml
+
+      - name: Parse face assignments
+        if: steps.clustering-cache.outputs.cache-hit != 'true'
+        run: |
+          PATH=$PATH:/home/runner/.local/bin
+          cat out.xml | xq '.["d:multistatus"]["d:response"] | map(select(.["d:href"] | test("faces/.+?/.+?"))) | map({"href": .["d:href"], "realpath": .["d:propstat"][0]["d:prop"]["nc:realpath"], "face-detections": .["d:propstat"][0]["d:prop"]["nc:face-detections"] | fromjson | map({userId, x, y, height, width, clusterId}) })' > out.json
+          cat out.json
+
+      - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: out.json
+          key: ${{ steps.clustering-cache.outputs.cache-primary-key }}
+
+      - name: Download IMDb-Face.csv
+        working-directory: apps/${{ env.APP_NAME }}/tests/res
+        run: |
+          wget https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face-csv.zip
+          unzip IMDb-Face-csv.zip
+          rm IMDb-Face-csv.zip
+
+      - name: Analyse face assignments
+        run: |
+          node -e "
+            const COLUMN_NAME = 0
+            const COLUMN_URL = 5
+            const COLUMN_RECT = 3
+            const COLUMN_DIMS = 4
+
+            const csv = fs.readFileSync(__dirname + '/apps/recognize/tests/res/IMDb-Face.csv')
+              .toString('utf8')
+              .split('\n')
+              .map(line => line.split(','))
+
+            // remove csv header
+            csv.shift()
+
+            const names = [...new Set(csv.map(image => image[COLUMN_NAME])).values()]
+
+            const selectedNames = names.slice(0, 2000)
+
+            const limitedCsv = selectedNames.flatMap(name => {
+              return csv.filter(line => line[COLUMN_NAME] === name)
+            })
+
+            const allDetections = fs.readFileSync(__dirname + '/out.txt').toString('utf8').trim().split('\n').map(line => line.split('|'))
+
+            const json = require(__dirname + '/out.json');
+
+            const facesByCluster = json
+            .reduce((acc, face) => {
+              const clusterId = parseInt(face.href.split('/')[6]);
+              acc[clusterId] = [...(acc[clusterId] ?? []), face.realpath.split('/')[4]];
+              return acc
+            }, {});
+
+            const targetFaces = json
+            .filter(face => {
+              return limitedCsv
+                .some(entry => {
+                  if (entry[COLUMN_NAME] === face.realpath.split('/')[4] && entry[COLUMN_URL].split('/').pop() === face.realpath.split('/').pop()) {
+                    let dims = entry[COLUMN_DIMS].split(' ').map(i => parseInt(i))
+                    dims = {x: dims[1], y: dims[0]}
+                    const rect = entry[COLUMN_RECT].split(' ').map(i => parseInt(i))
+                    return Math.abs(face['face-detections'][0].x - rect[0] / dims.x) < 0.05 && Math.abs(face['face-detections'][0].y - rect[1] / dims.y) < 0.05
+                  }
+                  return false
+                })
+            })
+
+            const targetFacesPerIdentity = targetFaces.reduce((acc, face) => {
+              const name = face.realpath.split('/')[4]
+              acc[name] = acc[name] ?? []
+              acc[name].push(face)
+              return acc
+            },{})
+
+            const targetFacesByCluster = targetFaces
+            .reduce((acc, face) => {
+              const clusterId = parseInt(face.href.split('/')[6]);
+              acc[clusterId] = [...(acc[clusterId] ?? []), face.realpath.split('/')[4]];
+              return acc
+            }, {});
+
+            console.log(facesByCluster);
+            console.log(targetFacesByCluster);
+            const clusterTargetAccuracies = Object.entries(targetFacesByCluster)
+              .filter(([clusterId, names]) => names.length > 1)
+              .map(([clusterId, names]) =>
+                [...new Set(names).values()]
+                  .map(name1 =>
+                    names.filter(name2 => name1 === name2).length
+                  ).sort().reverse()[0] / names.length
+              );
+            const clusterAccuracies = Object.entries(facesByCluster)
+              .map(([clusterId, names]) =>
+                [...new Set(names).values()]
+                  .map(name1 =>
+                    names.filter(name2 => name1 === name2).length
+                  ).sort().reverse()[0] / names.length
+              );
+            const clusteredFaces = Object.entries(facesByCluster)
+                .map(([clusterId, names]) => names.length)
+                .reduce((acc, val) => acc+val, 0)
+            const clusteredTargetFaces = Object.entries(targetFacesByCluster)
+                .map(([clusterId, names]) => names.length)
+                .reduce((acc, val) => acc+val, 0)
+            const clusteredTargetFacesByIdentity = Object.entries(targetFacesByCluster)
+              .map(([clusterId, names]) =>
+                [...new Set(names).values()]
+                  .map(name1 =>
+                    [name1, names.filter(name2 => name1 === name2).length]
+                  ).sort(([name1, size1], [name2, size2]) => size1 - size2).reverse()[0]
+              )
+              .filter(([name,size]) => size > 1)
+              .reduce((acc, [name, size]) => {
+                acc[name] = (acc[name] ?? 0) + size
+                return acc
+              }, Object.fromEntries(Object.entries(targetFacesPerIdentity).map(([key]) => [key, 0])))
+
+            console.log(targetFacesPerIdentity)
+            console.log(clusteredTargetFacesByIdentity)
+            const averageTargetFacesPerIdentity = Object.entries(targetFacesPerIdentity).reduce((acc, [name, detections]) => acc+detections.length, 0) / Object.entries(targetFacesPerIdentity).length
+            const averageClusteredTargetFacesByIdentity = Object.entries(clusteredTargetFacesByIdentity).reduce((acc, [name, size]) => acc+size, 0) / Object.entries(clusteredTargetFacesByIdentity).length
+
+            const clusteredTargetFacesByIdentityRate = Object.entries(clusteredTargetFacesByIdentity)
+              .reduce((acc, [name, size]) => acc + size / targetFacesPerIdentity[name].length, 0) / Object.entries(clusteredTargetFacesByIdentity).length
+            const identitiesWithPhotos = $(find data/admin/files/IMDb-Face -type d ! -empty | wc -l)
+            const identitiesWithDetections = Object.entries(targetFacesPerIdentity).length
+            const identitiesWithEnoughDetections = Object.entries(targetFacesPerIdentity).filter(([name, detections]) => detections.length > 1).length
+            const identitiesWithClusters = Object.entries(clusteredTargetFacesByIdentity).filter(([name, size]) => size > 1).length
+            const identitiesWithClustersRate = identitiesWithClusters / identitiesWithEnoughDetections
+
+            const detectedFaces = $(sqlite3 data/nextcloud.db "select count(*) from oc_recognize_face_detections where user_id = 'admin';")
+            const detectedTargetFaces = allDetections.filter(detection => {
+              if(detection.length < 3) return false
+              const x = Number(detection[0])
+              const y = Number(detection[1])
+              const path = detection[2]
+              return limitedCsv
+              .some(entry => {
+                if (entry[COLUMN_NAME] === path.split('/')[2] && entry[COLUMN_URL].split('/').pop().split('.jpg')[0] === path.split('/').pop().split('.jpg')[0]) {
+                  let dims = entry[COLUMN_DIMS].split(' ').map(i => parseInt(i))
+                  dims = {x: dims[1], y: dims[0]}
+                  const rect = entry[COLUMN_RECT].split(' ').map(i => parseInt(i))
+                  return Math.abs(x - rect[0] / dims.x) < 0.05 && Math.abs(y - rect[1] / dims.y) < 0.05
+                }
+                return false
+              })
+            }).length
+            const totalPhotos = $(ls data/admin/files/IMDb-Face/* | wc -l)
+            const detectedFacesRate = detectedFaces / totalPhotos
+            const clusteredTargetFacesRate = clusteredTargetFaces / detectedTargetFaces
+            const clusteredFacesRate = clusteredFaces / detectedFaces
+            const averageClusterAccuracy = clusterAccuracies.reduce((acc, val) => acc+val, 0)/clusterAccuracies.length
+            const averageClusterTargetAccuracy = clusterTargetAccuracies.reduce((acc, val) => acc+val, 0)/clusterTargetAccuracies.length
+            const targettedShitClusterRate = clusterTargetAccuracies.filter((val) => val < 0.5).length/clusterTargetAccuracies.length
+            const shitClusterRate = clusterAccuracies.filter((val) => val < 0.5).length/clusterAccuracies.length
+            console.log({ clusterAccuracies });
+            console.log({ clusterTargetAccuracies });
+            console.log({ totalPhotos });
+            console.log({ detectedFaces });
+            console.log({ detectedFacesRate });
+            console.log({ detectedTargetFaces });
+            console.log({ clusteredFaces });
+            console.log({ clusteredFacesRate })
+            console.log({ clusteredTargetFaces })
+            console.log({ clusteredTargetFacesRate })
+            console.log({ averageTargetFacesPerIdentity })
+            console.log({ averageClusteredTargetFacesByIdentity })
+            console.log({ clusteredTargetFacesByIdentityRate })
+            console.log({ identitiesWithPhotos })
+            console.log({ identitiesWithDetections })
+            console.log({ identitiesWithEnoughDetections })
+            console.log({ identitiesWithClusters })
+            console.log({ identitiesWithClustersRate })
+            console.log({ shitClusterRate })
+            console.log({ targettedShitClusterRate })
+            console.log({ averageClusterAccuracy })
+            console.log({ averageClusterTargetAccuracy })
+            console.log({ weightedAccuracy: averageClusterAccuracy * clusteredFacesRate })
+            console.log({ weightedTargetAccuracy: averageClusterTargetAccuracy * clusteredTargetFacesRate })
+            const combinedScore = (averageClusterTargetAccuracy * identitiesWithClustersRate * clusteredTargetFacesByIdentityRate * clusteredTargetFacesRate) ** (1/4)
+            console.log({ combinedScore, minCombinedScore: 0.6 })
+            if (combinedScore < 0.6 || combinedScore > 1.0) {
+              console.log('Benchmark result: Bad')
+              process.exit(1)
+            } else {
+              console.log('Benchmark result: Good')
+            }
+          "
+
+      - name: Show ExApp logs
+        if: always()
+        run: |
+          echo '---------------- nextcloud.log ----------------'
+          tail -n 100 data/nextcloud.log || echo "No nextcloud.log"
+          echo '---------------- recognize_backend logs ----------------'
+          [ -f backend_logs ] && cat backend_logs || echo "No backend logs"
