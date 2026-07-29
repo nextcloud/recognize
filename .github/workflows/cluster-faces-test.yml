@@ -16,6 +16,17 @@ on:
 
 env:
   APP_NAME: recognize
+  # Ground truth annotations are matched to detections by IoU rather than by
+  # top-left-corner distance: a backend that reports tighter or differently
+  # anchored boxes (RetinaFace vs. the built-in detector) would otherwise look
+  # like it had lost recall.
+  MIN_IOU: '0.3'
+  # Purity floor. Both backends have historically scored >= 0.95 here.
+  MIN_CLUSTER_TARGET_ACCURACY: '0.85'
+  # Combined score floor. Still 0, i.e. report-only: the old 0.6 threshold was
+  # calibrated against denominators derived from the run's own output, which
+  # inflated it. Set this from the first baseline run of the new metrics.
+  MIN_COMBINED_SCORE: '0'
 
 jobs:
   php:
@@ -205,9 +216,16 @@ jobs:
           path: data/nextcloud.db
           key: ${{ steps.db-cache.outputs.cache-primary-key }}
 
+      # The photos on disk are the run-independent denominator for every rate the
+      # analysis step reports, so take the inventory before they are truncated.
+      - name: Create photo inventory
+        run: |
+          find data/admin/files/IMDb-Face -type f -printf '%P\n' | sort > photos.txt
+          wc -l photos.txt
+
       - name: Reduce space
         run: |
-          for dirname in data/admin/files/IMDb-Face/*; do truncate -s 0 "${dirname}/*"; done
+          for dirname in data/admin/files/IMDb-Face/*; do truncate -s 0 "${dirname}"/*; done
 
       - name: install sqlite3
         if: env.ACT # Skip this on normal GitHub Actions
@@ -215,13 +233,13 @@ jobs:
 
       - name: Create detection summary
         run: |
-          sqlite3 data/nextcloud.db "select x, y, path from oc_recognize_face_detections d LEFT JOIN oc_filecache c ON c.fileid = d.file_id where user_id = 'admin' ORDER BY path;" > out.txt
+          sqlite3 data/nextcloud.db "select x, y, width, height, path from oc_recognize_face_detections d LEFT JOIN oc_filecache c ON c.fileid = d.file_id where user_id = 'admin' ORDER BY path;" > out.txt
 
       - uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         id: clustering-cache
         with:
           path: out.json
-          key: ${{ runner.os }}-${{ hashFiles('out.txt', 'apps/recognize/src/classifier_faces.js', 'apps/recognize/lib/Classifiers/Classifier.php', 'apps/recognize/lib/Classifiers/Images/ClusteringFaceClassifier.php', 'apps/recognize/lib/Clustering/**', 'apps/recognize/lib/Dav/**', 'apps/recognize/lib/Service/FaceClusterAnalyzer.php', 'apps/recognize/lib/Command/ClusterFaces.php') }}-${{ matrix.pure-js-mode }}
+          key: ${{ runner.os }}-${{ hashFiles('out.txt', 'apps/recognize/src/classifier_faces.js', 'apps/recognize/lib/Classifiers/Classifier.php', 'apps/recognize/lib/Classifiers/Images/ClusteringFaceClassifier.php', 'apps/recognize/lib/Clustering/**', 'apps/recognize/lib/Dav/**', 'apps/recognize/lib/Service/FaceClusterAnalyzer.php', 'apps/recognize/lib/Service/SettingsService.php', 'apps/recognize/lib/Command/ClusterFaces.php') }}-${{ matrix.pure-js-mode }}
 
       - name: Run clustering
         if: steps.clustering-cache.outputs.cache-hit != 'true'
@@ -289,175 +307,16 @@ jobs:
           rm IMDb-Face-csv.zip
 
       - name: Analyse face assignments
+        env:
+          LABEL: ${{ github.job }}
+          CSV_PATH: apps/${{ env.APP_NAME }}/tests/res/IMDb-Face.csv
+          PHOTOS_TXT: photos.txt
+          DETECTIONS_TXT: out.txt
+          CLUSTERS_JSON: out.json
+          METRICS_JSON_OUT: metrics.json
         run: |
-          node -e "
-            const COLUMN_NAME = 0
-            const COLUMN_URL = 5
-            const COLUMN_RECT = 3
-            const COLUMN_DIMS = 4
-
-            const csv = fs.readFileSync(__dirname + '/apps/recognize/tests/res/IMDb-Face.csv')
-              .toString('utf8')
-              .split('\n')
-              .map(line => line.split(','))
-
-            // remove csv header
-            csv.shift()
-
-            const names = [...new Set(csv.map(image => image[COLUMN_NAME])).values()]
-
-            const selectedNames = names.slice(0, 2000)
-
-            const limitedCsv = selectedNames.flatMap(name => {
-              return csv.filter(line => line[COLUMN_NAME] === name)
-            })
-
-            const allDetections = fs.readFileSync(__dirname + '/out.txt').toString('utf8').trim().split('\n').map(line => line.split('|'))
-
-            const json = require(__dirname + '/out.json');
-
-            const facesByCluster = json
-            .reduce((acc, face) => {
-              const clusterId = parseInt(face.href.split('/')[6]);
-              acc[clusterId] = [...(acc[clusterId] ?? []), face.realpath.split('/')[4]];
-              return acc
-            }, {});
-
-            const targetFaces = json
-            .filter(face => {
-              return limitedCsv
-                .some(entry => {
-                  if (entry[COLUMN_NAME] === face.realpath.split('/')[4] && entry[COLUMN_URL].split('/').pop() === face.realpath.split('/').pop()) {
-                    let dims = entry[COLUMN_DIMS].split(' ').map(i => parseInt(i))
-                    dims = {x: dims[1], y: dims[0]}
-                    const rect = entry[COLUMN_RECT].split(' ').map(i => parseInt(i))
-                    return Math.abs(face['face-detections'][0].x - rect[0] / dims.x) < 0.05 && Math.abs(face['face-detections'][0].y - rect[1] / dims.y) < 0.05
-                  }
-                  return false
-                })
-            })
-
-            const targetFacesPerIdentity = targetFaces.reduce((acc, face) => {
-              const name = face.realpath.split('/')[4]
-              acc[name] = acc[name] ?? []
-              acc[name].push(face)
-              return acc
-            },{})
-
-            const targetFacesByCluster = targetFaces
-            .reduce((acc, face) => {
-              const clusterId = parseInt(face.href.split('/')[6]);
-              acc[clusterId] = [...(acc[clusterId] ?? []), face.realpath.split('/')[4]];
-              return acc
-            }, {});
-
-            console.log(facesByCluster);
-            console.log(targetFacesByCluster);
-            const clusterTargetAccuracies = Object.entries(targetFacesByCluster)
-              .filter(([clusterId, names]) => names.length > 1)
-              .map(([clusterId, names]) =>
-                [...new Set(names).values()]
-                  .map(name1 =>
-                    names.filter(name2 => name1 === name2).length
-                  ).sort().reverse()[0] / names.length
-              );
-            const clusterAccuracies = Object.entries(facesByCluster)
-              .map(([clusterId, names]) =>
-                [...new Set(names).values()]
-                  .map(name1 =>
-                    names.filter(name2 => name1 === name2).length
-                  ).sort().reverse()[0] / names.length
-              );
-            const clusteredFaces = Object.entries(facesByCluster)
-                .map(([clusterId, names]) => names.length)
-                .reduce((acc, val) => acc+val, 0)
-            const clusteredTargetFaces = Object.entries(targetFacesByCluster)
-                .map(([clusterId, names]) => names.length)
-                .reduce((acc, val) => acc+val, 0)
-            const clusteredTargetFacesByIdentity = Object.entries(targetFacesByCluster)
-              .map(([clusterId, names]) =>
-                [...new Set(names).values()]
-                  .map(name1 =>
-                    [name1, names.filter(name2 => name1 === name2).length]
-                  ).sort(([name1, size1], [name2, size2]) => size1 - size2).reverse()[0]
-              )
-              .filter(([name,size]) => size > 1)
-              .reduce((acc, [name, size]) => {
-                acc[name] = (acc[name] ?? 0) + size
-                return acc
-              }, Object.fromEntries(Object.entries(targetFacesPerIdentity).map(([key]) => [key, 0])))
-
-            console.log(targetFacesPerIdentity)
-            console.log(clusteredTargetFacesByIdentity)
-            const averageTargetFacesPerIdentity = Object.entries(targetFacesPerIdentity).reduce((acc, [name, detections]) => acc+detections.length, 0) / Object.entries(targetFacesPerIdentity).length
-            const averageClusteredTargetFacesByIdentity = Object.entries(clusteredTargetFacesByIdentity).reduce((acc, [name, size]) => acc+size, 0) / Object.entries(clusteredTargetFacesByIdentity).length
-
-            const clusteredTargetFacesByIdentityRate = Object.entries(clusteredTargetFacesByIdentity)
-              .reduce((acc, [name, size]) => acc + size / targetFacesPerIdentity[name].length, 0) / Object.entries(clusteredTargetFacesByIdentity).length
-            const identitiesWithPhotos = $(find data/admin/files/IMDb-Face -type d ! -empty | wc -l)
-            const identitiesWithDetections = Object.entries(targetFacesPerIdentity).length
-            const identitiesWithEnoughDetections = Object.entries(targetFacesPerIdentity).filter(([name, detections]) => detections.length > 1).length
-            const identitiesWithClusters = Object.entries(clusteredTargetFacesByIdentity).filter(([name, size]) => size > 1).length
-            const identitiesWithClustersRate = identitiesWithClusters / identitiesWithEnoughDetections
-
-            const detectedFaces = $(sqlite3 data/nextcloud.db "select count(*) from oc_recognize_face_detections where user_id = 'admin';")
-            const detectedTargetFaces = allDetections.filter(detection => {
-              if(detection.length < 3) return false
-              const x = Number(detection[0])
-              const y = Number(detection[1])
-              const path = detection[2]
-              return limitedCsv
-              .some(entry => {
-                if (entry[COLUMN_NAME] === path.split('/')[2] && entry[COLUMN_URL].split('/').pop().split('.jpg')[0] === path.split('/').pop().split('.jpg')[0]) {
-                  let dims = entry[COLUMN_DIMS].split(' ').map(i => parseInt(i))
-                  dims = {x: dims[1], y: dims[0]}
-                  const rect = entry[COLUMN_RECT].split(' ').map(i => parseInt(i))
-                  return Math.abs(x - rect[0] / dims.x) < 0.05 && Math.abs(y - rect[1] / dims.y) < 0.05
-                }
-                return false
-              })
-            }).length
-            const totalPhotos = $(ls data/admin/files/IMDb-Face/* | wc -l)
-            const detectedFacesRate = detectedFaces / totalPhotos
-            const clusteredTargetFacesRate = clusteredTargetFaces / detectedTargetFaces
-            const clusteredFacesRate = clusteredFaces / detectedFaces
-            const averageClusterAccuracy = clusterAccuracies.reduce((acc, val) => acc+val, 0)/clusterAccuracies.length
-            const averageClusterTargetAccuracy = clusterTargetAccuracies.reduce((acc, val) => acc+val, 0)/clusterTargetAccuracies.length
-            const targettedShitClusterRate = clusterTargetAccuracies.filter((val) => val < 0.5).length/clusterTargetAccuracies.length
-            const shitClusterRate = clusterAccuracies.filter((val) => val < 0.5).length/clusterAccuracies.length
-            console.log({ clusterAccuracies });
-            console.log({ clusterTargetAccuracies });
-            console.log({ totalPhotos });
-            console.log({ detectedFaces });
-            console.log({ detectedFacesRate });
-            console.log({ detectedTargetFaces });
-            console.log({ clusteredFaces });
-            console.log({ clusteredFacesRate })
-            console.log({ clusteredTargetFaces })
-            console.log({ clusteredTargetFacesRate })
-            console.log({ averageTargetFacesPerIdentity })
-            console.log({ averageClusteredTargetFacesByIdentity })
-            console.log({ clusteredTargetFacesByIdentityRate })
-            console.log({ identitiesWithPhotos })
-            console.log({ identitiesWithDetections })
-            console.log({ identitiesWithEnoughDetections })
-            console.log({ identitiesWithClusters })
-            console.log({ identitiesWithClustersRate })
-            console.log({ shitClusterRate })
-            console.log({ targettedShitClusterRate })
-            console.log({ averageClusterAccuracy })
-            console.log({ averageClusterTargetAccuracy })
-            console.log({ weightedAccuracy: averageClusterAccuracy * clusteredFacesRate })
-            console.log({ weightedTargetAccuracy: averageClusterTargetAccuracy * clusteredTargetFacesRate })
-            const combinedScore = (averageClusterTargetAccuracy * identitiesWithClustersRate * clusteredTargetFacesByIdentityRate * clusteredTargetFacesRate) ** (1/4)
-            console.log({ combinedScore, minCombinedScore: 0.6 })
-            if (combinedScore < 0.6 || combinedScore > 1.0) {
-              console.log('Benchmark result: Bad')
-              process.exit(1)
-            } else {
-              console.log('Benchmark result: Good')
-            }
-          "
+          DETECTED_FACES_TOTAL=$(sqlite3 data/nextcloud.db "select count(*) from oc_recognize_face_detections where user_id = 'admin';") \
+            node apps/${{ env.APP_NAME }}/tests/analyse-face-assignments.js
 
   php-taskprocessing:
     runs-on: ubuntu-latest
@@ -803,9 +662,16 @@ jobs:
           path: nextcloud-cache.db
           key: ${{ steps.db-cache.outputs.cache-primary-key }}
 
+      # The photos on disk are the run-independent denominator for every rate the
+      # analysis step reports, so take the inventory before they are truncated.
+      - name: Create photo inventory
+        run: |
+          find data/admin/files/IMDb-Face -type f -printf '%P\n' | sort > photos.txt
+          wc -l photos.txt
+
       - name: Reduce space
         run: |
-          for dirname in data/admin/files/IMDb-Face/*; do truncate -s 0 "${dirname}/*"; done
+          for dirname in data/admin/files/IMDb-Face/*; do truncate -s 0 "${dirname}"/*; done
 
       - name: install sqlite3
         if: env.ACT # Skip this on normal GitHub Actions
@@ -813,13 +679,17 @@ jobs:
 
       - name: Create detection summary
         run: |
-          sqlite3 data/nextcloud.db "select x, y, path from oc_recognize_face_detections d LEFT JOIN oc_filecache c ON c.fileid = d.file_id where user_id = 'admin' ORDER BY path;" > out.txt
+          sqlite3 data/nextcloud.db "select x, y, width, height, path from oc_recognize_face_detections d LEFT JOIN oc_filecache c ON c.fileid = d.file_id where user_id = 'admin' ORDER BY path;" > out.txt
 
       - uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         id: clustering-cache
         with:
           path: out.json
-          key: ${{ runner.os }}-taskprocessing-${{ hashFiles('out.txt', 'apps/recognize/lib/Clustering/**', 'apps/recognize/lib/Dav/**', 'apps/recognize/lib/Service/FaceClusterAnalyzer.php', 'apps/recognize/lib/Command/ClusterFaces.php') }}
+          # lib/Classifiers/TaskProcessing/** has to be part of this key: in
+          # taskprocessing mode FaceClusterAnalyzer reads MIN_CLUSTER_SEPARATION,
+          # MAX_CLUSTER_EDGE_LENGTH and friends from ImageFaceRecognitionClassifier,
+          # so without it, tuning those constants silently reuses a stale out.json.
+          key: ${{ runner.os }}-taskprocessing-${{ hashFiles('out.txt', 'apps/recognize/lib/Clustering/**', 'apps/recognize/lib/Dav/**', 'apps/recognize/lib/Classifiers/TaskProcessing/**', 'apps/recognize/lib/Service/FaceClusterAnalyzer.php', 'apps/recognize/lib/Service/SettingsService.php', 'apps/recognize/lib/Command/ClusterFaces.php') }}
 
       - name: Run clustering
         if: steps.clustering-cache.outputs.cache-hit != 'true'
@@ -887,175 +757,16 @@ jobs:
           rm IMDb-Face-csv.zip
 
       - name: Analyse face assignments
+        env:
+          LABEL: ${{ github.job }}
+          CSV_PATH: apps/${{ env.APP_NAME }}/tests/res/IMDb-Face.csv
+          PHOTOS_TXT: photos.txt
+          DETECTIONS_TXT: out.txt
+          CLUSTERS_JSON: out.json
+          METRICS_JSON_OUT: metrics.json
         run: |
-          node -e "
-            const COLUMN_NAME = 0
-            const COLUMN_URL = 5
-            const COLUMN_RECT = 3
-            const COLUMN_DIMS = 4
-
-            const csv = fs.readFileSync(__dirname + '/apps/recognize/tests/res/IMDb-Face.csv')
-              .toString('utf8')
-              .split('\n')
-              .map(line => line.split(','))
-
-            // remove csv header
-            csv.shift()
-
-            const names = [...new Set(csv.map(image => image[COLUMN_NAME])).values()]
-
-            const selectedNames = names.slice(0, 2000)
-
-            const limitedCsv = selectedNames.flatMap(name => {
-              return csv.filter(line => line[COLUMN_NAME] === name)
-            })
-
-            const allDetections = fs.readFileSync(__dirname + '/out.txt').toString('utf8').trim().split('\n').map(line => line.split('|'))
-
-            const json = require(__dirname + '/out.json');
-
-            const facesByCluster = json
-            .reduce((acc, face) => {
-              const clusterId = parseInt(face.href.split('/')[6]);
-              acc[clusterId] = [...(acc[clusterId] ?? []), face.realpath.split('/')[4]];
-              return acc
-            }, {});
-
-            const targetFaces = json
-            .filter(face => {
-              return limitedCsv
-                .some(entry => {
-                  if (entry[COLUMN_NAME] === face.realpath.split('/')[4] && entry[COLUMN_URL].split('/').pop() === face.realpath.split('/').pop()) {
-                    let dims = entry[COLUMN_DIMS].split(' ').map(i => parseInt(i))
-                    dims = {x: dims[1], y: dims[0]}
-                    const rect = entry[COLUMN_RECT].split(' ').map(i => parseInt(i))
-                    return Math.abs(face['face-detections'][0].x - rect[0] / dims.x) < 0.05 && Math.abs(face['face-detections'][0].y - rect[1] / dims.y) < 0.05
-                  }
-                  return false
-                })
-            })
-
-            const targetFacesPerIdentity = targetFaces.reduce((acc, face) => {
-              const name = face.realpath.split('/')[4]
-              acc[name] = acc[name] ?? []
-              acc[name].push(face)
-              return acc
-            },{})
-
-            const targetFacesByCluster = targetFaces
-            .reduce((acc, face) => {
-              const clusterId = parseInt(face.href.split('/')[6]);
-              acc[clusterId] = [...(acc[clusterId] ?? []), face.realpath.split('/')[4]];
-              return acc
-            }, {});
-
-            console.log(facesByCluster);
-            console.log(targetFacesByCluster);
-            const clusterTargetAccuracies = Object.entries(targetFacesByCluster)
-              .filter(([clusterId, names]) => names.length > 1)
-              .map(([clusterId, names]) =>
-                [...new Set(names).values()]
-                  .map(name1 =>
-                    names.filter(name2 => name1 === name2).length
-                  ).sort().reverse()[0] / names.length
-              );
-            const clusterAccuracies = Object.entries(facesByCluster)
-              .map(([clusterId, names]) =>
-                [...new Set(names).values()]
-                  .map(name1 =>
-                    names.filter(name2 => name1 === name2).length
-                  ).sort().reverse()[0] / names.length
-              );
-            const clusteredFaces = Object.entries(facesByCluster)
-                .map(([clusterId, names]) => names.length)
-                .reduce((acc, val) => acc+val, 0)
-            const clusteredTargetFaces = Object.entries(targetFacesByCluster)
-                .map(([clusterId, names]) => names.length)
-                .reduce((acc, val) => acc+val, 0)
-            const clusteredTargetFacesByIdentity = Object.entries(targetFacesByCluster)
-              .map(([clusterId, names]) =>
-                [...new Set(names).values()]
-                  .map(name1 =>
-                    [name1, names.filter(name2 => name1 === name2).length]
-                  ).sort(([name1, size1], [name2, size2]) => size1 - size2).reverse()[0]
-              )
-              .filter(([name,size]) => size > 1)
-              .reduce((acc, [name, size]) => {
-                acc[name] = (acc[name] ?? 0) + size
-                return acc
-              }, Object.fromEntries(Object.entries(targetFacesPerIdentity).map(([key]) => [key, 0])))
-
-            console.log(targetFacesPerIdentity)
-            console.log(clusteredTargetFacesByIdentity)
-            const averageTargetFacesPerIdentity = Object.entries(targetFacesPerIdentity).reduce((acc, [name, detections]) => acc+detections.length, 0) / Object.entries(targetFacesPerIdentity).length
-            const averageClusteredTargetFacesByIdentity = Object.entries(clusteredTargetFacesByIdentity).reduce((acc, [name, size]) => acc+size, 0) / Object.entries(clusteredTargetFacesByIdentity).length
-
-            const clusteredTargetFacesByIdentityRate = Object.entries(clusteredTargetFacesByIdentity)
-              .reduce((acc, [name, size]) => acc + size / targetFacesPerIdentity[name].length, 0) / Object.entries(clusteredTargetFacesByIdentity).length
-            const identitiesWithPhotos = $(find data/admin/files/IMDb-Face -type d ! -empty | wc -l)
-            const identitiesWithDetections = Object.entries(targetFacesPerIdentity).length
-            const identitiesWithEnoughDetections = Object.entries(targetFacesPerIdentity).filter(([name, detections]) => detections.length > 1).length
-            const identitiesWithClusters = Object.entries(clusteredTargetFacesByIdentity).filter(([name, size]) => size > 1).length
-            const identitiesWithClustersRate = identitiesWithClusters / identitiesWithEnoughDetections
-
-            const detectedFaces = $(sqlite3 data/nextcloud.db "select count(*) from oc_recognize_face_detections where user_id = 'admin';")
-            const detectedTargetFaces = allDetections.filter(detection => {
-              if(detection.length < 3) return false
-              const x = Number(detection[0])
-              const y = Number(detection[1])
-              const path = detection[2]
-              return limitedCsv
-              .some(entry => {
-                if (entry[COLUMN_NAME] === path.split('/')[2] && entry[COLUMN_URL].split('/').pop().split('.jpg')[0] === path.split('/').pop().split('.jpg')[0]) {
-                  let dims = entry[COLUMN_DIMS].split(' ').map(i => parseInt(i))
-                  dims = {x: dims[1], y: dims[0]}
-                  const rect = entry[COLUMN_RECT].split(' ').map(i => parseInt(i))
-                  return Math.abs(x - rect[0] / dims.x) < 0.05 && Math.abs(y - rect[1] / dims.y) < 0.05
-                }
-                return false
-              })
-            }).length
-            const totalPhotos = $(ls data/admin/files/IMDb-Face/* | wc -l)
-            const detectedFacesRate = detectedFaces / totalPhotos
-            const clusteredTargetFacesRate = clusteredTargetFaces / detectedTargetFaces
-            const clusteredFacesRate = clusteredFaces / detectedFaces
-            const averageClusterAccuracy = clusterAccuracies.reduce((acc, val) => acc+val, 0)/clusterAccuracies.length
-            const averageClusterTargetAccuracy = clusterTargetAccuracies.reduce((acc, val) => acc+val, 0)/clusterTargetAccuracies.length
-            const targettedShitClusterRate = clusterTargetAccuracies.filter((val) => val < 0.5).length/clusterTargetAccuracies.length
-            const shitClusterRate = clusterAccuracies.filter((val) => val < 0.5).length/clusterAccuracies.length
-            console.log({ clusterAccuracies });
-            console.log({ clusterTargetAccuracies });
-            console.log({ totalPhotos });
-            console.log({ detectedFaces });
-            console.log({ detectedFacesRate });
-            console.log({ detectedTargetFaces });
-            console.log({ clusteredFaces });
-            console.log({ clusteredFacesRate })
-            console.log({ clusteredTargetFaces })
-            console.log({ clusteredTargetFacesRate })
-            console.log({ averageTargetFacesPerIdentity })
-            console.log({ averageClusteredTargetFacesByIdentity })
-            console.log({ clusteredTargetFacesByIdentityRate })
-            console.log({ identitiesWithPhotos })
-            console.log({ identitiesWithDetections })
-            console.log({ identitiesWithEnoughDetections })
-            console.log({ identitiesWithClusters })
-            console.log({ identitiesWithClustersRate })
-            console.log({ shitClusterRate })
-            console.log({ targettedShitClusterRate })
-            console.log({ averageClusterAccuracy })
-            console.log({ averageClusterTargetAccuracy })
-            console.log({ weightedAccuracy: averageClusterAccuracy * clusteredFacesRate })
-            console.log({ weightedTargetAccuracy: averageClusterTargetAccuracy * clusteredTargetFacesRate })
-            const combinedScore = (averageClusterTargetAccuracy * identitiesWithClustersRate * clusteredTargetFacesByIdentityRate * clusteredTargetFacesRate) ** (1/4)
-            console.log({ combinedScore, minCombinedScore: 0.6 })
-            if (combinedScore < 0.6 || combinedScore > 1.0) {
-              console.log('Benchmark result: Bad')
-              process.exit(1)
-            } else {
-              console.log('Benchmark result: Good')
-            }
-          "
+          DETECTED_FACES_TOTAL=$(sqlite3 data/nextcloud.db "select count(*) from oc_recognize_face_detections where user_id = 'admin';") \
+            node apps/${{ env.APP_NAME }}/tests/analyse-face-assignments.js
 
       - name: Show ExApp logs
         if: always()
