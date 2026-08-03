@@ -27,6 +27,36 @@ env:
   # calibrated against denominators derived from the run's own output, which
   # inflated it. Set this from the first baseline run of the new metrics.
   MIN_COMBINED_SCORE: '0'
+  # Coverage floor. Every purity metric in the report gets *better* as coverage
+  # drops - a run that only ever detected faces in a third of the identity
+  # directories scores near-perfect cluster accuracy on that third. Without this
+  # gate a truncated run (ExApp tasks that never came back, a crawl that stalled)
+  # reads as an improvement. Both backends detect at least one annotated face for
+  # essentially every identity when they process the whole dataset.
+  MIN_IDENTITY_DETECTION_RATE: '0.9'
+  # Keep every Nth identity directory of the IMDb-Face set so the whole run fits
+  # in the job time limit. The full zip is ~702 directories / ~23650 photos, i.e.
+  # ~34 photos per identity.
+  #
+  # The TaskProcessing job is the constraint. The ExApp needs ~1.3s per image on a
+  # single CPU worker, i.e. ~11 min per 500-photo TaskProcessing task, and the
+  # classification step has a budget of roughly 3h (the cron loop plus the pending
+  # task wait). The previous keep-every-2 set was ~11800 photos = ~24 tasks =
+  # ~4.5h of ExApp work, which is why runs timed out with two thirds of the
+  # dataset never processed. Observed throughput was lower still, about 8 tasks
+  # per run, because in-flight photos get re-queued and scheduled twice.
+  #
+  # keep-every-8 is ~88 directories / ~2950 photos = ~6 tasks = ~1.1h, so roughly
+  # 2x margin against what a run actually achieved. It can go back down towards 2
+  # once the classifier applies backpressure and stops dropping files from the
+  # queue at schedule time, since that removes the duplicate work and makes the
+  # loop's exit condition mean what it says.
+  #
+  # Both jobs use the same value so their metrics stay directly comparable, and
+  # each keep-every-N set is a strict subset of the smaller N. Note that changing
+  # this re-baselines both jobs: metrics are means over the identities on disk, so
+  # they are not comparable across different values of N.
+  DATASET_KEEP_EVERY: '8'
 
 jobs:
   php:
@@ -159,7 +189,7 @@ jobs:
         id: photos-cache
         with:
           path: data/admin/files/
-          key: https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip-half
+          key: https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip-every${{ env.DATASET_KEEP_EVERY }}
 
       - name: Upload photos
         if: steps.photos-cache.outputs.cache-hit != 'true'
@@ -169,13 +199,13 @@ jobs:
           wget https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip
           unzip IMDb-Face.zip
           rm IMDb-Face.zip
-          # Drop every other identity directory to roughly halve the dataset so
-          # the classification run stays within the job time limit. Deterministic
+          # Keep only every DATASET_KEEP_EVERY'th identity directory so the
+          # classification run stays within the job time limit. Deterministic
           # (sorted glob) so both jobs cache an identical set under the same key.
           cd IMDb-Face
           i=0
           for d in */; do
-            if [ $((i % 2)) -eq 1 ]; then rm -rf "$d"; fi
+            if [ $((i % ${{ env.DATASET_KEEP_EVERY }})) -ne 0 ]; then rm -rf "$d"; fi
             i=$((i + 1))
           done
           echo "Kept $(ls -d */ | wc -l) identity directories"
@@ -183,7 +213,7 @@ jobs:
       - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         with:
           path: data/admin/files/
-          key: https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip-half
+          key: https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip-every${{ env.DATASET_KEEP_EVERY }}
 
       - name: Set config
         run: |
@@ -481,7 +511,7 @@ jobs:
         id: photos-cache
         with:
           path: data/admin/files/
-          key: https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip-half
+          key: https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip-every${{ env.DATASET_KEEP_EVERY }}
 
       - name: Upload photos
         if: steps.photos-cache.outputs.cache-hit != 'true'
@@ -491,13 +521,13 @@ jobs:
           wget https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip
           unzip IMDb-Face.zip
           rm IMDb-Face.zip
-          # Drop every other identity directory to roughly halve the dataset so
-          # the classification run stays within the job time limit. Deterministic
+          # Keep only every DATASET_KEEP_EVERY'th identity directory so the
+          # classification run stays within the job time limit. Deterministic
           # (sorted glob) so both jobs cache an identical set under the same key.
           cd IMDb-Face
           i=0
           for d in */; do
-            if [ $((i % 2)) -eq 1 ]; then rm -rf "$d"; fi
+            if [ $((i % ${{ env.DATASET_KEEP_EVERY }})) -ne 0 ]; then rm -rf "$d"; fi
             i=$((i + 1))
           done
           echo "Kept $(ls -d */ | wc -l) identity directories"
@@ -505,7 +535,7 @@ jobs:
       - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         with:
           path: data/admin/files/
-          key: https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip-half
+          key: https://cloud.nextcloud.com/public.php/dav/files/wfDk23DBsXYrd4S/IMDb-Face.zip-every${{ env.DATASET_KEEP_EVERY }}
 
       - name: Set config
         run: |
@@ -607,6 +637,7 @@ jobs:
         run: sudo apt update && sudo apt install -y sqlite3
 
       - name: Run classification via TaskProcessing
+        id: classify
         if: steps.db-cache.outputs.cache-hit != 'true'
         run: |
           # Probe available disk so we can tell whether runs die on ENOSPC.
@@ -645,19 +676,44 @@ jobs:
             sleep 30
           done
           echo "disk after classification: $(disk_free)"
+
+          # Whether the run actually finished. The faces queue emptying is not
+          # enough: files leave the queue when their TaskProcessing task is
+          # *scheduled*, not when its results are written back, so a drained queue
+          # with tasks still pending means those photos have no detections at all.
+          # Detection counts cannot be used here - a photo with no face in it
+          # legitimately produces no rows - so completeness is queue + task state.
+          QUEUE=$(sq "select count(*) from oc_recognize_queue_faces;")
+          PENDING=$(sq "select count(*) from oc_taskprocessing_tasks where app_id = 'recognize' and status in (0, 1, 2);")
           FAILED=$(sq "select count(*) from oc_taskprocessing_tasks where app_id = 'recognize' and status = 4;")
-          echo "failed recognize taskprocessing tasks: $FAILED"
+          TOTAL=$(sq "select count(*) from oc_taskprocessing_tasks where app_id = 'recognize';")
+          echo "final: faces queue=$QUEUE, pending tasks=$PENDING, failed tasks=$FAILED, total tasks=$TOTAL"
+          echo "photos on disk: $(find data/admin/files/IMDb-Face -type f | wc -l)"
+          echo "photos with detections: $(sq "select count(distinct file_id) from oc_recognize_face_detections where user_id = 'admin';")"
+
+          if [ "$QUEUE" -eq 0 ] && [ "$PENDING" -eq 0 ] && [ "$FAILED" -eq 0 ]; then
+            echo "complete=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "complete=false" >> "$GITHUB_OUTPUT"
+            echo "::error title=Incomplete classification run::faces queue=$QUEUE, pending tasks=$PENDING, failed tasks=$FAILED of $TOTAL. Each pending task covers up to 500 photos, whose detections were never written. The detection DB will NOT be cached; the metrics below score only the photos that made it through."
+          fi
 
       # VACUUM INTO writes a consistent point-in-time copy (WAL folded in) that
       # actions/cache can tar without the running dev server / ExApp mutating it
       # mid-read (which previously failed the save with "tar exit code 1").
+      #
+      # Only ever snapshot a *complete* run. An incomplete one used to be cached
+      # just the same, which pinned a partial detection DB under this key and made
+      # every later run with the same backend SHA and file set replay the same
+      # truncated numbers without touching the ExApp at all. A cache hit therefore
+      # now implies a run that drained the queue with no pending or failed tasks.
       - name: Snapshot detection DB for caching
-        if: steps.db-cache.outputs.cache-hit != 'true'
+        if: steps.db-cache.outputs.cache-hit != 'true' && steps.classify.outputs.complete == 'true'
         run: |
           sqlite3 -cmd ".timeout 60000" data/nextcloud.db "VACUUM INTO 'nextcloud-cache.db';"
 
       - uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
-        if: steps.db-cache.outputs.cache-hit != 'true'
+        if: steps.db-cache.outputs.cache-hit != 'true' && steps.classify.outputs.complete == 'true'
         with:
           path: nextcloud-cache.db
           key: ${{ steps.db-cache.outputs.cache-primary-key }}
@@ -767,6 +823,23 @@ jobs:
         run: |
           DETECTED_FACES_TOTAL=$(sqlite3 data/nextcloud.db "select count(*) from oc_recognize_face_detections where user_id = 'admin';") \
             node apps/${{ env.APP_NAME }}/tests/analyse-face-assignments.js
+
+      # Runs even when the analysis above failed its gates, so an incomplete run
+      # is named as such instead of only showing up as a low score. Skipped on a
+      # cache hit, where `complete` is unset - a cached DB is only saved for a run
+      # that finished.
+      - name: Fail on incomplete classification run
+        if: always() && steps.classify.outputs.complete == 'false'
+        run: |
+          echo "The classification run did not finish: the ExApp had tasks still"
+          echo "pending or failed when the wait loop expired, so an unknown share"
+          echo "of the dataset has no detections and the metrics above are scored"
+          echo "against whatever made it through. Nothing was cached."
+          echo
+          echo "Either raise the wait budget in 'Run classification via"
+          echo "TaskProcessing', raise DATASET_KEEP_EVERY to shrink the dataset,"
+          echo "or give the ExApp more workers."
+          exit 1
 
       - name: Show ExApp logs
         if: always()

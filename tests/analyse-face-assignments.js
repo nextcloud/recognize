@@ -23,6 +23,7 @@
  *   MIN_IOU                        match threshold, default 0.3
  *   MIN_COMBINED_SCORE             gate, default 0 (report only, see workflow comment)
  *   MIN_CLUSTER_TARGET_ACCURACY    gate, default 0.85
+ *   MIN_IDENTITY_DETECTION_RATE    coverage gate, default 0.9 (see below)
  *   METRICS_JSON_OUT      optional path to write the metrics as JSON
  *   GITHUB_STEP_SUMMARY   optional path to append a markdown table to
  */
@@ -51,6 +52,10 @@ const LABEL = env('LABEL', 'clustering run');
 const MIN_IOU = parseFloat(env('MIN_IOU', '0.3'));
 const MIN_COMBINED_SCORE = parseFloat(env('MIN_COMBINED_SCORE', '0'));
 const MIN_CLUSTER_TARGET_ACCURACY = parseFloat(env('MIN_CLUSTER_TARGET_ACCURACY', '0.85'));
+// Coverage floor, see the gate at the bottom. Every purity metric below improves
+// as coverage falls, so without this a run that lost most of the dataset scores
+// better than one that processed all of it.
+const MIN_IDENTITY_DETECTION_RATE = parseFloat(env('MIN_IDENTITY_DETECTION_RATE', '0.9'));
 
 const COLUMN_NAME = 0;
 const COLUMN_RECT = 3;
@@ -463,6 +468,33 @@ if (process.env.GITHUB_STEP_SUMMARY) {
 const failures = [];
 if (!Number.isFinite(combinedScore) || combinedScore > 1.0) {
 	failures.push(`combinedScore ${combinedScore} is not a valid score`);
+}
+
+// Coverage gate, checked first because it invalidates everything below it.
+//
+// A run that never produced detections for part of the dataset scores *better*
+// on every purity metric than one that processed all of it: it clusters a
+// smaller, easier subset, so averageClusterTargetAccuracy, shitClusterRate and
+// clusteredOfDetectedTargetFacesRate all improve while the pipeline is in fact
+// doing less. identityDetectionRate is the metric that cannot be gamed that way,
+// because its denominator is the identities on disk.
+//
+// It also tells the two failure shapes apart. With ~25 annotations per identity,
+// a detector that genuinely misses a third of faces still finds at least one face
+// for essentially every identity, so identityDetectionRate stays near 1 while
+// detectionRecall drops. The two falling together means whole identity
+// directories produced nothing - photos that were never processed, not faces that
+// were missed.
+if (metrics.identityDetectionRate < MIN_IDENTITY_DETECTION_RATE) {
+	const perCoveredIdentity = identitiesWithDetections === 0
+		? 0
+		: detectedTargetFaces / identitiesWithDetections;
+	failures.push(
+		`identityDetectionRate ${metrics.identityDetectionRate.toFixed(4)} < MIN_IDENTITY_DETECTION_RATE ${MIN_IDENTITY_DETECTION_RATE}`
+		+ ` - only ${identitiesWithDetections} of ${scoreableIdentities.length} identities had any annotated face detected,`
+		+ ` at ${perCoveredIdentity.toFixed(1)} of ${metrics.averageGroundTruthFacesPerIdentity.toFixed(1)} annotations each.`
+		+ ' Every purity metric in this report is scored against that subset only.',
+	);
 }
 if (combinedScore < MIN_COMBINED_SCORE) {
 	failures.push(`combinedScore ${combinedScore.toFixed(4)} < MIN_COMBINED_SCORE ${MIN_COMBINED_SCORE}`);
