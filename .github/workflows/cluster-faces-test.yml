@@ -23,9 +23,11 @@ env:
   MIN_IOU: '0.3'
   # Purity floor. Both backends have historically scored >= 0.95 here.
   MIN_CLUSTER_TARGET_ACCURACY: '0.85'
-  # Combined score floor. Still 0, i.e. report-only: the old 0.6 threshold was
-  # calibrated against denominators derived from the run's own output, which
-  # inflated it. Set this from the first baseline run of the new metrics.
+  # Combined score floor, per job: each "Analyse face assignments" step overrides
+  # this with a value baselined against its own backend. The two are ~2x apart
+  # (0.38 built-in vs 0.80 via the ExApp), so a single shared threshold would have
+  # to sit under the lower one and could not catch the better backend regressing.
+  # 0 here is only the fallback for a job that sets no floor of its own.
   MIN_COMBINED_SCORE: '0'
   # Coverage floor. Every purity metric in the report gets *better* as coverage
   # drops - a run that only ever detected faces in a third of the identity
@@ -344,6 +346,11 @@ jobs:
           DETECTIONS_TXT: out.txt
           CLUSTERS_JSON: out.json
           METRICS_JSON_OUT: metrics.json
+          # Baselined at 0.3813 on the first run where both jobs processed the
+          # whole dataset (keep-every-10, 71 identities). The built-in detector
+          # only finds about half of the annotated faces at all - detectionRecall
+          # 0.4559, medianBestIou 0 - which caps everything downstream of it.
+          MIN_COMBINED_SCORE: '0.35'
         run: |
           DETECTED_FACES_TOTAL=$(sqlite3 data/nextcloud.db "select count(*) from oc_recognize_face_detections where user_id = 'admin';") \
             node apps/${{ env.APP_NAME }}/tests/analyse-face-assignments.js
@@ -820,6 +827,11 @@ jobs:
           DETECTIONS_TXT: out.txt
           CLUSTERS_JSON: out.json
           METRICS_JSON_OUT: metrics.json
+          # Baselined at 0.8043 on the first run where both jobs processed the
+          # whole dataset (keep-every-10, 71 identities). Deliberately much higher
+          # than the built-in detector's floor: a shared threshold would have to
+          # sit below 0.38 and would not notice this backend halving its score.
+          MIN_COMBINED_SCORE: '0.75'
         run: |
           DETECTED_FACES_TOTAL=$(sqlite3 data/nextcloud.db "select count(*) from oc_recognize_face_detections where user_id = 'admin';") \
             node apps/${{ env.APP_NAME }}/tests/analyse-face-assignments.js
