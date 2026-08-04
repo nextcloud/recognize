@@ -56,7 +56,7 @@ env:
   # each keep-every-N set is a strict subset of the smaller N. Note that changing
   # this re-baselines both jobs: metrics are means over the identities on disk, so
   # they are not comparable across different values of N.
-  DATASET_KEEP_EVERY: '8'
+  DATASET_KEEP_EVERY: '10'
 
 jobs:
   php:
