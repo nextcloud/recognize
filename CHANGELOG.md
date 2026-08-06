@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [13.0.0] - 2026-08-06
 
+### Breaking changes
+- Drop support for nc < 35
+
 ### New
 * feat: Add recognize_backend exApp integration: Payloads can now be processed on a separate machine via AppAPI
 * feat(deps): Add Nextcloud 35 support
