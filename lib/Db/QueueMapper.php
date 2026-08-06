@@ -80,6 +80,31 @@ final class QueueMapper extends QBMapper {
 	}
 
 	/**
+	 * Remove multiple queue items in a single statement per chunk.
+	 *
+	 * Deleting files one-by-one issues one write transaction per file, which on
+	 * SQLite serializes against every other DB user and can stall for minutes
+	 * when a large batch is dropped. Batching keeps it to a handful of writes.
+	 *
+	 * @param string $model
+	 * @param list<int> $ids
+	 * @return void
+	 * @throws \OCP\DB\Exception
+	 */
+	public function removeFromQueueByIds(string $model, array $ids) : void {
+		if (count($ids) === 0) {
+			return;
+		}
+		// Chunk to stay well below SQLite's bound-parameter limit
+		foreach (array_chunk($ids, 500) as $chunk) {
+			$qb = $this->db->getQueryBuilder();
+			$qb->delete($this->getQueueTable($model))
+				->where($qb->expr()->in('id', $qb->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)))
+				->executeStatement();
+		}
+	}
+
+	/**
 	 * @param int $fileId
 	 * @return void
 	 * @throws \OCP\DB\Exception

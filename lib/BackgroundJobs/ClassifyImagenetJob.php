@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace OCA\Recognize\BackgroundJobs;
 
 use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
+use OCA\Recognize\Classifiers\TaskProcessing\ImageClassifier as TaskProcessingImageClassifier;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
 use OCA\Recognize\Service\SettingsService;
@@ -20,11 +21,13 @@ final class ClassifyImagenetJob extends ClassifierJob {
 
 	private SettingsService $settingsService;
 	private ImagenetClassifier $imagenet;
+	private TaskProcessingImageClassifier $tpImage;
 
-	public function __construct(ITimeFactory $time, Logger $logger, QueueService $queue, SettingsService $settingsService, ImagenetClassifier $imagenet, IUserMountCache $mountCache, IJobList $jobList) {
+	public function __construct(ITimeFactory $time, Logger $logger, QueueService $queue, SettingsService $settingsService, ImagenetClassifier $imagenet, TaskProcessingImageClassifier $tpImage, IUserMountCache $mountCache, IJobList $jobList) {
 		parent::__construct($time, $logger, $queue, $mountCache, $jobList, $settingsService);
 		$this->settingsService = $settingsService;
 		$this->imagenet = $imagenet;
+		$this->tpImage = $tpImage;
 	}
 
 	/**
@@ -39,6 +42,10 @@ final class ClassifyImagenetJob extends ClassifierJob {
 	 * @return void
 	 */
 	protected function classify(array $files) : void {
+		if ($this->settingsService->getSetting('taskprocessing.enabled') === 'true') {
+			$this->tpImage->classify($files);
+			return;
+		}
 		$this->imagenet->classify($files);
 	}
 

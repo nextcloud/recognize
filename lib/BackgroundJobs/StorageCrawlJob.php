@@ -98,8 +98,12 @@ final class StorageCrawlJob extends QueuedJob {
 					$this->queue->insertIntoQueue(MusicnnClassifier::MODEL_NAME, $queueFile);
 				}
 			} catch (Exception $e) {
+				// Don't abort the whole crawl on a transient insert failure
+				// (e.g. "database is locked" under WAL contention): break out so
+				// the reschedule below re-queues from the current file and the
+				// crawl resumes next run instead of orphaning all remaining files.
 				$this->logger->error('Failed to add file to queue', ['exception' => $e]);
-				return;
+				break;
 			}
 		}
 

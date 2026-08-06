@@ -9,6 +9,7 @@ namespace OCA\Recognize\Service;
 
 use \OCA\Recognize\Vendor\Rubix\ML\Datasets\Labeled;
 use \OCA\Recognize\Vendor\Rubix\ML\Kernels\Distance\Euclidean;
+use OCA\Recognize\Classifiers\TaskProcessing\ImageFaceRecognitionClassifier;
 use OCA\Recognize\Clustering\HDBSCAN;
 use OCA\Recognize\Db\FaceCluster;
 use OCA\Recognize\Db\FaceClusterMapper;
@@ -27,7 +28,12 @@ final class FaceClusterAnalyzer {
 	private FaceDetectionMapper $faceDetections;
 	private FaceClusterMapper $faceClusters;
 	private Logger $logger;
-	private int $minDatasetSize = self::MIN_DATASET_SIZE;
+	private int $minDatasetSize;
+	private float $minDetectionSize;
+	private float $minClusterSeparation;
+	private float $maxClusterEdgeLength;
+	private float $maxOverlapNewCluster;
+	private float $minOverlapExistingCluster;
 	private SettingsService $settingsService;
 
 	public function __construct(FaceDetectionMapper $faceDetections, FaceClusterMapper $faceClusters, Logger $logger, SettingsService $settingsService) {
@@ -35,6 +41,22 @@ final class FaceClusterAnalyzer {
 		$this->faceClusters = $faceClusters;
 		$this->logger = $logger;
 		$this->settingsService = $settingsService;
+
+		if ($this->settingsService->getSetting('taskprocessing.enabled') === 'true') {
+			$this->minDatasetSize = ImageFaceRecognitionClassifier::MIN_DATASET_SIZE;
+			$this->minDetectionSize = ImageFaceRecognitionClassifier::MIN_DETECTION_SIZE;
+			$this->minClusterSeparation = ImageFaceRecognitionClassifier::MIN_CLUSTER_SEPARATION;
+			$this->maxClusterEdgeLength = ImageFaceRecognitionClassifier::MAX_CLUSTER_EDGE_LENGTH;
+			$this->maxOverlapNewCluster = ImageFaceRecognitionClassifier::MAX_OVERLAP_NEW_CLUSTER;
+			$this->minOverlapExistingCluster = ImageFaceRecognitionClassifier::MIN_OVERLAP_EXISTING_CLUSTER;
+		} else {
+			$this->minDatasetSize = self::MIN_DATASET_SIZE;
+			$this->minDetectionSize = self::MIN_DETECTION_SIZE;
+			$this->minClusterSeparation = self::MIN_CLUSTER_SEPARATION;
+			$this->maxClusterEdgeLength = self::MAX_CLUSTER_EDGE_LENGTH;
+			$this->maxOverlapNewCluster = self::MAX_OVERLAP_NEW_CLUSTER;
+			$this->minOverlapExistingCluster = self::MIN_OVERLAP_EXISTING_CLUSTER;
+		}
 	}
 
 	public function setMinDatasetSize(int $minSize) : void {
@@ -64,12 +86,12 @@ final class FaceClusterAnalyzer {
 		}
 
 		if ($batchSize > 0) {
-			$rejectedDetections = $this->faceDetections->sampleRejectedDetectionsByUserId($userId, $this->getRejectSampleSize($batchSize), self::MIN_DETECTION_SIZE, self::MIN_DETECTION_SIZE);
+			$rejectedDetections = $this->faceDetections->sampleRejectedDetectionsByUserId($userId, $this->getRejectSampleSize($batchSize), $this->minDetectionSize, $this->minDetectionSize);
 			$requestedFreshDetectionCount = max($batchSize - count($rejectedDetections) - count($sampledDetections), 500);
-			$freshDetections = $this->faceDetections->findUnclusteredByUserId($userId, $requestedFreshDetectionCount, self::MIN_DETECTION_SIZE, self::MIN_DETECTION_SIZE);
+			$freshDetections = $this->faceDetections->findUnclusteredByUserId($userId, $requestedFreshDetectionCount, $this->minDetectionSize, $this->minDetectionSize);
 		} else {
-			$freshDetections = $this->faceDetections->findUnclusteredByUserId($userId, 0, self::MIN_DETECTION_SIZE, self::MIN_DETECTION_SIZE);
-			$rejectedDetections = $this->faceDetections->sampleRejectedDetectionsByUserId($userId, $this->getRejectSampleSize(count($freshDetections)), self::MIN_DETECTION_SIZE, self::MIN_DETECTION_SIZE);
+			$freshDetections = $this->faceDetections->findUnclusteredByUserId($userId, 0, $this->minDetectionSize, $this->minDetectionSize);
+			$rejectedDetections = $this->faceDetections->sampleRejectedDetectionsByUserId($userId, $this->getRejectSampleSize(count($freshDetections)), $this->minDetectionSize, $this->minDetectionSize);
 		}
 
 
@@ -94,7 +116,7 @@ final class FaceClusterAnalyzer {
 		$hdbscan = new HDBSCAN($dataset, $this->getMinClusterSize($n), $this->getMinSampleSize($n));
 
 		$numberOfClusteredDetections = 0;
-		$clusters = $hdbscan->predict(self::MIN_CLUSTER_SEPARATION, self::MAX_CLUSTER_EDGE_LENGTH);
+		$clusters = $hdbscan->predict($this->minClusterSeparation, $this->maxClusterEdgeLength);
 
 		foreach ($clusters as $flatCluster) {
 			/** @var int[] $detectionKeys */
@@ -132,10 +154,10 @@ final class FaceClusterAnalyzer {
 			}
 
 			// If more than X% of already clustered detections are for this, we keep it
-			if ($overlap > self::MIN_OVERLAP_EXISTING_CLUSTER) {
+			if ($overlap > $this->minOverlapExistingCluster) {
 				$clusterId = $oldClusterId;
 				$cluster = $this->faceClusters->find($clusterId);
-			} elseif ($overlap < self::MAX_OVERLAP_NEW_CLUSTER) {
+			} elseif ($overlap < $this->maxOverlapNewCluster) {
 				// otherwise we create a new cluster
 
 				$cluster = new FaceCluster();
@@ -187,16 +209,20 @@ final class FaceClusterAnalyzer {
 	 * @return list<float>
 	 */
 	public static function calculateCentroidOfDetections(array $detections): array {
-		// init 128 dimensional vector
-		/** @var list<float> $sum */
-		$sum = [];
-		for ($i = 0; $i < self::DIMENSIONS; $i++) {
-			$sum[] = 0.0;
+		if (count($detections) === 0) {
+			/** @var list<float> $empty */
+			$empty = [];
+			for ($i = 0; $i < self::DIMENSIONS; $i++) {
+				$empty[] = 0.0;
+			}
+			return $empty;
 		}
 
-		if (count($detections) === 0) {
-			return $sum;
-		}
+		// Size the accumulator from the first detection so both 128-dim (legacy) and
+		// 512-dim (buffalo_l/taskprocessing) embeddings work without a runtime switch.
+		$dimensions = count(reset($detections)->getVector());
+		/** @var list<float> $sum */
+		$sum = array_fill(0, $dimensions, 0.0);
 
 		foreach ($detections as $detection) {
 			$sum = array_map(static function (float $el, float $el2): float {

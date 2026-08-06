@@ -35,6 +35,8 @@ final class AdminSettings implements ISettings {
 		$tagsEnabled = $this->appManager->isEnabledForAnyone('systemtags');
 		$this->initialState->provideInitialState('tagsEnabled', $tagsEnabled);
 
+		$this->initialState->provideInitialState('recognizeBackendInstalled', $this->settingsService->isRecognizeBackendInstalled());
+
 		return new TemplateResponse('recognize', 'admin');
 	}
 

@@ -18,8 +18,15 @@ use OCA\Recognize\Classifiers\Video\MovinetClassifier;
 use OCA\Recognize\Exception\Exception;
 use OCP\AppFramework\Services\IAppConfig;
 use OCP\BackgroundJob\IJobList;
+use OCP\Server;
 
 final class SettingsService {
+	/**
+	 * App id of the ExApp that provides TaskProcessing classifiers; when installed
+	 * and enabled, taskprocessing mode is on by default.
+	 */
+	public const RECOGNIZE_BACKEND_APP_ID = 'recognize_backend';
+
 	/** @var array<string,string>  */
 	private const DEFAULTS = [
 		'tensorflow.cores' => '0',
@@ -31,6 +38,7 @@ final class SettingsService {
 		'faces.enabled' => 'false',
 		'musicnn.enabled' => 'false',
 		'movinet.enabled' => 'false',
+		'taskprocessing.enabled' => '',
 		'node_binary' => '',
 		'clusterFaces.status' => 'null',
 		'faces.status' => 'null',
@@ -105,11 +113,37 @@ final class SettingsService {
 		if (strpos($key, 'batchSize') !== false) {
 			return $this->config->getAppValueString($key, $this->getSetting('tensorflow.purejs') === 'false' ? self::DEFAULTS[$key] : self::PUREJS_DEFAULTS[$key]);
 		}
+		if ($key === 'taskprocessing.enabled') {
+			$default = $this->isRecognizeBackendInstalled() ? 'true' : 'false';
+			return $this->config->getAppValueString($key, $default);
+		}
 		$lazy = false;
 		if (in_array($key, self::LAZY_SETTINGS, true)) {
 			$lazy = true;
 		}
 		return $this->config->getAppValueString($key, self::DEFAULTS[$key], lazy: $lazy);
+	}
+
+	/**
+	 * Whether the recognize_backend ExApp is installed and enabled. The lookup
+	 * goes through app_api's PublicFunctions service so we don't impose a hard
+	 * dependency on app_api: if it isn't installed, this returns false.
+	 */
+	public function isRecognizeBackendInstalled(): bool {
+		try {
+			/**
+			 * @var \OCA\AppAPI\PublicFunctions $publicFunctions
+			 */
+			$publicFunctions = Server::get(\OCA\AppAPI\PublicFunctions::class);
+		} catch (\Throwable $e) {
+			return false;
+		}
+		try {
+			$exApp = $publicFunctions->getExApp(self::RECOGNIZE_BACKEND_APP_ID);
+		} catch (\Throwable $e) {
+			return false;
+		}
+		return $exApp !== null && (bool)($exApp['enabled'] ?? false);
 	}
 
 	/**

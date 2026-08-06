@@ -7,6 +7,7 @@
 declare(strict_types=1);
 namespace OCA\Recognize\BackgroundJobs;
 
+use OCA\Recognize\Classifiers\TaskProcessing\VideoClassifier as TaskProcessingVideoClassifier;
 use OCA\Recognize\Classifiers\Video\MovinetClassifier;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
@@ -20,11 +21,13 @@ final class ClassifyMovinetJob extends ClassifierJob {
 
 	private SettingsService $settingsService;
 	private MovinetClassifier $movinet;
+	private TaskProcessingVideoClassifier $tpVideo;
 
-	public function __construct(ITimeFactory $time, Logger $logger, QueueService $queue, SettingsService $settingsService, MovinetClassifier $movinet, IUserMountCache $mountCache, IJobList $jobList) {
+	public function __construct(ITimeFactory $time, Logger $logger, QueueService $queue, SettingsService $settingsService, MovinetClassifier $movinet, TaskProcessingVideoClassifier $tpVideo, IUserMountCache $mountCache, IJobList $jobList) {
 		parent::__construct($time, $logger, $queue, $mountCache, $jobList, $settingsService);
 		$this->settingsService = $settingsService;
 		$this->movinet = $movinet;
+		$this->tpVideo = $tpVideo;
 	}
 
 	/**
@@ -40,6 +43,10 @@ final class ClassifyMovinetJob extends ClassifierJob {
 	 * @throws \OCA\Recognize\Exception\Exception
 	 */
 	protected function classify(array $files) : void {
+		if ($this->settingsService->getSetting('taskprocessing.enabled') === 'true') {
+			$this->tpVideo->classify($files);
+			return;
+		}
 		$this->movinet->classify($files);
 	}
 
