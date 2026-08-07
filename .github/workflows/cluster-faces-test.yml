@@ -637,7 +637,7 @@ jobs:
         if: steps.db-cache.outputs.cache-hit != 'true'
         run: |
           ./occ app_api:daemon:register --net host manual_install "Manual Install" manual-install http localhost http://localhost:8080
-          ./occ app_api:app:register recognize_backend manual_install --json-info "{\"appid\":\"recognize_backend\",\"name\":\"Recognize Backend\",\"daemon_config_name\":\"manual_install\",\"version\":\"${{ steps.backendinfo.outputs.result }}\",\"secret\":\"12345\",\"port\":9031,\"scopes\":[\"TASK_PROCESSING\",\"FILES\"],\"system_app\":0}" --force-scopes --wait-finish
+          ./occ app_api:app:register recognize_backend manual_install --json-info "{\"appid\":\"recognize_backend\",\"name\":\"Recognize Backend\",\"daemon_config_name\":\"manual_install\",\"version\":\"${{ steps.backendinfo.outputs.result }}\",\"secret\":\"12345\",\"port\":9031,\"scopes\":[\"TASK_PROCESSING\",\"FILES\"]}" --force-scopes --wait-finish
 
       - name: install sqlite3
         if: steps.db-cache.outputs.cache-hit != 'true' && env.ACT # Skip this on normal GitHub Actions

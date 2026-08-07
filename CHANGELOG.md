@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [13.0.0] - 2026-08-06
+
+### Breaking changes
+- Drop support for nc < 35
+
+### New
+* feat: Add recognize_backend exApp integration: Payloads can now be processed on a separate machine via AppAPI
+* feat(deps): Add Nextcloud 35 support
+
+### Fixed
+* fix(QueueMapper): Do not mutate queueItem
+* fix: inject HTTP proxy env vars into node subprocess calls (thanks to likehopper)
+* chore: Upgrade to vue 3 and nextcloud-vue 9
+* fix(l10n): Update translations from Transifex
+
 ## [12.0.0] - 2026-04-07
 
 ### Breaking changes

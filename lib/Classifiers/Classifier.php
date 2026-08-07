@@ -31,8 +31,8 @@ use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Process\Process;
 
 abstract class Classifier {
-	public const TEMP_FILE_DIMENSION = 1024;
-	public const MAX_EXECUTION_TIME = 0;
+	public const int TEMP_FILE_DIMENSION = 1024;
+	public const int MAX_EXECUTION_TIME = 0;
 
 	protected LoggerInterface $logger;
 	protected IAppConfig $config;
