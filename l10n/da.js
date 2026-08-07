@@ -1,6 +1,9 @@
 OC.L10N.register(
     "recognize",
     {
+    "Categories" : "Kategorier",
+    "Images" : "Billeder",
+    "Videos" : "Videoer",
     "Failed to load settings" : "Fejl ved indlæsning af indstillinger",
     "Failed to save settings" : "Kunne ikke gemme indstillinger",
     "never" : "aldrig",

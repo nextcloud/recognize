@@ -1,4 +1,6 @@
 { "translations": {
+    "Images" : "Відарысы",
+    "Videos" : "Відэа",
     "Failed to save settings" : "Не ўдалося захаваць налады",
     "never" : "ніколі",
     "{time} ago" : "{time} таму",

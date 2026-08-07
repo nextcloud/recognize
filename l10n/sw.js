@@ -1,6 +1,9 @@
 OC.L10N.register(
     "recognize",
     {
+    "Categories" : "Vipengele",
+    "Images" : "Picha",
+    "Videos" : "Picha mjongeo",
     "Failed to load settings" : "Failed to load settings",
     "Failed to save settings" : "Failed to save settings",
     "never" : "kamwe",

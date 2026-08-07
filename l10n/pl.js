@@ -2,6 +2,9 @@ OC.L10N.register(
     "recognize",
     {
     "Recognize" : "Rozpoznaj",
+    "Categories" : "Kategorie",
+    "Images" : "Obrazy",
+    "Videos" : "Filmy",
     "Smart media tagging and face recognition with on-premises machine learning models" : "Inteligentne tagowanie mediów i rozpoznawanie twarzy za pomocą lokalnych modeli uczenia maszynowego",
     "Your server does not support AVX instructions" : "Twój serwer nie obsługuje instrukcji AVX",
     "Your server does not have an x86 64-bit CPU" : "Twój serwer nie ma 64-bitowego procesora x86",

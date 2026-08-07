@@ -1,6 +1,9 @@
 OC.L10N.register(
     "recognize",
     {
+    "Categories" : "Taggayin",
+    "Images" : "Tugniwin",
+    "Videos" : "Tividyutin",
     "never" : "werjin",
     "Status" : "État",
     "Queued files" : "Ifuyla deg wedras",

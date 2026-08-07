@@ -1,6 +1,9 @@
 OC.L10N.register(
     "recognize",
     {
+    "Categories" : "Categori",
+    "Images" : "Imagini",
+    "Videos" : "Fișiere video",
     "never" : "niciodată",
     "Status" : "Stare",
     "Reset" : "Resetare",

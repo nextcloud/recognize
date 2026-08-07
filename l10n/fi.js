@@ -2,6 +2,9 @@ OC.L10N.register(
     "recognize",
     {
     "Recognize" : "Regocnize",
+    "Categories" : "Luokat",
+    "Images" : "Kuvat",
+    "Videos" : "Videot",
     "Your server does not support AVX instructions" : "Palvelin ei tue AVX-käskykantaa",
     "Your server does not have an x86 64-bit CPU" : "Palvelimessa ei ole 64-bittistä x86-suoritinta",
     "Failed to load settings" : "Asetusten lataaminen epäonnistui",

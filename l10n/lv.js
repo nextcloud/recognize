@@ -1,6 +1,9 @@
 OC.L10N.register(
     "recognize",
     {
+    "Categories" : "Kategorijas",
+    "Images" : "Attēli",
+    "Videos" : "Video",
     "Smart media tagging and face recognition with on-premises machine learning models" : "Viedā informācijas nesēju atzīmēšana ar birkām un sejas atpazīšana ar uz vietas izvietotiem mašīnmācīšanās modeļiem.",
     "Failed to load settings" : "Neizdevās ielādēt iestatījumus",
     "Failed to save settings" : "Neizdevās saglabāt iestatījumus",

@@ -2,6 +2,8 @@ OC.L10N.register(
     "recognize",
     {
     "Recognize" : "Reconéisser",
+    "Categories" : "Categorias",
+    "Images" : "Imatges",
     "Failed to save settings" : "Fracàs de l’enregistrament dels paramètres",
     "never" : "pas jamai",
     "{time} ago" : "fa {time}",

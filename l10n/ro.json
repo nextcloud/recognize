@@ -1,4 +1,7 @@
 { "translations": {
+    "Categories" : "Categori",
+    "Images" : "Imagini",
+    "Videos" : "Fișiere video",
     "never" : "niciodată",
     "Status" : "Stare",
     "Reset" : "Resetare",

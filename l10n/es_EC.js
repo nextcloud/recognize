@@ -2,6 +2,9 @@ OC.L10N.register(
     "recognize",
     {
     "Recognize" : "Reconocer",
+    "Categories" : "Categorías",
+    "Images" : "Imágenes",
+    "Videos" : "Videos",
     "Your server does not support AVX instructions" : "Tu servidor no admite instrucciones AVX",
     "Your server does not have an x86 64-bit CPU" : "Tu servidor no tiene una CPU de 64 bits x86",
     "Your server uses musl libc" : "Tu servidor utiliza musl libc",
@@ -99,8 +102,6 @@ OC.L10N.register(
     "Nice value to set the priority of the Node.js processes. The value can only be from 0 to 19 since the Node.js process runs without superuser privileges. The higher the nice value, the lower the priority of the process." : "Valor agradable para establecer la prioridad de los procesos de Node.js. El valor solo puede ser de 0 a 19, ya que el proceso de Node.js se ejecuta sin privilegios de superusuario. Cuanto mayor sea el valor agradable, menor será la prioridad del proceso.",
     "Terminal commands" : "Comandos de terminal",
     "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "Para descargar todos los modelos preliminarmente antes de ejecutar las tareas de clasificación, ejecuta el siguiente comando en la terminal del servidor.",
-    "To trigger a full classification run, run the following command on the server terminal. (The classification will run in multiple background jobs which can run in parallel.)" : "Para iniciar una ejecución completa de clasificación, ejecuta el siguiente comando en la terminal del servidor. (La clasificación se ejecutará en varias tareas en segundo plano que se pueden ejecutar en paralelo.)",
-    "To run a full classification run on the terminal, run the following. (The classification will run in sequence inside your terminal.)" : "Para ejecutar una ejecución completa de clasificación en la terminal, ejecuta lo siguiente. (La clasificación se ejecutará en secuencia dentro de tu terminal.)",
     "Before running a full initial classification run on the terminal, you should stop all background processing that Recognize scheduled upon installation to avoid interference." : "Antes de ejecutar una ejecución completa inicial de clasificación en la terminal, debes detener todos los procesos en segundo plano que Reconocer programó al momento de la instalación para evitar interferencias.",
     "To remove all face clusters but keep the raw detected faces run the following on the terminal:" : "Para eliminar todos los grupos de rostros pero mantener los rostros detectados sin procesar, ejecuta lo siguiente en la terminal:",
     "To remove all detected faces and face clusters run the following on the terminal:" : "Para eliminar todos los rostros detectados y los grupos de rostros, ejecuta lo siguiente en la terminal:",

@@ -1,6 +1,9 @@
 OC.L10N.register(
     "recognize",
     {
+    "Categories" : "หมวดหมู่",
+    "Images" : "รูปภาพ",
+    "Videos" : "วิดีโอ",
     "Failed to load settings" : "ไม่สามารถโหลดการตั้งค่าได้",
     "Failed to save settings" : "ไม่สามารถบันทึกการตั้งค่าได้",
     "never" : "ไม่เคย",

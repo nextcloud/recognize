@@ -1,6 +1,8 @@
 OC.L10N.register(
     "recognize",
     {
+    "Images" : "Відарысы",
+    "Videos" : "Відэа",
     "Failed to save settings" : "Не ўдалося захаваць налады",
     "never" : "ніколі",
     "{time} ago" : "{time} таму",

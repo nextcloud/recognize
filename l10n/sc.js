@@ -1,6 +1,9 @@
 OC.L10N.register(
     "recognize",
     {
+    "Categories" : "Categ",
+    "Images" : "Immàgines",
+    "Videos" : "Vìdeos",
     "Failed to load settings" : "Impossìbile carrigare sa cunfiguratzione",
     "Failed to save settings" : "No at fatu a sarvare is informatziones",
     "never" : "mai",

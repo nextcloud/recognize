@@ -1,4 +1,7 @@
 { "translations": {
+    "Categories" : "Kategorioj",
+    "Images" : "Bildoj",
+    "Videos" : "Videaĵoj",
     "Failed to load settings" : "Ŝargo de agordoj malsukcesis",
     "Failed to save settings" : "Konservo de agordoj malsukcesis",
     "never" : "neniam",

@@ -1,6 +1,9 @@
 OC.L10N.register(
     "recognize",
     {
+    "Categories" : "Các hạng mục",
+    "Images" : "Hình ảnh",
+    "Videos" : "Video",
     "Failed to load settings" : "Tải cấu hình thất bại",
     "Failed to save settings" : "Lưu cấu hình thất bại",
     "never" : "không thay đổi",

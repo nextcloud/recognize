@@ -2,6 +2,9 @@ OC.L10N.register(
     "recognize",
     {
     "Recognize" : "Препознавање",
+    "Categories" : "Категории",
+    "Images" : "Слики",
+    "Videos" : "Видеа",
     "Failed to load settings" : "Неуспешно вчитување на параметрите",
     "Failed to save settings" : "Неуспешно зачувување на параметрите",
     "never" : "никогаш",

@@ -1,4 +1,7 @@
 { "translations": {
+    "Categories" : "Categories",
+    "Images" : "Images",
+    "Videos" : "Videos",
     "Failed to save settings" : "Failed to save settings",
     "never" : "never",
     "Status" : "Status",

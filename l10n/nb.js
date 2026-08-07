@@ -2,6 +2,9 @@ OC.L10N.register(
     "recognize",
     {
     "Recognize" : "Gjenkjenn",
+    "Categories" : "Kategorier",
+    "Images" : "Bilder",
+    "Videos" : "Filmer",
     "Smart media tagging and face recognition with on-premises machine learning models" : "Smart mediemerking og ansiktsgjenkjenning med lokale maskinlæringsmodeller",
     "Your server does not support AVX instructions" : "Serveren din støtter ikke AVX-instruksjoner",
     "Your server does not have an x86 64-bit CPU" : "Serveren din har ikke en x86 64-bit CPU",
@@ -105,8 +108,6 @@ OC.L10N.register(
     "Nice value to set the priority of the Node.js processes. The value can only be from 0 to 19 since the Node.js process runs without superuser privileges. The higher the nice value, the lower the priority of the process." : "Nice-verdi for å sette prioriteten til Node.js-prosessene. Verdien kan bare være fra 0 til 19 siden Node.js-prosessen kjører uten superbrukerrettigheter. Jo høyere nice-verdi, jo lavere prioritet på prosessen.",
     "Terminal commands" : "Terminalkommandoer",
     "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "For å laste ned alle modellene før utførelse av klassifiseringsjobbene, kjør følgende kommando på serverterminalen.",
-    "To trigger a full classification run, run the following command on the server terminal. (The classification will run in multiple background jobs which can run in parallel.)" : "For å utløse en fullstendig klassifiseringskjøring, kjør følgende kommando på serverterminalen. (Klassifiseringen vil kjøre i flere bakgrunnsjobber som kan kjøre parallelt).",
-    "To run a full classification run on the terminal, run the following. (The classification will run in sequence inside your terminal.)" : "Kjør følgende for å kjøre en fullstendig klassifiseringskjøring på terminalen. (Klassifiseringen vil kjøre i rekkefølge inne i terminalen din).",
     "Before running a full initial classification run on the terminal, you should stop all background processing that Recognize scheduled upon installation to avoid interference." : "Før du kjører en full innledende klassifiseringskjøring på terminalen, bør du stoppe all bakgrunnsbehandling som Gjenkjenning planlagte ved installasjon for å unngå forstyrrelser.",
     "To run a face clustering run on for each user in the terminal, run the following. Consider adding the parameter --batch-size 10000 for large libraries to avoid PHP memory exhaustion. (The clustering will run in sequence inside your terminal.)" : "Kjør følgende for å kjøre en ansiktsklynge for hver bruker i terminalen. Vurder å legge til parameteren --batch-size 10000 for store biblioteker for å unngå PHP-minneutmattelse. (Klyngen vil kjøre i rekkefølge inne i terminalen din).",
     "To remove all face clusters but keep the raw detected faces run the following on the terminal:" : "For å fjerne alle ansiktsklynger, men beholde de rå oppdagede ansiktene, kjør følgende på terminalen:",

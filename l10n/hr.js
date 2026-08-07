@@ -1,6 +1,9 @@
 OC.L10N.register(
     "recognize",
     {
+    "Categories" : "Kategorije",
+    "Images" : "Slike",
+    "Videos" : "Videozapisi",
     "Failed to load settings" : "Učitavanje postavki nije uspjelo",
     "Failed to save settings" : "Spremanje postavki nije uspjelo",
     "never" : "nikad",

@@ -1,5 +1,8 @@
 { "translations": {
     "Recognize" : "Recognize",
+    "Categories" : "Kategoriak",
+    "Images" : "Irudiak",
+    "Videos" : "Bideoak",
     "Your server does not support AVX instructions" : "Zure zerbitzariak ez ditu AVX instrukzioak onartzen",
     "Your server does not have an x86 64-bit CPU" : "Zerbitzariak ez du x86 64-biteko PUZa",
     "Your server uses musl libc" : "Zure zerbitzariak musl libc erabiltzen du",

@@ -1,6 +1,9 @@
 OC.L10N.register(
     "recognize",
     {
+    "Categories" : "Kategorioj",
+    "Images" : "Bildoj",
+    "Videos" : "Videaĵoj",
     "Failed to load settings" : "Ŝargo de agordoj malsukcesis",
     "Failed to save settings" : "Konservo de agordoj malsukcesis",
     "never" : "neniam",

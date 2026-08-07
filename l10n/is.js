@@ -1,6 +1,9 @@
 OC.L10N.register(
     "recognize",
     {
+    "Categories" : "Flokkar",
+    "Images" : "Myndir",
+    "Videos" : "Myndskeið",
     "Failed to load settings" : "Mistókst að hlaða inn stillingum",
     "Failed to save settings" : "Mistókst að vista stillingar",
     "never" : "aldrei",

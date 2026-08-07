@@ -2,6 +2,9 @@ OC.L10N.register(
     "recognize",
     {
     "Recognize" : "Prepoznava",
+    "Categories" : "Kategorije",
+    "Images" : "Slike",
+    "Videos" : "Video posnetki",
     "Failed to load settings" : "Nalaganje nastavitev je spodletelo.",
     "Failed to save settings" : "Shranjevanje nastavitev je spodletelo",
     "never" : "nikoli",

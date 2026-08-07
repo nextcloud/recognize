@@ -2,6 +2,9 @@ OC.L10N.register(
     "recognize",
     {
     "Recognize" : "Recognize",
+    "Categories" : "Categorieën",
+    "Images" : "Afbeeldingen",
+    "Videos" : "Video's",
     "Failed to load settings" : "Kon instellingen niet laden",
     "Failed to save settings" : "Kon instellingen niet opslaan",
     "never" : "nooit",

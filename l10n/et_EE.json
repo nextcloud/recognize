@@ -1,5 +1,8 @@
 { "translations": {
     "Recognize" : "Tuvastaja",
+    "Categories" : "Kategooriad",
+    "Images" : "Pildid",
+    "Videos" : "Videod",
     "Smart media tagging and face recognition with on-premises machine learning models" : "Nutikas meediafailide märgistamine ja näotuvastus serveris asuvate masinõppemudelite abil",
     "Your server does not support AVX instructions" : "Sinu server ei toeta AVX-käsustikku",
     "Your server does not have an x86 64-bit CPU" : "Sinu serveril pole x86 64-bitist protsessorit",

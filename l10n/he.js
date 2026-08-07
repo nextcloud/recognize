@@ -1,6 +1,9 @@
 OC.L10N.register(
     "recognize",
     {
+    "Categories" : "קטגוריות",
+    "Images" : "תמונות",
+    "Videos" : "סרטונים",
     "Failed to load settings" : "טעינת ההגדרות נכשלה",
     "Failed to save settings" : "שמירת ההגדרות נכשלה",
     "never" : "מעולם לא",

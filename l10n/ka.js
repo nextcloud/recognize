@@ -1,6 +1,9 @@
 OC.L10N.register(
     "recognize",
     {
+    "Categories" : "Categories",
+    "Images" : "Images",
+    "Videos" : "Videos",
     "Failed to save settings" : "Failed to save settings",
     "never" : "never",
     "Status" : "Status",

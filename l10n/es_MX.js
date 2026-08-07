@@ -1,6 +1,9 @@
 OC.L10N.register(
     "recognize",
     {
+    "Categories" : "Categorías",
+    "Images" : "Imágenes",
+    "Videos" : "Videos",
     "Failed to load settings" : "No se pudo cargar la configuración",
     "Failed to save settings" : "No se pudo guardar la configuración",
     "never" : "nunca",

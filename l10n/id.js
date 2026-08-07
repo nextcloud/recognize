@@ -1,6 +1,9 @@
 OC.L10N.register(
     "recognize",
     {
+    "Categories" : "Kategori",
+    "Images" : "Gambar",
+    "Videos" : "Video",
     "Failed to load settings" : "Gagal memuat pengaturan",
     "Failed to save settings" : "Gagal simpan setelan",
     "never" : "tidak pernah.",

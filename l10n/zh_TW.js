@@ -2,6 +2,9 @@ OC.L10N.register(
     "recognize",
     {
     "Recognize" : "識別",
+    "Categories" : "分類",
+    "Images" : "圖片",
+    "Videos" : "影片",
     "Failed to load settings" : "設定載入失敗",
     "Failed to save settings" : "設定儲存失敗",
     "never" : "永不",

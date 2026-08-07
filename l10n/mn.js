@@ -1,6 +1,9 @@
 OC.L10N.register(
     "recognize",
     {
+    "Categories" : "—Ç”©—Ä”©–ª",
+    "Images" : "–ó—É—Ä–≥—É—É–¥",
+    "Videos" : "–ë–∏—á–ª—ç–≥“Ø“Ø–¥",
     "Failed to save settings" : "Тохиргоог хадгалж чадсангүй",
     "never" : "—Ö—ç–∑—ç—ç —á “Ø–≥“Ø–π",
     "{time} ago" : "{time}-н өмнө",

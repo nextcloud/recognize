@@ -1,6 +1,8 @@
 OC.L10N.register(
     "recognize",
     {
+    "Images" : "Imáxenes",
+    "Videos" : "Vídeos",
     "Your server does not support AVX instructions" : "El sirvidor nun ye compatible coles instrucciones AVX",
     "Your server does not have an x86 64-bit CPU" : "EL sirvidor nun ye tien una CPU x86 de 64 bits",
     "Your server uses musl libc" : "El sirvidor usa libc de musl",

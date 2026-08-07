@@ -1,6 +1,9 @@
 OC.L10N.register(
     "recognize",
     {
+    "Categories" : "カテゴリ",
+    "Images" : "画像",
+    "Videos" : "動画",
     "Smart media tagging and face recognition with on-premises machine learning models" : "オンプレミスの機械学習モデルによる、スマートなタグ付けと顔認識",
     "Failed to load settings" : "設定の読込に失敗しました",
     "Failed to save settings" : "設定の保存に失敗しました",

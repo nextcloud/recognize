@@ -2,6 +2,9 @@ OC.L10N.register(
     "recognize",
     {
     "Recognize" : "Αναγνώριση",
+    "Categories" : "Κατηγορίες",
+    "Images" : "Εικόνες",
+    "Videos" : "Βίντεο",
     "Smart media tagging and face recognition with on-premises machine learning models" : "Έξυπνη ετικετοποίηση πολυμέσων και αναγνώριση προσώπων με μοντέλα μηχανικής μάθησης εγκατεστημένα στον χώρο σας",
     "Your server does not support AVX instructions" : "Ο διακομιστής σας δεν υποστηρίζει εντολές AVX",
     "Your server does not have an x86 64-bit CPU" : "Ο διακομιστής σας δεν διαθέτει επεξεργαστή x86 64-bit",
@@ -104,8 +107,6 @@ OC.L10N.register(
     "Nice value to set the priority of the Node.js processes. The value can only be from 0 to 19 since the Node.js process runs without superuser privileges. The higher the nice value, the lower the priority of the process." : "Τιμή Nice για τον καθορισμό της προτεραιότητας των διεργασιών Node.js. Η τιμή μπορεί να είναι μόνο από 0 έως 19, καθώς η διεργασία Node.js εκτελείται χωρίς δικαιώματα υπερχρήστη. Όσο υψηλότερη είναι η τιμή Nice, τόσο χαμηλότερη είναι η προτεραιότητα της διεργασίας.",
     "Terminal commands" : "Εντολές τερματικού",
     "To download all models preliminary to executing the classification jobs, run the following command on the server terminal." : "Για να κατεβάσετε όλα τα μοντέλα πριν από την εκτέλεση των εργασιών ταξινόμησης, εκτελέστε την ακόλουθη εντολή στο τερματικό του διακομιστή.",
-    "To trigger a full classification run, run the following command on the server terminal. (The classification will run in multiple background jobs which can run in parallel.)" : "Για να ενεργοποιήσετε μια πλήρη εκτέλεση ταξινόμησης, εκτελέστε την ακόλουθη εντολή στο τερματικό του διακομιστή. (Η ταξινόμηση θα εκτελεστεί σε πολλαπλές εργασίες παρασκηνίου που μπορούν να εκτελεστούν παράλληλα.)",
-    "To run a full classification run on the terminal, run the following. (The classification will run in sequence inside your terminal.)" : "Για να εκτελέσετε μια πλήρη ταξινόμηση στο τερματικό, εκτελέστε την ακόλουθη εντολή. (Η ταξινόμηση θα εκτελεστεί διαδοχικά μέσα στο τερματικό σας.)",
     "Before running a full initial classification run on the terminal, you should stop all background processing that Recognize scheduled upon installation to avoid interference." : "Πριν εκτελέσετε μια πλήρη αρχική ταξινόμηση στο τερματικό, θα πρέπει να σταματήσετε όλες τις εργασίες παρασκηνίου που έχει προγραμματίσει το Recognize κατά την εγκατάσταση, για να αποφύγετε παρεμβολές.",
     "To run a face clustering run on for each user in the terminal, run the following. Consider adding the parameter --batch-size 10000 for large libraries to avoid PHP memory exhaustion. (The clustering will run in sequence inside your terminal.)" : "Για να εκτελέσετε ομαδοποίηση προσώπων για κάθε χρήστη στο τερματικό, εκτελέστε την ακόλουθη εντολή. Σκεφτείτε να προσθέσετε την παράμετρο --batch-size 10000 για μεγάλες βιβλιοθήκες, για να αποφύγετε την εξάντληση της μνήμης PHP. (Η ομαδοποίηση θα εκτελεστεί διαδοχικά μέσα στο τερματικό σας.)",
     "To remove all face clusters but keep the raw detected faces run the following on the terminal:" : "Για να αφαιρέσετε όλες τις ομάδες προσώπων αλλά να διατηρήσετε τις ακατέργαστες αναγνωρισμένες φάτσες, εκτελέστε την ακόλουθη εντολή στο τερματικό:",
