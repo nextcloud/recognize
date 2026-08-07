@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="6.16.1@f1f5de594dc76faf8784e02d3dc4716c91c6f6ac">
+<files psalm-version="6.5.0@38fc8444edf0cebc9205296ee6e30e906ade783b">
   <file src="lib/AppInfo/Application.php">
-    <DeprecatedInterface>
-      <code><![CDATA[$this->getContainer()]]></code>
-    </DeprecatedInterface>
     <MixedArgument>
       <code><![CDATA[$this->getContainer()->get(PropFindPlugin::class)]]></code>
     </MixedArgument>
@@ -409,9 +406,6 @@
     </UnsupportedPropertyReferenceUsage>
   </file>
   <file src="lib/Clustering/MstClusterer.php">
-    <InvalidOperand>
-      <code><![CDATA[($currentLambda - $lastLambda) * $edgeCount]]></code>
-    </InvalidOperand>
     <MissingDocblockType>
       <code><![CDATA[$currentLongestEdge]]></code>
     </MissingDocblockType>
@@ -880,11 +874,6 @@
     </PossiblyNullArgument>
   </file>
   <file src="lib/Migration/InstallDeps.php">
-    <InvalidOperand>
-      <code><![CDATA[$isARM]]></code>
-      <code><![CDATA[$isMusl]]></code>
-      <code><![CDATA[$supportsAVX]]></code>
-    </InvalidOperand>
     <MixedArgument>
       <code><![CDATA[$item->getPathname()]]></code>
       <code><![CDATA[$item->getPathname()]]></code>
@@ -948,13 +937,6 @@
     <ArgumentTypeCoercion>
       <code><![CDATA[$unclusteredDetections[$detectionKey]->getVector()]]></code>
     </ArgumentTypeCoercion>
-    <InvalidOperand>
-      <code><![CDATA[$batchSize ** (0.55)]]></code>
-      <code><![CDATA[$batchSize ** (1.0 / 4.7)]]></code>
-      <code><![CDATA[$batchSize ** (1.0 / 5.6)]]></code>
-      <code><![CDATA[$batchSize / 4.0]]></code>
-      <code><![CDATA[-0.007 * $numberClusters]]></code>
-    </InvalidOperand>
     <PossiblyFalseArgument>
       <code><![CDATA[$clusterId]]></code>
     </PossiblyFalseArgument>
