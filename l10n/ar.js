@@ -2,6 +2,7 @@ OC.L10N.register(
     "recognize",
     {
     "Recognize" : "التعرف على",
+    "Categories" : "التصنيفات",
     "Images" : "الصِّوَر",
     "Videos" : "مقاطع فيديو",
     "Smart media tagging and face recognition with on-premises machine learning models" : "وضع وسوم على الوسائط الذكية و التعرُّف على الوجوه باستخدام نماذج التَّعلُّم الآلي المحلّية",

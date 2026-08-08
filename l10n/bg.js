@@ -2,6 +2,7 @@ OC.L10N.register(
     "recognize",
     {
     "Recognize" : "Разпознаване",
+    "Categories" : "Категории",
     "Images" : "Изображения",
     "Videos" : "Видеа",
     "Your server does not support AVX instructions" : "Вашият сървър не поддържа AVX инструкции",

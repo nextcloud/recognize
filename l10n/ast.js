@@ -1,6 +1,7 @@
 OC.L10N.register(
     "recognize",
     {
+    "Categories" : "Categories",
     "Images" : "Imáxenes",
     "Videos" : "Vídeos",
     "Your server does not support AVX instructions" : "El sirvidor nun ye compatible coles instrucciones AVX",
