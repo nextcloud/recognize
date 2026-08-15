@@ -102,6 +102,9 @@ The app does not send any sensitive data to cloud providers or similar services.
 		<post-migration>
 			<step>OCA\Recognize\Migration\InstallDeps</step>
 		</post-migration>
+		<post-migration>
+			<step>OCA\Recognize\Migration\MoveDefaultModelFolder</step>
+		</post-migration>
 		<live-migration>
 			<step>OCA\Recognize\Migration\RemoveDuplicateFaceDetections</step>
 		</live-migration>
