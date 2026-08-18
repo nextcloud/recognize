@@ -28,9 +28,11 @@ final class AdminSettings implements ISettings {
 		$settings = $this->settingsService->getAll();
 		$this->initialState->provideInitialState('settings', $settings);
 
-		$modelsPath = __DIR__ . '/../../models';
-		$modelsDownloaded = file_exists($modelsPath);
+		$targetPath = $this->settingsService->getSetting('models_target_path');
+		$modelsDownloaded = file_exists($targetPath .' /models');
+		$modelsTargetPathWritable = is_writable($targetPath);
 		$this->initialState->provideInitialState('modelsDownloaded', $modelsDownloaded);
+		$this->initialState->provideInitialState('modelsTargetPathWritable', $modelsTargetPathWritable);
 
 		$tagsEnabled = $this->appManager->isEnabledForAnyone('systemtags');
 		$this->initialState->provideInitialState('tagsEnabled', $tagsEnabled);

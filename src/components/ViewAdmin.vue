@@ -38,6 +38,23 @@
 				</p>
 			</template>
 		</NcSettingsSection>
+		<NcSettingsSection :name="t('recognize', 'Model Setting')">
+			<NcNoteCard v-if="modelsTargetPathWritable" show-alert type="success">
+				{{ t('recognize', 'The Model Target Path is Writable') }}
+			</NcNoteCard>
+			<NcNoteCard v-else-if="!modelsTargetPathWritable" show-alert type="warning">
+				{{ t('recognize', 'Model Target Path is not Writable') }}
+			</NcNoteCard>
+			<p>
+				<NcTextField v-model="settings['models_target_path']"
+					:label="t('recognize', 'Path Model Folder')"
+					:label-visible="true"
+					@update:model-value="onChange" />
+			</p>
+			<p>
+				{{ t('recognize', 'Changing this Value will require you to redownload the Models. Also the models in the old Directory need to be deleted manually') }}
+			</p>
+		</NcSettingsSection>
 		<NcSettingsSection :name="t('recognize', 'Classifier backend')">
 			<NcNoteCard v-if="recognizeBackendInstalled" type="success">
 				{{ t('recognize', 'The recognize_backend ExApp is installed; TaskProcessing mode is recommended.') }}
@@ -81,8 +98,8 @@
 					{{ t('recognize', 'Enable face recognition (groups photos by faces that appear in them; UI is in the photos app)') }}
 				</NcCheckboxRadioSwitch>
 				<NcTextField v-if="!settings['taskprocessing.enabled']"
-					:disabled="!settings['faces.enabled']"
 					v-model="settings['faces.batchSize']"
+					:disabled="!settings['faces.enabled']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~500 or more, in WASM mode ~50 is recommended)')"
 					:title="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~500 or more, in WASM mode ~50 is recommended)')"
@@ -130,8 +147,8 @@
 					{{ t('recognize', 'Enable object recognition (e.g. food, vehicles, landscapes)') }}
 				</NcCheckboxRadioSwitch>
 				<NcTextField v-if="!settings['taskprocessing.enabled']"
-					:disabled="!settings['imagenet.enabled']"
 					v-model="settings['imagenet.batchSize']"
+					:disabled="!settings['imagenet.enabled']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
 					:title="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
@@ -146,8 +163,8 @@
 					{{ t('recognize', 'Enable landmark recognition (e.g. Eiffel Tower, Golden Gate Bridge)') }}
 				</NcCheckboxRadioSwitch>
 				<NcTextField v-if="!settings['taskprocessing.enabled']"
-					:disabled="!settings['imagenet.enabled'] || !settings['landmarks.enabled']"
 					v-model="settings['landmarks.batchSize']"
+					:disabled="!settings['imagenet.enabled'] || !settings['landmarks.enabled']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
 					:title="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
@@ -177,8 +194,8 @@
 					{{ t('recognize', 'Enable music genre recognition (e.g. pop, rock, folk, metal, new age)') }}
 				</NcCheckboxRadioSwitch>
 				<NcTextField v-if="!settings['taskprocessing.enabled']"
-					:disabled="!settings['musicnn.enabled']"
 					v-model="settings['musicnn.batchSize']"
+					:disabled="!settings['musicnn.enabled']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
 					:title="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~100 or more, in WASM mode ~20 is recommended)')"
@@ -211,8 +228,8 @@
 					{{ t('recognize', 'Enable human action recognition (e.g. arm wrestling, dribbling basketball, hula hooping)') }}
 				</NcCheckboxRadioSwitch>
 				<NcTextField v-if="!settings['taskprocessing.enabled']"
-					:disabled="!settings['movinet.enabled']"
 					v-model="settings['movinet.batchSize']"
+					:disabled="!settings['movinet.enabled']"
 					:label-visible="true"
 					:label="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~20 or more, in WASM mode ~5 is recommended)')"
 					:title="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~20 or more, in WASM mode ~5 is recommended)')"
@@ -445,7 +462,7 @@ const TASK_PROCESSING_TASK_TYPES = {
 	musicnn: 'recognize:audio:classification',
 }
 
-const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'ffmpeg_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'faces.batchSize', 'imagenet.batchSize', 'landmarks.batchSize', 'movinet.batchSize', 'musicnn.batchSize', 'clusterFaces.status', 'clusterFaces.lastRun', 'nice_binary', 'nice_value', 'concurrency.enabled', 'taskprocessing.enabled']
+const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'ffmpeg_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'faces.batchSize', 'imagenet.batchSize', 'landmarks.batchSize', 'movinet.batchSize', 'musicnn.batchSize', 'clusterFaces.status', 'clusterFaces.lastRun', 'nice_binary', 'nice_value', 'concurrency.enabled', 'taskprocessing.enabled', 'models_target_path', 'models_archive_file']
 
 const BOOLEAN_SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'clusterFaces.status', 'concurrency.enabled', 'taskprocessing.enabled']
 
@@ -487,6 +504,7 @@ export default {
 			musicnnTpStats: null,
 			tagsEnabled: null,
 			recognizeBackendInstalled: false,
+			modelsTargetPathWritable: null,
 		}
 	},
 
@@ -523,6 +541,7 @@ export default {
 	},
 	async created() {
 		this.modelsDownloaded = loadState('recognize', 'modelsDownloaded')
+		this.modelsTargetPathWritable = loadState('recognize', 'modelsTargetPathWritable')
 		this.tagsEnabled = loadState('recognize', 'tagsEnabled')
 		this.recognizeBackendInstalled = loadState('recognize', 'recognizeBackendInstalled', false)
 		this.getCount()

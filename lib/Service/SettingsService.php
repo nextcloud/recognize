@@ -61,6 +61,7 @@ final class SettingsService {
 		'nice_value' => '0',
 		'concurrency.enabled' => 'false',
 		'ffmpeg_binary' => '',
+		'models_target_path' => '../../models_cache',
 	];
 
 	/** @var array<string,string>  */
@@ -94,7 +95,13 @@ final class SettingsService {
 		'landmarks.batchSize',
 		'movinet.batchSize',
 		'musicnn.batchSize',
-		'concurrency.enabled'
+		'concurrency.enabled',
+		'models_target_path',
+		'models_archive_file',
+	];
+
+	private const PATH_SETTINGS = [
+		'models_target_path',
 	];
 
 	private IAppConfig $config;
@@ -120,6 +127,14 @@ final class SettingsService {
 		$lazy = false;
 		if (in_array($key, self::LAZY_SETTINGS, true)) {
 			$lazy = true;
+		}
+
+		if (in_array($key, self::PATH_SETTINGS, true)) {
+			$path = $this->config->getAppValueString($key, self::DEFAULTS[$key], lazy: $lazy);
+			if (!$this->isPathAbsolute($path)) {
+				$path = __DIR__ .'/'. $path;
+			}
+			return $path;
 		}
 		return $this->config->getAppValueString($key, self::DEFAULTS[$key], lazy: $lazy);
 	}
@@ -182,6 +197,9 @@ final class SettingsService {
 		if (in_array($key, self::LAZY_SETTINGS, true)) {
 			$lazy = true;
 		}
+		if (in_array($key, self::PATH_SETTINGS) && $value === '') {
+			$value = self::DEFAULTS[$key];
+		}
 		$this->config->setAppValueString($key, $value, lazy: $lazy);
 	}
 
@@ -194,5 +212,16 @@ final class SettingsService {
 			$settings[$key] = $this->getSetting($key);
 		}
 		return $settings;
+	}
+
+	private function isPathAbsolute(string $path): bool {
+		if ($path === '') {
+			return false;
+		}
+		if ($path[0] === '/') {
+			return true;
+		}
+
+		return false;
 	}
 }
