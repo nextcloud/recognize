@@ -13,7 +13,7 @@
     "The classified categories. Each input image is mapped to a text containing a comma separated list of categories." : "As categorias classificadas. Cada imagem de entrada é mapeada para um texto que contém uma lista de categorias separadas por vírgulas.",
     "Image face recognition" : "Reconhecimento facial em imagens",
     "Recognize faces in images and return embedding vectors for each face." : "Reconhecer rostos em imagens e retornar vetores de incorporação para cada rosto.",
-    "Provide images to recognize faces in" : "Forneça imagens para o reconhecimento de rostos em",
+    "Provide images to recognize faces in" : "Forneça imagens para o reconhecimento facial",
     "Faces" : "Rostos",
     "The detected faces. Each input image is mapped to a text containing JSON-encoded face descriptions ({x,y,width,height,score,vector,angle} ) separated by line breaks." : "Os rostos detectados. Cada imagem de entrada é mapeada para um texto que contém descrições de rostos codificadas em JSON ({x,y,width,height,score,vector,angle} ) separadas por quebras de linha.",
     "Video classification" : "Classificação de vídeos",
