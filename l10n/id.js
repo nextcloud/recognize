@@ -11,6 +11,7 @@ OC.L10N.register(
     "Reset" : "Setel ulang",
     "Checking FFmpeg" : "Memeriksa FFmpeg",
     "Architecture" : "Arsitektur",
+    "Building" : "Gedung",
     "Landscape" : "Lansekap",
     "Portrait" : "Potret",
     "People" : "Orang",
