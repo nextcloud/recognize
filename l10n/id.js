@@ -18,6 +18,7 @@ OC.L10N.register(
     "Music" : "Musik",
     "Office" : "Office",
     "Food" : "Makanan",
+    "Book" : "Buku",
     "Train" : "Kereta",
     "Clock" : "Jam",
     "Display" : "Tampilkan",

@@ -2,8 +2,10 @@ OC.L10N.register(
     "recognize",
     {
     "Recognize" : "Rozpoznání",
+    "Audios" : "Zvuky",
     "Categories" : "Kategorie",
     "Images" : "Obrázky",
+    "Faces" : "Tváře",
     "Videos" : "Videa",
     "Smart media tagging and face recognition with on-premises machine learning models" : "Inteligentní opatřování médií štítky a rozpoznávání obličejů pomocí modelů strojového učení, provozovaných přímo na serveru",
     "Your server does not support AVX instructions" : "Vámi využívaný server nepodporuje instrukce AVX",
