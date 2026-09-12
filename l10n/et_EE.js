@@ -30,7 +30,7 @@ OC.L10N.register(
     "Failed to save settings" : "Seadistuste salvestamine ei õnnestunud",
     "never" : "mitte kunagi",
     "{time} ago" : "{time} tagasi",
-    "Status" : "Staatus",
+    "Status" : "Olek",
     "The machine learning models have been downloaded successfully." : "Masinõppe mudelite allalaadimine õnnestus.",
     "The machine learning models still need to be downloaded." : "Siiski vajad veel masinõppe mudeli allalaadimist.",
     "The systemtags app is enabled." : "Süsteemsete siltide rakendus on kasutusel",
