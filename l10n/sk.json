@@ -46,7 +46,7 @@
     "When enabled, Recognize hands files off to a Nextcloud TaskProcessing provider (typically the recognize_backend ExApp) instead of running TensorFlow locally. Hardware checks and Node.js / FFmpeg requirements no longer apply in this mode." : "Ak je táto možnosť povolená, Recognize odovzdá súbory poskytovateľovi Nextcloud TaskProcessing (zvyčajne ExApp recognize_backend) namiesto lokálneho spúšťania TensorFlow. V tomto režime už nie sú potrebné kontroly hardvéru ani požiadavky na Node.js a FFmpeg.",
     "Face recognition" : "Rozpoznávanie tváre",
     "Face recognition is working. " : "Rozpoznávanie tváre je funkčné.",
-    "An error occurred during face recognition, please check the Nextcloud logs." : "Počas rozpoznávania tváre sa vyskytla chyba, skontrolujte záznam o chybách Nextcloud.",
+    "An error occurred during face recognition, please check the Nextcloud logs." : "Počas rozpoznávania tváre sa vyskytla chyba, skontrolujte záznamy Nextcloud.",
     "Waiting for status reports on face recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs." : "Čaká sa na správy o stave rozpoznávania tváre. Ak táto správa pretrváva dlhšie ako 15 minút, skontrolujte denníky Nextcloud.",
     "Face recognition:" : "Rozpoznávanie tváre:",
     "Queued files" : "Súbory vo fronte",
