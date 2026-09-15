@@ -1,5 +1,4 @@
 const Flickr = require('flickr-sdk')
-const { GOOGLE_IMG_SCRAP , GOOGLE_QUERY } = require('google-img-scrap');
 const download = require('download')
 const flatten = require('lodash/flatten')
 const execa = require('execa')
@@ -10,6 +9,7 @@ const LABELS = require('./res/famous_people.json')
 const PHOTOS_PER_LABEL = 10
 const PHOTOS_OLDER_THAN = 1627464319 // 2021-07-28; for determinism
 const FACE_DISTANCE_THRESHOLD = 0.42
+const flickr = new Flickr(process.env.FLICKR_API_KEY)
 
 ;(async function() {
 	const labels = LABELS.slice(0,20)
@@ -17,7 +17,7 @@ const FACE_DISTANCE_THRESHOLD = 0.42
 
 	await Parallel.each(labels, async label => {
 		try {
-			let urls = await findPhotosGoogle('"' + label + '"', PHOTOS_PER_LABEL)
+			let urls = await findPhotos(label, PHOTOS_PER_LABEL)
 			await Promise.all(
 				flatten(urls).map(url => download(url, 'temp_images/' + label))
 			)
@@ -28,7 +28,7 @@ const FACE_DISTANCE_THRESHOLD = 0.42
 	}, 1)
 
 	try {
-		let urls = await findPhotosGoogle(negativeLabel, PHOTOS_PER_LABEL * 3)
+		let urls = await findPhotos(negativeLabel, PHOTOS_PER_LABEL * 3)
 		await Promise.all(
 			flatten(urls).map(url => download(url, 'temp_images/' + negativeLabel))
 		)
@@ -134,20 +134,6 @@ function findPhotos(label, amount = PHOTOS_PER_LABEL) {
 	}).catch(function(err) {
 		throw err
 	})
-}
-
-async function findPhotosGoogle(label, amount= PHOTOS_PER_LABEL) {
-	console.log('GOOGLE search: '+label)
-	const results = await GOOGLE_IMG_SCRAP({
-		search: label,
-		query: {
-			EXTENSION: GOOGLE_QUERY.EXTENSION.JPG,
-			SIZE: GOOGLE_QUERY.SIZE.LARGE,
-		},
-		limit: amount,
-	});
-
-	return results.result.map(i => i.url)
 }
 
 function addVectors(a, b) {
