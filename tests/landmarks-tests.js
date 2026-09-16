@@ -1,5 +1,4 @@
 const Flickr = require('flickr-sdk')
-const { GOOGLE_IMG_SCRAP , GOOGLE_QUERY } = require('google-img-scrap');
 const download = require('download')
 const uniq = require('lodash/uniq')
 const flatten = require('lodash/flatten')
@@ -99,17 +98,4 @@ function findPhotos(label, amount = PHOTOS_PER_LABEL) {
 	}).catch(function(err) {
 		throw err
 	})
-}
-
-async function findPhotosGoogle(label, amount= PHOTOS_PER_LABEL) {
-	console.log('GOOGLE search: '+label)
-	const results = await GOOGLE_IMG_SCRAP({
-		search: label,
-		query: {
-			EXTENSION: GOOGLE_QUERY.EXTENSION.JPG
-		},
-		limit: amount,
-	});
-
-	return results.result.map(i => i.url)
 }
