@@ -21,6 +21,7 @@ OC.L10N.register(
     "Waiting for status reports on face recognition. If this message persists beyond 15 minutes, please check the Nextcloud logs." : "顔認証のステータス報告を待っています。このメッセージが15分以上続く場合は、Nextcloudのログを確認してください。",
     "Queued files" : "キュー中のファイル",
     "Reset" : "リセット",
+    "Resource usage" : "リソースの使用状況",
     "Cat" : "猫",
     "Architecture" : "アーキテクチャ",
     "Farm" : "農場",
