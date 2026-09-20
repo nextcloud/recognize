@@ -13,6 +13,7 @@ use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
+use OCA\Recognize\Service\SettingsService;
 use OCP\AppFramework\Services\IAppConfig;
 use OCP\BackgroundJob\IJobList;
 use OCP\DB\Exception;
@@ -43,8 +44,8 @@ final class ClusteringFaceClassifier extends Classifier {
 		private FaceDetectionMapper $faceDetections,
 		QueueService $queue, IRootFolder $rootFolder,
 		private IUserMountCache $userMountCache, private IJobList $jobList, ITempManager $tempManager, IPreview $previewProvider,
-		private IManager $shareManager) {
-		parent::__construct($logger, $config, $rootFolder, $queue, $tempManager, $previewProvider);
+		private IManager $shareManager, SettingsService $settingsService) {
+		parent::__construct($logger, $config, $rootFolder, $queue, $tempManager, $previewProvider, $settingsService);
 	}
 
 	/**
