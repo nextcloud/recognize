@@ -231,7 +231,19 @@ final class FsActionMapper extends QBMapper {
 	 */
 	public function insertMove(int $nodeId, string $owner, array $addedUsers, array $targetUsers): Entity {
 		try {
+			/** @var FsMove $move */
 			$move = $this->findByNodeId(FsMove::class, $nodeId);
+			// A move for this node is still pending: the row carries the payload the job will
+			// act on, so it has to reflect the latest move, not the first one. Union the added
+			// users (an earlier move may have granted access to users this move didn't touch)
+			// and take the newest access list verbatim, dropping users it no longer contains.
+			$addedUsers = array_values(array_intersect(
+				array_unique(array_merge($move->getAddedUsers(), $addedUsers)),
+				$targetUsers
+			));
+			$move->setAddedUsers($addedUsers);
+			$move->setTargetUsers($targetUsers);
+			$this->update($move);
 		} catch (DoesNotExistException $e) {
 			$move = new FsMove();
 			$move->setNodeId($nodeId);
@@ -239,10 +251,10 @@ final class FsActionMapper extends QBMapper {
 			$move->setAddedUsers($addedUsers);
 			$move->setTargetUsers($targetUsers);
 			$this->insert($move);
-			$arguments = [ 'type' => FsMove::class ];
-			if (!$this->jobList->has(ProcessFsActionsJob::class, $arguments)) {
-				$this->jobList->add(ProcessFsActionsJob::class, $arguments);
-			}
+		}
+		$arguments = [ 'type' => FsMove::class ];
+		if (!$this->jobList->has(ProcessFsActionsJob::class, $arguments)) {
+			$this->jobList->add(ProcessFsActionsJob::class, $arguments);
 		}
 		return $move;
 	}
@@ -278,6 +290,50 @@ final class FsActionMapper extends QBMapper {
 			// When autoincrement is used id is always an int
 			$entity->setId($qb->getLastInsertId());
 		}
+
+		return $entity;
+	}
+
+	/**
+	 * Like QBMapper::update(), but takes the table name from the entity, since this
+	 * mapper serves several tables and has none of its own.
+	 *
+	 * @param FsCreation|FsDeletion|FsMove|FsAccessUpdate $entity
+	 * @return FsCreation|FsDeletion|FsMove|FsAccessUpdate
+	 * @throws Exception
+	 */
+	public function update(Entity $entity): Entity {
+		// if entity wasn't changed it makes no sense to run a db query
+		/** @var array<string, mixed> $properties */
+		$properties = $entity->getUpdatedFields();
+		unset($properties['id']);
+		if (count($properties) === 0) {
+			return $entity;
+		}
+
+		$id = $entity->getId();
+		if ($id === null) {
+			throw new \InvalidArgumentException('Entity which should be updated has no id');
+		}
+
+		$qb = $this->db->getQueryBuilder();
+		$qb->update($entity::$tableName);
+
+		// build the fields
+		foreach ($properties as $property => $updated) {
+			$column = $entity->propertyToColumn($property);
+			$getter = 'get' . ucfirst($property);
+			$value = $entity->$getter();
+
+			$type = $this->getParameterTypeForProperty($entity, $property);
+			$qb->set($column, $qb->createNamedParameter($value, $type));
+		}
+
+		$idType = $this->getParameterTypeForProperty($entity, 'id');
+		$qb->where(
+			$qb->expr()->eq('id', $qb->createNamedParameter($id, $idType))
+		);
+		$qb->executeStatement();
 
 		return $entity;
 	}
