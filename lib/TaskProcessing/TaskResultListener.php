@@ -274,6 +274,7 @@ final class TaskResultListener implements IEventListener {
 	 */
 	private function getUsersWithFileAccess(int $fileId): array {
 		try {
+			$this->userMountCache->clear();
 			$mountInfos = $this->userMountCache->getMountsForFileId($fileId);
 		} catch (\Throwable $e) {
 			$this->logger->warning('Could not look up users with access for file ' . $fileId, ['exception' => $e]);

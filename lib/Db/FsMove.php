@@ -48,14 +48,27 @@ final class FsMove extends Entity {
 	 * @return list<string>
 	 */
 	public function getAddedUsers(): array {
-		return explode(',', $this->addedUsers ?? '');
+		return self::explodeUsers($this->addedUsers);
 	}
 
 	/**
 	 * @return list<string>
 	 */
 	public function getTargetUsers(): array {
-		return explode(',', $this->targetUsers ?? '');
+		return self::explodeUsers($this->targetUsers);
+	}
+
+	/**
+	 * explode() on an empty string yields [''], which would be treated as a user
+	 * with an empty user ID, so map the empty column to an empty list instead.
+	 *
+	 * @return list<string>
+	 */
+	private static function explodeUsers(?string $users): array {
+		if ($users === null || $users === '') {
+			return [];
+		}
+		return explode(',', $users);
 	}
 
 	/**

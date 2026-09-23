@@ -125,7 +125,7 @@ final class FsActionService {
 						break;
 					}
 					try {
-						$this->onMove($action->getOwner(), $action->getAddedUsers(), $action->getTargetUsers(), $node);
+						$this->onMove($action->getAddedUsers(), $action->getTargetUsers(), $node);
 					} catch (Exception|InvalidPathException|NotFoundException $e) {
 						$this->logger->warning('Failed to process move action: ' . $e->getMessage() . ' Continuing.', ['exception' => $e]);
 					}
@@ -168,24 +168,17 @@ final class FsActionService {
 		$files = $this->storageService->getFilesInMount($storageId, $rootId, [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
 		$userIdsToScheduleClustering = [];
 		foreach ($files as $fileInfo) {
-			$node = $this->rootFolder->getFirstNodeById($fileInfo['fileid']) ?: null;
-			$ownerId = $node?->getOwner()?->getUID();
-			if ($ownerId === null) {
+			$detectionCountByUser = $this->getDetectionCountByUser($fileInfo['fileid']);
+			if (count($detectionCountByUser) === 0) {
+				// Nothing detected for this file (yet): nothing to copy, nothing to prune
 				continue;
 			}
-			$detectionsForFile = $this->faceDetectionMapper->findByFileId($fileInfo['fileid']);
-			$userHasDetectionForFile = [];
-			foreach ($detectionsForFile as $detection) {
-				$userHasDetectionForFile[$detection->getUserId()] = true;
-			}
+			$sourceUserId = (string)array_key_first($detectionCountByUser);
 			foreach ($userIds as $userId) {
-				if ($userId === $ownerId) {
+				if (isset($detectionCountByUser[(string)$userId])) {
 					continue;
 				}
-				if ($userHasDetectionForFile[$userId] ?? false) {
-					continue;
-				}
-				$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($fileInfo['fileid'], $ownerId, $userId);
+				$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($fileInfo['fileid'], $sourceUserId, (string)$userId);
 				$userIdsToScheduleClustering[$userId] = true;
 			}
 			$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($fileInfo['fileid'], $userIds);
@@ -193,6 +186,28 @@ final class FsActionService {
 		foreach (array_keys($userIdsToScheduleClustering) as $userId) {
 			$this->jobList->add(ClusterFacesJob::class, ['userId' => (string)$userId]);
 		}
+	}
+
+	/**
+	 * How many face detections each user holds for a file, most complete set first.
+	 *
+	 * The first key is the user to copy detections from when granting access to further
+	 * users. The file system owner cannot be used for that: group folder nodes have no
+	 * owner when they are resolved outside of a user session, which is the case in the
+	 * background jobs that process fs actions. Whoever already holds detections for the
+	 * file is both a more reliable and a more direct answer to the question.
+	 *
+	 * @return array<string, int>
+	 * @throws Exception
+	 */
+	private function getDetectionCountByUser(int $fileId): array {
+		$detectionCountByUser = [];
+		foreach ($this->faceDetectionMapper->findByFileId($fileId) as $detection) {
+			$userId = (string)$detection->getUserId();
+			$detectionCountByUser[$userId] = ($detectionCountByUser[$userId] ?? 0) + 1;
+		}
+		arsort($detectionCountByUser);
+		return $detectionCountByUser;
 	}
 
 	/**
@@ -325,33 +340,38 @@ final class FsActionService {
 	}
 
 	/**
-	 * @param string $ownerId
 	 * @param list<string> $usersToAdd
 	 * @param list<string> $targetUserIds
 	 * @param Node $node
 	 * @return void
 	 * @throws Exception|InvalidPathException|NotFoundException
 	 */
-	private function onMove(string $ownerId, array $usersToAdd, array $targetUserIds, Node $node): void {
+	private function onMove(array $usersToAdd, array $targetUserIds, Node $node): void {
 		if ($node instanceof Folder) {
 			try {
 				foreach ($node->getDirectoryListing() as $n) {
 					if (!in_array($n->getMimetype(), Constants::IMAGE_FORMATS)) {
 						continue;
 					}
-					$this->onMove($ownerId, $usersToAdd, $targetUserIds, $n);
+					$this->onMove($usersToAdd, $targetUserIds, $n);
 				}
 			} catch (NotFoundException|Exception|InvalidPathException $e) {
 				$this->logger->warning('Error in recognize file listener', ['exception' => $e]);
 			}
 			return;
 		}
+		$detectionCountByUser = $this->getDetectionCountByUser($node->getId());
+		if (count($detectionCountByUser) === 0) {
+			// Nothing detected for this file (yet): nothing to copy, nothing to prune
+			return;
+		}
+		$sourceUserId = (string)array_key_first($detectionCountByUser);
 		foreach ($usersToAdd as $userId) {
-			if (count($this->faceDetectionMapper->findByFileIdAndUser($node->getId(), $userId)) > 0) {
+			if (isset($detectionCountByUser[(string)$userId])) {
 				continue;
 			}
-			$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($node->getId(), $ownerId, $userId);
-			$this->jobList->add(ClusterFacesJob::class, ['userId' => $userId]);
+			$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($node->getId(), $sourceUserId, (string)$userId);
+			$this->jobList->add(ClusterFacesJob::class, ['userId' => (string)$userId]);
 		}
 		$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($node->getId(), $targetUserIds);
 	}

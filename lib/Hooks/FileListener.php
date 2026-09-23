@@ -283,17 +283,17 @@ final class FileListener implements IEventListener {
 	 * @throws Exception
 	 */
 	public function postRename(Node $source, Node $target): void {
-		$targetUserIds = $this->getUsersWithFileAccess($target->getId());
-
-		$usersToAdd = array_values(array_diff($targetUserIds, $this->sourceUserIds));
-		$existingUsers = array_diff($targetUserIds, $usersToAdd);
-		$sourceOwner = $source->getOwner();
-		$targetOwner = $target->getOwner();
-		$ownerId = $sourceOwner?->getUID() ?? $targetOwner?->getUID() ?? $existingUsers[0];
-
 		if (preg_match('#^/[^/]*?/files/#', $target->getPath()) !== 1 && preg_match('#^/groupfolders/#', $target->getPath()) !== 1) {
 			return;
 		}
+
+		$targetUserIds = $this->getUsersWithFileAccess($target->getId());
+		$usersToAdd = array_values(array_diff($targetUserIds, $this->sourceUserIds));
+
+		// Recorded for diagnostics only, and empty for group folder nodes, which have no
+		// owner: FsActionService picks the user to copy detections from by looking at who
+		// actually holds detections for the file.
+		$ownerId = $source->getOwner()?->getUID() ?? $target->getOwner()?->getUID() ?? '';
 
 		$this->fsActionMapper->insertMove($target->getId(), $ownerId, $usersToAdd, $targetUserIds);
 	}
