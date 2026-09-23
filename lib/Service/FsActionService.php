@@ -350,7 +350,9 @@ final class FsActionService {
 		if ($node instanceof Folder) {
 			try {
 				foreach ($node->getDirectoryListing() as $n) {
-					if (!in_array($n->getMimetype(), Constants::IMAGE_FORMATS)) {
+					// Recurse into subfolders: we only get a rename event for the top node,
+					// so the whole subtree has to be walked here.
+					if ($n->getType() !== FileInfo::TYPE_FOLDER && !in_array($n->getMimetype(), Constants::IMAGE_FORMATS)) {
 						continue;
 					}
 					$this->onMove($usersToAdd, $targetUserIds, $n);
