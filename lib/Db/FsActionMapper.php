@@ -54,12 +54,8 @@ final class FsActionMapper extends QBMapper {
 	 * @param class-string<FsCreation|FsDeletion|FsMove|FsAccessUpdate> $className
 	 * @return list<FsCreation|FsDeletion|FsMove|FsAccessUpdate>
 	 * @throws \OCP\DB\Exception
-	 * @throws \Exception
 	 */
 	public function find(string $className, int $limit = 0): array {
-		if (!in_array('storage_id', $className::$columns, true)) {
-			throw new \Exception('entity does not have a storage_id column');
-		}
 		$qb = $this->db->getQueryBuilder();
 		$qb->selectDistinct($className::$columns)
 			->from($className::$tableName);
@@ -243,7 +239,7 @@ final class FsActionMapper extends QBMapper {
 			$move->setAddedUsers($addedUsers);
 			$move->setTargetUsers($targetUsers);
 			$this->insert($move);
-			$arguments = [ 'type' => FsDeletion::class ];
+			$arguments = [ 'type' => FsMove::class ];
 			if (!$this->jobList->has(ProcessFsActionsJob::class, $arguments)) {
 				$this->jobList->add(ProcessFsActionsJob::class, $arguments);
 			}
