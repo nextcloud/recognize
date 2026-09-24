@@ -32,6 +32,7 @@ use Psr\Log\LoggerInterface;
 
 final class FsActionService {
 	public const BATCH_SIZE = 1000;
+
 	public function __construct(
 		private FsActionMapper      $fsActionMapper,
 		private LoggerInterface     $logger,
@@ -75,6 +76,9 @@ final class FsActionService {
 	 * @param array<FsCreation|FsDeletion|FsMove|FsAccessUpdate> $actions
 	 */
 	public function processActions(array $actions): void {
+		// The mount tables are read repeatedly while processing a batch, so refresh them
+		// once here rather than on every lookup.
+		$this->userMountCache->clear();
 		$lastUserId = null;
 		foreach ($actions as $action) {
 			switch ($action::class) {
@@ -125,7 +129,7 @@ final class FsActionService {
 						break;
 					}
 					try {
-						$this->onMove($action->getOwner(), $action->getAddedUsers(), $action->getTargetUsers(), $node);
+						$this->onMove($node);
 					} catch (Exception|InvalidPathException|NotFoundException $e) {
 						$this->logger->warning('Failed to process move action: ' . $e->getMessage() . ' Continuing.', ['exception' => $e]);
 					}
@@ -149,7 +153,6 @@ final class FsActionService {
 	 * @return list<string>
 	 */
 	private function getUsersWithFileAccess(int $nodeId): array {
-		$this->userMountCache->clear();
 		$mountInfos = $this->userMountCache->getMountsForFileId($nodeId);
 		$userIds = array_map(static function (ICachedMountInfo $mountInfo) {
 			return $mountInfo->getUser()->getUID();
@@ -164,35 +167,71 @@ final class FsActionService {
 	 * @throws Exception
 	 */
 	private function onAccessUpdate(int $storageId, int $rootId): void {
-		$userIds = $this->getUsersWithFileAccess($rootId);
 		$files = $this->storageService->getFilesInMount($storageId, $rootId, [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
 		$userIdsToScheduleClustering = [];
 		foreach ($files as $fileInfo) {
-			$node = $this->rootFolder->getFirstNodeById($fileInfo['fileid']) ?: null;
-			$ownerId = $node?->getOwner()?->getUID();
-			if ($ownerId === null) {
-				continue;
-			}
-			$detectionsForFile = $this->faceDetectionMapper->findByFileId($fileInfo['fileid']);
-			$userHasDetectionForFile = [];
-			foreach ($detectionsForFile as $detection) {
-				$userHasDetectionForFile[$detection->getUserId()] = true;
-			}
-			foreach ($userIds as $userId) {
-				if ($userId === $ownerId) {
-					continue;
-				}
-				if ($userHasDetectionForFile[$userId] ?? false) {
-					continue;
-				}
-				$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($fileInfo['fileid'], $ownerId, $userId);
-				$userIdsToScheduleClustering[$userId] = true;
-			}
-			$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($fileInfo['fileid'], $userIds);
+			$this->syncDetectionsForFile($fileInfo['fileid'], $userIdsToScheduleClustering);
 		}
 		foreach (array_keys($userIdsToScheduleClustering) as $userId) {
 			$this->jobList->add(ClusterFacesJob::class, ['userId' => (string)$userId]);
 		}
+	}
+
+	/**
+	 * Gives every user with access to the file a copy of its face detections and removes
+	 * the detections of users who lost access.
+	 *
+	 * Access is resolved per file rather than taken from an ancestor: a descendant can be
+	 * shared directly, in which case it is reachable by users the ancestor is not shared
+	 * with, and pruning against the ancestor's list would delete detections they still
+	 * have access to.
+	 *
+	 * @param array<string, true> $userIdsToScheduleClustering
+	 * @throws Exception
+	 */
+	private function syncDetectionsForFile(int $fileId, array &$userIdsToScheduleClustering): void {
+		$detectionCountByUser = $this->getDetectionCountByUser($fileId);
+		if (count($detectionCountByUser) === 0) {
+			// Nothing detected for this file (yet): nothing to copy, nothing to prune
+			return;
+		}
+		$targetUserIds = $this->getUsersWithFileAccess($fileId);
+		if (count($targetUserIds) === 0) {
+			// No mounts found, e.g. because the file vanished in the meantime: don't treat
+			// that as everyone having lost access
+			return;
+		}
+		$sourceUserId = (string)array_key_first($detectionCountByUser);
+		foreach ($targetUserIds as $userId) {
+			if (isset($detectionCountByUser[$userId])) {
+				continue;
+			}
+			$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($fileId, $sourceUserId, $userId);
+			$userIdsToScheduleClustering[$userId] = true;
+		}
+		$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($fileId, $targetUserIds);
+	}
+
+	/**
+	 * How many face detections each user holds for a file, most complete set first.
+	 *
+	 * The first key is the user to copy detections from when granting access to further
+	 * users. The file system owner cannot be used for that: group folder nodes have no
+	 * owner when they are resolved outside of a user session, which is the case in the
+	 * background jobs that process fs actions. Whoever already holds detections for the
+	 * file is both a more reliable and a more direct answer to the question.
+	 *
+	 * @return array<string, int>
+	 * @throws Exception
+	 */
+	private function getDetectionCountByUser(int $fileId): array {
+		$detectionCountByUser = [];
+		foreach ($this->faceDetectionMapper->findByFileId($fileId) as $detection) {
+			$userId = (string)$detection->getUserId();
+			$detectionCountByUser[$userId] = ($detectionCountByUser[$userId] ?? 0) + 1;
+		}
+		arsort($detectionCountByUser);
+		return $detectionCountByUser;
 	}
 
 	/**
@@ -325,34 +364,38 @@ final class FsActionService {
 	}
 
 	/**
-	 * @param string $ownerId
-	 * @param list<string> $usersToAdd
-	 * @param list<string> $targetUserIds
-	 * @param Node $node
-	 * @return void
 	 * @throws Exception|InvalidPathException|NotFoundException
 	 */
-	private function onMove(string $ownerId, array $usersToAdd, array $targetUserIds, Node $node): void {
+	private function onMove(Node $node): void {
+		$userIdsToScheduleClustering = [];
+		$this->moveNode($node, $userIdsToScheduleClustering);
+		foreach (array_keys($userIdsToScheduleClustering) as $userId) {
+			$this->jobList->add(ClusterFacesJob::class, ['userId' => (string)$userId]);
+		}
+	}
+
+	/**
+	 * @param array<string, true> $userIdsToScheduleClustering
+	 * @throws Exception|InvalidPathException|NotFoundException
+	 */
+	private function moveNode(Node $node, array &$userIdsToScheduleClustering): void {
 		if ($node instanceof Folder) {
-			try {
-				foreach ($node->getDirectoryListing() as $n) {
-					if (!in_array($n->getMimetype(), Constants::IMAGE_FORMATS)) {
-						continue;
-					}
-					$this->onMove($ownerId, $usersToAdd, $targetUserIds, $n);
+			foreach ($node->getDirectoryListing() as $n) {
+				// Recurse into subfolders: we only get a rename event for the top node,
+				// so the whole subtree has to be walked here.
+				if ($n->getType() !== FileInfo::TYPE_FOLDER && !in_array($n->getMimetype(), Constants::IMAGE_FORMATS)) {
+					continue;
 				}
-			} catch (NotFoundException|Exception|InvalidPathException $e) {
-				$this->logger->warning('Error in recognize file listener', ['exception' => $e]);
+				try {
+					$this->moveNode($n, $userIdsToScheduleClustering);
+				} catch (NotFoundException|Exception|InvalidPathException $e) {
+					// Per child, so one unreadable node doesn't abandon the rest of the subtree:
+					// the action row is deleted either way, so skipped files are never retried.
+					$this->logger->warning('Failed to process move for node ' . $n->getId(), ['exception' => $e]);
+				}
 			}
 			return;
 		}
-		foreach ($usersToAdd as $userId) {
-			if (count($this->faceDetectionMapper->findByFileIdAndUser($node->getId(), $userId)) > 0) {
-				continue;
-			}
-			$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($node->getId(), $ownerId, $userId);
-			$this->jobList->add(ClusterFacesJob::class, ['userId' => $userId]);
-		}
-		$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($node->getId(), $targetUserIds);
+		$this->syncDetectionsForFile($node->getId(), $userIdsToScheduleClustering);
 	}
 }
