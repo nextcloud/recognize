@@ -194,6 +194,9 @@ final class TaskResultListener implements IEventListener {
 	private function applyFaceResults(array $fileIds, array $results): void {
 		$model = ClusteringFaceClassifier::MODEL_NAME;
 		$scheduledClusterJobsFor = [];
+		// The mount tables are read for every file in this batch, so refresh them once here
+		// rather than on every lookup.
+		$this->userMountCache->clear();
 		foreach ($fileIds as $i => $fileId) {
 			if (!isset($results[$i])) {
 				continue;
@@ -274,7 +277,6 @@ final class TaskResultListener implements IEventListener {
 	 */
 	private function getUsersWithFileAccess(int $fileId): array {
 		try {
-			$this->userMountCache->clear();
 			$mountInfos = $this->userMountCache->getMountsForFileId($fileId);
 		} catch (\Throwable $e) {
 			$this->logger->warning('Could not look up users with access for file ' . $fileId, ['exception' => $e]);
