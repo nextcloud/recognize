@@ -15,24 +15,19 @@ use OCP\AppFramework\Db\Entity;
  * @package OCA\Recognize\Db
  * @method int getNodeId()
  * @method setNodeId(int $nodeId)
- * @method string getOwner()
- * @method setOwner(string $owner)
  */
 final class FsMove extends Entity {
 	protected ?int $nodeId = null;
-	protected ?string $owner = null;
-	protected ?string $addedUsers = null;
-	protected ?string $targetUsers = null;
 
 	/**
 	 * @var string[]
 	 */
-	public static array $columns = ['id', 'node_id', 'owner', 'added_users', 'target_users'];
+	public static array $columns = ['id', 'node_id'];
 
 	/**
 	 * @var string[]
 	 */
-	public static array $fields = ['id', 'nodeId', 'owner', 'addedUsers', 'targetUsers'];
+	public static array $fields = ['id', 'nodeId'];
 
 	public static string $tableName = 'recognize_fs_moves';
 
