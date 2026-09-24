@@ -54,7 +54,6 @@ final class ClusteringFaceClassifier extends Classifier {
 	 * @throws NotFoundException
 	 */
 	private function getUsersWithFileAccess(Node $node): array {
-		$this->userMountCache->clear();
 		$mountInfos = $this->userMountCache->getMountsForFileId($node->getId());
 		$userIds = array_map(static function (ICachedMountInfo $mountInfo) {
 			return $mountInfo->getUser()->getUID();
@@ -92,6 +91,10 @@ final class ClusteringFaceClassifier extends Classifier {
 		}
 
 		$classifierProcess = $this->classifyFiles(self::MODEL_NAME, $filteredQueueFiles, $timeout);
+
+		// The mount tables are read for every file in this batch, so refresh them once here
+		// rather than on every lookup.
+		$this->userMountCache->clear();
 
 		/**
 		 * @var list<array> $faces
