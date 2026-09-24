@@ -167,28 +167,49 @@ final class FsActionService {
 	 * @throws Exception
 	 */
 	private function onAccessUpdate(int $storageId, int $rootId): void {
-		$userIds = $this->getUsersWithFileAccess($rootId);
 		$files = $this->storageService->getFilesInMount($storageId, $rootId, [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
 		$userIdsToScheduleClustering = [];
 		foreach ($files as $fileInfo) {
-			$detectionCountByUser = $this->getDetectionCountByUser($fileInfo['fileid']);
-			if (count($detectionCountByUser) === 0) {
-				// Nothing detected for this file (yet): nothing to copy, nothing to prune
-				continue;
-			}
-			$sourceUserId = (string)array_key_first($detectionCountByUser);
-			foreach ($userIds as $userId) {
-				if (isset($detectionCountByUser[(string)$userId])) {
-					continue;
-				}
-				$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($fileInfo['fileid'], $sourceUserId, (string)$userId);
-				$userIdsToScheduleClustering[$userId] = true;
-			}
-			$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($fileInfo['fileid'], $userIds);
+			$this->syncDetectionsForFile($fileInfo['fileid'], $userIdsToScheduleClustering);
 		}
 		foreach (array_keys($userIdsToScheduleClustering) as $userId) {
 			$this->jobList->add(ClusterFacesJob::class, ['userId' => (string)$userId]);
 		}
+	}
+
+	/**
+	 * Gives every user with access to the file a copy of its face detections and removes
+	 * the detections of users who lost access.
+	 *
+	 * Access is resolved per file rather than taken from an ancestor: a descendant can be
+	 * shared directly, in which case it is reachable by users the ancestor is not shared
+	 * with, and pruning against the ancestor's list would delete detections they still
+	 * have access to.
+	 *
+	 * @param array<string, true> $userIdsToScheduleClustering
+	 * @throws Exception
+	 */
+	private function syncDetectionsForFile(int $fileId, array &$userIdsToScheduleClustering): void {
+		$detectionCountByUser = $this->getDetectionCountByUser($fileId);
+		if (count($detectionCountByUser) === 0) {
+			// Nothing detected for this file (yet): nothing to copy, nothing to prune
+			return;
+		}
+		$targetUserIds = $this->getUsersWithFileAccess($fileId);
+		if (count($targetUserIds) === 0) {
+			// No mounts found, e.g. because the file vanished in the meantime: don't treat
+			// that as everyone having lost access
+			return;
+		}
+		$sourceUserId = (string)array_key_first($detectionCountByUser);
+		foreach ($targetUserIds as $userId) {
+			if (isset($detectionCountByUser[$userId])) {
+				continue;
+			}
+			$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($fileId, $sourceUserId, $userId);
+			$userIdsToScheduleClustering[$userId] = true;
+		}
+		$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($fileId, $targetUserIds);
 	}
 
 	/**
@@ -375,23 +396,6 @@ final class FsActionService {
 			}
 			return;
 		}
-		$detectionCountByUser = $this->getDetectionCountByUser($node->getId());
-		if (count($detectionCountByUser) === 0) {
-			// Nothing detected for this file (yet): nothing to copy, nothing to prune
-			return;
-		}
-		// Resolved per node rather than taken from the moved root: a descendant can be shared
-		// directly, in which case it is reachable by users the root is not shared with, and
-		// pruning against the root's list would delete detections they still have access to.
-		$targetUserIds = $this->getUsersWithFileAccess($node->getId());
-		$sourceUserId = (string)array_key_first($detectionCountByUser);
-		foreach ($targetUserIds as $userId) {
-			if (isset($detectionCountByUser[$userId])) {
-				continue;
-			}
-			$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($node->getId(), $sourceUserId, $userId);
-			$userIdsToScheduleClustering[$userId] = true;
-		}
-		$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($node->getId(), $targetUserIds);
+		$this->syncDetectionsForFile($node->getId(), $userIdsToScheduleClustering);
 	}
 }
