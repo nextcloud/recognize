@@ -15,8 +15,6 @@ use OCP\DB\Exception;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
 use OCP\Files\Cache\CacheEntryInsertedEvent;
-use OCP\Files\Config\ICachedMountInfo;
-use OCP\Files\Config\IUserMountCache;
 use OCP\Files\Events\Node\BeforeNodeDeletedEvent;
 use OCP\Files\Events\Node\BeforeNodeRenamedEvent;
 use OCP\Files\Events\Node\NodeCreatedEvent;
@@ -37,9 +35,6 @@ use Psr\Log\LoggerInterface;
 final class FileListener implements IEventListener {
 	private ?bool $movingFromIgnoredTerritory;
 	private ?array $movingDirFromIgnoredTerritory;
-	/** @var list<string> */
-	private array $sourceUserIds;
-	private ?Node $source = null;
 
 	/** @var array<string, bool>  */
 	private array $addedMounts = [];
@@ -48,28 +43,10 @@ final class FileListener implements IEventListener {
 		private LoggerInterface     $logger,
 		private IgnoreService       $ignoreService,
 		private IRootFolder         $rootFolder,
-		private IUserMountCache     $userMountCache,
 		private FsActionMapper      $fsActionMapper,
 	) {
 		$this->movingFromIgnoredTerritory = null;
 		$this->movingDirFromIgnoredTerritory = null;
-		$this->sourceUserIds = [];
-	}
-
-	/**
-	 * @param int $nodeId
-	 * @return list<string>
-	 * @throws InvalidPathException
-	 * @throws NotFoundException
-	 */
-	private function getUsersWithFileAccess(int $nodeId): array {
-		$this->userMountCache->clear();
-		$mountInfos = $this->userMountCache->getMountsForFileId($nodeId);
-		$userIds = array_map(static function (ICachedMountInfo $mountInfo) {
-			return $mountInfo->getUser()->getUID();
-		}, $mountInfos);
-
-		return array_values(array_unique($userIds));
 	}
 
 	public function handle(Event $event): void {
@@ -112,8 +89,6 @@ final class FileListener implements IEventListener {
 				} else {
 					$this->movingDirFromIgnoredTerritory = $this->getDirIgnores($event->getSource());
 				}
-				$this->sourceUserIds = $this->getUsersWithFileAccess($event->getSource()->getId());
-				$this->source = $event->getSource();
 				return;
 			}
 			if ($event instanceof NodeRenamedEvent) {
@@ -171,7 +146,7 @@ final class FileListener implements IEventListener {
 						return;
 					}
 				}
-				$this->postRename($this->source ?? $event->getSource(), $event->getTarget());
+				$this->postRename($event->getTarget());
 				return;
 			}
 			if ($event instanceof BeforeNodeDeletedEvent) {
@@ -282,20 +257,14 @@ final class FileListener implements IEventListener {
 	 * @throws NotFoundException
 	 * @throws Exception
 	 */
-	public function postRename(Node $source, Node $target): void {
+	public function postRename(Node $target): void {
 		if (preg_match('#^/[^/]*?/files/#', $target->getPath()) !== 1 && preg_match('#^/groupfolders/#', $target->getPath()) !== 1) {
 			return;
 		}
 
-		$targetUserIds = $this->getUsersWithFileAccess($target->getId());
-		$usersToAdd = array_values(array_diff($targetUserIds, $this->sourceUserIds));
-
-		// Recorded for diagnostics only, and empty for group folder nodes, which have no
-		// owner: FsActionService picks the user to copy detections from by looking at who
-		// actually holds detections for the file.
-		$ownerId = $source->getOwner()?->getUID() ?? $target->getOwner()?->getUID() ?? '';
-
-		$this->fsActionMapper->insertMove($target->getId(), $ownerId, $usersToAdd, $targetUserIds);
+		// Who has access to the moved node, and to each file below it, is resolved when
+		// the move is processed, so the node ID is all that needs to be recorded.
+		$this->fsActionMapper->insertMove($target->getId());
 	}
 
 	/**
