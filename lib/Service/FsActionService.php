@@ -32,6 +32,7 @@ use Psr\Log\LoggerInterface;
 
 final class FsActionService {
 	public const BATCH_SIZE = 1000;
+
 	public function __construct(
 		private FsActionMapper      $fsActionMapper,
 		private LoggerInterface     $logger,
@@ -75,6 +76,9 @@ final class FsActionService {
 	 * @param array<FsCreation|FsDeletion|FsMove|FsAccessUpdate> $actions
 	 */
 	public function processActions(array $actions): void {
+		// The mount tables are read repeatedly while processing a batch, so refresh them
+		// once here rather than on every lookup.
+		$this->userMountCache->clear();
 		$lastUserId = null;
 		foreach ($actions as $action) {
 			switch ($action::class) {
@@ -125,7 +129,7 @@ final class FsActionService {
 						break;
 					}
 					try {
-						$this->onMove($action->getAddedUsers(), $action->getTargetUsers(), $node);
+						$this->onMove($node);
 					} catch (Exception|InvalidPathException|NotFoundException $e) {
 						$this->logger->warning('Failed to process move action: ' . $e->getMessage() . ' Continuing.', ['exception' => $e]);
 					}
@@ -149,7 +153,6 @@ final class FsActionService {
 	 * @return list<string>
 	 */
 	private function getUsersWithFileAccess(int $nodeId): array {
-		$this->userMountCache->clear();
 		$mountInfos = $this->userMountCache->getMountsForFileId($nodeId);
 		$userIds = array_map(static function (ICachedMountInfo $mountInfo) {
 			return $mountInfo->getUser()->getUID();
@@ -340,25 +343,35 @@ final class FsActionService {
 	}
 
 	/**
-	 * @param list<string> $usersToAdd
-	 * @param list<string> $targetUserIds
-	 * @param Node $node
-	 * @return void
 	 * @throws Exception|InvalidPathException|NotFoundException
 	 */
-	private function onMove(array $usersToAdd, array $targetUserIds, Node $node): void {
+	private function onMove(Node $node): void {
+		$userIdsToScheduleClustering = [];
+		$this->moveNode($node, $userIdsToScheduleClustering);
+		foreach (array_keys($userIdsToScheduleClustering) as $userId) {
+			$this->jobList->add(ClusterFacesJob::class, ['userId' => (string)$userId]);
+		}
+	}
+
+	/**
+	 * @param array<string, true> $userIdsToScheduleClustering
+	 * @throws Exception|InvalidPathException|NotFoundException
+	 */
+	private function moveNode(Node $node, array &$userIdsToScheduleClustering): void {
 		if ($node instanceof Folder) {
-			try {
-				foreach ($node->getDirectoryListing() as $n) {
-					// Recurse into subfolders: we only get a rename event for the top node,
-					// so the whole subtree has to be walked here.
-					if ($n->getType() !== FileInfo::TYPE_FOLDER && !in_array($n->getMimetype(), Constants::IMAGE_FORMATS)) {
-						continue;
-					}
-					$this->onMove($usersToAdd, $targetUserIds, $n);
+			foreach ($node->getDirectoryListing() as $n) {
+				// Recurse into subfolders: we only get a rename event for the top node,
+				// so the whole subtree has to be walked here.
+				if ($n->getType() !== FileInfo::TYPE_FOLDER && !in_array($n->getMimetype(), Constants::IMAGE_FORMATS)) {
+					continue;
 				}
-			} catch (NotFoundException|Exception|InvalidPathException $e) {
-				$this->logger->warning('Error in recognize file listener', ['exception' => $e]);
+				try {
+					$this->moveNode($n, $userIdsToScheduleClustering);
+				} catch (NotFoundException|Exception|InvalidPathException $e) {
+					// Per child, so one unreadable node doesn't abandon the rest of the subtree:
+					// the action row is deleted either way, so skipped files are never retried.
+					$this->logger->warning('Failed to process move for node ' . $n->getId(), ['exception' => $e]);
+				}
 			}
 			return;
 		}
@@ -367,13 +380,17 @@ final class FsActionService {
 			// Nothing detected for this file (yet): nothing to copy, nothing to prune
 			return;
 		}
+		// Resolved per node rather than taken from the moved root: a descendant can be shared
+		// directly, in which case it is reachable by users the root is not shared with, and
+		// pruning against the root's list would delete detections they still have access to.
+		$targetUserIds = $this->getUsersWithFileAccess($node->getId());
 		$sourceUserId = (string)array_key_first($detectionCountByUser);
-		foreach ($usersToAdd as $userId) {
-			if (isset($detectionCountByUser[(string)$userId])) {
+		foreach ($targetUserIds as $userId) {
+			if (isset($detectionCountByUser[$userId])) {
 				continue;
 			}
-			$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($node->getId(), $sourceUserId, (string)$userId);
-			$this->jobList->add(ClusterFacesJob::class, ['userId' => (string)$userId]);
+			$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($node->getId(), $sourceUserId, $userId);
+			$userIdsToScheduleClustering[$userId] = true;
 		}
 		$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($node->getId(), $targetUserIds);
 	}
