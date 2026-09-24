@@ -167,7 +167,6 @@ final class FsActionService {
 	 * @throws Exception
 	 */
 	private function onAccessUpdate(int $storageId, int $rootId): void {
-		$userIds = $this->getUsersWithFileAccess($rootId);
 		$files = $this->storageService->getFilesInMount($storageId, $rootId, [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
 		$userIdsToScheduleClustering = [];
 		foreach ($files as $fileInfo) {
