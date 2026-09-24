@@ -308,7 +308,7 @@ final class FsActionMapper extends QBMapper {
 	 */
 	public function update(Entity $entity): Entity {
 		// if entity wasn't changed it makes no sense to run a db query
-		/** @var array<string, mixed> $properties */
+		/** @var array<string, true> $properties */
 		$properties = $entity->getUpdatedFields();
 		unset($properties['id']);
 		if (count($properties) === 0) {
