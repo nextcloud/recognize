@@ -965,7 +965,12 @@
     </PossiblyFalseArgument>
   </file>
   <file src="lib/Service/FsActionService.php">
+    <RedundantCast>
+      <code><![CDATA[(string)array_key_first($detectionCountByUser)]]></code>
+    </RedundantCast>
     <RedundantCastGivenDocblockType>
+      <code><![CDATA[(string)$detection->getUserId()]]></code>
+      <code><![CDATA[(string)$userId]]></code>
       <code><![CDATA[(string)$userId]]></code>
     </RedundantCastGivenDocblockType>
     <UndefinedClass>
