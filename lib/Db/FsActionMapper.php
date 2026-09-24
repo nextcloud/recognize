@@ -231,24 +231,36 @@ final class FsActionMapper extends QBMapper {
 	 * @param list<string> $addedUsers
 	 * @param list<string> $targetUsers
 	 * @return FsCreation|FsDeletion|FsMove|FsAccessUpdate
-	 * @throws Exception|MultipleObjectsReturnedException
+	 * @throws Exception
 	 */
 	public function insertMove(int $nodeId, string $owner, array $addedUsers, array $targetUsers): Entity {
-		try {
-			/** @var FsMove $move */
-			$move = $this->findByNodeId(FsMove::class, $nodeId);
-			// A move for this node is still pending: the row carries the payload the job will
-			// act on, so it has to reflect the latest move, not the first one. Union the added
-			// users (an earlier move may have granted access to users this move didn't touch)
-			// and take the newest access list verbatim, dropping users it no longer contains.
+		// A move for this node may still be pending. Replace it with a fresh row rather than
+		// updating it in place: the job deletes the rows it has processed by ID, so a row
+		// updated while the job was already working on it would be deleted along with the
+		// stale action, and this move would never be processed. A fresh row has a new ID,
+		// which the running job doesn't know about, so it survives until the next run.
+		$qb = $this->db->getQueryBuilder();
+		$qb->selectDistinct(FsMove::$columns)
+			->from(FsMove::$tableName)
+			->where($qb->expr()->eq('node_id', $qb->createPositionalParameter($nodeId, IQueryBuilder::PARAM_INT)));
+		/** @var list<FsMove> $pendingMoves */
+		$pendingMoves = $this->findItems(FsMove::class, $qb);
+		if (count($pendingMoves) > 0) {
+			// Union the added users (an earlier move may have granted access to users this
+			// move didn't touch), dropping users the newest access list no longer contains.
 			$addedUsers = array_values(array_intersect(
-				array_unique(array_merge($move->getAddedUsers(), $addedUsers)),
+				array_unique(array_merge($addedUsers, ...array_map(static fn (FsMove $move) => $move->getAddedUsers(), $pendingMoves))),
 				$targetUsers
 			));
-			$move->setAddedUsers($addedUsers);
-			$move->setTargetUsers($targetUsers);
-			$this->update($move);
-		} catch (DoesNotExistException $e) {
+		}
+
+		$this->db->beginTransaction();
+		try {
+			$qb = $this->db->getQueryBuilder();
+			$qb->delete(FsMove::$tableName)
+				->where($qb->expr()->eq('node_id', $qb->createPositionalParameter($nodeId, IQueryBuilder::PARAM_INT)));
+			$qb->executeStatement();
+
 			$move = new FsMove();
 			$move->setNodeId($nodeId);
 			$move->setOwner($owner);
@@ -294,50 +306,6 @@ final class FsActionMapper extends QBMapper {
 			// When autoincrement is used id is always an int
 			$entity->setId($qb->getLastInsertId());
 		}
-
-		return $entity;
-	}
-
-	/**
-	 * Like QBMapper::update(), but takes the table name from the entity, since this
-	 * mapper serves several tables and has none of its own.
-	 *
-	 * @param FsCreation|FsDeletion|FsMove|FsAccessUpdate $entity
-	 * @return FsCreation|FsDeletion|FsMove|FsAccessUpdate
-	 * @throws Exception
-	 */
-	public function update(Entity $entity): Entity {
-		// if entity wasn't changed it makes no sense to run a db query
-		/** @var array<string, true> $properties */
-		$properties = $entity->getUpdatedFields();
-		unset($properties['id']);
-		if (count($properties) === 0) {
-			return $entity;
-		}
-
-		$id = $entity->getId();
-		if ($id === null) {
-			throw new \InvalidArgumentException('Entity which should be updated has no id');
-		}
-
-		$qb = $this->db->getQueryBuilder();
-		$qb->update($entity::$tableName);
-
-		// build the fields
-		foreach ($properties as $property => $updated) {
-			$column = $entity->propertyToColumn($property);
-			$getter = 'get' . ucfirst($property);
-			$value = $entity->$getter();
-
-			$type = $this->getParameterTypeForProperty($entity, $property);
-			$qb->set($column, $qb->createNamedParameter($value, $type));
-		}
-
-		$idType = $this->getParameterTypeForProperty($entity, 'id');
-		$qb->where(
-			$qb->expr()->eq('id', $qb->createNamedParameter($id, $idType))
-		);
-		$qb->executeStatement();
 
 		return $entity;
 	}
