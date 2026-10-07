@@ -271,7 +271,7 @@ OC.L10N.register(
     "Bus" : "Autobus",
     "Bowl" : "Misa",
     "Monitor" : "Monitor",
-    "Bike" : "Bycikel",
+    "Bike" : "Bicykel",
     "Scooter" : "Skúter",
     "Camping" : "Táborenie",
     "Cart" : "Vozík",
