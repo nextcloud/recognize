@@ -10,6 +10,7 @@ namespace OCA\Recognize\Classifiers\Images;
 use OCA\Recognize\Classifiers\Classifier;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
+use OCA\Recognize\Service\SettingsService;
 use OCA\Recognize\Service\TagManager;
 use OCP\AppFramework\Services\IAppConfig;
 use OCP\Files\IRootFolder;
@@ -25,8 +26,8 @@ final class ImagenetClassifier extends Classifier {
 	private TagManager $tagManager;
 	protected QueueService $queue;
 
-	public function __construct(Logger $logger, IAppConfig $config, TagManager $tagManager, QueueService $queue, IRootFolder $rootFolder, ITempManager $tempManager, IPreview $previewProvider) {
-		parent::__construct($logger, $config, $rootFolder, $queue, $tempManager, $previewProvider);
+	public function __construct(Logger $logger, IAppConfig $config, TagManager $tagManager, QueueService $queue, IRootFolder $rootFolder, ITempManager $tempManager, IPreview $previewProvider, SettingsService $settingsService) {
+		parent::__construct($logger, $config, $rootFolder, $queue, $tempManager, $previewProvider, $settingsService);
 		$this->tagManager = $tagManager;
 		$this->queue = $queue;
 	}

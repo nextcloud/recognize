@@ -13,6 +13,7 @@ use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
 use OCA\Recognize\Constants;
 use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Service\QueueService;
+use OCA\Recognize\Service\SettingsService;
 use OCP\AppFramework\Services\IAppConfig;
 use OCP\DB\Exception;
 use OCP\Encryption\Exceptions\GenericEncryptionException;
@@ -41,14 +42,16 @@ abstract class Classifier {
 	private ITempManager $tempManager;
 	private IPreview $previewProvider;
 	private int $maxExecutionTime = self::MAX_EXECUTION_TIME;
+	private SettingsService $settingsService;
 
-	public function __construct(LoggerInterface $logger, IAppConfig $config, IRootFolder $rootFolder, QueueService $queue, ITempManager $tempManager, IPreview  $previewProvider) {
+	public function __construct(LoggerInterface $logger, IAppConfig $config, IRootFolder $rootFolder, QueueService $queue, ITempManager $tempManager, IPreview  $previewProvider, SettingsService $settingsService) {
 		$this->logger = $logger;
 		$this->config = $config;
 		$this->rootFolder = $rootFolder;
 		$this->queue = $queue;
 		$this->tempManager = $tempManager;
 		$this->previewProvider = $previewProvider;
+		$this->settingsService = $settingsService;
 	}
 
 	public function setMaxExecutionTime(int $time): void {
@@ -187,6 +190,7 @@ abstract class Classifier {
 		if ($cores !== '0') {
 			$env['RECOGNIZE_CORES'] = $cores;
 		}
+		$env['MODEL_DIR'] = $this->settingsService->getSetting('models_target_path').'/models';
 		$proc->setEnv($env);
 		$proc->setTimeout(count($paths) * $timeout);
 		$proc->setInput(implode("\n", $paths));

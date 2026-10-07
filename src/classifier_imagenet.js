@@ -4,9 +4,11 @@ const YAML = require('yaml')
 const _ = require('lodash')
 const rules = YAML.parse(fsSync.readFileSync(path.join(__dirname, 'rules.yml')).toString('utf8'))
 const { IMAGENET_CLASSES } = require('./efficientnet/classes')
+const MODEL_DIR = process.env.MODEL_DIR
 
 let tf, getPort, StaticServer
 let PUREJS = false
+
 if (process.env.RECOGNIZE_PUREJS === 'true') {
 	tf = require('@tensorflow/tfjs')
 	require('@tensorflow/tfjs-backend-wasm')
@@ -58,7 +60,7 @@ if (process.argv.length < 3) throw new Error('Incorrect arguments: node classify
  * @param minInput
  */
 async function main(modelName, imgSize, minInput) {
-	const modelPath = path.resolve(__dirname, '..', 'models', modelName)
+	const modelPath = path.resolve(MODEL_DIR, modelName)
 
 	const modelFileName = 'model.json'
 	let modelUrl

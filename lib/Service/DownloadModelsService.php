@@ -12,14 +12,17 @@ use OCA\Recognize\Helper\TAR;
 use OCP\Http\Client\IClientService;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use function Safe\mkdir;
 
 final class DownloadModelsService {
 	private IClientService $clientService;
 	private bool $isCLI;
+	private SettingsService $settingsService;
 
-	public function __construct(IClientService $clientService, bool $isCLI) {
+	public function __construct(IClientService $clientService, bool $isCLI, SettingsService $settingsService) {
 		$this->clientService = $clientService;
 		$this->isCLI = $isCLI;
+		$this->settingsService = $settingsService;
 	}
 
 	/**
@@ -27,14 +30,19 @@ final class DownloadModelsService {
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function download(?callable $log = null) : void {
+
+	public function download() : void {
 		$log ??= static function (string $message): void {
 		};
-		$targetPath = __DIR__ . '/../../models';
-		if (file_exists($targetPath)) {
+		$targetPath = $this->settingsService->getSetting('models_target_path');
+		if (!file_exists($targetPath)) {
+			mkdir($targetPath, recursive: true);
+		}
+		$modelPath = $targetPath . '/models';
+		if (file_exists($modelPath)) {
 			$log('Removing existing models directory at ' . $targetPath);
 			// remove models directory
-			$it = new RecursiveDirectoryIterator($targetPath, FilesystemIterator::SKIP_DOTS);
+			$it = new RecursiveDirectoryIterator($modelPath, FilesystemIterator::SKIP_DOTS);
 			$files = new RecursiveIteratorIterator($it,
 				RecursiveIteratorIterator::CHILD_FIRST);
 			foreach ($files as $file) {
@@ -44,11 +52,12 @@ final class DownloadModelsService {
 					unlink($file->getRealPath());
 				}
 			}
-			rmdir($targetPath);
+			rmdir($modelPath);
 		}
 
 		$archiveUrl = $this->getArchiveUrl($this->getNeededArchiveRef());
-		$archivePath = __DIR__ . '/../../models.tar.gz';
+
+		$archivePath = $targetPath . '/models.tar.gz';
 		$log('Downloading models archive from ' . $archiveUrl);
 		$log('Saving archive to ' . $archivePath);
 		$timeout = $this->isCLI ? 0 : 480;

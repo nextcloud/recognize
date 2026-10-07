@@ -3,6 +3,7 @@ const fsSync = require('fs')
 const YAML = require('yaml')
 const _ = require('lodash')
 const rules = YAML.parse(fsSync.readFileSync(path.join(__dirname, 'musicnn_rules.yml')).toString('utf8'))
+const MODEL_DIR = process.env.MODEL_DIR
 
 let tf, getPort, StaticServer
 let PUREJS = false
@@ -51,7 +52,7 @@ if (process.argv.length < 3) throw new Error('Incorrect arguments: node classify
  *
  */
 async function main() {
-	const modelPath = path.resolve(__dirname, '..', 'models', 'musicnn')
+	const modelPath = path.resolve(MODEL_DIR, 'musicnn')
 
 	const modelFileName = 'model.json'
 	let modelUrl
