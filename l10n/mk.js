@@ -13,6 +13,7 @@ OC.L10N.register(
     "Audio tagging" : "Означување на звуци",
     "Video tagging" : "Означување на видеа",
     "Reset" : "Ресетирање",
+    "Resource usage" : "Искористување на ресурси",
     "Cat" : "Мачка",
     "Animal" : "Животно",
     "Wildlife" : "Див свет",
