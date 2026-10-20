@@ -16,6 +16,7 @@
 		<file name="tests/stubs/oca_dav_connector_sabre_filesplugin.php"/>
 		<file name="tests/stubs/oca_dav_connector_sabre_principal.php"/>
 		<file name="tests/stubs/oca_exapp.php"/>
+		<file name="tests/stubs/oca_dav_carddav_carddavbackend.php"/>
     </stubs>
     <projectFiles>
         <directory name="lib" />

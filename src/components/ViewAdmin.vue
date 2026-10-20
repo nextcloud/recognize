@@ -88,6 +88,17 @@
 					:title="t('recognize', 'The number of files to process per job run (A job will be scheduled every 5 minutes; For normal operation ~500 or more, in WASM mode ~50 is recommended)')"
 					@update:model-value="onChange" />
 			</p>
+			<p>
+				<NcCheckboxRadioSwitch v-model="settings['faces.contactLinking']"
+					:disabled="!settings['faces.enabled']"
+					type="switch"
+					@update:model-value="onChange">
+					{{ t('recognize', 'Link recognized people to contacts automatically (compares the photos of contacts with the recognized faces once a day; links can be changed in the Photos and Contacts apps)') }}
+				</NcCheckboxRadioSwitch>
+				<NcNoteCard v-if="settings['faces.enabled'] && settings['faces.contactLinking'] && settings['taskprocessing.enabled']" type="info">
+					{{ t('recognize', 'Automatic linking is not available with the TaskProcessing backend, as it cannot analyze contact photos. People can still be linked to contacts by hand.') }}
+				</NcNoteCard>
+			</p>
 		</NcSettingsSection>
 		<NcSettingsSection :name="t('recognize', 'Object detection & landmark recognition')">
 			<template v-if="settings['imagenet.enabled']">
@@ -447,7 +458,7 @@ const TASK_PROCESSING_TASK_TYPES = {
 
 const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'node_binary', 'ffmpeg_binary', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'faces.batchSize', 'imagenet.batchSize', 'landmarks.batchSize', 'movinet.batchSize', 'musicnn.batchSize', 'clusterFaces.status', 'clusterFaces.lastRun', 'nice_binary', 'nice_value', 'concurrency.enabled', 'taskprocessing.enabled']
 
-const BOOLEAN_SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'clusterFaces.status', 'concurrency.enabled', 'taskprocessing.enabled']
+const BOOLEAN_SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'faces.contactLinking', 'musicnn.enabled', 'movinet.enabled', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'clusterFaces.status', 'concurrency.enabled', 'taskprocessing.enabled']
 
 const MAX_RELATIVE_DATE = 1000 * 60 * 60 * 24 * 7 // one week
 

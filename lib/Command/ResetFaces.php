@@ -7,6 +7,7 @@
 declare(strict_types=1);
 namespace OCA\Recognize\Command;
 
+use OCA\Recognize\Db\ContactFaceMapper;
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use Symfony\Component\Console\Command\Command;
@@ -16,11 +17,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class ResetFaces extends Command {
 	private FaceDetectionMapper $faceDetectionMapper;
 	private FaceClusterMapper $clusterMapper;
+	private ContactFaceMapper $contactFaceMapper;
 
-	public function __construct(FaceDetectionMapper $faceDetectionMapper, FaceClusterMapper $clusterMapper) {
+	public function __construct(FaceDetectionMapper $faceDetectionMapper, FaceClusterMapper $clusterMapper, ContactFaceMapper $contactFaceMapper) {
 		parent::__construct();
 		$this->faceDetectionMapper = $faceDetectionMapper;
 		$this->clusterMapper = $clusterMapper;
+		$this->contactFaceMapper = $contactFaceMapper;
 	}
 
 	/**
@@ -45,6 +48,7 @@ final class ResetFaces extends Command {
 		try {
 			$this->clusterMapper->deleteAll();
 			$this->faceDetectionMapper->deleteAll();
+			$this->contactFaceMapper->deleteAll();
 		} catch (\Exception $ex) {
 			$output->writeln('<error>Failed to reset faces</error>');
 			$output->writeln($ex->getMessage());
