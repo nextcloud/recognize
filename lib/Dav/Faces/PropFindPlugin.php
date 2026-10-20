@@ -108,7 +108,7 @@ final class PropFindPlugin extends ServerPlugin {
 				return json_encode([
 					'linkSource' => $cluster->getContactLinkSource(),
 					'contact' => $contact !== null ? $this->contactsService->serializeContact($cluster->getUserId(), $contact) : null,
-				], \JSON_THROW_ON_ERROR);
+				], \JSON_THROW_ON_ERROR | \JSON_INVALID_UTF8_SUBSTITUTE);
 			});
 		}
 

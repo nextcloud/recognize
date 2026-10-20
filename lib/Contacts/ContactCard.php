@@ -81,9 +81,11 @@ final class ContactCard {
 			return $fn;
 		}
 		if (isset($vCard->N)) {
-			$parts = array_filter(array_map(static fn ($part): string => trim((string)$part), $vCard->N->getParts()));
-			if (count($parts) > 0) {
-				return implode(' ', array_reverse($parts));
+			// N holds family name, given name, additional names, prefix and suffix
+			$parts = array_map(static fn ($part): string => trim((string)$part), $vCard->N->getParts());
+			$ordered = array_filter([$parts[3] ?? '', $parts[1] ?? '', $parts[2] ?? '', $parts[0] ?? '', $parts[4] ?? '']);
+			if (count($ordered) > 0) {
+				return implode(' ', $ordered);
 			}
 		}
 		return $this->getUid();
