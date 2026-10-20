@@ -56,11 +56,15 @@ final class ContactsService {
 	}
 
 	/**
+	 * The Contacts app identifies an address book by the last segment of its DAV
+	 * href, so a percent-encoded URI is accepted as well.
+	 *
 	 * @return array{id: int, uri: string, displayName: string, readOnly: bool}|null
 	 */
 	public function findAddressBook(string $userId, string $addressBookUri): ?array {
+		$decodedUri = rawurldecode($addressBookUri);
 		foreach ($this->getAddressBooks($userId) as $book) {
-			if ($book['uri'] === $addressBookUri) {
+			if ($book['uri'] === $addressBookUri || $book['uri'] === $decodedUri) {
 				return $book;
 			}
 		}
@@ -173,8 +177,9 @@ final class ContactsService {
 		if (!$this->appManager->isEnabledForUser('contacts')) {
 			return null;
 		}
+		// The Contacts app knows the address book by the last segment of its DAV href
 		return $this->urlGenerator->linkToRouteAbsolute('contacts.contacts.direct', [
-			'contact' => $contact->getUid() . '~' . $contact->getAddressBookUri(),
+			'contact' => $contact->getUid() . '~' . \Sabre\HTTP\encodePath($contact->getAddressBookUri()),
 		]);
 	}
 

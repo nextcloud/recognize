@@ -80,7 +80,7 @@ final class ContactLinkController extends OCSController {
 	public function getContact(string $addressBook, string $uid): DataResponse {
 		$userId = $this->requireUser();
 		$contact = $this->requireContact($userId, $addressBook, $uid);
-		$clusters = $this->clusterMapper->findByContact($userId, $addressBook, $uid);
+		$clusters = $this->clusterMapper->findByContact($userId, $contact->getAddressBookUri(), $contact->getUid());
 		return new DataResponse([
 			'contact' => $this->contactsService->serializeContact($userId, $contact),
 			'faces' => array_map(fn (FaceCluster $cluster): array => $this->serializeCluster($cluster), $clusters),
@@ -206,6 +206,9 @@ final class ContactLinkController extends OCSController {
 		$userId = $this->requireUser();
 		$detection = $this->requireDetection($userId, $detectionId);
 
+		if (($addressBook === null) !== ($uid === null)) {
+			throw new OCSBadRequestException('Both the address book and the UID of the contact are required');
+		}
 		if ($addressBook !== null && $uid !== null) {
 			$contact = $this->requireContact($userId, $addressBook, $uid);
 		} else {

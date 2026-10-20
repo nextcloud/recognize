@@ -19,6 +19,9 @@ class ContactCardTest extends TestCase {
 		$card = $this->card("BEGIN:VCARD\r\nVERSION:4.0\r\nUID:uid-1\r\nN:Doe;Jane;;;\r\nEND:VCARD\r\n");
 		self::assertSame('Jane Doe', $card->getDisplayName());
 
+		$card = $this->card("BEGIN:VCARD\r\nVERSION:4.0\r\nUID:uid-1\r\nN:Doe;John;Quincy;Dr.;Jr.\r\nEND:VCARD\r\n");
+		self::assertSame('Dr. John Quincy Doe Jr.', $card->getDisplayName());
+
 		$card = $this->card("BEGIN:VCARD\r\nVERSION:4.0\r\nUID:uid-1\r\nFN:Jane Q. Doe\r\nN:Doe;Jane;;;\r\nEND:VCARD\r\n");
 		self::assertSame('Jane Q. Doe', $card->getDisplayName());
 	}
