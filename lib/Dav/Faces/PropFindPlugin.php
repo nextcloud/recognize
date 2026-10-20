@@ -13,6 +13,8 @@ use OCA\DAV\Connector\Sabre\File;
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Db\FaceDetectionWithTitle;
+use OCA\Recognize\Service\ContactLinkService;
+use OCA\Recognize\Service\ContactsService;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 use OCP\AppFramework\Services\IAppConfig;
@@ -36,6 +38,8 @@ final class PropFindPlugin extends ServerPlugin {
 	public const REALPATH_PROPERTYNAME = '{http://nextcloud.org/ns}realpath';
 	public const NBITEMS_PROPERTYNAME = '{http://nextcloud.org/ns}nbItems';
 	public const FACE_PREVIEW_IMAGE_PROPERTYNAME = '{http://nextcloud.org/ns}face-preview-image';
+	public const FACE_CLUSTER_ID_PROPERTYNAME = '{http://nextcloud.org/ns}face-cluster-id';
+	public const FACE_CONTACT_PROPERTYNAME = '{http://nextcloud.org/ns}face-contact';
 
 	public const API_KEY_TIMEOUT = 60 * 60 * 24;
 
@@ -49,6 +53,8 @@ final class PropFindPlugin extends ServerPlugin {
 		private LoggerInterface $logger,
 		private ITimeFactory $timeFactory,
 		private IAppConfig $appConfig,
+		private ContactLinkService $contactLinkService,
+		private ContactsService $contactsService,
 	) {
 	}
 
@@ -95,6 +101,15 @@ final class PropFindPlugin extends ServerPlugin {
 
 		if ($node instanceof FaceRoot) {
 			$propFind->handle(self::FACE_PREVIEW_IMAGE_PROPERTYNAME, fn () => $node->getPreviewImage());
+			$propFind->handle(self::FACE_CLUSTER_ID_PROPERTYNAME, fn () => $node->getCluster()->getId());
+			$propFind->handle(self::FACE_CONTACT_PROPERTYNAME, function () use ($node): string {
+				$cluster = $node->getCluster();
+				$contact = $this->contactLinkService->getLinkedContact($cluster);
+				return json_encode([
+					'linkSource' => $cluster->getContactLinkSource(),
+					'contact' => $contact !== null ? $this->contactsService->serializeContact($cluster->getUserId(), $contact) : null,
+				], \JSON_THROW_ON_ERROR);
+			});
 		}
 
 		if ($node instanceof File) {

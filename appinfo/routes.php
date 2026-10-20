@@ -42,4 +42,15 @@ return [
 		['name' => 'admin#get_setting', 'url' => '/admin/settings/{setting}', 'verb' => 'GET'],
 		['name' => 'admin#set_setting', 'url' => '/admin/settings/{setting}', 'verb' => 'PUT'],
 	],
+	'ocs' => [
+		// Links between people (face clusters) and contacts, used by the Photos and Contacts apps
+		['name' => 'contact_link#searchContacts', 'url' => '/api/v1/contacts', 'verb' => 'GET'],
+		['name' => 'contact_link#getContact', 'url' => '/api/v1/contacts/{addressBook}/{uid}', 'verb' => 'GET'],
+		['name' => 'contact_link#listFaces', 'url' => '/api/v1/faces', 'verb' => 'GET'],
+		['name' => 'contact_link#listDetections', 'url' => '/api/v1/faces/{clusterId}/detections', 'verb' => 'GET', 'requirements' => ['clusterId' => '\d+']],
+		['name' => 'contact_link#linkFace', 'url' => '/api/v1/faces/{clusterId}/contact', 'verb' => 'PUT', 'requirements' => ['clusterId' => '\d+']],
+		['name' => 'contact_link#unlinkFace', 'url' => '/api/v1/faces/{clusterId}/contact', 'verb' => 'DELETE', 'requirements' => ['clusterId' => '\d+']],
+		['name' => 'contact_link#getDetectionPreview', 'url' => '/api/v1/faces/detections/{detectionId}/preview', 'verb' => 'GET', 'requirements' => ['detectionId' => '\d+']],
+		['name' => 'contact_link#setContactPhoto', 'url' => '/api/v1/faces/detections/{detectionId}/contact-photo', 'verb' => 'POST', 'requirements' => ['detectionId' => '\d+']],
+	],
 ];

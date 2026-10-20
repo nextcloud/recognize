@@ -17,6 +17,7 @@ use OCA\Recognize\BackgroundJobs\ClassifyMusicnnJob;
 use OCA\Recognize\BackgroundJobs\ClusterFacesJob;
 use OCA\Recognize\BackgroundJobs\SchedulerJob;
 use OCA\Recognize\BackgroundJobs\StorageCrawlJob;
+use OCA\Recognize\Db\ContactFaceMapper;
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Service\QueueService;
@@ -43,9 +44,11 @@ final class AdminController extends Controller {
 	private IAppConfig $config;
 	private FaceDetectionMapper $faceDetections;
 	private IBinaryFinder $binaryFinder;
+	private ContactFaceMapper $contactFaceMapper;
 
-	public function __construct(string $appName, IRequest $request, TagManager $tagManager, IJobList $jobList, SettingsService $settingsService, QueueService $queue, FaceClusterMapper $clusterMapper, FaceDetectionMapper $detectionMapper, IAppConfig $config, FaceDetectionMapper $faceDetections, IBinaryFinder $binaryFinder) {
+	public function __construct(string $appName, IRequest $request, TagManager $tagManager, IJobList $jobList, SettingsService $settingsService, QueueService $queue, FaceClusterMapper $clusterMapper, FaceDetectionMapper $detectionMapper, IAppConfig $config, FaceDetectionMapper $faceDetections, IBinaryFinder $binaryFinder, ContactFaceMapper $contactFaceMapper) {
 		parent::__construct($appName, $request);
+		$this->contactFaceMapper = $contactFaceMapper;
 		$this->tagManager = $tagManager;
 		$this->jobList = $jobList;
 		$this->settingsService = $settingsService;
@@ -89,6 +92,7 @@ final class AdminController extends Controller {
 		try {
 			$this->clusterMapper->deleteAll();
 			$this->detectionMapper->deleteAll();
+			$this->contactFaceMapper->deleteAll();
 		} catch (Exception $e) {
 			return new JSONResponse([], Http::STATUS_INTERNAL_SERVER_ERROR);
 		}

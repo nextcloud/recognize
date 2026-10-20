@@ -89,6 +89,70 @@ final class FaceClusterMapper extends QBMapper {
 		return $this->findEntities($qb);
 	}
 
+	/**
+	 * Clusters of a user that are linked to a contact.
+	 *
+	 * @throws \OCP\DB\Exception
+	 * @return list<\OCA\Recognize\Db\FaceCluster>
+	 */
+	public function findLinkedByUserId(string $userId): array {
+		$qb = $this->db->getQueryBuilder();
+		$qb->select(FaceCluster::$columns)
+			->from('recognize_face_clusters')
+			->where($qb->expr()->eq('user_id', $qb->createPositionalParameter($userId)))
+			->andWhere($qb->expr()->isNotNull('contact_uid'));
+		return $this->findEntities($qb);
+	}
+
+	/**
+	 * Clusters of a user that are linked to the given contact.
+	 *
+	 * @throws \OCP\DB\Exception
+	 * @return list<\OCA\Recognize\Db\FaceCluster>
+	 */
+	public function findByContact(string $userId, string $addressBook, string $contactUid): array {
+		$qb = $this->db->getQueryBuilder();
+		$qb->select(FaceCluster::$columns)
+			->from('recognize_face_clusters')
+			->where($qb->expr()->eq('user_id', $qb->createPositionalParameter($userId)))
+			->andWhere($qb->expr()->eq('contact_address_book', $qb->createPositionalParameter($addressBook)))
+			->andWhere($qb->expr()->eq('contact_uid', $qb->createPositionalParameter($contactUid)));
+		return $this->findEntities($qb);
+	}
+
+	/**
+	 * Clusters of a user that may still be linked to a contact automatically: they
+	 * hold at least one detection, are not linked, and the user never decided on a
+	 * link for them.
+	 *
+	 * @throws \OCP\DB\Exception
+	 * @return list<\OCA\Recognize\Db\FaceCluster>
+	 */
+	public function findAutoLinkCandidatesByUserId(string $userId): array {
+		$qb = $this->db->getQueryBuilder();
+		$columns = array_map(fn ($c) => 'fc.'.$c, FaceCluster::$columns);
+		$qb->selectDistinct($columns)
+			->from('recognize_face_clusters', 'fc')
+			->innerJoin('fc', 'recognize_face_detections', 'fd', 'fc.id = fd.cluster_id')
+			->where($qb->expr()->eq('fc.user_id', $qb->createPositionalParameter($userId)))
+			->andWhere($qb->expr()->isNull('fc.contact_uid'))
+			->andWhere($qb->expr()->isNull('fc.contact_link_source'));
+		return $this->findEntities($qb);
+	}
+
+	/**
+	 * @return list<string>
+	 * @throws \OCP\DB\Exception
+	 */
+	public function findUserIds(): array {
+		$qb = $this->db->getQueryBuilder();
+		$qb->selectDistinct('user_id')
+			->from('recognize_face_clusters');
+		/** @var list<string> */
+		$list = $qb->executeQuery()->fetchAll(\PDO::FETCH_COLUMN);
+		return $list;
+	}
+
 	public function delete(Entity $entity): Entity {
 		/** @var FaceCluster $entity */
 		$qb = $this->db->getQueryBuilder();

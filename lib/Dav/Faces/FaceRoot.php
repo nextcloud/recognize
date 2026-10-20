@@ -50,6 +50,10 @@ final class FaceRoot implements ICollection, IMoveTarget {
 	/**
 	 * @inheritDoc
 	 */
+	public function getCluster(): FaceCluster {
+		return $this->cluster;
+	}
+
 	public function getName(): string {
 		return $this->cluster->getTitle() !== '' ? $this->cluster->getTitle() : ''.$this->cluster->getId();
 	}
