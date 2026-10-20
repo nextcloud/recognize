@@ -126,6 +126,12 @@ Go to "Apps" in your nextcloud, search for "recognize" and click install.
 
 Any configuration is done in Settings/Recognize of your Nextcloud instance.
 
+#### Linking people to contacts
+
+Recognized people can be linked to the contacts of the Contacts app. Once a day, recognize compares the photos of all contacts that are not linked yet with the recognized people and links a person when exactly one person matches the photo; linked people that have no name yet take the name of the contact. The linked contact is shown on the page of the person in the Photos app, where the link can also be made, changed or removed by hand, and a photo of the person can be used as the photo of the contact. In the Contacts app, the photo of a contact can be picked from the recognized faces.
+
+Automatic linking can be turned off in the admin settings and runs on demand with `occ recognize:link-contacts`. It needs the built-in face recognition; with the TaskProcessing backend, people can only be linked by hand.
+
 #### Ignoring directories
 
 If you want path/to/your/folder/* to be excluded from image recognition, add a file `path/to/your/folder/.noimage`. If you want to exclude it from music genre recognition, add a file `path/to/your/folder/.nomusic`. If you want to exclude it from video recognition, add a file `path/to/your/folder/.novideo`. If you want to exclude it from all recognition, add a file `path/to/your/folder/.nomedia`.
