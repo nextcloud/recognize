@@ -265,8 +265,8 @@ final class ContactLinkService {
 
 		$side = (int)round(max($faceWidth, $faceHeight) * (1 + 2 * self::CROP_MARGIN));
 		$side = max(1, min($side, $width, $height));
-		$left = (int)round(min(max($centerX - $side / 2, 0), $width - $side));
-		$top = (int)round(min(max($centerY - $side / 2, 0), $height - $side));
+		$left = max(0, min((int)round($centerX - $side / 2), $width - $side));
+		$top = max(0, min((int)round($centerY - $side / 2), $height - $side));
 
 		$cropped = imagecrop($image, ['x' => $left, 'y' => $top, 'width' => $side, 'height' => $side]);
 		imagedestroy($image);
