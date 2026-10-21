@@ -211,7 +211,7 @@ final class FsActionMapper extends QBMapper {
 	 */
 	public function insertDeletion(int $storageId, int $nodeId): FsCreation|FsDeletion|FsMove|FsAccessUpdate {
 		try {
-			$deletion = $this->findByNodeId(FsDeletion::class, $nodeId);
+			$deletion = $this->findByStorageIdAndRootId(FsDeletion::class, $storageId, $nodeId);
 		} catch (DoesNotExistException $e) {
 			$deletion = new FsDeletion();
 			$deletion->setStorageId($storageId);
