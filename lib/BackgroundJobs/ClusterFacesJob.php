@@ -7,6 +7,7 @@
 declare(strict_types=1);
 namespace OCA\Recognize\BackgroundJobs;
 
+use OCA\Recognize\Service\ContactLinkService;
 use OCA\Recognize\Service\FaceClusterAnalyzer;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\SettingsService;
@@ -20,13 +21,15 @@ final class ClusterFacesJob extends QueuedJob {
 	private IJobList $jobList;
 	private LoggerInterface $logger;
 	private SettingsService $settingsService;
+	private ContactLinkService $contactLinkService;
 
-	public function __construct(ITimeFactory $time, Logger $logger, IJobList $jobList, FaceClusterAnalyzer $clusterAnalyzer, SettingsService $settingsService) {
+	public function __construct(ITimeFactory $time, Logger $logger, IJobList $jobList, FaceClusterAnalyzer $clusterAnalyzer, SettingsService $settingsService, ContactLinkService $contactLinkService) {
 		parent::__construct($time);
 		$this->logger = $logger;
 		$this->jobList = $jobList;
 		$this->clusterAnalyzer = $clusterAnalyzer;
 		$this->settingsService = $settingsService;
+		$this->contactLinkService = $contactLinkService;
 	}
 
 	/**
@@ -47,6 +50,9 @@ final class ClusterFacesJob extends QueuedJob {
 				}
 			}
 			$this->clusterAnalyzer->calculateClusters($userId, $batchSize);
+			if ($this->contactLinkService->isAutoLinkingAvailable()) {
+				$this->jobList->add(LinkContactsJob::class, ['userId' => $userId]);
+			}
 		} catch (\Throwable $e) {
 			$this->settingsService->setSetting('clusterFaces.status', 'false');
 			$this->logger->error('Failed to calculate face clusters', ['exception' => $e]);

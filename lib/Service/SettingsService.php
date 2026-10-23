@@ -36,6 +36,7 @@ final class SettingsService {
 		'imagenet.enabled' => 'false',
 		'landmarks.enabled' => 'false',
 		'faces.enabled' => 'false',
+		'faces.contactLinking' => 'true',
 		'musicnn.enabled' => 'false',
 		'movinet.enabled' => 'false',
 		'taskprocessing.enabled' => '',

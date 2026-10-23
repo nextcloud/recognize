@@ -158,44 +158,10 @@ abstract class Classifier {
 
 		$this->logger->debug('Classifying '.var_export($paths, true));
 
-		$command = [
-			$this->config->getAppValueString('node_binary', lazy: true),
-			dirname(__DIR__, 2) . '/src/classifier_'.$model.'.js',
-			'-'
-		];
-
-		if (trim($this->config->getAppValueString('nice_binary', '', lazy: true)) !== '') {
-			$command = [
-				$this->config->getAppValueString('nice_binary', lazy: true),
-				"-" . $this->config->getAppValueString('nice_value', '0', lazy: true),
-				...$command,
-			];
-		}
-
-		$this->logger->debug('Running '.var_export($command, true));
-
-		$proc = new Process($command, __DIR__);
-		$env = [];
-		if ($this->config->getAppValueString('tensorflow.gpu', 'false') === 'true') {
-			$env['RECOGNIZE_GPU'] = 'true';
-		}
-		if ($this->config->getAppValueString('tensorflow.purejs', 'false', lazy: true) === 'true') {
-			$env['RECOGNIZE_PUREJS'] = 'true';
-		}
-		// Set cores
-		$cores = $this->config->getAppValueString('tensorflow.cores', '0');
-		if ($cores !== '0') {
-			$env['RECOGNIZE_CORES'] = $cores;
-		}
-		$proc->setEnv($env);
-		$proc->setTimeout(count($paths) * $timeout);
-		$proc->setInput(implode("\n", $paths));
+		$proc = $this->createClassifierProcess($model, $paths, $timeout);
 		try {
 			$proc->start();
-
-			if ((int)$cores !== 0) {
-				@exec('taskset -cp ' . implode(',', range(0, (int)$cores, 1)) . ' ' . ((string)$proc->getPid()));
-			}
+			$this->pinToConfiguredCores($proc);
 
 			$i = 0;
 			$errOut = '';
@@ -258,6 +224,102 @@ abstract class Classifier {
 			$this->cleanUpTmpFiles();
 			$this->logger->warning($proc->getErrorOutput());
 			throw new \ErrorException('Classifier process could not be started');
+		}
+	}
+
+	/**
+	 * Run the classifier of a model on local image files that are not part of the
+	 * queue, such as images that are not stored in Nextcloud at all.
+	 *
+	 * @param string $model
+	 * @param list<string> $paths Absolute paths of the images
+	 * @param int $timeout Seconds granted per image
+	 * @return list<mixed> The decoded result for each path, in the order of the paths
+	 * @throws \ErrorException|\RuntimeException
+	 */
+	public function classifyLocalFiles(string $model, array $paths, int $timeout): array {
+		if (count($paths) === 0) {
+			return [];
+		}
+		$this->logger->debug('Classifying local files '.var_export($paths, true));
+		$proc = $this->createClassifierProcess($model, $paths, $timeout);
+		try {
+			$proc->start();
+			$this->pinToConfiguredCores($proc);
+			$proc->wait();
+		} catch (ProcessTimedOutException $e) {
+			$this->logger->warning($proc->getErrorOutput());
+			throw new \RuntimeException('Classifier process timeout');
+		} catch (RuntimeException $e) {
+			$this->logger->warning($proc->getErrorOutput());
+			throw new \ErrorException('Classifier process could not be started');
+		}
+		$this->logger->debug('Classifier process output: ' . $proc->getErrorOutput());
+
+		$results = [];
+		foreach (explode("\n", $proc->getOutput()) as $line) {
+			if (trim($line) === '') {
+				continue;
+			}
+			try {
+				/** @var mixed $decoded */
+				$decoded = json_decode($line, true, 512, JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_IGNORE);
+				/** @psalm-suppress MixedAssignment */
+				$results[] = $decoded;
+			} catch (\JsonException $e) {
+				$this->logger->warning('Classifier process emitted invalid JSON: ' . $line, ['exception' => $e]);
+			}
+		}
+		if (count($results) !== count($paths)) {
+			$this->logger->warning('Classifier process output: '.$proc->getErrorOutput());
+			throw new \ErrorException('Classifier process error');
+		}
+		return $results;
+	}
+
+	/**
+	 * @param list<string> $paths
+	 */
+	private function createClassifierProcess(string $model, array $paths, int $timeout): Process {
+		$command = [
+			$this->config->getAppValueString('node_binary', lazy: true),
+			dirname(__DIR__, 2) . '/src/classifier_'.$model.'.js',
+			'-'
+		];
+
+		if (trim($this->config->getAppValueString('nice_binary', '', lazy: true)) !== '') {
+			$command = [
+				$this->config->getAppValueString('nice_binary', lazy: true),
+				"-" . $this->config->getAppValueString('nice_value', '0', lazy: true),
+				...$command,
+			];
+		}
+
+		$this->logger->debug('Running '.var_export($command, true));
+
+		$proc = new Process($command, __DIR__);
+		$env = [];
+		if ($this->config->getAppValueString('tensorflow.gpu', 'false') === 'true') {
+			$env['RECOGNIZE_GPU'] = 'true';
+		}
+		if ($this->config->getAppValueString('tensorflow.purejs', 'false', lazy: true) === 'true') {
+			$env['RECOGNIZE_PUREJS'] = 'true';
+		}
+		// Set cores
+		$cores = $this->config->getAppValueString('tensorflow.cores', '0');
+		if ($cores !== '0') {
+			$env['RECOGNIZE_CORES'] = $cores;
+		}
+		$proc->setEnv($env);
+		$proc->setTimeout(count($paths) * $timeout);
+		$proc->setInput(implode("\n", $paths));
+		return $proc;
+	}
+
+	private function pinToConfiguredCores(Process $proc): void {
+		$cores = (int)$this->config->getAppValueString('tensorflow.cores', '0');
+		if ($cores !== 0) {
+			@exec('taskset -cp ' . implode(',', range(0, $cores, 1)) . ' ' . ((string)$proc->getPid()));
 		}
 	}
 
