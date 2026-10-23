@@ -1,6 +1,7 @@
 const path = require('path')
 const fsSync = require('fs')
 const _ = require('lodash')
+const MODEL_DIR = process.env.MODEL_DIR
 
 let tf, getPort, StaticServer
 let PUREJS = false
@@ -33,7 +34,7 @@ if (process.argv.length < 3) throw new Error('Incorrect arguments: node classify
  *
  */
 async function main() {
-	const modelPath = path.resolve(__dirname, '..', 'models', 'movinet-a3')
+	const modelPath = path.resolve(MODEL_DIR, 'movinet-a3')
 
 	const modelFileName = 'model.json'
 	let modelUrl

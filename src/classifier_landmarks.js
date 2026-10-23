@@ -9,6 +9,7 @@ const LABELS = {
 	landmarks_south_america: require('./landmarks/south_america.json').name,
 	landmarks_oceania: require('./landmarks/oceania.json').name,
 }
+const MODEL_DIR = process.env.MODEL_DIR
 
 let tf, getPort, StaticServer
 let PUREJS = false
@@ -48,7 +49,7 @@ if (process.argv.length < 3) throw new Error('Incorrect arguments: node classify
  * @param paths
  */
 async function main(modelName, imgSize, minInput, paths) {
-	const modelPath = path.resolve(__dirname, '..', 'models', modelName)
+	const modelPath = path.resolve(MODEL_DIR, modelName)
 
 	const modelFileName = 'model.json'
 	let modelUrl
