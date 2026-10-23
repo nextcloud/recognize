@@ -1,4 +1,5 @@
 { "translations": {
+    "Recognize" : "Recognize",
     "Categories" : "Categori",
     "Images" : "Imagini",
     "Videos" : "Fișiere video",
@@ -7,6 +8,8 @@
     "never" : "niciodată",
     "Status" : "Stare",
     "Reset" : "Resetare",
+    "Resource usage" : "Utilizarea resurselor",
+    "Cat" : "Pisică",
     "Architecture" : "Arhitectura",
     "Building" : "Clădire",
     "Farm" : "Fermă",
@@ -28,6 +31,7 @@
     "Pizza" : "Pizza",
     "Info" : "Info",
     "Document" : "Document",
+    "Bucket" : "Bucket",
     "Event" : "Eveniment",
     "Gallery" : "Galerie",
     "Park" : "Parc"

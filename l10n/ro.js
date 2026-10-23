@@ -1,6 +1,7 @@
 OC.L10N.register(
     "recognize",
     {
+    "Recognize" : "Recognize",
     "Categories" : "Categori",
     "Images" : "Imagini",
     "Videos" : "Fișiere video",
@@ -9,6 +10,8 @@ OC.L10N.register(
     "never" : "niciodată",
     "Status" : "Stare",
     "Reset" : "Resetare",
+    "Resource usage" : "Utilizarea resurselor",
+    "Cat" : "Pisică",
     "Architecture" : "Arhitectura",
     "Building" : "Clădire",
     "Farm" : "Fermă",
@@ -30,6 +33,7 @@ OC.L10N.register(
     "Pizza" : "Pizza",
     "Info" : "Info",
     "Document" : "Document",
+    "Bucket" : "Bucket",
     "Event" : "Eveniment",
     "Gallery" : "Galerie",
     "Park" : "Parc"
