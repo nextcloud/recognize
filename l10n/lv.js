@@ -25,6 +25,7 @@ OC.L10N.register(
     "Music" : "Mūzika",
     "Office" : "Birojs",
     "Car" : "Automašīna",
+    "Display" : "Attēlojums",
     "Bike" : "Velosipēds",
     "Camping" : "Kempings",
     "Barbecue" : "Bārbekjū",
