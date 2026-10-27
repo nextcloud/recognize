@@ -96,6 +96,7 @@ The app does not send any sensitive data to cloud providers or similar services.
 	</dependencies>
 	<background-jobs>
 		<job>OCA\Recognize\BackgroundJobs\MaintenanceJob</job>
+		<job>OCA\Recognize\BackgroundJobs\ScheduleLinkContactsJob</job>
 	</background-jobs>
 
 	<repair-steps>
@@ -121,6 +122,7 @@ The app does not send any sensitive data to cloud providers or similar services.
 		<command>OCA\Recognize\Command\DownloadModels</command>
 		<command>OCA\Recognize\Command\Classify</command>
 		<command>OCA\Recognize\Command\ClusterFaces</command>
+		<command>OCA\Recognize\Command\LinkContacts</command>
 	</commands>
 
 	<settings>
