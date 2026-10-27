@@ -497,6 +497,13 @@ jobs:
           sudo docker image prune --all --force || true
           echo "disk after cleanup: $(df -h / | awk 'NR==2 {print $4" free ("$5" used)"}')"
 
+      - name: Checkout app_api
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          path: apps/app_api
+          repository: nextcloud/app_api
+          ref: ${{ matrix.server-versions == 'master' && 'main' || matrix.server-versions }}
+
       - name: Enable app_api
         run: ./occ app:enable -vvv -f app_api
 
@@ -635,6 +642,9 @@ jobs:
 
       - name: Register ExApp with app_api
         if: steps.db-cache.outputs.cache-hit != 'true'
+        # --wait-finish blocks forever if the ExApp never comes up; fail fast so
+        # the "Show ExApp logs" step can tell us why.
+        timeout-minutes: 15
         run: |
           ./occ app_api:daemon:register --net host manual_install "Manual Install" manual-install http localhost http://localhost:8080
           ./occ app_api:app:register recognize_backend manual_install --json-info "{\"appid\":\"recognize_backend\",\"name\":\"Recognize Backend\",\"daemon_config_name\":\"manual_install\",\"version\":\"${{ steps.backendinfo.outputs.result }}\",\"secret\":\"12345\",\"port\":9031,\"scopes\":[\"TASK_PROCESSING\",\"FILES\"]}" --force-scopes --wait-finish
