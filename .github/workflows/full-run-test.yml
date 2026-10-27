@@ -361,10 +361,10 @@ jobs:
         run: |
           # onnxruntime-gpu needs CUDA libs at import time; swap in the CPU build for the runner
           sed -i 's/^onnxruntime-gpu.*/onnxruntime/' requirements.txt
-          # The default PyPI torch wheels bundle ~5GB of NVIDIA CUDA libraries and
-          # blow up the runner disk. Install the CPU-only build first so the torch
-          # constraints in requirements.txt are already satisfied.
-          pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision torchaudio
+          # requirements.txt pins the CUDA torch builds (+cu128 from the cu128 index),
+          # which pull in ~5GB of NVIDIA libraries and blow up the runner disk.
+          # Rewrite the pins to the matching CPU-only builds.
+          sed -i -e 's#/whl/cu128#/whl/cpu#' -e 's/+cu128$/+cpu/' requirements.txt
           pip install -r requirements.txt
 
       - name: Cache recognize_backend models
