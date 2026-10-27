@@ -28,7 +28,7 @@ final class ClusterFacesJob extends QueuedJob {
 	public const LINEAR_BATCH_SIZE_PER_BYTE = 5_000 / 1_200_000_000;
 	// Share of the free memory we allow clustering to use
 	public const MEMORY_HEADROOM = 0.7;
-	// Seconds to wait before retrying when another ClusterFacesJob for the same user is running
+	// Seconds to wait before retrying when another ClusterFacesJob for the same user is running or all slots are taken
 	public const RETRY_DELAY = 10 * 60;
 
 	private FaceClusterAnalyzer $clusterAnalyzer;
@@ -55,9 +55,9 @@ final class ClusterFacesJob extends QueuedJob {
 		// QueuedJob removes itself from the job list before running, so new face detections
 		// can schedule another ClusterFacesJob for this user while this one is still running.
 		// Make sure only one runs per user at a time; the lock is released on shutdown even after a fatal error.
-		$lockKey = 'recognize/cluster-faces/' . $userId;
+		$userLockKey = 'recognize/cluster-faces/' . $userId;
 		try {
-			$this->lockingProvider->acquireLock($lockKey, ILockingProvider::LOCK_EXCLUSIVE);
+			$this->lockingProvider->acquireLock($userLockKey, ILockingProvider::LOCK_EXCLUSIVE);
 		} catch (LockedException $e) {
 			$this->logger->debug('ClusterFacesJob for user ' . $userId . ' is already running, rescheduling');
 			// Re-add the job so that detections added after the running job has fetched its batch are not left behind,
@@ -66,14 +66,49 @@ final class ClusterFacesJob extends QueuedJob {
 			return;
 		}
 
+		// Clustering is memory hungry, so also limit how many users are clustered at the same time
+		$slotLockKey = $this->acquireSlot();
+		if ($slotLockKey === null) {
+			$this->lockingProvider->releaseLock($userLockKey, ILockingProvider::LOCK_EXCLUSIVE);
+			$this->logger->debug('Maximum number of concurrent ClusterFacesJobs reached, rescheduling job for user ' . $userId);
+			$this->jobList->scheduleAfter(self::class, $this->time->getTime() + self::RETRY_DELAY, $argument);
+			return;
+		}
+
+		$moreDetectionsLeft = false;
 		try {
-			$this->clusterAnalyzer->calculateClusters($userId, self::getBatchSize());
+			$moreDetectionsLeft = $this->clusterAnalyzer->calculateClusters($userId, self::getBatchSize());
 		} catch (\Throwable $e) {
 			$this->settingsService->setSetting('clusterFaces.status', 'false');
 			$this->logger->error('Failed to calculate face clusters', ['exception' => $e]);
 		} finally {
-			$this->lockingProvider->releaseLock($lockKey, ILockingProvider::LOCK_EXCLUSIVE);
+			$this->lockingProvider->releaseLock($slotLockKey, ILockingProvider::LOCK_EXCLUSIVE);
+			$this->lockingProvider->releaseLock($userLockKey, ILockingProvider::LOCK_EXCLUSIVE);
 		}
+
+		if ($moreDetectionsLeft) {
+			// Process the next batch right away instead of waiting for MaintenanceJob
+			$this->jobList->add(self::class, $argument);
+		}
+	}
+
+	/**
+	 * Try to acquire one of the clusterFaces.concurrency global slots
+	 *
+	 * @return string|null The key of the acquired slot lock or null if all slots are taken
+	 */
+	private function acquireSlot(): ?string {
+		$concurrency = max(1, (int)$this->settingsService->getSetting('clusterFaces.concurrency'));
+		for ($i = 0; $i < $concurrency; $i++) {
+			$slotLockKey = 'recognize/cluster-faces-slot/' . $i;
+			try {
+				$this->lockingProvider->acquireLock($slotLockKey, ILockingProvider::LOCK_EXCLUSIVE);
+				return $slotLockKey;
+			} catch (LockedException $e) {
+				continue;
+			}
+		}
+		return null;
 	}
 
 	/**

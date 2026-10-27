@@ -52,6 +52,7 @@ final class SettingsService {
 		'nice_binary' => '',
 		'nice_value' => '0',
 		'concurrency.enabled' => 'false',
+		'clusterFaces.concurrency' => '1',
 		'ffmpeg_binary' => '',
 	];
 
@@ -86,7 +87,8 @@ final class SettingsService {
 		'landmarks.batchSize',
 		'movinet.batchSize',
 		'musicnn.batchSize',
-		'concurrency.enabled'
+		'concurrency.enabled',
+		'clusterFaces.concurrency',
 	];
 
 	private IAppConfig $config;
