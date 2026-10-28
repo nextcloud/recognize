@@ -38,6 +38,33 @@
 				</p>
 			</template>
 		</NcSettingsSection>
+		<NcSettingsSection :name="t('recognize', 'How Recognize works')"
+			:description="t('recognize', 'Files go through several stages before tags or people show up. The status boxes in the sections below refer to these stages.')">
+			<ol class="recognize-steps">
+				<li>
+					<strong>{{ t('recognize', 'Queued files') }}</strong><br>
+					{{ t('recognize', 'When a file is uploaded or changed, Recognize adds it to the queue of each enabled classifier that handles its file type (images, videos or audio). Files that already existed when you enabled a classifier are added by a crawl that runs in the background once. The number of queued files is the number of files waiting to be classified.') }}
+				</li>
+				<li>
+					<strong>{{ t('recognize', 'Background jobs') }}</strong><br>
+					{{ t('recognize', 'For each classifier and storage with queued files, Recognize schedules a Nextcloud background job. Every time cron runs, these jobs take a batch of files from the queue. The job removes itself once its queue is empty, so "Scheduled background jobs" should be above zero whenever files are queued.') }}
+				</li>
+				<li>
+					<strong>{{ t('recognize', 'Classification') }}</strong><br>
+					<template v-if="settings['taskprocessing.enabled']">
+						{{ t('recognize', 'In TaskProcessing mode, the background jobs do not classify files themselves. They hand each file over to Nextcloud TaskProcessing as a task, which is then processed by a TaskProcessing provider such as the recognize_backend ExApp. The "TaskProcessing tasks" numbers show how many of these tasks are waiting or running. Once a task finishes, Recognize stores its results.') }}
+					</template>
+					<template v-else>
+						{{ t('recognize', 'The background jobs run the machine learning models locally, using Node.js and TensorFlow, on the batch of files they took from the queue.') }}
+					</template>
+					{{ t('recognize', 'Object, landmark, music genre and action results are stored as tags on the file. Detected faces are stored separately for the next step.') }}
+				</li>
+				<li>
+					<strong>{{ t('recognize', 'Face clustering') }}</strong><br>
+					{{ t('recognize', 'A separate background job per user groups that user\'s detected faces into people, which then show up in the Photos app. Clustering only starts once a user has at least 120 detected faces. "Faces left to cluster" counts detected faces that have not been assigned to a person yet.') }}
+				</li>
+			</ol>
+		</NcSettingsSection>
 		<NcSettingsSection :name="t('recognize', 'Classifier backend')">
 			<NcNoteCard v-if="recognizeBackendInstalled" type="success">
 				{{ t('recognize', 'The recognize_backend ExApp is installed; TaskProcessing mode is recommended.') }}
@@ -228,25 +255,35 @@
 					@update:model-value="onChange" />
 			</p>
 		</NcSettingsSection>
-		<NcSettingsSection :name="t('recognize', 'Reset')">
-			<p>{{ t('recognize', 'Click the button below to remove all tags from all files that have been classified so far.') }}</p>
-			<button class="button" @click="onReset">
-				{{ t('recognize', 'Reset tags for classified files') }}
-			</button>
-			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'Click the button below to remove all face detections from all files that have been classified so far.') }}</p>
-			<button class="button" @click="onResetFaces">
-				{{ t('recognize', 'Reset faces for classified files') }}
-			</button>
-			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'Click the button below to rescan all files in this instance and add them to the classifier queues.') }}</p>
+		<NcSettingsSection :name="t('recognize', 'Maintenance')"
+			:description="t('recognize', 'None of these actions classify files immediately. Classification always happens in background jobs, as described in \'How Recognize works\' above.')">
+			<h3>{{ t('recognize', 'Rescan all files') }}</h3>
+			<p>{{ t('recognize', 'Adds all supported files of all users to the queues of the enabled classifiers again, so that every file is classified anew, including files that have been classified before. Existing tags and faces are kept.') }}</p>
+			<p>{{ t('recognize', 'This first empties the current queues and removes Recognize\'s pending background jobs. It then schedules a background job that starts one crawl job per storage. Over the next cron runs, the crawl jobs fill the queues and the classifier background jobs work through them. Depending on the number of files, it can take a while until the queue counts go up.') }}</p>
+			<p>{{ t('recognize', 'You do not need this after enabling a classifier, because existing files are then crawled automatically. It is useful if files were missed, or after resetting tags or faces. Terminal equivalent: {command}', { command: 'occ recognize:recrawl' }) }}</p>
 			<button class="button" @click="onRescan">
 				{{ t('recognize', 'Rescan all files') }}
 			</button>
-			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'Click the button below to clear the classifier queues and clear all background jobs. This is useful when you want to do the initial classification using the terminal command.') }}</p>
+
+			<h3>{{ t('recognize', 'Clear queues and background jobs') }}</h3>
+			<p>{{ t('recognize', 'Empties all classifier queues and removes all of Recognize\'s scheduled background jobs (crawling, classification and face clustering), which stops all background processing that is currently pending. Existing tags and faces are kept.') }}</p>
+			<p>{{ t('recognize', 'Files that are uploaded or changed afterwards are queued again as usual. This is useful before running the full classification in the terminal with {command}, so that background jobs do not interfere.', { command: 'occ recognize:classify' }) }}</p>
 			<button class="button" @click="onClearJobs">
 				{{ t('recognize', 'Clear queues and background jobs') }}
+			</button>
+
+			<h3>{{ t('recognize', 'Reset tags') }}</h3>
+			<p>{{ t('recognize', 'Removes the tags that Recognize assigns (objects, landmarks, music genres and actions) from all files that it has classified so far. Faces are not affected.') }}</p>
+			<p>{{ t('recognize', 'Files are not classified again automatically. Use "Rescan all files" afterwards if you want them to be tagged again. The tags themselves remain in the system even if no file uses them anymore; you can delete unused tags with {command}. Terminal equivalent: {command2}', { command: 'occ recognize:cleanup-tags', command2: 'occ recognize:reset-tags' }) }}</p>
+			<button class="button" @click="onReset">
+				{{ t('recognize', 'Reset tags for classified files') }}
+			</button>
+
+			<h3>{{ t('recognize', 'Reset faces') }}</h3>
+			<p>{{ t('recognize', 'Deletes all detected faces and all people (face clusters) of all users, including the names users have given to people. This cannot be undone.') }}</p>
+			<p>{{ t('recognize', 'Faces are not detected again automatically. Use "Rescan all files" afterwards to detect faces again. If you only want to redo the grouping into people and keep the detected faces, use {command} in the terminal instead. Terminal equivalent: {command2}', { command: 'occ recognize:reset-face-clusters', command2: 'occ recognize:reset-faces' }) }}</p>
+			<button class="button" @click="onResetFaces">
+				{{ t('recognize', 'Reset faces for classified files') }}
 			</button>
 		</NcSettingsSection>
 		<NcSettingsSection v-if="!settings['taskprocessing.enabled']" :name="t('recognize', 'Resource usage') ">
@@ -410,16 +447,16 @@
 			<p>{{ t('recognize', 'To download all models preliminary to executing the classification jobs, run the following command on the server terminal.') }}</p>
 			<pre><code>occ recognize:download-models</code></pre>
 			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'To trigger a full classification run in the background, run the following command on the server terminal. (The classification will run in multiple background jobs which can run in parallel.)') }}</p>
+			<p>{{ t('recognize', 'To trigger a full classification run in the background, run the following command on the server terminal. It does the same as the "Rescan all files" button: it only fills the queues via crawl jobs, the actual classification then happens in background jobs, which can run in parallel.') }}</p>
 			<pre><code>occ recognize:recrawl</code></pre>
 			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'To run a full classification run on the terminal, run the following. (The classification will run in sequence inside your terminal; doesn\'t work with task processing mode)') }}</p>
+			<p>{{ t('recognize', 'To run a full classification run on the terminal, run the following. It clears the queues and background jobs first, then classifies all files one after another inside your terminal, without using background jobs. Add --retry to skip tagging files that Recognize has already processed (face detection still runs on all images). (This does not work in TaskProcessing mode.)') }}</p>
 			<pre><code>occ recognize:classify</code></pre>
 			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'Before running a full initial classification run on the terminal, you should stop all background processing that Recognize scheduled upon installation to avoid interference.') }}</p>
+			<p>{{ t('recognize', 'To stop all pending background processing, run the following. It empties all classifier queues and removes the crawl and classification background jobs, like the "Clear queues and background jobs" button, but keeps face clustering jobs.') }}</p>
 			<pre><code>occ recognize:clear-background-jobs</code></pre>
 			<p>&nbsp;</p>
-			<p>{{ t('recognize', 'To run a face clustering run on for each user in the terminal, run the following. Consider adding the parameter --batch-size 10000 for large libraries to avoid PHP memory exhaustion. (The clustering will run in sequence inside your terminal.)') }}</p>
+			<p>{{ t('recognize', 'To group the detected faces of each user into people right away, run the following. Normally this happens automatically in background jobs. The clustering runs one user after another inside your terminal. Consider adding the parameter --batch-size 10000 for large libraries to avoid PHP memory exhaustion.') }}</p>
 			<pre><code>occ recognize:cluster-faces</code></pre>
 			<p>&nbsp;</p>
 			<p>{{ t('recognize', 'To remove all face clusters but keep the raw detected faces run the following on the terminal:') }}</p>
@@ -820,6 +857,20 @@ figure[class^='icon-'] {
 	position: fixed;
 	top: 70px;
 	right: 20px;
+}
+
+#recognize .recognize-steps {
+	list-style: decimal;
+	padding-inline-start: 20px;
+}
+
+#recognize .recognize-steps li {
+	margin-bottom: 8px;
+}
+
+#recognize h3 {
+	margin-top: 20px;
+	font-weight: bold;
 }
 
 #recognize a:link, #recognize a:visited, #recognize a:hover {
