@@ -66,10 +66,11 @@ final class FaceClusterAnalyzer {
 	}
 
 	/**
+	 * @return bool Whether there may be more unclustered detections left for this user that did not fit into this batch
 	 * @throws \OCP\DB\Exception
 	 * @throws \JsonException
 	 */
-	public function calculateClusters(string $userId, int $batchSize = 0): void {
+	public function calculateClusters(string $userId, int $batchSize = 0): bool {
 		$this->logger->debug('ClusterDebug: Retrieving face detections for user ' . $userId);
 
 		if ($batchSize === 0) {
@@ -94,6 +95,7 @@ final class FaceClusterAnalyzer {
 			$this->logger->warning('ClusterDebug: The batch size of ' . $batchSize . ' detections is too small for the ' . count($existingClusters) . ' existing clusters of user ' . $userId . '; loading ' . count($sampledDetections) . ' reference detections instead. Consider raising the PHP memory limit.');
 		}
 
+		$batchFull = false;
 		if ($batchSize > 0) {
 			$rejectedDetections = $this->faceDetections->sampleRejectedDetectionsByUserId($userId, $this->getRejectSampleSize($batchSize), $this->minDetectionSize, $this->minDetectionSize);
 			// Guarantee forward progress even when samples and rejects have eaten the whole
@@ -101,6 +103,7 @@ final class FaceClusterAnalyzer {
 			$freshDetectionFloor = min(500, (int)round($batchSize * (1.0 - self::REFERENCE_SAMPLE_BUDGET_SHARE)));
 			$requestedFreshDetectionCount = max($batchSize - count($rejectedDetections) - count($sampledDetections), $freshDetectionFloor);
 			$freshDetections = $this->faceDetections->findUnclusteredByUserId($userId, $requestedFreshDetectionCount, $this->minDetectionSize, $this->minDetectionSize);
+			$batchFull = count($freshDetections) >= $requestedFreshDetectionCount;
 		} else {
 			$freshDetections = $this->faceDetections->findUnclusteredByUserId($userId, 0, $this->minDetectionSize, $this->minDetectionSize);
 			$rejectedDetections = $this->faceDetections->sampleRejectedDetectionsByUserId($userId, $this->getRejectSampleSize(count($freshDetections)), $this->minDetectionSize, $this->minDetectionSize);
@@ -112,7 +115,7 @@ final class FaceClusterAnalyzer {
 
 		if (count($detections) < $this->minDatasetSize || count($freshDetections) === 0) {
 			$this->logger->debug('ClusterDebug: Not enough face detections found');
-			return;
+			return false;
 		}
 
 		$this->logger->debug('ClusterDebug: Found ' . count($freshDetections) . " fresh detections. Adding " . count($rejectedDetections). " old detections and " . count($sampledDetections). " sampled detections from already existing clusters. Calculating clusters on " . count($detections) . " detections.");
@@ -214,6 +217,7 @@ final class FaceClusterAnalyzer {
 
 		$this->settingsService->setSetting('clusterFaces.status', 'true');
 		$this->settingsService->setSetting('clusterFaces.lastRun', (string)time());
+		return $batchFull;
 	}
 
 	/**

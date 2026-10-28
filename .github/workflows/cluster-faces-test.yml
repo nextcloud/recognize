@@ -497,6 +497,13 @@ jobs:
           sudo docker image prune --all --force || true
           echo "disk after cleanup: $(df -h / | awk 'NR==2 {print $4" free ("$5" used)"}')"
 
+      - name: Checkout app_api
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          path: apps/app_api
+          repository: nextcloud/app_api
+          ref: ${{ matrix.server-versions == 'master' && 'main' || matrix.server-versions }}
+
       - name: Enable app_api
         run: ./occ app:enable -vvv -f app_api
 
@@ -619,10 +626,10 @@ jobs:
           # up the runner disk; swap in the CPU build like the full-run test does.
           sed -i 's/^onnxruntime-gpu.*/onnxruntime/' requirements.txt
           python3 -m pip install --upgrade pip
-          # The default PyPI torch wheels bundle ~5GB of NVIDIA CUDA libraries and
-          # blow up the runner disk. Install the CPU-only build first so the torch
-          # constraints in requirements.txt are already satisfied.
-          python3 -m pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision torchaudio
+          # requirements.txt pins the CUDA torch builds (+cu128 from the cu128 index),
+          # which pull in ~5GB of NVIDIA libraries and blow up the runner disk.
+          # Rewrite the pins to the matching CPU-only builds.
+          sed -i -e 's#/whl/cu128#/whl/cpu#' -e 's/+cu128$/+cpu/' requirements.txt
           python3 -m pip install -r requirements.txt
 
       - name: Run ExApp
@@ -635,6 +642,9 @@ jobs:
 
       - name: Register ExApp with app_api
         if: steps.db-cache.outputs.cache-hit != 'true'
+        # --wait-finish blocks forever if the ExApp never comes up; fail fast so
+        # the "Show ExApp logs" step can tell us why.
+        timeout-minutes: 15
         run: |
           ./occ app_api:daemon:register --net host manual_install "Manual Install" manual-install http localhost http://localhost:8080
           ./occ app_api:app:register recognize_backend manual_install --json-info "{\"appid\":\"recognize_backend\",\"name\":\"Recognize Backend\",\"daemon_config_name\":\"manual_install\",\"version\":\"${{ steps.backendinfo.outputs.result }}\",\"secret\":\"12345\",\"port\":9031,\"scopes\":[\"TASK_PROCESSING\",\"FILES\"]}" --force-scopes --wait-finish
