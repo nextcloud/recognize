@@ -646,12 +646,14 @@
     <MixedArgument>
       <code><![CDATA[$node->getFile()->getFileInfo()]]></code>
       <code><![CDATA[TagsPlugin::FAVORITE_PROPERTYNAME]]></code>
+      <code><![CDATA[TagsPlugin::FAVORITE_PROPERTYNAME]]></code>
     </MixedArgument>
     <PropertyNotSetInConstructor>
       <code><![CDATA[$server]]></code>
     </PropertyNotSetInConstructor>
     <UndefinedClass>
       <code><![CDATA[File]]></code>
+      <code><![CDATA[TagsPlugin]]></code>
       <code><![CDATA[TagsPlugin]]></code>
     </UndefinedClass>
     <UndefinedInterfaceMethod>

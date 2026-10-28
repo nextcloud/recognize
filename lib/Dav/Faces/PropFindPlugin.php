@@ -20,9 +20,12 @@ use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\DB\Exception;
 use OCP\Files\DavUtil;
 use OCP\IPreview;
+use OCP\ITagManager;
+use OCP\ITags;
 use OCP\Security\ICrypto;
 use Psr\Log\LoggerInterface;
 use Sabre\DAV\Exception\Forbidden;
+use Sabre\DAV\ICollection;
 use Sabre\DAV\INode;
 use Sabre\DAV\PropFind;
 use Sabre\DAV\Server;
@@ -41,6 +44,13 @@ final class PropFindPlugin extends ServerPlugin {
 
 	private Server $server;
 
+	/** @var array<int, list<FaceDetectionWithTitle>> */
+	private array $cachedDetections = [];
+	/** @var array<int, bool> */
+	private array $cachedFavorites = [];
+	/** @var array<string, true> */
+	private array $preloadedCollections = [];
+
 	public function __construct(
 		private FaceDetectionMapper $faceDetectionMapper,
 		private IPreview $previewManager,
@@ -49,17 +59,78 @@ final class PropFindPlugin extends ServerPlugin {
 		private LoggerInterface $logger,
 		private ITimeFactory $timeFactory,
 		private IAppConfig $appConfig,
+		private ITagManager $tagManager,
 	) {
 	}
 
 	public function initialize(Server $server): void {
 		$this->server = $server;
 
+		$this->server->on('preloadCollection', $this->preloadCollection(...));
 		$this->server->on('propFind', $this->propFind(...));
 		$this->server->on('beforeMove', $this->beforeMove(...));
 		$this->server->on('beforeMethod:*', $this->beforeMethod(...), 1);
 	}
 
+
+	/**
+	 * Fetches face detections and favorites for all children of a collection in bulk,
+	 * so that propFind doesn't have to query the DB once per child node
+	 */
+	public function preloadCollection(PropFind $propFind, ICollection $collection): void {
+		if (!($collection instanceof UnassignedFacesHome || $collection instanceof FaceRoot)) {
+			return;
+		}
+		$path = $propFind->getPath();
+		if (isset($this->preloadedCollections[$path])) {
+			return;
+		}
+		$wantsDetections = $propFind->getStatus(self::FACE_DETECTIONS_PROPERTYNAME) !== null;
+		$wantsFavorites = $propFind->getStatus(TagsPlugin::FAVORITE_PROPERTYNAME) !== null;
+		if (!$wantsDetections && !$wantsFavorites) {
+			return;
+		}
+		$this->preloadedCollections[$path] = true;
+
+		$fileIds = [];
+		foreach ($collection->getChildren() as $child) {
+			if ($child instanceof FacePhoto) {
+				$fileIds[] = $child->getFaceDetection()->getFileId();
+			}
+		}
+		$fileIds = array_values(array_unique($fileIds));
+		if (count($fileIds) === 0) {
+			return;
+		}
+
+		if ($wantsDetections) {
+			foreach ($fileIds as $fileId) {
+				$this->cachedDetections[$fileId] = [];
+			}
+			foreach ($this->faceDetectionMapper->findByFileIdsWithTitle($fileIds) as $detection) {
+				$this->cachedDetections[$detection->getFileId()][] = $detection;
+			}
+		}
+
+		if ($wantsFavorites) {
+			$tagger = $this->tagManager->load('files');
+			$tags = $tagger?->getTagsForObjects($fileIds);
+			if ($tags === false || $tags === null) {
+				return;
+			}
+			foreach ($fileIds as $fileId) {
+				$this->cachedFavorites[$fileId] = in_array(ITags::TAG_FAVORITE, $tags[$fileId] ?? [], true);
+			}
+		}
+	}
+
+	/**
+	 * @return list<FaceDetectionWithTitle>
+	 * @throws Exception
+	 */
+	private function getDetections(int $fileId): array {
+		return $this->cachedDetections[$fileId] ?? $this->faceDetectionMapper->findByFileIdWithTitle($fileId);
+	}
 
 	public function propFind(PropFind $propFind, INode $node): void {
 		if ($node instanceof FacePhoto) {
@@ -67,7 +138,7 @@ final class PropFindPlugin extends ServerPlugin {
 				return json_encode(
 					array_map(
 						fn (FaceDetectionWithTitle $face) => $face->toArray(),
-						$this->faceDetectionMapper->findByFileIdWithTitle($node->getFile()->getId())
+						$this->getDetections($node->getFile()->getId())
 					)
 				);
 			});
@@ -75,7 +146,7 @@ final class PropFindPlugin extends ServerPlugin {
 			$propFind->handle(self::REALPATH_PROPERTYNAME, fn () => $node->getFile()->getPath());
 			$propFind->handle(FilesPlugin::INTERNAL_FILEID_PROPERTYNAME, fn () => $node->getFile()->getId());
 			$propFind->handle(FilesPlugin::GETETAG_PROPERTYNAME, fn () => $node->getETag());
-			$propFind->handle(TagsPlugin::FAVORITE_PROPERTYNAME, fn () => $node->isFavorite() ? 1 : 0);
+			$propFind->handle(TagsPlugin::FAVORITE_PROPERTYNAME, fn () => ($this->cachedFavorites[$node->getFile()->getId()] ?? $node->isFavorite()) ? 1 : 0);
 			$propFind->handle(FilesPlugin::HAS_PREVIEW_PROPERTYNAME, fn () => json_encode($this->previewManager->isAvailable($node->getFile()->getFileInfo())));
 			$propFind->handle(FilesPlugin::PERMISSIONS_PROPERTYNAME, function () use ($node): string {
 				$permissions = DavUtil::getDavPermissions($node->getFile(), $node->getFile()->getParent());
@@ -102,7 +173,7 @@ final class PropFindPlugin extends ServerPlugin {
 				return json_encode(
 					array_map(
 						fn (FaceDetectionWithTitle $face) => $face->toArray(),
-						$this->faceDetectionMapper->findByFileIdWithTitle($node->getId()),
+						$this->getDetections((int)$node->getId()),
 					)
 				);
 			});

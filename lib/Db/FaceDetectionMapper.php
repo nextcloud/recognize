@@ -205,6 +205,27 @@ final class FaceDetectionMapper extends QBMapper {
 	}
 
 	/**
+	 * @param list<int> $fileIds
+	 * @return list<\OCA\Recognize\Db\FaceDetectionWithTitle>
+	 * @throws \OCP\DB\Exception
+	 */
+	public function findByFileIdsWithTitle(array $fileIds) : array {
+		$entities = [];
+		// Chunk to stay well below SQLite's bound-parameter limit
+		foreach (array_chunk($fileIds, 500) as $chunk) {
+			$qb = $this->db->getQueryBuilder();
+			$qb->select(array_merge(array_map(fn ($col) => 'd.'.$col, FaceDetection::$columns), ['c.title']))
+				->from('recognize_face_detections', 'd')
+				->where($qb->expr()->in('file_id', $qb->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)))
+				->leftJoin('d', 'recognize_face_clusters', 'c', $qb->expr()->eq('d.cluster_id', 'c.id'));
+			/** @var list<\OCA\Recognize\Db\FaceDetectionWithTitle> $chunkEntities */
+			$chunkEntities = $this->findEntities($qb);
+			array_push($entities, ...$chunkEntities);
+		}
+		return $entities;
+	}
+
+	/**
 	 * @return list<string>
 	 * @throws \OCP\DB\Exception
 	 */
