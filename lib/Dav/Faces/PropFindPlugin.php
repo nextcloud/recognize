@@ -20,6 +20,7 @@ use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\DB\Exception;
 use OCP\Files\DavUtil;
 use OCP\IPreview;
+use OCP\IUserSession;
 use OCP\Security\ICrypto;
 use Psr\Log\LoggerInterface;
 use Sabre\DAV\Exception\Forbidden;
@@ -49,6 +50,7 @@ final class PropFindPlugin extends ServerPlugin {
 		private LoggerInterface $logger,
 		private ITimeFactory $timeFactory,
 		private IAppConfig $appConfig,
+		private IUserSession $userSession,
 	) {
 	}
 
@@ -61,13 +63,26 @@ final class PropFindPlugin extends ServerPlugin {
 	}
 
 
+	/**
+	 * @return list<FaceDetectionWithTitle>
+	 * @throws Exception
+	 */
+	private function getDetections(int $fileId): array {
+		// Detections and cluster titles are private to each user
+		$userId = $this->userSession->getUser()?->getUID();
+		if ($userId === null) {
+			return [];
+		}
+		return $this->faceDetectionMapper->findByFileIdWithTitle($fileId, $userId);
+	}
+
 	public function propFind(PropFind $propFind, INode $node): void {
 		if ($node instanceof FacePhoto) {
 			$propFind->handle(self::FACE_DETECTIONS_PROPERTYNAME, function () use ($node) {
 				return json_encode(
 					array_map(
 						fn (FaceDetectionWithTitle $face) => $face->toArray(),
-						$this->faceDetectionMapper->findByFileIdWithTitle($node->getFile()->getId())
+						$this->getDetections($node->getFile()->getId())
 					)
 				);
 			});
@@ -102,7 +117,7 @@ final class PropFindPlugin extends ServerPlugin {
 				return json_encode(
 					array_map(
 						fn (FaceDetectionWithTitle $face) => $face->toArray(),
-						$this->faceDetectionMapper->findByFileIdWithTitle($node->getId()),
+						$this->getDetections((int)$node->getId()),
 					)
 				);
 			});

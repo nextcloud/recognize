@@ -179,14 +179,16 @@ final class FaceDetectionMapper extends QBMapper {
 
 	/**
 	 * @param int $fileId
+	 * @param string $userId
 	 * @return list<\OCA\Recognize\Db\FaceDetectionWithTitle>
 	 * @throws \OCP\DB\Exception
 	 */
-	public function findByFileIdWithTitle(int $fileId) : array {
+	public function findByFileIdWithTitle(int $fileId, string $userId) : array {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select(array_merge(array_map(fn ($col) => 'd.'.$col, FaceDetection::$columns), ['c.title']))
 			->from('recognize_face_detections', 'd')
 			->where($qb->expr()->eq('file_id', $qb->createPositionalParameter($fileId, IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()->eq('d.user_id', $qb->createPositionalParameter($userId, IQueryBuilder::PARAM_STR)))
 			->leftJoin('d', 'recognize_face_clusters', 'c', $qb->expr()->eq('d.cluster_id', 'c.id'));
 		/** @var list<\OCA\Recognize\Db\FaceDetectionWithTitle> $entities */
 		$entities = $this->findEntities($qb);
