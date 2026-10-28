@@ -32,6 +32,7 @@ use Psr\Log\LoggerInterface;
 
 final class FsActionService {
 	public const BATCH_SIZE = 1000;
+
 	public function __construct(
 		private FsActionMapper      $fsActionMapper,
 		private LoggerInterface     $logger,
@@ -75,6 +76,9 @@ final class FsActionService {
 	 * @param array<FsCreation|FsDeletion|FsMove|FsAccessUpdate> $actions
 	 */
 	public function processActions(array $actions): void {
+		// The mount tables are read repeatedly while processing a batch, so refresh them
+		// once here rather than on every lookup.
+		$this->userMountCache->clear();
 		$lastUserId = null;
 		foreach ($actions as $action) {
 			switch ($action::class) {
@@ -149,7 +153,6 @@ final class FsActionService {
 	 * @return list<string>
 	 */
 	private function getUsersWithFileAccess(int $nodeId): array {
-		$this->userMountCache->clear();
 		$mountInfos = $this->userMountCache->getMountsForFileId($nodeId);
 		$userIds = array_map(static function (ICachedMountInfo $mountInfo) {
 			return $mountInfo->getUser()->getUID();
@@ -164,7 +167,6 @@ final class FsActionService {
 	 * @throws Exception
 	 */
 	private function onAccessUpdate(int $storageId, int $rootId): void {
-		$userIds = $this->getUsersWithFileAccess($rootId);
 		$files = $this->storageService->getFilesInMount($storageId, $rootId, [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
 		$userIdsToScheduleClustering = [];
 		foreach ($files as $fileInfo) {
@@ -336,13 +338,13 @@ final class FsActionService {
 		if ($node instanceof Folder) {
 			try {
 				foreach ($node->getDirectoryListing() as $n) {
-					if (!in_array($n->getMimetype(), Constants::IMAGE_FORMATS)) {
+					// Recurse into subfolders: we only get a rename event for the top node,
+					// so the whole subtree has to be walked here.
+					if ($n->getType() !== FileInfo::TYPE_FOLDER && !in_array($n->getMimetype(), Constants::IMAGE_FORMATS)) {
 						continue;
 					}
 					$this->onMove($ownerId, $usersToAdd, $targetUserIds, $n);
 				}
-			} catch (NotFoundException|Exception|InvalidPathException $e) {
-				$this->logger->warning('Error in recognize file listener', ['exception' => $e]);
 			}
 			return;
 		}
