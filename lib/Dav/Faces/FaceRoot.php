@@ -114,7 +114,7 @@ final class FaceRoot implements ICollection, IMoveTarget {
 		} catch (DoesNotExistException $e) {
 			throw new NotFound();
 		}
-		if ($detection->getClusterId() !== $this->cluster->getId()) {
+		if ($detection->getUserId() !== $this->user->getUID() || $detection->getClusterId() !== $this->cluster->getId()) {
 			throw new NotFound();
 		}
 		return new FacePhoto($this->detectionMapper, $detection, $this->rootFolder->getUserFolder($this->user->getUID()), $this->tagManager, $this->previewManager);
@@ -131,6 +131,9 @@ final class FaceRoot implements ICollection, IMoveTarget {
 
 	public function moveInto($targetName, $sourcePath, INode $sourceNode) {
 		if ($sourceNode instanceof FacePhoto) {
+			if ($sourceNode->getFaceDetection()->getUserId() !== $this->user->getUID()) {
+				throw new Forbidden('Not allowed to move face detections of other users');
+			}
 			$sourceNode->getFaceDetection()->setClusterId($this->cluster->getId());
 			$this->detectionMapper->update($sourceNode->getFaceDetection());
 			return true;

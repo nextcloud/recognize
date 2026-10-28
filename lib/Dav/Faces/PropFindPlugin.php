@@ -22,6 +22,7 @@ use OCP\Files\DavUtil;
 use OCP\IPreview;
 use OCP\ITagManager;
 use OCP\ITags;
+use OCP\IUserSession;
 use OCP\Security\ICrypto;
 use Psr\Log\LoggerInterface;
 use Sabre\DAV\Exception\Forbidden;
@@ -60,6 +61,7 @@ final class PropFindPlugin extends ServerPlugin {
 		private ITimeFactory $timeFactory,
 		private IAppConfig $appConfig,
 		private ITagManager $tagManager,
+		private IUserSession $userSession,
 	) {
 	}
 
@@ -103,11 +105,12 @@ final class PropFindPlugin extends ServerPlugin {
 			return;
 		}
 
-		if ($wantsDetections) {
+		$userId = $this->userSession->getUser()?->getUID();
+		if ($wantsDetections && $userId !== null) {
 			foreach ($fileIds as $fileId) {
 				$this->cachedDetections[$fileId] = [];
 			}
-			foreach ($this->faceDetectionMapper->findByFileIdsWithTitle($fileIds) as $detection) {
+			foreach ($this->faceDetectionMapper->findByFileIdsWithTitle($fileIds, $userId) as $detection) {
 				$this->cachedDetections[$detection->getFileId()][] = $detection;
 			}
 		}
@@ -129,7 +132,15 @@ final class PropFindPlugin extends ServerPlugin {
 	 * @throws Exception
 	 */
 	private function getDetections(int $fileId): array {
-		return $this->cachedDetections[$fileId] ?? $this->faceDetectionMapper->findByFileIdWithTitle($fileId);
+		if (isset($this->cachedDetections[$fileId])) {
+			return $this->cachedDetections[$fileId];
+		}
+		// Detections and cluster titles are private to each user
+		$userId = $this->userSession->getUser()?->getUID();
+		if ($userId === null) {
+			return [];
+		}
+		return $this->faceDetectionMapper->findByFileIdWithTitle($fileId, $userId);
 	}
 
 	public function propFind(PropFind $propFind, INode $node): void {

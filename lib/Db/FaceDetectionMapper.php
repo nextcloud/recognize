@@ -190,14 +190,16 @@ final class FaceDetectionMapper extends QBMapper {
 
 	/**
 	 * @param int $fileId
+	 * @param string $userId
 	 * @return list<\OCA\Recognize\Db\FaceDetectionWithTitle>
 	 * @throws \OCP\DB\Exception
 	 */
-	public function findByFileIdWithTitle(int $fileId) : array {
+	public function findByFileIdWithTitle(int $fileId, string $userId) : array {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select(array_merge(array_map(fn ($col) => 'd.'.$col, FaceDetection::$columns), ['c.title']))
 			->from('recognize_face_detections', 'd')
 			->where($qb->expr()->eq('file_id', $qb->createPositionalParameter($fileId, IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()->eq('d.user_id', $qb->createPositionalParameter($userId, IQueryBuilder::PARAM_STR)))
 			->leftJoin('d', 'recognize_face_clusters', 'c', $qb->expr()->eq('d.cluster_id', 'c.id'));
 		/** @var list<\OCA\Recognize\Db\FaceDetectionWithTitle> $entities */
 		$entities = $this->findEntities($qb);
@@ -206,10 +208,11 @@ final class FaceDetectionMapper extends QBMapper {
 
 	/**
 	 * @param list<int> $fileIds
+	 * @param string $userId
 	 * @return list<\OCA\Recognize\Db\FaceDetectionWithTitle>
 	 * @throws \OCP\DB\Exception
 	 */
-	public function findByFileIdsWithTitle(array $fileIds) : array {
+	public function findByFileIdsWithTitle(array $fileIds, string $userId) : array {
 		$entities = [];
 		// Chunk to stay well below SQLite's bound-parameter limit
 		foreach (array_chunk($fileIds, 500) as $chunk) {
@@ -217,6 +220,7 @@ final class FaceDetectionMapper extends QBMapper {
 			$qb->select(array_merge(array_map(fn ($col) => 'd.'.$col, FaceDetection::$columns), ['c.title']))
 				->from('recognize_face_detections', 'd')
 				->where($qb->expr()->in('file_id', $qb->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)))
+				->andWhere($qb->expr()->eq('d.user_id', $qb->createNamedParameter($userId, IQueryBuilder::PARAM_STR)))
 				->leftJoin('d', 'recognize_face_clusters', 'c', $qb->expr()->eq('d.cluster_id', 'c.id'));
 			/** @var list<\OCA\Recognize\Db\FaceDetectionWithTitle> $chunkEntities */
 			$chunkEntities = $this->findEntities($qb);
