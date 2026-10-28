@@ -76,7 +76,7 @@ final class UnassignedFacesHome implements ICollection {
 		} catch (DoesNotExistException $e) {
 			throw new NotFound();
 		}
-		if ($detection->getClusterId() !== -1) {
+		if ($detection->getUserId() !== $this->user->getUID() || $detection->getClusterId() !== -1) {
 			throw new NotFound();
 		}
 
