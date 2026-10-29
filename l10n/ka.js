@@ -7,7 +7,7 @@ OC.L10N.register(
     "Failed to save settings" : "Failed to save settings",
     "never" : "never",
     "Status" : "Status",
-    "Reset" : "Reset",
+    "Background jobs" : "Background jobs",
     "Architecture" : "Architecture",
     "Farm" : "Farm",
     "People" : "People",

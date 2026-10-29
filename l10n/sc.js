@@ -9,7 +9,7 @@ OC.L10N.register(
     "never" : "mai",
     "{time} ago" : "{time} a immoe",
     "Status" : "Status",
-    "Reset" : "Riprìstinu",
+    "Background jobs" : "Atividades de background",
     "People" : "Gente",
     "Music" : "Mùsica",
     "Office" : "Ofìtziu",

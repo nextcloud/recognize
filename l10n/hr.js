@@ -9,7 +9,7 @@ OC.L10N.register(
     "never" : "nikad",
     "{time} ago" : "Prije {time}",
     "Status" : "Status",
-    "Reset" : "Resetiraj",
+    "Background jobs" : "Pozadinski zadaci",
     "Architecture" : "Arhitektura",
     "Landscape" : "Pejzaž",
     "Portrait" : "Portret",

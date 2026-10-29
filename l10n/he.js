@@ -9,7 +9,7 @@ OC.L10N.register(
     "never" : "מעולם לא",
     "{time} ago" : "לפני {time}",
     "Status" : "מצב",
-    "Reset" : "איפוס",
+    "Background jobs" : "משימות רקע",
     "Cat" : "חתול",
     "Dog" : "כלב",
     "Music" : "מוזיקה",

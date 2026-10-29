@@ -6,7 +6,6 @@
     "Failed to save settings" : "ไม่สามารถบันทึกการตั้งค่าได้",
     "never" : "ไม่เคย",
     "Status" : "สถานะ",
-    "Reset" : "รีเซ็ต",
     "Node.js" : "Node.js",
     "Checking Node.js" : "กำลังตรวจสอบ Node.js",
     "Node.js {version} binary was installed successfully." : "ติดตั้ง Node.js {version} binary สำเร็จแล้ว",

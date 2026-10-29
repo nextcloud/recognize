@@ -9,7 +9,6 @@ OC.L10N.register(
     "never" : "neniam",
     "{time} ago" : "antaŭ {time}",
     "Status" : "Stato",
-    "Reset" : "Restarigi",
     "People" : "Homoj",
     "Dog" : "Hundo",
     "Music" : "Muziko",

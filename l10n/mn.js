@@ -9,7 +9,7 @@ OC.L10N.register(
     "never" : "—Ö—ç–∑—ç—ç —á “Ø–≥“Ø–π",
     "{time} ago" : "{time}-н өмнө",
     "Status" : "—Ç”©–ª”©–≤",
-    "Reset" : "—Ç–æ—Ö–∏—Ä—É—É–ª–∞—Ö",
+    "Background jobs" : "Арын ажлууд",
     "Resource usage" : "Нөөцийн ашиглалт",
     "Architecture" : "Архитектур",
     "Building" : "Барилга",

@@ -8,7 +8,7 @@ OC.L10N.register(
     "Failed to save settings" : "Lưu cấu hình thất bại",
     "never" : "không thay đổi",
     "Status" : "Trạng thái",
-    "Reset" : "Đặt lại",
+    "Background jobs" : "Các công việc trong nền",
     "Cat" : "Mèo",
     "Farm" : "Nông trại",
     "People" : "Mọi người",

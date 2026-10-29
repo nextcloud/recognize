@@ -16,7 +16,6 @@ OC.L10N.register(
     "Face recognition:" : "Seju atpazīšana:",
     "There are queued files in the face recognition queue but no background job is scheduled to process them." : "Ir ierindotas datnes seju atpazīšanas rindā, bet nav ieplānots neviens fona darbs, kas tās apstrādātu.",
     "Enable face recognition (groups photos by faces that appear in them; UI is in the photos app)" : "Iespējot seju atpazīšanu (apkopo fotoattēlus pēc sejām, kas parādās tajos; lietotāja saskarne ir fotoattēlu lietotnē)",
-    "Reset" : "Atiestatīt",
     "Farm" : "Ferma",
     "Landscape" : "Ainava",
     "Portrait" : "Portrets",

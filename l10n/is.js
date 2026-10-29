@@ -9,7 +9,7 @@ OC.L10N.register(
     "never" : "aldrei",
     "{time} ago" : "fyrir {time} síðan",
     "Status" : "Staða",
-    "Reset" : "Endurstilla",
+    "Background jobs" : "Verk í bakgrunni",
     "Architecture" : "Tölvuhögun",
     "Building" : "Bygging",
     "Farm" : "Býli",

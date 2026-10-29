@@ -8,7 +8,7 @@ OC.L10N.register(
     "Failed to save settings" : "No se pudo guardar la configuración",
     "never" : "nunca",
     "Status" : "Estatus",
-    "Reset" : "Reiniciar",
+    "Background jobs" : "Tareas en segundo plano",
     "Architecture" : "Arquitectura",
     "Landscape" : "Paisaje",
     "Portrait" : "Retrato",

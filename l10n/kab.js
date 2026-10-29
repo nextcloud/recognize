@@ -7,7 +7,7 @@ OC.L10N.register(
     "never" : "werjin",
     "Status" : "État",
     "Queued files" : "Ifuyla deg wedras",
-    "Reset" : "Ɛiwed-d s wadda",
+    "Background jobs" : "Imahilen n ugilal",
     "Cat" : "Amcic",
     "Nature" : "Agama",
     "Beach" : "Taftist",

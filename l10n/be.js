@@ -10,7 +10,6 @@ OC.L10N.register(
     "Status" : "Статус",
     "Face recognition" : "Распазнаванне твараў",
     "Face recognition:" : "Распазнаванне твараў:",
-    "Reset" : "Скінуць",
     "FFMPEG" : "FFMPEG",
     "Cat" : "Кот",
     "Animal" : "Жывёла",

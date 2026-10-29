@@ -9,7 +9,7 @@ OC.L10N.register(
     "never" : "kamwe",
     "{time} ago" : "{time} uliopita",
     "Status" : "Wadhifa",
-    "Reset" : "Pangilia upya",
+    "Background jobs" : "Kazi za asili",
     "Checking FFmpeg" : "Inaangalia FFmpeg",
     "Landscape" : "Landscape",
     "Portrait" : "Portrait",
