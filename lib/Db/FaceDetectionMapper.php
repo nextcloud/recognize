@@ -47,11 +47,20 @@ final class FaceDetectionMapper extends QBMapper {
 	/**
 	 * Stores the vector of a detection that has no embedding yet as a new embedding
 	 *
+	 * @param bool $reuseExisting Use an existing embedding of the same file with the same bounding box instead, if there is one
 	 * @throws \OCP\DB\Exception
 	 */
-	private function ensureEmbedding(FaceDetection $detection): void {
+	private function ensureEmbedding(FaceDetection $detection, bool $reuseExisting): void {
 		if ($detection->getEmbeddingId() !== null) {
 			return;
+		}
+		if ($reuseExisting) {
+			foreach ($this->embeddings->findByFileId($detection->getFileId()) as $existing) {
+				if (self::sameBoundingBox($existing, $detection)) {
+					$detection->setEmbeddingId($existing->getId());
+					return;
+				}
+			}
 		}
 		$embedding = new FaceEmbedding();
 		$embedding->setFileId($detection->getFileId());
@@ -62,6 +71,16 @@ final class FaceDetectionMapper extends QBMapper {
 		$embedding->setVector($detection->getVector());
 		$this->embeddings->insert($embedding);
 		$detection->setEmbeddingId($embedding->getId());
+	}
+
+	/**
+	 * Compares with a tolerance, as not all databases store doubles losslessly
+	 */
+	private static function sameBoundingBox(FaceEmbedding $embedding, FaceDetection $detection): bool {
+		return abs($embedding->getX() - $detection->getX()) < 1e-9
+			&& abs($embedding->getY() - $detection->getY()) < 1e-9
+			&& abs($embedding->getHeight() - $detection->getHeight()) < 1e-9
+			&& abs($embedding->getWidth() - $detection->getWidth()) < 1e-9;
 	}
 
 	private function getMinDetectionSize(): float {
@@ -88,14 +107,15 @@ final class FaceDetectionMapper extends QBMapper {
 
 	/**
 	 * Inserts a detection for a user, unless that user already has a detection for the same embedding.
-	 * If the detection has no embedding yet, its vector is stored as a new embedding.
+	 * If the detection has no embedding yet, it is linked to the embedding of the same face in the same file,
+	 * or its vector is stored as a new embedding if there is none.
 	 *
 	 * @param FaceDetection $entity
 	 * @throws \OCP\DB\Exception
 	 */
 	public function insert(Entity $entity): FaceDetection {
 		/** @var FaceDetection $entity */
-		$this->ensureEmbedding($entity);
+		$this->ensureEmbedding($entity, true);
 		$qb = $this->db->getQueryBuilder();
 		$qb->select(FaceDetection::$columns)
 			->from('recognize_face_detections')
@@ -115,7 +135,7 @@ final class FaceDetectionMapper extends QBMapper {
 	 */
 	public function insertWithoutDeduplication(Entity $entity): FaceDetection {
 		/** @var FaceDetection $entity */
-		$this->ensureEmbedding($entity);
+		$this->ensureEmbedding($entity, false);
 		return parent::insert($entity);
 	}
 

@@ -47,11 +47,12 @@ class FacePhoto implements IFile {
 	#[Override]
 	public function delete(): void {
 		$detections = $this->detectionMapper->findByClusterIdWithVector($this->faceDetection->getClusterId());
-		$vectors = array_filter($detections, fn (FaceDetection $detection) => $detection->getId() === $this->faceDetection->getId());
-		if (count($detections) > 1 && count($vectors) > 0) {
+		// $this->faceDetection was loaded without its vector, so take it from the cluster's detections
+		$thisDetection = current(array_filter($detections, fn (FaceDetection $detection) => $detection->getId() === $this->faceDetection->getId()));
+		if (count($detections) > 1 && $thisDetection !== false) {
 			$centroid = FaceClusterAnalyzer::calculateCentroidOfDetections($detections);
 			$distance = new Euclidean();
-			$distanceValue = $distance->compute($centroid, reset($vectors)->getVector());
+			$distanceValue = $distance->compute($centroid, $thisDetection->getVector());
 			// Set threshold to avoid recreating the same mistake
 			$this->faceDetection->setThreshold($distanceValue);
 		}
