@@ -19,6 +19,8 @@ use OCA\Recognize\Classifiers\TaskProcessing\ImageFaceRecognitionClassifier;
 use OCA\Recognize\Classifiers\Video\MovinetClassifier;
 use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
+use OCA\Recognize\Db\FaceEmbedding;
+use OCA\Recognize\Db\FaceEmbeddingMapper;
 use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Service\QueueService;
 use OCA\Recognize\Service\TagManager;
@@ -39,7 +41,7 @@ use Psr\Log\LoggerInterface;
  * Stores results of TaskProcessing tasks scheduled by this app:
  *
  *  - image / video / audio classification → assigns category tags via {@see TagManager}
- *  - face recognition → inserts {@see FaceDetection} rows and schedules a {@see ClusterFacesJob}
+ *  - face recognition → inserts a {@see FaceEmbedding} per face, a {@see FaceDetection} per face and user with access, and schedules a {@see ClusterFacesJob}
  *
  * @template-implements IEventListener<Event>
  */
@@ -48,6 +50,7 @@ final class TaskResultListener implements IEventListener {
 		private LoggerInterface $logger,
 		private TagManager $tagManager,
 		private FaceDetectionMapper $faceDetections,
+		private FaceEmbeddingMapper $faceEmbeddings,
 		private IUserMountCache $userMountCache,
 		private IAppConfig $config,
 		private IJobList $jobList,
@@ -225,17 +228,22 @@ final class TaskResultListener implements IEventListener {
 					$this->logger->warning('Face entry without embedding vector for file ' . $fileId);
 					continue;
 				}
+				$embedding = new FaceEmbedding();
+				$embedding->setFileId($fileId);
+				$embedding->setX((float)($face['x'] ?? 0));
+				$embedding->setY((float)($face['y'] ?? 0));
+				$embedding->setWidth((float)($face['width'] ?? 0));
+				$embedding->setHeight((float)($face['height'] ?? 0));
+				$embedding->setVector($vector);
+				try {
+					$this->faceEmbeddings->insert($embedding);
+				} catch (\Throwable $e) {
+					$this->logger->error('Could not store face embedding for file ' . $fileId, ['exception' => $e]);
+					continue;
+				}
 				foreach ($userIds as $userId) {
-					$detection = new FaceDetection();
-					$detection->setFileId($fileId);
-					$detection->setUserId($userId);
-					$detection->setX((float)($face['x'] ?? 0));
-					$detection->setY((float)($face['y'] ?? 0));
-					$detection->setWidth((float)($face['width'] ?? 0));
-					$detection->setHeight((float)($face['height'] ?? 0));
-					$detection->setVector($vector);
 					try {
-						$this->faceDetections->insert($detection);
+						$this->faceDetections->insertForUser($embedding, $userId);
 					} catch (\Throwable $e) {
 						$this->logger->error('Could not store face detection for file ' . $fileId, ['exception' => $e]);
 						continue;

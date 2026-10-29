@@ -47,7 +47,8 @@ class ClusterTest extends TestCase {
 		}
 		$detections = $this->faceDetectionMapper->findByUserId(self::TEST_USER1);
 		foreach ($detections as $detection) {
-			$this->faceDetectionMapper->delete($detection);
+			// Also removes the embeddings, so inserted detections don't get linked to the vectors of a previous test
+			$this->faceDetectionMapper->deleteByFileId($detection->getFileId());
 		}
 
 		// Generate artificial clusters along just one dimension
@@ -116,7 +117,7 @@ class ClusterTest extends TestCase {
 		$detections = $this->faceDetectionMapper->findByClusterId($clusters[0]->getId());
 		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER, $detections);
 
-		$detections = $this->faceDetectionMapper->findByClusterId($clusters[1]->getId());
+		$detections = $this->faceDetectionMapper->findByClusterIdWithVector($clusters[1]->getId());
 		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER, $detections);
 
 		$detectionToRemove = $detections[0];
@@ -248,7 +249,7 @@ class ClusterTest extends TestCase {
 			$vector = self::getNullVector();
 			$vector[0] = $clusterValue + 0.001 * $i;
 			$detection->setVector($vector);
-			$detection->setFileId($i);
+			$detection->setFileId(2 * self::INITIAL_DETECTIONS_PER_CLUSTER + $i);
 			$detection->setHeight(0.5);
 			$detection->setWidth(0.5);
 			$this->faceDetectionMapper->insert($detection);
@@ -277,7 +278,7 @@ class ClusterTest extends TestCase {
 			$vector = self::getNullVector();
 			$vector[0] = $clusterValue + 0.001 * $i;
 			$detection->setVector($vector);
-			$detection->setFileId($i);
+			$detection->setFileId(3 * self::INITIAL_DETECTIONS_PER_CLUSTER + $i);
 			$detection->setHeight(0.5);
 			$detection->setWidth(0.5);
 			$this->faceDetectionMapper->insert($detection);

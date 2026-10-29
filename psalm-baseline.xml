@@ -613,9 +613,6 @@
     </MixedArgument>
   </file>
   <file src="lib/Dav/Faces/FacePhoto.php">
-    <ArgumentTypeCoercion>
-      <code><![CDATA[$this->faceDetection->getVector()]]></code>
-    </ArgumentTypeCoercion>
     <InvalidReturnStatement>
       <code><![CDATA[$this->getFile()->getSize()]]></code>
     </InvalidReturnStatement>
@@ -688,6 +685,7 @@
   <file src="lib/Db/FaceDetection.php">
     <MissingPropertyType>
       <code><![CDATA[$clusterId]]></code>
+      <code><![CDATA[$embeddingId]]></code>
       <code><![CDATA[$faceVector]]></code>
       <code><![CDATA[$fileId]]></code>
       <code><![CDATA[$height]]></code>
@@ -713,6 +711,22 @@
     </MissingPropertyType>
     <PropertyNotSetInConstructor>
       <code><![CDATA[FaceDetectionWithTitle]]></code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="lib/Db/FaceEmbedding.php">
+    <MissingPropertyType>
+      <code><![CDATA[$faceVector]]></code>
+      <code><![CDATA[$fileId]]></code>
+      <code><![CDATA[$height]]></code>
+      <code><![CDATA[$width]]></code>
+      <code><![CDATA[$x]]></code>
+      <code><![CDATA[$y]]></code>
+    </MissingPropertyType>
+    <MixedReturnStatement>
+      <code><![CDATA[$this->getter('faceVector')]]></code>
+    </MixedReturnStatement>
+    <PropertyNotSetInConstructor>
+      <code><![CDATA[FaceEmbedding]]></code>
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Db/FsAccessUpdate.php">

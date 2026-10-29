@@ -9,8 +9,9 @@ namespace OCA\Recognize\Classifiers\Images;
 
 use OCA\Recognize\BackgroundJobs\ClusterFacesJob;
 use OCA\Recognize\Classifiers\Classifier;
-use OCA\Recognize\Db\FaceDetection;
 use OCA\Recognize\Db\FaceDetectionMapper;
+use OCA\Recognize\Db\FaceEmbedding;
+use OCA\Recognize\Db\FaceEmbeddingMapper;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\QueueService;
 use OCP\AppFramework\Services\IAppConfig;
@@ -41,6 +42,7 @@ final class ClusteringFaceClassifier extends Classifier {
 		Logger $logger,
 		IAppConfig $config,
 		private FaceDetectionMapper $faceDetections,
+		private FaceEmbeddingMapper $faceEmbeddings,
 		QueueService $queue, IRootFolder $rootFolder,
 		private IUserMountCache $userMountCache, private IJobList $jobList, ITempManager $tempManager, IPreview $previewProvider,
 		private IManager $shareManager) {
@@ -73,7 +75,7 @@ final class ClusteringFaceClassifier extends Classifier {
 		$filteredQueueFiles = [];
 		foreach ($queueFiles as $queueFile) {
 			try {
-				$facesByFileCount = count($this->faceDetections->findByFileId($queueFile->getFileId()));
+				$facesByFileCount = $this->faceEmbeddings->countByFileId($queueFile->getFileId());
 			} catch (Exception $e) {
 				$this->logger->debug('finding faces by file '.$queueFile->getFileId().' failed', ['exception' => $e]);
 				$facesByFileCount = 1;
@@ -114,19 +116,25 @@ final class ClusteringFaceClassifier extends Classifier {
 					$userIds = [];
 				}
 
+				$embedding = new FaceEmbedding();
+				$embedding->setX($face['x']);
+				$embedding->setY($face['y']);
+				$embedding->setWidth($face['width']);
+				$embedding->setHeight($face['height']);
+				$embedding->setVector($face['vector']);
+				$embedding->setFileId($queueFile->getFileId());
+				try {
+					$this->faceEmbeddings->insert($embedding);
+				} catch (\Throwable $e) {
+					$this->logger->error('Could not store face embedding in database', ['exception' => $e]);
+					continue;
+				}
+
 				// Insert face detection for all users with access
 				foreach ($userIds as $userId) {
 					$this->logger->debug('preparing face detection for user ' . $userId);
-					$faceDetection = new FaceDetection();
-					$faceDetection->setX($face['x']);
-					$faceDetection->setY($face['y']);
-					$faceDetection->setWidth($face['width']);
-					$faceDetection->setHeight($face['height']);
-					$faceDetection->setVector($face['vector']);
-					$faceDetection->setFileId($queueFile->getFileId());
-					$faceDetection->setUserId($userId);
 					try {
-						$this->faceDetections->insert($faceDetection);
+						$this->faceDetections->insertForUser($embedding, $userId);
 					} catch (\Throwable $e) {
 						$this->logger->error('Could not store face detection in database', ['exception' => $e]);
 						continue;
