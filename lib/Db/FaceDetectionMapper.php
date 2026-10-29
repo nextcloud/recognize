@@ -24,12 +24,44 @@ use OCP\IDBConnection;
 final class FaceDetectionMapper extends QBMapper {
 	private IConfig $config;
 	private SettingsService $settingsService;
+	private FaceEmbeddingMapper $embeddings;
 
-	public function __construct(IDBConnection $db, IConfig $config, SettingsService $settingsService) {
+	public function __construct(IDBConnection $db, IConfig $config, SettingsService $settingsService, FaceEmbeddingMapper $embeddings) {
 		parent::__construct($db, 'recognize_face_detections', FaceDetection::class);
 		$this->db = $db;
 		$this->config = $config;
 		$this->settingsService = $settingsService;
+		$this->embeddings = $embeddings;
+	}
+
+	/**
+	 * Selects detections together with the face vector of their embedding
+	 */
+	private function selectWithVector(IQueryBuilder $qb): IQueryBuilder {
+		return $qb->select(array_map(fn ($col) => 'd.'.$col, FaceDetection::$columns))
+			->addSelect('e.face_vector')
+			->from('recognize_face_detections', 'd')
+			->innerJoin('d', 'recognize_face_embeddings', 'e', $qb->expr()->eq('d.embedding_id', 'e.id'));
+	}
+
+	/**
+	 * Stores the vector of a detection that has no embedding yet as a new embedding
+	 *
+	 * @throws \OCP\DB\Exception
+	 */
+	private function ensureEmbedding(FaceDetection $detection): void {
+		if ($detection->getEmbeddingId() !== null) {
+			return;
+		}
+		$embedding = new FaceEmbedding();
+		$embedding->setFileId($detection->getFileId());
+		$embedding->setX($detection->getX());
+		$embedding->setY($detection->getY());
+		$embedding->setHeight($detection->getHeight());
+		$embedding->setWidth($detection->getWidth());
+		$embedding->setVector($detection->getVector());
+		$this->embeddings->insert($embedding);
+		$detection->setEmbeddingId($embedding->getId());
 	}
 
 	private function getMinDetectionSize(): float {
@@ -55,20 +87,20 @@ final class FaceDetectionMapper extends QBMapper {
 	}
 
 	/**
+	 * Inserts a detection for a user, unless that user already has a detection for the same embedding.
+	 * If the detection has no embedding yet, its vector is stored as a new embedding.
+	 *
 	 * @param FaceDetection $entity
 	 * @throws \OCP\DB\Exception
 	 */
 	public function insert(Entity $entity): FaceDetection {
 		/** @var FaceDetection $entity */
+		$this->ensureEmbedding($entity);
 		$qb = $this->db->getQueryBuilder();
 		$qb->select(FaceDetection::$columns)
 			->from('recognize_face_detections')
-			->where($qb->expr()->eq('file_id', $qb->createPositionalParameter($entity->getFileId(), IQueryBuilder::PARAM_INT)))
-			->andWhere($qb->expr()->eq('user_id', $qb->createPositionalParameter($entity->getUserId(), IQueryBuilder::PARAM_STR)))
-			->andWhere($qb->expr()->eq('x', $qb->createPositionalParameter($entity->getX(), IQueryBuilder::PARAM_INT)))
-			->andWhere($qb->expr()->eq('y', $qb->createPositionalParameter($entity->getY(), IQueryBuilder::PARAM_INT)))
-			->andWhere($qb->expr()->eq('height', $qb->createPositionalParameter($entity->getHeight(), IQueryBuilder::PARAM_INT)))
-			->andWhere($qb->expr()->eq('width', $qb->createPositionalParameter($entity->getWidth(), IQueryBuilder::PARAM_INT)));
+			->where($qb->expr()->eq('embedding_id', $qb->createPositionalParameter($entity->getEmbeddingId(), IQueryBuilder::PARAM_INT)))
+			->andWhere($qb->expr()->eq('user_id', $qb->createPositionalParameter($entity->getUserId(), IQueryBuilder::PARAM_STR)));
 		$duplicates = $this->findEntities($qb);
 
 		if (empty($duplicates)) {
@@ -83,7 +115,25 @@ final class FaceDetectionMapper extends QBMapper {
 	 */
 	public function insertWithoutDeduplication(Entity $entity): FaceDetection {
 		/** @var FaceDetection $entity */
+		$this->ensureEmbedding($entity);
 		return parent::insert($entity);
+	}
+
+	/**
+	 * Creates the per-user detection for an embedding
+	 *
+	 * @throws \OCP\DB\Exception
+	 */
+	public function insertForUser(FaceEmbedding $embedding, string $userId): FaceDetection {
+		$detection = new FaceDetection();
+		$detection->setEmbeddingId($embedding->getId());
+		$detection->setFileId($embedding->getFileId());
+		$detection->setX($embedding->getX());
+		$detection->setY($embedding->getY());
+		$detection->setHeight($embedding->getHeight());
+		$detection->setWidth($embedding->getWidth());
+		$detection->setUserId($userId);
+		return parent::insert($detection);
 	}
 
 	/**
@@ -93,6 +143,20 @@ final class FaceDetectionMapper extends QBMapper {
 		$qb = $this->db->getQueryBuilder();
 		$qb->delete('recognize_face_detections')
 			->executeStatement();
+		$this->embeddings->deleteAll();
+	}
+
+	/**
+	 * Deletes all detections of a file for all users, including the embeddings
+	 *
+	 * @throws \OCP\DB\Exception
+	 */
+	public function deleteByFileId(int $fileId): void {
+		$qb = $this->db->getQueryBuilder();
+		$qb->delete('recognize_face_detections')
+			->where($qb->expr()->eq('file_id', $qb->createPositionalParameter($fileId, IQueryBuilder::PARAM_INT)))
+			->executeStatement();
+		$this->embeddings->deleteByFileId($fileId);
 	}
 
 	/**
@@ -105,6 +169,18 @@ final class FaceDetectionMapper extends QBMapper {
 		$qb->select(FaceDetection::$columns)
 			->from('recognize_face_detections')
 			->where($qb->expr()->eq('cluster_id', $qb->createPositionalParameter($clusterId)));
+		return $this->findEntities($qb);
+	}
+
+	/**
+	 * @param int $clusterId
+	 * @return list<\OCA\Recognize\Db\FaceDetection>
+	 * @throws \OCP\DB\Exception
+	 */
+	public function findByClusterIdWithVector(int $clusterId) : array {
+		$qb = $this->db->getQueryBuilder();
+		$this->selectWithVector($qb)
+			->where($qb->expr()->eq('d.cluster_id', $qb->createPositionalParameter($clusterId)));
 		return $this->findEntities($qb);
 	}
 
@@ -146,21 +222,33 @@ final class FaceDetectionMapper extends QBMapper {
 	}
 
 	/**
+	 * Gives the passed users a detection for every face found in the file that they don't have yet
+	 *
+	 * @param int $fileId
+	 * @param list<string> $userIds
+	 * @return list<string> The users that received new detections
 	 * @throws \OCP\DB\Exception
 	 */
-	public function copyDetectionsForFileFromUserToUser(int $fileId, string $fromUser, string $toUser) : void {
-		$detections = $this->findByFileIdAndUser($fileId, $fromUser);
-		foreach ($detections as $detection) {
-			$detectionCopy = new FaceDetection();
-			$detectionCopy->setX($detection->getX());
-			$detectionCopy->setY($detection->getY());
-			$detectionCopy->setVector($detection->getVector());
-			$detectionCopy->setFileId($detection->getFileId());
-			$detectionCopy->setHeight($detection->getHeight());
-			$detectionCopy->setWidth($detection->getWidth());
-			$detectionCopy->setUserId($toUser);
-			$this->insert($detectionCopy);
+	public function addUsersToFile(int $fileId, array $userIds) : array {
+		$embeddings = $this->embeddings->findByFileId($fileId);
+		if (count($embeddings) === 0 || count($userIds) === 0) {
+			return [];
 		}
+		$hasDetection = [];
+		foreach ($this->findByFileId($fileId) as $detection) {
+			$hasDetection[$detection->getUserId()][(int)$detection->getEmbeddingId()] = true;
+		}
+		$addedUsers = [];
+		foreach ($userIds as $userId) {
+			foreach ($embeddings as $embedding) {
+				if ($hasDetection[$userId][$embedding->getId()] ?? false) {
+					continue;
+				}
+				$this->insertForUser($embedding, $userId);
+				$addedUsers[$userId] = true;
+			}
+		}
+		return array_map('strval', array_keys($addedUsers));
 	}
 
 	/**
@@ -249,12 +337,11 @@ final class FaceDetectionMapper extends QBMapper {
 	 */
 	public function findUnclusteredByUserId(string $userId, int $limit = 0, float $minHeight = 0, float $minWidth = 0) : array {
 		$qb = $this->db->getQueryBuilder();
-		$qb->select(FaceDetection::$columns)
-			->from('recognize_face_detections')
-			->where($qb->expr()->eq('user_id', $qb->createPositionalParameter($userId)))
-			->andWhere($qb->expr()->gte('height', $qb->createPositionalParameter($minHeight)))
-			->andWhere($qb->expr()->gte('width', $qb->createPositionalParameter($minWidth)))
-			->andWhere($qb->expr()->isNull('cluster_id'));
+		$this->selectWithVector($qb)
+			->where($qb->expr()->eq('d.user_id', $qb->createPositionalParameter($userId)))
+			->andWhere($qb->expr()->gte('d.height', $qb->createPositionalParameter($minHeight)))
+			->andWhere($qb->expr()->gte('d.width', $qb->createPositionalParameter($minWidth)))
+			->andWhere($qb->expr()->isNull('d.cluster_id'));
 		if ($limit > 0) {
 			$qb->setMaxResults($limit);
 		}
@@ -285,11 +372,10 @@ final class FaceDetectionMapper extends QBMapper {
 	 */
 	public function findClusterSample(int $clusterId, int $n, int $minHeight = 0, int $minWidth = 0): array {
 		$qb = $this->db->getQueryBuilder();
-		$qb->select(FaceDetection::$columns)
-			->from('recognize_face_detections', 'd')
-			->where($qb->expr()->eq('cluster_id', $qb->createPositionalParameter($clusterId)))
-			->andWhere($qb->expr()->gte('height', $qb->createPositionalParameter($minHeight)))
-			->andWhere($qb->expr()->gte('width', $qb->createPositionalParameter($minWidth)))
+		$this->selectWithVector($qb)
+			->where($qb->expr()->eq('d.cluster_id', $qb->createPositionalParameter($clusterId)))
+			->andWhere($qb->expr()->gte('d.height', $qb->createPositionalParameter($minHeight)))
+			->andWhere($qb->expr()->gte('d.width', $qb->createPositionalParameter($minWidth)))
 			->orderBy(
 				$qb->createFunction(
 					$this->config->getSystemValue('dbtype', 'sqlite') === 'mysql'
@@ -311,12 +397,11 @@ final class FaceDetectionMapper extends QBMapper {
 	 */
 	public function sampleRejectedDetectionsByUserId(string $userId, int $n, float $minHeight = 0, float $minWidth = 0): array {
 		$qb = $this->db->getQueryBuilder();
-		$qb->select(FaceDetection::$columns)
-			->from('recognize_face_detections', 'd')
-			->where($qb->expr()->eq('cluster_id', $qb->createPositionalParameter(-1)))
-			->andWhere($qb->expr()->eq('user_id', $qb->createPositionalParameter($userId)))
-			->andWhere($qb->expr()->gte('height', $qb->createPositionalParameter($minHeight)))
-			->andWhere($qb->expr()->gte('width', $qb->createPositionalParameter($minWidth)))
+		$this->selectWithVector($qb)
+			->where($qb->expr()->eq('d.cluster_id', $qb->createPositionalParameter(-1)))
+			->andWhere($qb->expr()->eq('d.user_id', $qb->createPositionalParameter($userId)))
+			->andWhere($qb->expr()->gte('d.height', $qb->createPositionalParameter($minHeight)))
+			->andWhere($qb->expr()->gte('d.width', $qb->createPositionalParameter($minWidth)))
 			->orderBy(
 				$qb->createFunction(
 					$this->config->getSystemValue('dbtype', 'sqlite') === 'mysql'

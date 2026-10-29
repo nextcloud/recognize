@@ -116,7 +116,7 @@ class ClusterTest extends TestCase {
 		$detections = $this->faceDetectionMapper->findByClusterId($clusters[0]->getId());
 		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER, $detections);
 
-		$detections = $this->faceDetectionMapper->findByClusterId($clusters[1]->getId());
+		$detections = $this->faceDetectionMapper->findByClusterIdWithVector($clusters[1]->getId());
 		self::assertCount(self::INITIAL_DETECTIONS_PER_CLUSTER, $detections);
 
 		$detectionToRemove = $detections[0];

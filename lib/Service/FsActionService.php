@@ -125,7 +125,7 @@ final class FsActionService {
 						break;
 					}
 					try {
-						$this->onMove($action->getOwner(), $action->getAddedUsers(), $action->getTargetUsers(), $node);
+						$this->onMove($action->getAddedUsers(), $action->getTargetUsers(), $node);
 					} catch (Exception|InvalidPathException|NotFoundException $e) {
 						$this->logger->warning('Failed to process move action: ' . $e->getMessage() . ' Continuing.', ['exception' => $e]);
 					}
@@ -168,24 +168,7 @@ final class FsActionService {
 		$files = $this->storageService->getFilesInMount($storageId, $rootId, [ClusteringFaceClassifier::MODEL_NAME], 0, 0);
 		$userIdsToScheduleClustering = [];
 		foreach ($files as $fileInfo) {
-			$node = $this->rootFolder->getFirstNodeById($fileInfo['fileid']) ?: null;
-			$ownerId = $node?->getOwner()?->getUID();
-			if ($ownerId === null) {
-				continue;
-			}
-			$detectionsForFile = $this->faceDetectionMapper->findByFileId($fileInfo['fileid']);
-			$userHasDetectionForFile = [];
-			foreach ($detectionsForFile as $detection) {
-				$userHasDetectionForFile[$detection->getUserId()] = true;
-			}
-			foreach ($userIds as $userId) {
-				if ($userId === $ownerId) {
-					continue;
-				}
-				if ($userHasDetectionForFile[$userId] ?? false) {
-					continue;
-				}
-				$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($fileInfo['fileid'], $ownerId, $userId);
+			foreach ($this->faceDetectionMapper->addUsersToFile($fileInfo['fileid'], $userIds) as $userId) {
 				$userIdsToScheduleClustering[$userId] = true;
 			}
 			$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($fileInfo['fileid'], $userIds);
@@ -304,14 +287,7 @@ final class FsActionService {
 	public function onDeletion(int $nodeId, ?array $mimeTypes = null): void {
 		// Try Deleting possibly existing face detections
 		try {
-			/**
-			 * @var \OCA\Recognize\Db\FaceDetection[] $faceDetections
-			 */
-			$faceDetections = $this->faceDetectionMapper->findByFileId($nodeId);
-			foreach ($faceDetections as $detection) {
-				$this->logger->debug('Delete face detection ' . $detection->getId());
-				$this->faceDetectionMapper->delete($detection);
-			}
+			$this->faceDetectionMapper->deleteByFileId($nodeId);
 		} catch (Exception $e) {
 			$this->logger->warning($e->getMessage(), ['exception' => $e]);
 		}
@@ -325,32 +301,27 @@ final class FsActionService {
 	}
 
 	/**
-	 * @param string $ownerId
 	 * @param list<string> $usersToAdd
 	 * @param list<string> $targetUserIds
 	 * @param Node $node
 	 * @return void
 	 * @throws Exception|InvalidPathException|NotFoundException
 	 */
-	private function onMove(string $ownerId, array $usersToAdd, array $targetUserIds, Node $node): void {
+	private function onMove(array $usersToAdd, array $targetUserIds, Node $node): void {
 		if ($node instanceof Folder) {
 			try {
 				foreach ($node->getDirectoryListing() as $n) {
 					if (!in_array($n->getMimetype(), Constants::IMAGE_FORMATS)) {
 						continue;
 					}
-					$this->onMove($ownerId, $usersToAdd, $targetUserIds, $n);
+					$this->onMove($usersToAdd, $targetUserIds, $n);
 				}
 			} catch (NotFoundException|Exception|InvalidPathException $e) {
 				$this->logger->warning('Error in recognize file listener', ['exception' => $e]);
 			}
 			return;
 		}
-		foreach ($usersToAdd as $userId) {
-			if (count($this->faceDetectionMapper->findByFileIdAndUser($node->getId(), $userId)) > 0) {
-				continue;
-			}
-			$this->faceDetectionMapper->copyDetectionsForFileFromUserToUser($node->getId(), $ownerId, $userId);
+		foreach ($this->faceDetectionMapper->addUsersToFile($node->getId(), $usersToAdd) as $userId) {
 			$this->jobList->add(ClusterFacesJob::class, ['userId' => $userId]);
 		}
 		$this->faceDetectionMapper->removeDetectionsForFileFromUsersNotInList($node->getId(), $targetUserIds);
