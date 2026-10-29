@@ -41,7 +41,7 @@ final class FaceDetectionMapper extends QBMapper {
 		return $qb->select(array_map(fn ($col) => 'd.'.$col, FaceDetection::$columns))
 			->addSelect('e.face_vector')
 			->from('recognize_face_detections', 'd')
-			->innerJoin('d', 'recognize_face_embeddings', 'e', $qb->expr()->eq('d.embedding_id', 'e.id'));
+			->innerJoin('d', 'recognize_face_vectors', 'e', $qb->expr()->eq('d.embedding_id', 'e.id'));
 	}
 
 	/**

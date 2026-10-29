@@ -16,7 +16,7 @@ use OCP\IDBConnection;
  */
 final class FaceEmbeddingMapper extends QBMapper {
 	public function __construct(IDBConnection $db) {
-		parent::__construct($db, 'recognize_face_embeddings', FaceEmbedding::class);
+		parent::__construct($db, 'recognize_face_vectors', FaceEmbedding::class);
 		$this->db = $db;
 	}
 
@@ -27,7 +27,7 @@ final class FaceEmbeddingMapper extends QBMapper {
 	public function findByFileId(int $fileId): array {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select(FaceEmbedding::$columns)
-			->from('recognize_face_embeddings')
+			->from('recognize_face_vectors')
 			->where($qb->expr()->eq('file_id', $qb->createPositionalParameter($fileId, IQueryBuilder::PARAM_INT)));
 		return $this->findEntities($qb);
 	}
@@ -38,7 +38,7 @@ final class FaceEmbeddingMapper extends QBMapper {
 	public function countByFileId(int $fileId): int {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select($qb->func()->count('id'))
-			->from('recognize_face_embeddings')
+			->from('recognize_face_vectors')
 			->where($qb->expr()->eq('file_id', $qb->createPositionalParameter($fileId, IQueryBuilder::PARAM_INT)));
 		$result = $qb->executeQuery();
 		/** @var int|string $count */
@@ -52,7 +52,7 @@ final class FaceEmbeddingMapper extends QBMapper {
 	 */
 	public function deleteByFileId(int $fileId): void {
 		$qb = $this->db->getQueryBuilder();
-		$qb->delete('recognize_face_embeddings')
+		$qb->delete('recognize_face_vectors')
 			->where($qb->expr()->eq('file_id', $qb->createPositionalParameter($fileId, IQueryBuilder::PARAM_INT)))
 			->executeStatement();
 	}
@@ -62,7 +62,7 @@ final class FaceEmbeddingMapper extends QBMapper {
 	 */
 	public function deleteAll(): void {
 		$qb = $this->db->getQueryBuilder();
-		$qb->delete('recognize_face_embeddings')
+		$qb->delete('recognize_face_vectors')
 			->executeStatement();
 	}
 }

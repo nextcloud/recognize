@@ -17,7 +17,7 @@ use OCP\Migration\SimpleMigrationStep;
 
 /**
  * Moves the face vectors from recognize_face_detections, where they were duplicated for every user
- * with access to a file, into recognize_face_embeddings, then drops the vector column
+ * with access to a file, into recognize_face_vectors, then drops the vector column
  */
 final class Version013002000Date20261028094821 extends SimpleMigrationStep {
 	private const FILE_BATCH_SIZE = 500;
@@ -32,7 +32,7 @@ final class Version013002000Date20261028094821 extends SimpleMigrationStep {
 		/** @var ISchemaWrapper $schema */
 		$schema = $schemaClosure();
 
-		if (!$schema->hasTable('recognize_face_detections') || !$schema->hasTable('recognize_face_embeddings')) {
+		if (!$schema->hasTable('recognize_face_detections') || !$schema->hasTable('recognize_face_vectors')) {
 			return;
 		}
 		$table = $schema->getTable('recognize_face_detections');
@@ -109,27 +109,20 @@ final class Version013002000Date20261028094821 extends SimpleMigrationStep {
 		$result->closeCursor();
 
 		// Reuse embeddings created by a previous, interrupted run
-		$qb = $this->db->getQueryBuilder();
-		$qb->select('id', 'file_id', 'x', 'y', 'height', 'width')
-			->from('recognize_face_embeddings')
-			->where($qb->expr()->in('file_id', $qb->createNamedParameter($fileIds, IQueryBuilder::PARAM_INT_ARRAY)));
-		$result = $qb->executeQuery();
-		/** @var array<string, int> $embeddingIdByFace */
-		$embeddingIdByFace = [];
-		while ($row = $result->fetch()) {
-			$embeddingIdByFace[$this->faceKey($row)] = (int)$row['id'];
-		}
-		$result->closeCursor();
+		$embeddingIdByFace = $this->findEmbeddingIds($fileIds);
 
 		// Copy one detection per face within the database, so neither the vectors nor
 		// the float coordinates have to make a lossy round trip through PHP
 		$missingFaces = array_diff_key($detectionIdsByFace, $embeddingIdByFace);
-		$copyQuery = 'INSERT INTO `*PREFIX*recognize_face_embeddings` (`file_id`, `x`, `y`, `height`, `width`, `face_vector`) '
+		$copyQuery = 'INSERT INTO `*PREFIX*recognize_face_vectors` (`file_id`, `x`, `y`, `height`, `width`, `face_vector`) '
 			. 'SELECT `file_id`, `x`, `y`, `height`, `width`, `face_vector` FROM `*PREFIX*recognize_face_detections` WHERE `id` = ?';
-		foreach ($missingFaces as $key => $detectionIds) {
+		foreach ($missingFaces as $detectionIds) {
 			$this->db->executeStatement($copyQuery, [$detectionIds[0]], [IQueryBuilder::PARAM_INT]);
-			/** @psalm-suppress DeprecatedMethod The query builder cannot express INSERT ... SELECT */
-			$embeddingIdByFace[$key] = $this->db->lastInsertId('*PREFIX*recognize_face_embeddings');
+		}
+		// Read the ids back instead of using lastInsertId(), which fails on Oracle for table
+		// names longer than the sequence names Doctrine generates
+		if (count($missingFaces) > 0) {
+			$embeddingIdByFace = $this->findEmbeddingIds($fileIds);
 		}
 
 		foreach ($detectionIdsByFace as $key => $detectionIds) {
@@ -143,6 +136,26 @@ final class Version013002000Date20261028094821 extends SimpleMigrationStep {
 		}
 
 		return $count;
+	}
+
+	/**
+	 * @param list<int> $fileIds
+	 * @return array<string, int>
+	 * @throws \OCP\DB\Exception
+	 */
+	private function findEmbeddingIds(array $fileIds): array {
+		$qb = $this->db->getQueryBuilder();
+		$qb->select('id', 'file_id', 'x', 'y', 'height', 'width')
+			->from('recognize_face_vectors')
+			->where($qb->expr()->in('file_id', $qb->createNamedParameter($fileIds, IQueryBuilder::PARAM_INT_ARRAY)));
+		$result = $qb->executeQuery();
+		/** @var array<string, int> $embeddingIdByFace */
+		$embeddingIdByFace = [];
+		while ($row = $result->fetch()) {
+			$embeddingIdByFace[$this->faceKey($row)] = (int)$row['id'];
+		}
+		$result->closeCursor();
+		return $embeddingIdByFace;
 	}
 
 	/**

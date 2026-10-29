@@ -15,7 +15,7 @@ use OCP\Migration\IOutput;
 use OCP\Migration\SimpleMigrationStep;
 
 /**
- * Adds the recognize_face_embeddings table, which stores each face vector once per file
+ * Adds the recognize_face_vectors table, which stores each face vector once per file
  * instead of once per user with access to the file
  */
 final class Version013002000Date20261028094721 extends SimpleMigrationStep {
@@ -33,8 +33,8 @@ final class Version013002000Date20261028094721 extends SimpleMigrationStep {
 		$schema = $schemaClosure();
 
 		$changed = false;
-		if (!$schema->hasTable('recognize_face_embeddings')) {
-			$table = $schema->createTable('recognize_face_embeddings');
+		if (!$schema->hasTable('recognize_face_vectors')) {
+			$table = $schema->createTable('recognize_face_vectors');
 			$table->addColumn('id', Types::BIGINT, [
 				'autoincrement' => true,
 				'notnull' => true,
