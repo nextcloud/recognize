@@ -40,6 +40,17 @@ final class Version013002000Date20261028094821 extends SimpleMigrationStep {
 			return;
 		}
 
+		// Detections without a vector can't be clustered and can't be copied into the
+		// recognize_face_vectors table, where the vector is mandatory
+		$qb = $this->db->getQueryBuilder();
+		$qb->delete('recognize_face_detections')
+			->where($qb->expr()->isNull('face_vector'))
+			->andWhere($qb->expr()->isNull('embedding_id'));
+		$deleted = $qb->executeStatement();
+		if ($deleted > 0) {
+			$output->info('Removed ' . $deleted . ' face detections without a face vector');
+		}
+
 		$qb = $this->db->getQueryBuilder();
 		$qb->select($qb->func()->count('id'))
 			->from('recognize_face_detections')
