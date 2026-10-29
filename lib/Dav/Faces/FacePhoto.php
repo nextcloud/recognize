@@ -52,7 +52,9 @@ class FacePhoto implements IFile {
 		if (count($detections) > 1 && $thisDetection !== false) {
 			$centroid = FaceClusterAnalyzer::calculateCentroidOfDetections($detections);
 			$distance = new Euclidean();
-			$distanceValue = $distance->compute($centroid, $thisDetection->getVector());
+			/** @var list<float> $vector */
+			$vector = $thisDetection->getVector();
+			$distanceValue = $distance->compute($centroid, $vector);
 			// Set threshold to avoid recreating the same mistake
 			$this->faceDetection->setThreshold($distanceValue);
 		}
