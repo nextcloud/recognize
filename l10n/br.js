@@ -6,6 +6,7 @@ OC.L10N.register(
     "Videos" : "Videoioù",
     "never" : "james",
     "Status" : "Statud",
+    "Background jobs" : "Labour en a-dreñv",
     "People" : "Tud",
     "Music" : "Musik",
     "Office" : "Burev",

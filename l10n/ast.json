@@ -14,6 +14,7 @@
     "Background Jobs are not executed via cron. Recognize requires background jobs to be executed via cron." : "Los trabayos en segundu planu nun s'executen per cron. Recognize rique que los trabayos en segundu planu s'executen per cron.",
     "The app is installed and will automatically classify files in background processes." : "L'aplicación ta instalada y va clasificar automáticamente los ficheros en procesos en segundu planu.",
     "Queued files" : "Ficheros na cola",
+    "Background jobs" : "Trabayos en segundu planu",
     "Face recognition" : "Reconocimientu facial",
     "Face recognition is working. " : "El reconocimientu facial funciona.",
     "An error occurred during face recognition, please check the Nextcloud logs." : "Prodúxose un error demientres el reconocimientu facial, comprueba los rexistros de Nextcloud.",

@@ -20,6 +20,7 @@ OC.L10N.register(
     "The app is installed and will automatically classify files in background processes." : "L'aplicació està instal·lada i classificarà automàticament els fitxers en processos en segon pla.",
     "None of the tagging options below are currently selected. The app will currently do nothing." : "Cap de les opcions d'etiquetatge següents no està seleccionada actualment. Actualment l'aplicació no farà res.",
     "Queued files" : "Fitxers a la cua",
+    "Background jobs" : "Tasques de fons",
     "Face recognition" : "Reconeixement facial",
     "Face recognition is working. " : "El reconeixement facial funciona. ",
     "An error occurred during face recognition, please check the Nextcloud logs." : "S'ha produït un error durant el reconeixement facial; comproveu els registres de Nextcloud.",

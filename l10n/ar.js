@@ -22,6 +22,7 @@ OC.L10N.register(
     "The app is installed and will automatically classify files in background processes." : "تمّ تنصيب التطبيق و سوف يقوم بتنصيف الملفات آليّاً في عمليات بالخلفية.",
     "None of the tagging options below are currently selected. The app will currently do nothing." : "لم يتم تحديد أي من خيارات وضع السِّمَات أدناه حالياً. لن يقوم التطبيق حالياً بأيّ شيء.",
     "Queued files" : "ملفات في قائمة الانتظار",
+    "Background jobs" : "المهام التي تعمل في الخلفية بالخادم",
     "Face recognition" : "التعرف على الوجه",
     "Face recognition is working. " : "التعرُّف عل الوجوه قيد العمل.",
     "An error occurred during face recognition, please check the Nextcloud logs." : "حدث خطأ أثناء التعرّف على الوجوه. رجاءً راجع سجل الحركات logs في نكست كلاود",

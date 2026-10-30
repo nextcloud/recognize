@@ -20,6 +20,7 @@ OC.L10N.register(
     "The app is installed and will automatically classify files in background processes." : "Приложението е инсталирано и ще класифицира автоматично файлове във фонови процеси.",
     "None of the tagging options below are currently selected. The app will currently do nothing." : "не . В момента не е избрана нито една от опциите за маркиране по-долу. За сега приложението няма да направи нищо.",
     "Queued files" : "Редица от файлове, чакащи за изпълнение",
+    "Background jobs" : "Фонови процеси",
     "Face recognition" : "Лицево разпознаване",
     "Face recognition is working. " : "Разпознаването на лица работи.",
     "An error occurred during face recognition, please check the Nextcloud logs." : "Възникнала е грешка по време на разпознаването на лица, моля, проверете регистрационните файлове/журнали/ на Nextcloud.",
