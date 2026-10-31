@@ -54,12 +54,8 @@ final class FsActionMapper extends QBMapper {
 	 * @param class-string<FsCreation|FsDeletion|FsMove|FsAccessUpdate> $className
 	 * @return list<FsCreation|FsDeletion|FsMove|FsAccessUpdate>
 	 * @throws \OCP\DB\Exception
-	 * @throws \Exception
 	 */
 	public function find(string $className, int $limit = 0): array {
-		if (!in_array('storage_id', $className::$columns, true)) {
-			throw new \Exception('entity does not have a storage_id column');
-		}
 		$qb = $this->db->getQueryBuilder();
 		$qb->selectDistinct($className::$columns)
 			->from($className::$tableName);
@@ -227,26 +223,34 @@ final class FsActionMapper extends QBMapper {
 
 	/**
 	 * @param int $nodeId
-	 * @param string $owner
-	 * @param list<string> $addedUsers
-	 * @param list<string> $targetUsers
-	 * @return FsCreation|FsDeletion|FsMove|FsAccessUpdate
-	 * @throws Exception|MultipleObjectsReturnedException
+	 * @return FsMove
+	 * @throws Exception
 	 */
-	public function insertMove(int $nodeId, string $owner, array $addedUsers, array $targetUsers): Entity {
+	public function insertMove(int $nodeId): FsMove {
+		// A move for this node may still be pending. Replace it with a fresh row rather than
+		// keeping it: the job deletes the rows it has processed by ID, so a row the job was
+		// already working on would be deleted without this move having been processed. A
+		// fresh row has a new ID, which the running job doesn't know about, so it survives
+		// until the next run.
+		$this->db->beginTransaction();
 		try {
-			$move = $this->findByNodeId(FsMove::class, $nodeId);
-		} catch (DoesNotExistException $e) {
+			$qb = $this->db->getQueryBuilder();
+			$qb->delete(FsMove::$tableName)
+				->where($qb->expr()->eq('node_id', $qb->createPositionalParameter($nodeId, IQueryBuilder::PARAM_INT)));
+			$qb->executeStatement();
+
 			$move = new FsMove();
 			$move->setNodeId($nodeId);
-			$move->setOwner($owner);
-			$move->setAddedUsers($addedUsers);
-			$move->setTargetUsers($targetUsers);
 			$this->insert($move);
-			$arguments = [ 'type' => FsDeletion::class ];
-			if (!$this->jobList->has(ProcessFsActionsJob::class, $arguments)) {
-				$this->jobList->add(ProcessFsActionsJob::class, $arguments);
-			}
+			$this->db->commit();
+		} catch (\Throwable $e) {
+			$this->db->rollBack();
+			throw $e;
+		}
+
+		$arguments = [ 'type' => FsMove::class ];
+		if (!$this->jobList->has(ProcessFsActionsJob::class, $arguments)) {
+			$this->jobList->add(ProcessFsActionsJob::class, $arguments);
 		}
 		return $move;
 	}

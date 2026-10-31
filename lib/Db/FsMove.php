@@ -15,60 +15,24 @@ use OCP\AppFramework\Db\Entity;
  * @package OCA\Recognize\Db
  * @method int getNodeId()
  * @method setNodeId(int $nodeId)
- * @method string getOwner()
- * @method setOwner(string $owner)
  */
 final class FsMove extends Entity {
 	protected ?int $nodeId = null;
-	protected ?string $owner = null;
-	protected ?string $addedUsers = null;
-	protected ?string $targetUsers = null;
 
 	/**
 	 * @var string[]
 	 */
-	public static array $columns = ['id', 'node_id', 'owner', 'added_users', 'target_users'];
+	public static array $columns = ['id', 'node_id'];
 
 	/**
 	 * @var string[]
 	 */
-	public static array $fields = ['id', 'nodeId', 'owner', 'addedUsers', 'targetUsers'];
+	public static array $fields = ['id', 'nodeId'];
 
 	public static string $tableName = 'recognize_fs_moves';
 
 	public function __construct() {
 		// add types in constructor
 		$this->addType('nodeId', 'integer');
-		$this->addType('owner', 'string');
-		$this->addType('addedUsers', 'string');
-		$this->addType('targetUsers', 'string');
-	}
-
-	/**
-	 * @return list<string>
-	 */
-	public function getAddedUsers(): array {
-		return explode(',', $this->addedUsers ?? '');
-	}
-
-	/**
-	 * @return list<string>
-	 */
-	public function getTargetUsers(): array {
-		return explode(',', $this->targetUsers ?? '');
-	}
-
-	/**
-	 * @param list<string> $users
-	 */
-	public function setAddedUsers(array $users): void {
-		$this->setter('addedUsers', [implode(',', $users)]);
-	}
-
-	/**
-	 * @param list<string> $users
-	 */
-	public function setTargetUsers(array $users): void {
-		$this->setter('targetUsers', [implode(',', $users)]);
 	}
 }
