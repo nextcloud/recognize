@@ -24,6 +24,7 @@
     "None of the tagging options below are currently selected. The app will currently do nothing." : "V tuto chvíli nejsou vybrány žádné možnosti opatřování štítky. Aplikace v tuto chvíli nic nedělá.",
     "Queued files" : "Souborů ve frontě",
     "Background jobs" : "Úlohy na pozadí",
+    "Classification" : "Klasifikace",
     "Face recognition" : "Rozpoznávání obličejů",
     "Face recognition is working. " : "Rozpoznávání obličejů funguje.",
     "An error occurred during face recognition, please check the Nextcloud logs." : "Došlo k chybě při rozpoznávání obličejů – zkontrolujte záznamy událostí (log) v Nextcloud.",
