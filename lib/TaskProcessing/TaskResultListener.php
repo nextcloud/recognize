@@ -194,6 +194,9 @@ final class TaskResultListener implements IEventListener {
 	private function applyFaceResults(array $fileIds, array $results): void {
 		$model = ClusteringFaceClassifier::MODEL_NAME;
 		$scheduledClusterJobsFor = [];
+		// The mount tables are read for every file in this batch, so refresh them once here
+		// rather than on every lookup.
+		$this->userMountCache->clear();
 		foreach ($fileIds as $i => $fileId) {
 			if (!isset($results[$i])) {
 				continue;
