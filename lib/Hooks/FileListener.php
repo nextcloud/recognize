@@ -36,9 +36,6 @@ final class FileListener implements IEventListener {
 	private ?bool $movingFromIgnoredTerritory;
 	private ?array $movingDirFromIgnoredTerritory;
 
-	/** @var array<string, bool>  */
-	private array $addedMounts = [];
-
 	public function __construct(
 		private LoggerInterface     $logger,
 		private IgnoreService       $ignoreService,
@@ -52,23 +49,13 @@ final class FileListener implements IEventListener {
 	public function handle(Event $event): void {
 		try {
 			if ($event instanceof \OCP\Files\Config\Event\UserMountAddedEvent) {
-				$rootId = $event->mountPoint->getRootId();
 				// Asynchronous, because we potentially recurse and this event needs to be handled fast
-				$this->onAccessUpdate($event->mountPoint->getStorageId(), $rootId);
-				// Remember that this mount was added in the current process (see UserMountRemovedEvent below)
-				$this->addedMounts[$event->mountPoint->getUser()->getUID() . '-' . $rootId] = true;
+				$this->onAccessUpdate($event->mountPoint->getStorageId(), $event->mountPoint->getRootId());
 			}
 
 			if ($event instanceof \OCP\Files\Config\Event\UserMountRemovedEvent) {
-				// If we just added this mount, ignore the removal, as the 'removal' event is always fired after
-				// the 'added' event in server
-				$rootId = $event->mountPoint->getRootId();
-				$mountKey = $event->mountPoint->getUser()->getUID() . '-' . $rootId;
-				if (array_key_exists($mountKey, $this->addedMounts) && $this->addedMounts[$mountKey] === true) {
-					return;
-				}
 				// Asynchronous, because we potentially recurse and this event needs to be handled fast
-				$this->onAccessUpdate($event->mountPoint->getStorageId(), $rootId);
+				$this->onAccessUpdate($event->mountPoint->getStorageId(), $event->mountPoint->getRootId());
 			}
 			
 			if ($event instanceof BeforeNodeRenamedEvent) {
