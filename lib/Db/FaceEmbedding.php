@@ -57,4 +57,14 @@ class FaceEmbedding extends Entity {
 	public function setVector(array $vector): void {
 		$this->setter('faceVector', [$vector]);
 	}
+
+	/**
+	 * Compares with a tolerance, as not all databases store doubles losslessly
+	 */
+	public function hasSameBoundingBox(FaceEmbedding $other): bool {
+		return abs($this->getX() - $other->getX()) < 1e-9
+			&& abs($this->getY() - $other->getY()) < 1e-9
+			&& abs($this->getHeight() - $other->getHeight()) < 1e-9
+			&& abs($this->getWidth() - $other->getWidth()) < 1e-9;
+	}
 }

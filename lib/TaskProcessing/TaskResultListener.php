@@ -203,6 +203,18 @@ final class TaskResultListener implements IEventListener {
 			}
 			$raw = (string)$results[$i];
 			$userIds = $this->getUsersWithFileAccess($fileId);
+			// The file may have been processed before (e.g. it was edited and queued again),
+			// so reuse faces that are already stored instead of storing them a second time
+			try {
+				$existingEmbeddings = $this->faceEmbeddings->findByFileId($fileId);
+				$hasDetection = [];
+				foreach ($this->faceDetections->findByFileId($fileId) as $detection) {
+					$hasDetection[$detection->getUserId()][(int)$detection->getEmbeddingId()] = true;
+				}
+			} catch (\Throwable $e) {
+				$this->logger->error('Could not look up existing faces for file ' . $fileId, ['exception' => $e]);
+				continue;
+			}
 			foreach (explode("\n", $raw) as $line) {
 				$line = trim($line);
 				if ($line === '') {
@@ -235,13 +247,29 @@ final class TaskResultListener implements IEventListener {
 				$embedding->setWidth((float)($face['width'] ?? 0));
 				$embedding->setHeight((float)($face['height'] ?? 0));
 				$embedding->setVector($vector);
-				try {
-					$this->faceEmbeddings->insert($embedding);
-				} catch (\Throwable $e) {
-					$this->logger->error('Could not store face embedding for file ' . $fileId, ['exception' => $e]);
-					continue;
+				$existingEmbedding = null;
+				foreach ($existingEmbeddings as $candidate) {
+					if ($candidate->hasSameBoundingBox($embedding)) {
+						$existingEmbedding = $candidate;
+						break;
+					}
+				}
+				if ($existingEmbedding !== null) {
+					$embedding = $existingEmbedding;
+				} else {
+					try {
+						$this->faceEmbeddings->insert($embedding);
+					} catch (\Throwable $e) {
+						$this->logger->error('Could not store face embedding for file ' . $fileId, ['exception' => $e]);
+						continue;
+					}
+					$existingEmbeddings[] = $embedding;
 				}
 				foreach ($userIds as $userId) {
+					if ($hasDetection[$userId][$embedding->getId()] ?? false) {
+						continue;
+					}
+					$hasDetection[$userId][$embedding->getId()] = true;
 					try {
 						$this->faceDetections->insertForUser($embedding, $userId);
 					} catch (\Throwable $e) {
