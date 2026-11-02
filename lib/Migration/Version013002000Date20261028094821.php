@@ -53,11 +53,21 @@ final class Version013002000Date20261028094821 extends SimpleMigrationStep {
 			$output->info('Removed ' . $deleted . ' face detections without a face vector');
 		}
 
+		// Detections without a file can't be shown or linked to an embedding, which belongs to a file,
+		// so they would lose their vector when the column is dropped and linger as unusable rows
+		$qb = $this->db->getQueryBuilder();
+		$qb->delete('recognize_face_detections')
+			->where($qb->expr()->isNull('file_id'))
+			->andWhere($qb->expr()->isNull('embedding_id'));
+		$deleted = $qb->executeStatement();
+		if ($deleted > 0) {
+			$output->info('Removed ' . $deleted . ' face detections without a file');
+		}
+
 		$qb = $this->db->getQueryBuilder();
 		$qb->select($qb->func()->count('id'))
 			->from('recognize_face_detections')
-			->where($qb->expr()->isNull('embedding_id'))
-			->andWhere($qb->expr()->isNotNull('file_id'));
+			->where($qb->expr()->isNull('embedding_id'));
 		$result = $qb->executeQuery();
 		$total = (int)$result->fetchOne();
 		$result->closeCursor();
