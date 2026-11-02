@@ -23,6 +23,7 @@ use OCP\Files\InvalidPathException;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
+use OCP\IDBConnection;
 use OCP\IPreview;
 use OCP\ITempManager;
 use OCP\Share\IManager;
@@ -45,7 +46,8 @@ final class ClusteringFaceClassifier extends Classifier {
 		private FaceEmbeddingMapper $faceEmbeddings,
 		QueueService $queue, IRootFolder $rootFolder,
 		private IUserMountCache $userMountCache, private IJobList $jobList, ITempManager $tempManager, IPreview $previewProvider,
-		private IManager $shareManager) {
+		private IManager $shareManager,
+		private IDBConnection $db) {
 		parent::__construct($logger, $config, $rootFolder, $queue, $tempManager, $previewProvider);
 	}
 
@@ -99,52 +101,61 @@ final class ClusteringFaceClassifier extends Classifier {
 		 */
 		foreach ($classifierProcess as $queueFile => $faces) {
 			$this->logger->debug('Face results for ' . $queueFile->getFileId() . ' are in');
-			foreach ($faces as $face) {
-				if ($face['score'] < self::MIN_FACE_RECOGNITION_SCORE) {
-					$this->logger->debug('Face score too low. continuing with next face.');
-					continue;
-				}
-				if (abs($face['angle']['roll']) > self::MAX_FACE_ROLL || abs($face['angle']['yaw']) > self::MAX_FACE_YAW) {
-					$this->logger->debug('Face is not straight. continuing with next face.');
-					continue;
-				}
 
-				try {
-					$node = $this->rootFolder->getFirstNodeById($queueFile->getFileId());
-					$userIds = $node !== null ? $this->getUsersWithFileAccess($node) : [];
-				} catch (InvalidPathException|NotFoundException $e) {
-					$userIds = [];
-				}
+			try {
+				$node = $this->rootFolder->getFirstNodeById($queueFile->getFileId());
+				$userIds = $node !== null ? $this->getUsersWithFileAccess($node) : [];
+			} catch (InvalidPathException|NotFoundException $e) {
+				$userIds = [];
+			}
 
-				$embedding = new FaceEmbedding();
-				$embedding->setX($face['x']);
-				$embedding->setY($face['y']);
-				$embedding->setWidth($face['width']);
-				$embedding->setHeight($face['height']);
-				$embedding->setVector($face['vector']);
-				$embedding->setFileId($queueFile->getFileId());
-				try {
-					$this->faceEmbeddings->insert($embedding);
-				} catch (\Throwable $e) {
-					$this->logger->error('Could not store face embedding in database', ['exception' => $e]);
-					continue;
-				}
-
-				// Insert face detection for all users with access
-				foreach ($userIds as $userId) {
-					$this->logger->debug('preparing face detection for user ' . $userId);
-					try {
-						$this->faceDetections->insertForUser($embedding, $userId);
-					} catch (\Throwable $e) {
-						$this->logger->error('Could not store face detection in database', ['exception' => $e]);
+			// Store the faces of a file all at once or not at all: files that already have faces are
+			// never analysed again, so a partially stored file would stay incomplete forever
+			$storedFaces = 0;
+			$this->db->beginTransaction();
+			try {
+				foreach ($faces as $face) {
+					if ($face['score'] < self::MIN_FACE_RECOGNITION_SCORE) {
+						$this->logger->debug('Face score too low. continuing with next face.');
 						continue;
 					}
-					$this->logger->debug('scheduling ClusterFacesJob for user ' . $userId);
-					$this->jobList->add(ClusterFacesJob::class, ['userId' => $userId]);
+					if (abs($face['angle']['roll']) > self::MAX_FACE_ROLL || abs($face['angle']['yaw']) > self::MAX_FACE_YAW) {
+						$this->logger->debug('Face is not straight. continuing with next face.');
+						continue;
+					}
+
+					$embedding = new FaceEmbedding();
+					$embedding->setX($face['x']);
+					$embedding->setY($face['y']);
+					$embedding->setWidth($face['width']);
+					$embedding->setHeight($face['height']);
+					$embedding->setVector($face['vector']);
+					$embedding->setFileId($queueFile->getFileId());
+					$this->faceEmbeddings->insert($embedding);
+
+					// Insert face detection for all users with access
+					foreach ($userIds as $userId) {
+						$this->logger->debug('preparing face detection for user ' . $userId);
+						$this->faceDetections->insertForUser($embedding, $userId);
+					}
+					$storedFaces++;
 				}
-				$this->config->setAppValueString(self::MODEL_NAME . '.status', 'true', lazy: true);
-				$this->config->setAppValueString(self::MODEL_NAME . '.lastFile', (string)time(), lazy: true);
+				$this->db->commit();
+			} catch (\Throwable $e) {
+				$this->db->rollBack();
+				$this->logger->error('Could not store faces of file ' . $queueFile->getFileId() . ' in database, discarding them so the file can be analysed again', ['exception' => $e]);
+				continue;
 			}
+
+			if ($storedFaces === 0) {
+				continue;
+			}
+			foreach ($userIds as $userId) {
+				$this->logger->debug('scheduling ClusterFacesJob for user ' . $userId);
+				$this->jobList->add(ClusterFacesJob::class, ['userId' => $userId]);
+			}
+			$this->config->setAppValueString(self::MODEL_NAME . '.status', 'true', lazy: true);
+			$this->config->setAppValueString(self::MODEL_NAME . '.lastFile', (string)time(), lazy: true);
 		}
 		$this->logger->debug('face classifier end');
 	}

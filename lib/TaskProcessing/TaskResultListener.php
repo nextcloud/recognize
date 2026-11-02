@@ -30,6 +30,7 @@ use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
 use OCP\Files\Config\ICachedMountInfo;
 use OCP\Files\Config\IUserMountCache;
+use OCP\IDBConnection;
 use OCP\IUserManager;
 use OCP\IUserSession;
 use OCP\TaskProcessing\Events\TaskFailedEvent;
@@ -57,6 +58,7 @@ final class TaskResultListener implements IEventListener {
 		private QueueService $queue,
 		private IUserSession $userSession,
 		private IUserManager $userManager,
+		private IDBConnection $db,
 	) {
 	}
 
@@ -201,90 +203,107 @@ final class TaskResultListener implements IEventListener {
 			if (!isset($results[$i])) {
 				continue;
 			}
-			$raw = (string)$results[$i];
 			$userIds = $this->getUsersWithFileAccess($fileId);
-			// The file may have been processed before (e.g. it was edited and queued again),
-			// so reuse faces that are already stored instead of storing them a second time
+			$faces = $this->parseFaces($fileId, (string)$results[$i]);
+
+			// Store the faces of a file all at once or not at all, so a failure can't leave
+			// a face stored for only some of the users with access
+			/** @var array<string, true> $usersWithNewDetections */
+			$usersWithNewDetections = [];
+			$this->db->beginTransaction();
 			try {
+				// The file may have been processed before (e.g. it was edited and queued again),
+				// so reuse faces that are already stored instead of storing them a second time
 				$existingEmbeddings = $this->faceEmbeddings->findByFileId($fileId);
 				$hasDetection = [];
 				foreach ($this->faceDetections->findByFileId($fileId) as $detection) {
 					$hasDetection[$detection->getUserId()][(int)$detection->getEmbeddingId()] = true;
 				}
+
+				foreach ($faces as $embedding) {
+					$existingEmbedding = null;
+					foreach ($existingEmbeddings as $candidate) {
+						if ($candidate->hasSameBoundingBox($embedding)) {
+							$existingEmbedding = $candidate;
+							break;
+						}
+					}
+					if ($existingEmbedding !== null) {
+						$embedding = $existingEmbedding;
+					} else {
+						$this->faceEmbeddings->insert($embedding);
+						$existingEmbeddings[] = $embedding;
+					}
+					foreach ($userIds as $userId) {
+						if ($hasDetection[$userId][$embedding->getId()] ?? false) {
+							continue;
+						}
+						$hasDetection[$userId][$embedding->getId()] = true;
+						$this->faceDetections->insertForUser($embedding, $userId);
+						$usersWithNewDetections[$userId] = true;
+					}
+				}
+				$this->db->commit();
 			} catch (\Throwable $e) {
-				$this->logger->error('Could not look up existing faces for file ' . $fileId, ['exception' => $e]);
+				$this->db->rollBack();
+				$this->logger->error('Could not store faces of file ' . $fileId . ' in database', ['exception' => $e]);
 				continue;
 			}
-			foreach (explode("\n", $raw) as $line) {
-				$line = trim($line);
-				if ($line === '') {
-					continue;
-				}
-				try {
-					$face = json_decode($line, true, 512, JSON_THROW_ON_ERROR);
-				} catch (\JsonException $e) {
-					$this->logger->warning('Invalid face JSON for file ' . $fileId, ['exception' => $e]);
-					continue;
-				}
-				if (!is_array($face)) {
-					continue;
-				}
-				if (isset($face['score']) && (float)$face['score'] < ImageFaceRecognitionClassifier::MIN_FACE_RECOGNITION_SCORE) {
-					continue;
-				}
-				// Accept either a full face object {x,y,width,height,score,vector,angle}
-				// or a bare embedding vector (list of numbers).
-				$isBareVector = array_is_list($face) && count($face) > 0 && is_numeric($face[0]);
-				$vector = $isBareVector ? $face : ($face['vector'] ?? null);
-				if (!is_array($vector)) {
-					$this->logger->warning('Face entry without embedding vector for file ' . $fileId);
-					continue;
-				}
-				$embedding = new FaceEmbedding();
-				$embedding->setFileId($fileId);
-				$embedding->setX((float)($face['x'] ?? 0));
-				$embedding->setY((float)($face['y'] ?? 0));
-				$embedding->setWidth((float)($face['width'] ?? 0));
-				$embedding->setHeight((float)($face['height'] ?? 0));
-				$embedding->setVector($vector);
-				$existingEmbedding = null;
-				foreach ($existingEmbeddings as $candidate) {
-					if ($candidate->hasSameBoundingBox($embedding)) {
-						$existingEmbedding = $candidate;
-						break;
-					}
-				}
-				if ($existingEmbedding !== null) {
-					$embedding = $existingEmbedding;
-				} else {
-					try {
-						$this->faceEmbeddings->insert($embedding);
-					} catch (\Throwable $e) {
-						$this->logger->error('Could not store face embedding for file ' . $fileId, ['exception' => $e]);
-						continue;
-					}
-					$existingEmbeddings[] = $embedding;
-				}
-				foreach ($userIds as $userId) {
-					if ($hasDetection[$userId][$embedding->getId()] ?? false) {
-						continue;
-					}
-					$hasDetection[$userId][$embedding->getId()] = true;
-					try {
-						$this->faceDetections->insertForUser($embedding, $userId);
-					} catch (\Throwable $e) {
-						$this->logger->error('Could not store face detection for file ' . $fileId, ['exception' => $e]);
-						continue;
-					}
-					if (!isset($scheduledClusterJobsFor[$userId])) {
-						$this->jobList->add(ClusterFacesJob::class, ['userId' => $userId]);
-						$scheduledClusterJobsFor[$userId] = true;
-					}
+
+			foreach (array_keys($usersWithNewDetections) as $userId) {
+				$userId = (string)$userId;
+				if (!isset($scheduledClusterJobsFor[$userId])) {
+					$this->jobList->add(ClusterFacesJob::class, ['userId' => $userId]);
+					$scheduledClusterJobsFor[$userId] = true;
 				}
 			}
 			$this->config->setAppValueString($model . '.status', 'true', lazy: true);
 			$this->config->setAppValueString($model . '.lastFile', (string)time(), lazy: true);
 		}
+	}
+
+	/**
+	 * Parses the faces from the output of a face recognition task, one JSON object per line
+	 *
+	 * @return list<FaceEmbedding>
+	 */
+	private function parseFaces(int $fileId, string $raw): array {
+		$faces = [];
+		foreach (explode("\n", $raw) as $line) {
+			$line = trim($line);
+			if ($line === '') {
+				continue;
+			}
+			try {
+				$face = json_decode($line, true, 512, JSON_THROW_ON_ERROR);
+			} catch (\JsonException $e) {
+				$this->logger->warning('Invalid face JSON for file ' . $fileId, ['exception' => $e]);
+				continue;
+			}
+			if (!is_array($face)) {
+				continue;
+			}
+			if (isset($face['score']) && (float)$face['score'] < ImageFaceRecognitionClassifier::MIN_FACE_RECOGNITION_SCORE) {
+				continue;
+			}
+			// Accept either a full face object {x,y,width,height,score,vector,angle}
+			// or a bare embedding vector (list of numbers).
+			$isBareVector = array_is_list($face) && count($face) > 0 && is_numeric($face[0]);
+			$vector = $isBareVector ? $face : ($face['vector'] ?? null);
+			if (!is_array($vector)) {
+				$this->logger->warning('Face entry without embedding vector for file ' . $fileId);
+				continue;
+			}
+			$embedding = new FaceEmbedding();
+			$embedding->setFileId($fileId);
+			$embedding->setX((float)($face['x'] ?? 0));
+			$embedding->setY((float)($face['y'] ?? 0));
+			$embedding->setWidth((float)($face['width'] ?? 0));
+			$embedding->setHeight((float)($face['height'] ?? 0));
+			$embedding->setVector($vector);
+			$faces[] = $embedding;
+		}
+		return $faces;
 	}
 
 	private function enqueueForLandmarks(int $fileId): void {
