@@ -472,11 +472,13 @@ final class FaceDetectionMapper extends QBMapper {
 	public function countUnclustered(): int {
 		$minDetectionSize = $this->getMinDetectionSize();
 		$qb = $this->db->getQueryBuilder();
-		$qb->select($qb->func()->count('id'))
-			->from('recognize_face_detections')
-			->where($qb->expr()->isNull('cluster_id'))
-			->andWhere($qb->expr()->gte('height', $qb->createPositionalParameter($minDetectionSize)))
-			->andWhere($qb->expr()->gte('width', $qb->createPositionalParameter($minDetectionSize)));
+		// Only count detections that can actually be clustered, i.e. those with an embedding (see findUnclusteredByUserId)
+		$qb->select($qb->func()->count('d.id'))
+			->from('recognize_face_detections', 'd')
+			->innerJoin('d', 'recognize_face_vectors', 'e', $qb->expr()->eq('d.embedding_id', 'e.id'))
+			->where($qb->expr()->isNull('d.cluster_id'))
+			->andWhere($qb->expr()->gte('d.height', $qb->createPositionalParameter($minDetectionSize)))
+			->andWhere($qb->expr()->gte('d.width', $qb->createPositionalParameter($minDetectionSize)));
 		$result = $qb->executeQuery();
 		/** @var int|string $count */
 		$count = $result->fetch(\PDO::FETCH_COLUMN);
@@ -491,11 +493,14 @@ final class FaceDetectionMapper extends QBMapper {
 	public function getUsersForUnclustered(): array {
 		$minDetectionSize = $this->getMinDetectionSize();
 		$qb = $this->db->getQueryBuilder();
-		$qb->selectDistinct('user_id')
-			->from('recognize_face_detections')
-			->where($qb->expr()->isNull('cluster_id'))
-			->andWhere($qb->expr()->gte('height', $qb->createPositionalParameter($minDetectionSize)))
-			->andWhere($qb->expr()->gte('width', $qb->createPositionalParameter($minDetectionSize)));
+		// Only consider detections that can actually be clustered, i.e. those with an embedding (see findUnclusteredByUserId),
+		// otherwise ClusterFacesJob would be scheduled for these users forever
+		$qb->selectDistinct('d.user_id')
+			->from('recognize_face_detections', 'd')
+			->innerJoin('d', 'recognize_face_vectors', 'e', $qb->expr()->eq('d.embedding_id', 'e.id'))
+			->where($qb->expr()->isNull('d.cluster_id'))
+			->andWhere($qb->expr()->gte('d.height', $qb->createPositionalParameter($minDetectionSize)))
+			->andWhere($qb->expr()->gte('d.width', $qb->createPositionalParameter($minDetectionSize)));
 		$result = $qb->executeQuery();
 		/** @var array<string> $users */
 		$users = $result->fetchAll(\PDO::FETCH_COLUMN);
