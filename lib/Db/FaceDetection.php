@@ -83,6 +83,13 @@ class FaceDetection extends Entity {
 	public function getVector(): array {
 		return $this->getter('faceVector');
 	}
+
+	/**
+	 * Whether the vector is set; most queries don't load it, as it is stored with the embedding
+	 */
+	public function hasVector(): bool {
+		return is_array($this->faceVector);
+	}
 	public function setVector(array $vector): void {
 		$this->setter('faceVector', [$vector]);
 	}

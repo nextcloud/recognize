@@ -49,6 +49,7 @@ final class FaceDetectionMapper extends QBMapper {
 	 *
 	 * @param bool $reuseExisting Use an existing embedding of the same file with the same bounding box instead, if there is one
 	 * @throws \OCP\DB\Exception
+	 * @throws \InvalidArgumentException If the detection has neither an embedding nor a vector to create one from
 	 */
 	private function ensureEmbedding(FaceDetection $detection, bool $reuseExisting): void {
 		if ($detection->getEmbeddingId() !== null) {
@@ -61,6 +62,9 @@ final class FaceDetectionMapper extends QBMapper {
 					return;
 				}
 			}
+		}
+		if (!$detection->hasVector()) {
+			throw new \InvalidArgumentException('Cannot store a face detection for file ' . $detection->getFileId() . ' without an embedding or a face vector');
 		}
 		$embedding = new FaceEmbedding();
 		$embedding->setFileId($detection->getFileId());
