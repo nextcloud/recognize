@@ -22,6 +22,8 @@ use OCP\Migration\SimpleMigrationStep;
 final class Version013002000Date20261028094821 extends SimpleMigrationStep {
 	private const FILE_BATCH_SIZE = 500;
 	private const QUERY_CHUNK_SIZE = 1000;
+	// Coordinates are fractions of the image size, so this is far below the size of a pixel
+	private const COORDINATE_TOLERANCE = 1e-6;
 
 	public function __construct(
 		private IDBConnection $db,
@@ -99,6 +101,8 @@ final class Version013002000Date20261028094821 extends SimpleMigrationStep {
 	 * @param list<int> $fileIds
 	 * @return int The number of migrated detections
 	 * @throws \OCP\DB\Exception
+	 * @throws \RuntimeException If a face could not be linked to its embedding; this aborts the migration
+	 *                           before the face_vector column is dropped, so no vectors are lost
 	 */
 	private function migrateFiles(array $fileIds): int {
 		// Group the detections of these files by face; all copies of a face share file and bounding box
@@ -109,38 +113,49 @@ final class Version013002000Date20261028094821 extends SimpleMigrationStep {
 			->andWhere($qb->expr()->in('file_id', $qb->createNamedParameter($fileIds, IQueryBuilder::PARAM_INT_ARRAY)))
 			->orderBy('id');
 		$result = $qb->executeQuery();
-		/** @var array<string, list<int>> $detectionIdsByFace */
-		$detectionIdsByFace = [];
+		/** @var array<string, array{face: array{file_id: int, x: float, y: float, height: float, width: float}, detectionIds: list<int>}> $faces */
+		$faces = [];
 		$count = 0;
 		while ($row = $result->fetch()) {
-			$key = $this->faceKey($row);
-			$detectionIdsByFace[$key][] = (int)$row['id'];
+			$face = $this->normalizeFace($row);
+			$key = implode('|', $face);
+			$faces[$key] ??= ['face' => $face, 'detectionIds' => []];
+			$faces[$key]['detectionIds'][] = (int)$row['id'];
 			$count++;
 		}
 		$result->closeCursor();
 
 		// Reuse embeddings created by a previous, interrupted run
-		$embeddingIdByFace = $this->findEmbeddingIds($fileIds);
+		$embeddingsByFile = $this->findEmbeddings($fileIds);
 
 		// Copy one detection per face within the database, so neither the vectors nor
 		// the float coordinates have to make a lossy round trip through PHP
-		$missingFaces = array_diff_key($detectionIdsByFace, $embeddingIdByFace);
 		$copyQuery = 'INSERT INTO `*PREFIX*recognize_face_vectors` (`file_id`, `x`, `y`, `height`, `width`, `face_vector`) '
 			. 'SELECT `file_id`, `x`, `y`, `height`, `width`, `face_vector` FROM `*PREFIX*recognize_face_detections` WHERE `id` = ?';
-		foreach ($missingFaces as $detectionIds) {
-			$this->db->executeStatement($copyQuery, [$detectionIds[0]], [IQueryBuilder::PARAM_INT]);
+		$copied = false;
+		foreach ($faces as $face) {
+			if ($this->findMatchingEmbeddingId($face['face'], $embeddingsByFile) === null) {
+				$this->db->executeStatement($copyQuery, [$face['detectionIds'][0]], [IQueryBuilder::PARAM_INT]);
+				$copied = true;
+				// Placeholder until the ids are read back below, so a face within the tolerance isn't copied twice
+				$embeddingsByFile[$face['face']['file_id']][] = ['id' => 0, 'face' => $face['face']];
+			}
 		}
 		// Read the ids back instead of using lastInsertId(), which fails on Oracle for table
 		// names longer than the sequence names Doctrine generates
-		if (count($missingFaces) > 0) {
-			$embeddingIdByFace = $this->findEmbeddingIds($fileIds);
+		if ($copied) {
+			$embeddingsByFile = $this->findEmbeddings($fileIds);
 		}
 
-		foreach ($detectionIdsByFace as $key => $detectionIds) {
-			foreach (array_chunk($detectionIds, self::QUERY_CHUNK_SIZE) as $chunk) {
+		foreach ($faces as $face) {
+			$embeddingId = $this->findMatchingEmbeddingId($face['face'], $embeddingsByFile);
+			if ($embeddingId === null) {
+				throw new \RuntimeException('Could not find the copied face embedding for file ' . $face['face']['file_id'] . ' (bounding box ' . implode(', ', array_slice($face['face'], 1)) . ')');
+			}
+			foreach (array_chunk($face['detectionIds'], self::QUERY_CHUNK_SIZE) as $chunk) {
 				$qb = $this->db->getQueryBuilder();
 				$qb->update('recognize_face_detections')
-					->set('embedding_id', $qb->createNamedParameter($embeddingIdByFace[$key], IQueryBuilder::PARAM_INT))
+					->set('embedding_id', $qb->createNamedParameter($embeddingId, IQueryBuilder::PARAM_INT))
 					->where($qb->expr()->in('id', $qb->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)));
 				$qb->executeStatement();
 			}
@@ -151,29 +166,55 @@ final class Version013002000Date20261028094821 extends SimpleMigrationStep {
 
 	/**
 	 * @param list<int> $fileIds
-	 * @return array<string, int>
+	 * @return array<int, list<array{id: int, face: array{file_id: int, x: float, y: float, height: float, width: float}}>> The embeddings by file id
 	 * @throws \OCP\DB\Exception
 	 */
-	private function findEmbeddingIds(array $fileIds): array {
+	private function findEmbeddings(array $fileIds): array {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('id', 'file_id', 'x', 'y', 'height', 'width')
 			->from('recognize_face_vectors')
 			->where($qb->expr()->in('file_id', $qb->createNamedParameter($fileIds, IQueryBuilder::PARAM_INT_ARRAY)));
 		$result = $qb->executeQuery();
-		/** @var array<string, int> $embeddingIdByFace */
-		$embeddingIdByFace = [];
+		$embeddingsByFile = [];
 		while ($row = $result->fetch()) {
-			$embeddingIdByFace[$this->faceKey($row)] = (int)$row['id'];
+			$face = $this->normalizeFace($row);
+			$embeddingsByFile[$face['file_id']][] = ['id' => (int)$row['id'], 'face' => $face];
 		}
 		$result->closeCursor();
-		return $embeddingIdByFace;
+		return $embeddingsByFile;
+	}
+
+	/**
+	 * Compares the coordinates with a tolerance instead of exactly, as the copied floats
+	 * are not guaranteed to be read back with the exact same representation on all databases
+	 *
+	 * @param array{file_id: int, x: float, y: float, height: float, width: float} $face
+	 * @param array<int, list<array{id: int, face: array{file_id: int, x: float, y: float, height: float, width: float}}>> $embeddingsByFile
+	 */
+	private function findMatchingEmbeddingId(array $face, array $embeddingsByFile): ?int {
+		foreach ($embeddingsByFile[$face['file_id']] ?? [] as $embedding) {
+			if (abs($embedding['face']['x'] - $face['x']) < self::COORDINATE_TOLERANCE
+				&& abs($embedding['face']['y'] - $face['y']) < self::COORDINATE_TOLERANCE
+				&& abs($embedding['face']['height'] - $face['height']) < self::COORDINATE_TOLERANCE
+				&& abs($embedding['face']['width'] - $face['width']) < self::COORDINATE_TOLERANCE) {
+				return $embedding['id'];
+			}
+		}
+		return null;
 	}
 
 	/**
 	 * @param array<string, mixed> $row
+	 * @return array{file_id: int, x: float, y: float, height: float, width: float}
 	 */
-	private function faceKey(array $row): string {
-		return implode('|', [(int)$row['file_id'], (float)$row['x'], (float)$row['y'], (float)$row['height'], (float)$row['width']]);
+	private function normalizeFace(array $row): array {
+		return [
+			'file_id' => (int)$row['file_id'],
+			'x' => (float)$row['x'],
+			'y' => (float)$row['y'],
+			'height' => (float)$row['height'],
+			'width' => (float)$row['width'],
+		];
 	}
 
 	/**
