@@ -4,6 +4,7 @@ use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Migration\RemoveDuplicateFaceDetections;
 use OCP\IDBConnection;
 use OCP\Server;
+use Psr\Log\LoggerInterface;
 use Test\TestCase;
 
 /**
@@ -102,6 +103,95 @@ class RemoveDuplicateFaceDetectionsTest extends TestCase {
 		$this->assertEquals($expected, $remainingIds);
 		$this->assertNotContains($original, $remainingIds, 'The unclustered duplicate should be removed in favour of the clustered one');
 		$this->assertNotContains($reDetectedAgain, $remainingIds);
+	}
+
+	public function testRepairStepPrefersClusteredOverRejectedOverUnclustered() : void {
+		$qb = $this->db->getQueryBuilder();
+		$qb->delete('recognize_face_detections')->executeStatement();
+
+		// rejected (older) vs. clustered (newer): clustered wins
+		$rejected = $this->insertDetection('user1', 200, 0.295590, 0.269856, 0.037232, 0.070845, -1);
+		$clustered = $this->insertDetection('user1', 200, 0.295480, 0.269174, 0.037122, 0.071395, 1254);
+		// unclustered (older) vs. rejected (newer): rejected wins
+		$unclustered2 = $this->insertDetection('user1', 201, 0.295590, 0.269856, 0.037232, 0.070845, null);
+		$rejected2 = $this->insertDetection('user1', 201, 0.295480, 0.269174, 0.037122, 0.071395, -1);
+
+		Server::get(RemoveDuplicateFaceDetections::class)->run($this->createMock(\OCP\Migration\IOutput::class));
+
+		$qb = $this->db->getQueryBuilder();
+		$result = $qb->select('id')->from('recognize_face_detections')->executeQuery();
+		$remainingIds = [];
+		while (($id = $result->fetchOne()) !== false) {
+			$remainingIds[] = (int)$id;
+		}
+		$result->closeCursor();
+		sort($remainingIds);
+		$expected = [$clustered, $rejected2];
+		sort($expected);
+		$this->assertEquals($expected, $remainingIds);
+	}
+
+	public function testRepairStepAcrossBatches() : void {
+		$qb = $this->db->getQueryBuilder();
+		$qb->delete('recognize_face_detections')->executeStatement();
+
+		$expected = [];
+		for ($fileId = 300; $fileId < 310; $fileId++) {
+			// Two different faces per file, each detected twice with slightly shifted boxes
+			$expected[] = $this->insertDetection('user1', $fileId, 0.295590, 0.269856, 0.037232, 0.070845, null);
+			$expected[] = $this->insertDetection('user1', $fileId, 0.5, 0.3, 0.04, 0.07, null);
+			$this->insertDetection('user1', $fileId, 0.295480, 0.269174, 0.037122, 0.071395, null);
+			$this->insertDetection('user1', $fileId, 0.5001, 0.3001, 0.04, 0.07, null);
+		}
+
+		$repairStep = new RemoveDuplicateFaceDetections($this->db, Server::get(LoggerInterface::class));
+		// A batch size that doesn't line up with file boundaries, so batch limits fall in the middle of a file
+		$repairStep->setBatchSize(3);
+		$repairStep->run($this->createMock(\OCP\Migration\IOutput::class));
+
+		$this->assertEquals($this->sorted($expected), $this->getRemainingIds());
+	}
+
+	public function testRepairStepWithFileLargerThanBatch() : void {
+		$qb = $this->db->getQueryBuilder();
+		$qb->delete('recognize_face_detections')->executeStatement();
+
+		$expected = [];
+		$expected[] = $this->insertDetection('user1', 400, 0.1, 0.1, 0.05, 0.05, null);
+		for ($i = 0; $i < 5; $i++) {
+			$this->insertDetection('user1', 400, 0.1 + $i * 0.0001, 0.1, 0.05, 0.05, null);
+		}
+		$expected[] = $this->insertDetection('user1', 401, 0.1, 0.1, 0.05, 0.05, null);
+		$this->insertDetection('user1', 401, 0.1001, 0.1, 0.05, 0.05, null);
+
+		$repairStep = new RemoveDuplicateFaceDetections($this->db, Server::get(LoggerInterface::class));
+		$repairStep->setBatchSize(2);
+		$repairStep->run($this->createMock(\OCP\Migration\IOutput::class));
+
+		$this->assertEquals($this->sorted($expected), $this->getRemainingIds());
+	}
+
+	/**
+	 * @return list<int>
+	 */
+	private function getRemainingIds(): array {
+		$qb = $this->db->getQueryBuilder();
+		$result = $qb->select('id')->from('recognize_face_detections')->executeQuery();
+		$remainingIds = [];
+		while (($id = $result->fetchOne()) !== false) {
+			$remainingIds[] = (int)$id;
+		}
+		$result->closeCursor();
+		return $this->sorted($remainingIds);
+	}
+
+	/**
+	 * @param list<int> $ids
+	 * @return list<int>
+	 */
+	private function sorted(array $ids): array {
+		sort($ids);
+		return $ids;
 	}
 
 	public function testIsSameFace() : void {
