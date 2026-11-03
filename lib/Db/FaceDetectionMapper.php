@@ -133,6 +133,31 @@ final class FaceDetectionMapper extends QBMapper {
 	}
 
 	/**
+	 * Which of the given files already have at least one face detection (for any user)
+	 *
+	 * @param list<int> $fileIds
+	 * @return list<int>
+	 * @throws \OCP\DB\Exception
+	 */
+	public function findFileIdsWithDetections(array $fileIds): array {
+		$found = [];
+		foreach (array_chunk(array_values(array_unique($fileIds)), 1000) as $chunk) {
+			$qb = $this->db->getQueryBuilder();
+			$qb->selectDistinct('file_id')
+				->from('recognize_face_detections')
+				->where($qb->expr()->in('file_id', $qb->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)));
+			$result = $qb->executeQuery();
+			/** @var list<array{file_id: int|string}> $rows */
+			$rows = $result->fetchAll();
+			$result->closeCursor();
+			foreach ($rows as $row) {
+				$found[] = (int)$row['file_id'];
+			}
+		}
+		return $found;
+	}
+
+	/**
 	 * @throws \OCP\DB\Exception
 	 * @return \OCA\Recognize\Db\FaceDetection[]
 	 */
