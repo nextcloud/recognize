@@ -51,6 +51,17 @@ abstract class AbstractTaskProcessingClassifier {
 			return;
 		}
 
+		$filesToProcess = $this->filterQueueFiles($queueFiles);
+		if (count($filesToProcess) !== count($queueFiles)) {
+			$skipped = array_values(array_filter($queueFiles, static fn (QueueFile $qf): bool => !in_array($qf, $filesToProcess, true)));
+			$this->logger->debug('Skipping ' . count($skipped) . ' already processed files from ' . $this->getModelName() . ' queue');
+			$this->dropFromQueue($skipped);
+		}
+		$queueFiles = $filesToProcess;
+		if (count($queueFiles) === 0) {
+			return;
+		}
+
 		$storageId = $queueFiles[0]->getStorageId();
 		$rootId = $queueFiles[0]->getRootId();
 		$userId = $this->findUserForStorage($storageId, $rootId);
@@ -86,6 +97,17 @@ abstract class AbstractTaskProcessingClassifier {
 
 		// Once scheduled, files leave the queue. The TaskResultListener applies results when the task completes.
 		$this->dropFromQueue($queueFiles);
+	}
+
+	/**
+	 * Hook for subclasses to skip queue files that don't need to be processed (again).
+	 * Files that are filtered out are removed from the queue.
+	 *
+	 * @param list<QueueFile> $queueFiles
+	 * @return list<QueueFile>
+	 */
+	protected function filterQueueFiles(array $queueFiles): array {
+		return $queueFiles;
 	}
 
 	private function findUserForStorage(int $storageId, int $rootId): ?string {

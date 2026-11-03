@@ -197,8 +197,23 @@ final class TaskResultListener implements IEventListener {
 		// The mount tables are read for every file in this batch, so refresh them once here
 		// rather than on every lookup.
 		$this->userMountCache->clear();
+		// Files may have been processed by more than one task, e.g. when a recrawl was
+		// triggered while tasks were still pending. Only the first result is stored, as
+		// re-detected faces differ slightly in their coordinates and would end up as duplicates.
+		try {
+			$alreadyProcessed = array_flip($this->faceDetections->findFileIdsWithDetections($fileIds));
+		} catch (\Throwable $e) {
+			// Storing possible duplicates is better than losing the results; the
+			// RemoveDuplicateFaceDetections repair step can clean them up later
+			$this->logger->warning('Could not look up existing face detections', ['exception' => $e]);
+			$alreadyProcessed = [];
+		}
 		foreach ($fileIds as $i => $fileId) {
 			if (!isset($results[$i])) {
+				continue;
+			}
+			if (isset($alreadyProcessed[$fileId])) {
+				$this->logger->debug('File ' . $fileId . ' already has face detections, discarding new face results');
 				continue;
 			}
 			$raw = (string)$results[$i];
