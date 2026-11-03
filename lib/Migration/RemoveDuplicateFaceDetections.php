@@ -72,7 +72,7 @@ final class RemoveDuplicateFaceDetections implements IRepairStep {
 		try {
 			$removed = 0;
 			$lastFileId = -1;
-			do {
+			while (true) {
 				$upperFileId = $this->findBatchUpperBound($lastFileId);
 				$idsToDelete = $this->findDuplicateIds($lastFileId, $upperFileId);
 				foreach (array_chunk($idsToDelete, self::DELETE_CHUNK_SIZE) as $chunk) {
@@ -82,8 +82,11 @@ final class RemoveDuplicateFaceDetections implements IRepairStep {
 					$deleteQuery->executeStatement();
 				}
 				$removed += count($idsToDelete);
+				if ($upperFileId === null) {
+					break;
+				}
 				$lastFileId = $upperFileId;
-			} while ($upperFileId !== null);
+			}
 			if ($removed > 0) {
 				$output->info('Removed ' . $removed . ' duplicate face detections');
 				$this->logger->info('Removed ' . $removed . ' duplicate face detections');
@@ -109,6 +112,7 @@ final class RemoveDuplicateFaceDetections implements IRepairStep {
 			->setFirstResult($this->batchSize)
 			->setMaxResults(1);
 		$result = $qb->executeQuery();
+		/** @var int|string|false $fileId */
 		$fileId = $result->fetchOne();
 		$result->closeCursor();
 		return $fileId === false ? null : (int)$fileId;
