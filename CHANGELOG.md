@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [12.0.3] - 2026-11-03
+
+### Fixed
+* fix(FsMove): Remove unused columns
+* fix(insertMove): Use a transaction
+* perf: Only run userMountCache->clear() per batch
+* fix(onAccessUpdate): Correct user access for shared subdirectories
+* fix(FsActionService): Don't lose subdirectory files in onMove
+* fix(FileListener): Queue move actions correctly and fix FsActionMapper
+* fix(dav): Only return the current user's face detections
+* fix(dav): Check ownership of face detections
+* fix(FsActionMapper): Make sure to use DB index
+* fix: Remove google-img-scrap
+
 ## [12.0.2] - 2026-08-26
 
 ### Fixed
