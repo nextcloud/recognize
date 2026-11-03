@@ -4,6 +4,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [13.2.0] - 2026-11-03
+
+### New
+* enh: Improve self-documentation in the admin settings
+* perf(dav): Load detections in bulk
+* perf: Only run userMountCache->clear() per batch
+
+### Fixed
+
+* fix(RemoveDuplicateFaceDetections): Prioritize clustered faces + work in batches
+* fix: Prevent duplicates and clean up remaining near duplicates
+* fix(FsMove): Remove unused columns
+* fix(insertMove): Use a transaction
+* fix(onAccessUpdate): Correct user access for shared subdirectories
+* fix(FsActionService): Don't lose subdirectory files in onMove
+* fix(FileListener): Queue move actions correctly and fix FsActionMapper
+* fix(dav): Check ownership of face detections
+* fix(dav): Only return the current user's face detections
+* fix(ClusterFacesJob): Add a global limit on clustering runs
+* fix(ClusterFacesJob): Calculate clustering memory correctly and use a lock per user
+* fix(FsActionMapper): Make sure to use DB index
+* fix: Remove google-img-scrap
+* fix: log model download URL and destination (thanks to Ravi Shankar)
+* chore(deps): Update dependencies
+* fix(l10n): Update translations from Transifex
+
 ## [13.1.0] - 2026-08-26
 
 ### New
