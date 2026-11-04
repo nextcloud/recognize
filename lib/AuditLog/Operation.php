@@ -14,10 +14,16 @@ namespace OCA\Recognize\AuditLog;
  */
 enum Operation: string {
 	case SettingChanged = 'recognize.setting.changed';
+	case ClassificationsReset = 'recognize.classifications.reset';
+	case FaceClustersDeletedAll = 'recognize.face_clusters.deleted_all';
+	case FaceDetectionsDeletedAll = 'recognize.face_detections.deleted_all';
 
 	public function description(): string {
 		return match ($this) {
 			self::SettingChanged => 'An admin changed a Recognize setting to a different value.',
+			self::ClassificationsReset => 'Recognize classification tags were removed from all files of all users.',
+			self::FaceClustersDeletedAll => 'All face clusters (persons) of all users were deleted.',
+			self::FaceDetectionsDeletedAll => 'All face detections of all users were deleted.',
 		};
 	}
 }

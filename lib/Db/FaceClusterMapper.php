@@ -7,16 +7,22 @@
 declare(strict_types=1);
 namespace OCA\Recognize\Db;
 
+use OCA\Recognize\AuditLog\AuditEventFactory;
+use OCA\Recognize\AuditLog\Operation;
 use OCP\AppFramework\Db\Entity;
 use OCP\AppFramework\Db\QBMapper;
 use OCP\DB\QueryBuilder\IQueryBuilder;
+use OCP\EventDispatcher\IEventDispatcher;
 use OCP\IDBConnection;
 
 /**
  * @template-extends QBMapper<FaceCluster>
  */
 final class FaceClusterMapper extends QBMapper {
-	public function __construct(IDBConnection $db) {
+	public function __construct(
+		IDBConnection $db,
+		private IEventDispatcher $eventDispatcher,
+	) {
 		parent::__construct($db, 'recognize_face_clusters', FaceCluster::class);
 		$this->db = $db;
 	}
@@ -104,7 +110,14 @@ final class FaceClusterMapper extends QBMapper {
 	 */
 	public function deleteAll(): void {
 		$qb = $this->db->getQueryBuilder();
-		$qb->delete('recognize_face_clusters')
+		$count = $qb->delete('recognize_face_clusters')
 			->executeStatement();
+		if ($count > 0) {
+			$this->eventDispatcher->dispatchTyped(AuditEventFactory::create(
+				Operation::FaceClustersDeletedAll,
+				'Deleted all %s Recognize face clusters',
+				['count' => $count],
+			));
+		}
 	}
 }

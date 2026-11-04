@@ -7,6 +7,9 @@
 declare(strict_types=1);
 namespace OCA\Recognize\Service;
 
+use OCA\Recognize\AuditLog\AuditEventFactory;
+use OCA\Recognize\AuditLog\Operation;
+use OCP\EventDispatcher\IEventDispatcher;
 use OCP\SystemTag\ISystemTag;
 use OCP\SystemTag\ISystemTagManager;
 use OCP\SystemTag\ISystemTagObjectMapper;
@@ -17,10 +20,12 @@ final class TagManager {
 
 	private ISystemTagManager $tagManager;
 	private ISystemTagObjectMapper $objectMapper;
+	private IEventDispatcher $eventDispatcher;
 
-	public function __construct(ISystemTagManager $systemTagManager, ISystemTagObjectMapper $objectMapper) {
+	public function __construct(ISystemTagManager $systemTagManager, ISystemTagObjectMapper $objectMapper, IEventDispatcher $eventDispatcher) {
 		$this->tagManager = $systemTagManager;
 		$this->objectMapper = $objectMapper;
+		$this->eventDispatcher = $eventDispatcher;
 	}
 
 	/**
@@ -137,6 +142,13 @@ final class TagManager {
 		$fileIds = $this->findClassifiedFiles();
 		foreach ($fileIds as $id) {
 			$this->objectMapper->unassignTags($id, 'files', $tagIds);
+		}
+		if (count($fileIds) > 0) {
+			$this->eventDispatcher->dispatchTyped(AuditEventFactory::create(
+				Operation::ClassificationsReset,
+				'Removed Recognize classification tags from %s files',
+				['fileCount' => count($fileIds)],
+			));
 		}
 	}
 
