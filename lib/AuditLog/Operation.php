@@ -17,6 +17,8 @@ enum Operation: string {
 	case ClassificationsReset = 'recognize.classifications.reset';
 	case FaceClustersDeletedAll = 'recognize.face_clusters.deleted_all';
 	case FaceDetectionsDeletedAll = 'recognize.face_detections.deleted_all';
+	case EmptyTagsDeleted = 'recognize.empty_tags.deleted';
+	case LegacyTagsDeleted = 'recognize.legacy_tags.deleted';
 
 	public function description(): string {
 		return match ($this) {
@@ -24,6 +26,8 @@ enum Operation: string {
 			self::ClassificationsReset => 'Recognize classification tags were removed from all files of all users.',
 			self::FaceClustersDeletedAll => 'All face clusters (persons) of all users were deleted.',
 			self::FaceDetectionsDeletedAll => 'All face detections of all users were deleted.',
+			self::EmptyTagsDeleted => 'System tags that were assigned to no file were deleted, including tags not created by Recognize.',
+			self::LegacyTagsDeleted => 'System tags created by old Recognize versions were deleted.',
 		};
 	}
 }

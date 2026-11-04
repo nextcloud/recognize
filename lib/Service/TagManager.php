@@ -157,20 +157,40 @@ final class TagManager {
 	 */
 	public function removeEmptyTags(): void {
 		$tags = $this->tagManager->getAllTags();
+		$deletedTagIds = [];
 		foreach ($tags as $tag) {
 			$files = $this->objectMapper->getObjectIdsForTags($tag->getId(), 'files', 1);
 			if (empty($files)) {
 				$this->tagManager->deleteTags($tag->getId());
+				$deletedTagIds[] = $tag->getId();
 			}
 		}
+		$this->logDeletedTags(Operation::EmptyTagsDeleted, 'Deleted %s empty system tags', $deletedTagIds);
 	}
 
 	public function removeTags(array $tagNames) :void {
 		$tags = $this->tagManager->getAllTags();
+		$deletedTagIds = [];
 		foreach ($tags as $tag) {
 			if (in_array($tag->getName(), $tagNames)) {
 				$this->tagManager->deleteTags($tag->getId());
+				$deletedTagIds[] = $tag->getId();
 			}
 		}
+		$this->logDeletedTags(Operation::LegacyTagsDeleted, 'Deleted %s legacy Recognize system tags', $deletedTagIds);
+	}
+
+	/**
+	 * @param list<string> $tagIds
+	 */
+	private function logDeletedTags(Operation $operation, string $message, array $tagIds): void {
+		if (count($tagIds) === 0) {
+			return;
+		}
+		$this->eventDispatcher->dispatchTyped(AuditEventFactory::create(
+			$operation,
+			$message,
+			['count' => count($tagIds), 'tagIds' => $tagIds],
+		));
 	}
 }

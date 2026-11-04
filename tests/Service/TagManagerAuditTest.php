@@ -85,4 +85,72 @@ final class TagManagerAuditTest extends TestCase {
 
 		$this->tagManager->resetClassifications();
 	}
+
+	public function testRemoveEmptyTagsIsLogged(): void {
+		$this->systemTagManager->method('getAllTags')->willReturn([
+			$this->createTag('5'),
+			$this->createTag('6'),
+			$this->createTag('7'),
+		]);
+		$this->objectMapper->method('getObjectIdsForTags')
+			->willReturnCallback(fn (string $tagId): array => $tagId === '6' ? ['42'] : []);
+		$this->systemTagManager->expects($this->exactly(2))->method('deleteTags');
+
+		$this->eventDispatcher->expects($this->once())
+			->method('dispatchTyped')
+			->with($this->callback(function (CriticalActionPerformedEvent $event): bool {
+				$this->assertSame('Deleted %s empty system tags', $event->getLogMessage());
+				$this->assertSame(['count' => 2, 'tagIds' => ['5', '7']], $event->getParameters());
+				$this->assertTrue(AuditLogTestHelper::hasOperation($event, 'recognize.empty_tags.deleted'));
+				return true;
+			}));
+
+		$this->tagManager->removeEmptyTags();
+	}
+
+	public function testRemoveEmptyTagsWithoutEmptyTagsIsNotLogged(): void {
+		$this->systemTagManager->method('getAllTags')->willReturn([$this->createTag('5')]);
+		$this->objectMapper->method('getObjectIdsForTags')->willReturn(['42']);
+		$this->systemTagManager->expects($this->never())->method('deleteTags');
+		$this->eventDispatcher->expects($this->never())->method('dispatchTyped');
+
+		$this->tagManager->removeEmptyTags();
+	}
+
+	public function testFailedRemoveEmptyTagsIsNotLogged(): void {
+		$this->systemTagManager->method('getAllTags')->willReturn([$this->createTag('5')]);
+		$this->objectMapper->method('getObjectIdsForTags')->willReturn([]);
+		$this->systemTagManager->method('deleteTags')->willThrowException(new TagNotFoundException());
+		$this->eventDispatcher->expects($this->never())->method('dispatchTyped');
+		$this->expectException(TagNotFoundException::class);
+
+		$this->tagManager->removeEmptyTags();
+	}
+
+	public function testRemoveLegacyTagsIsLogged(): void {
+		$this->systemTagManager->method('getAllTags')->willReturn([
+			$this->createTag('5', 'cat'),
+			$this->createTag('6', 'holiday 2024'),
+			$this->createTag('7', 'dog'),
+		]);
+		$this->systemTagManager->expects($this->exactly(2))->method('deleteTags');
+
+		$this->eventDispatcher->expects($this->once())
+			->method('dispatchTyped')
+			->with($this->callback(function (CriticalActionPerformedEvent $event): bool {
+				$this->assertSame('Deleted %s legacy Recognize system tags', $event->getLogMessage());
+				$this->assertSame(['count' => 2, 'tagIds' => ['5', '7']], $event->getParameters());
+				$this->assertTrue(AuditLogTestHelper::hasOperation($event, 'recognize.legacy_tags.deleted'));
+				return true;
+			}));
+
+		$this->tagManager->removeTags(['cat', 'dog']);
+	}
+
+	public function testRemoveLegacyTagsWithoutMatchIsNotLogged(): void {
+		$this->systemTagManager->method('getAllTags')->willReturn([$this->createTag('6', 'holiday 2024')]);
+		$this->eventDispatcher->expects($this->never())->method('dispatchTyped');
+
+		$this->tagManager->removeTags(['cat', 'dog']);
+	}
 }
