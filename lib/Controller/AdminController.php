@@ -15,8 +15,6 @@ use OCA\Recognize\BackgroundJobs\ClassifyLandmarksJob;
 use OCA\Recognize\BackgroundJobs\ClassifyMovinetJob;
 use OCA\Recognize\BackgroundJobs\ClassifyMusicnnJob;
 use OCA\Recognize\BackgroundJobs\ClusterFacesJob;
-use OCA\Recognize\BackgroundJobs\SchedulerJob;
-use OCA\Recognize\BackgroundJobs\StorageCrawlJob;
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Service\QueueService;
@@ -63,25 +61,12 @@ final class AdminController extends Controller {
 	}
 
 	public function clearAllJobs(): JSONResponse {
-		$this->queue->clearQueue('imagenet');
-		$this->queue->clearQueue('faces');
-		$this->queue->clearQueue('landmarks');
-		$this->queue->clearQueue('movinet');
-		$this->queue->clearQueue('musicnn');
-		$this->jobList->remove(ClassifyFacesJob::class);
-		$this->jobList->remove(ClassifyImagenetJob::class);
-		$this->jobList->remove(ClassifyLandmarksJob::class);
-		$this->jobList->remove(ClassifyMusicnnJob::class);
-		$this->jobList->remove(ClassifyMovinetJob::class);
-		$this->jobList->remove(ClusterFacesJob::class);
-		$this->jobList->remove(SchedulerJob::class);
-		$this->jobList->remove(StorageCrawlJob::class);
+		$this->queue->clearAllJobs();
 		return new JSONResponse([]);
 	}
 
 	public function recrawl(): JSONResponse {
-		$this->clearAllJobs();
-		$this->jobList->add(SchedulerJob::class);
+		$this->queue->scheduleRecrawl();
 		return new JSONResponse([]);
 	}
 

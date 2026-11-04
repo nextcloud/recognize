@@ -7,11 +7,16 @@
 declare(strict_types=1);
 namespace OCA\Recognize\Service;
 
+use OCA\Recognize\AuditLog\AuditEventFactory;
+use OCA\Recognize\AuditLog\Operation;
 use OCA\Recognize\BackgroundJobs\ClassifyFacesJob;
 use OCA\Recognize\BackgroundJobs\ClassifyImagenetJob;
 use OCA\Recognize\BackgroundJobs\ClassifyLandmarksJob;
 use OCA\Recognize\BackgroundJobs\ClassifyMovinetJob;
 use OCA\Recognize\BackgroundJobs\ClassifyMusicnnJob;
+use OCA\Recognize\BackgroundJobs\ClusterFacesJob;
+use OCA\Recognize\BackgroundJobs\SchedulerJob;
+use OCA\Recognize\BackgroundJobs\StorageCrawlJob;
 use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
 use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
 use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
@@ -21,6 +26,7 @@ use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Db\QueueMapper;
 use OCP\AppFramework\Services\IAppConfig;
 use OCP\BackgroundJob\IJobList;
+use OCP\EventDispatcher\IEventDispatcher;
 
 final class QueueService {
 	/**
@@ -37,11 +43,13 @@ final class QueueService {
 	private QueueMapper $queueMapper;
 	private IJobList $jobList;
 	private IAppConfig $config;
+	private IEventDispatcher $eventDispatcher;
 
-	public function __construct(QueueMapper $queueMapper, IJobList $jobList, IAppConfig $config) {
+	public function __construct(QueueMapper $queueMapper, IJobList $jobList, IAppConfig $config, IEventDispatcher $eventDispatcher) {
 		$this->queueMapper = $queueMapper;
 		$this->jobList = $jobList;
 		$this->config = $config;
+		$this->eventDispatcher = $eventDispatcher;
 	}
 
 	/**
@@ -127,6 +135,53 @@ final class QueueService {
 
 	public function clearQueue(string $model): void {
 		$this->queueMapper->clearQueue($model);
+	}
+
+	/**
+	 * Empties all queues and removes all scheduled Recognize background jobs
+	 *
+	 * @throws \OCP\DB\Exception
+	 */
+	public function clearAllJobs(): void {
+		$removedFiles = $this->removeAllJobs();
+		$this->eventDispatcher->dispatchTyped(AuditEventFactory::create(
+			Operation::QueuesCleared,
+			'Cleared all Recognize queues and background jobs, removing %s queued files',
+			['removedFiles' => $removedFiles],
+		));
+	}
+
+	/**
+	 * Empties all queues, removes all scheduled Recognize background jobs and schedules a new crawl of all files
+	 *
+	 * @throws \OCP\DB\Exception
+	 */
+	public function scheduleRecrawl(): void {
+		$removedFiles = $this->removeAllJobs();
+		$this->jobList->add(SchedulerJob::class);
+		$this->eventDispatcher->dispatchTyped(AuditEventFactory::create(
+			Operation::RecrawlScheduled,
+			'Scheduled a Recognize recrawl of all files, removing %s queued files',
+			['removedFiles' => $removedFiles],
+		));
+	}
+
+	/**
+	 * @return int the number of removed queue entries
+	 * @throws \OCP\DB\Exception
+	 */
+	private function removeAllJobs(): int {
+		$removedFiles = 0;
+		foreach (array_keys(self::JOB_CLASSES) as $model) {
+			$removedFiles += $this->queueMapper->clearQueue($model);
+		}
+		foreach (self::JOB_CLASSES as $jobClass) {
+			$this->jobList->remove($jobClass);
+		}
+		$this->jobList->remove(ClusterFacesJob::class);
+		$this->jobList->remove(SchedulerJob::class);
+		$this->jobList->remove(StorageCrawlJob::class);
+		return $removedFiles;
 	}
 
 	public function count(string $model): int {

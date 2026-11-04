@@ -163,9 +163,13 @@ final class QueueMapper extends QBMapper {
 		return $insertedFile;
 	}
 
-	public function clearQueue(string $model): void {
+	/**
+	 * @return int the number of removed queue entries
+	 * @throws \OCP\DB\Exception
+	 */
+	public function clearQueue(string $model): int {
 		$qb = $this->db->getQueryBuilder();
-		$qb->delete($this->getQueueTable($model))->executeStatement();
+		return $qb->delete($this->getQueueTable($model))->executeStatement();
 	}
 
 	/**
