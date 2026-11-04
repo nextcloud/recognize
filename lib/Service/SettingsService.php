@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace OCA\Recognize\Service;
 
+use OCA\Recognize\AuditLog\AuditEventFactory;
+use OCA\Recognize\AuditLog\Operation;
 use OCA\Recognize\BackgroundJobs\SchedulerJob;
 use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
 use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
@@ -18,6 +20,7 @@ use OCA\Recognize\Classifiers\Video\MovinetClassifier;
 use OCA\Recognize\Exception\Exception;
 use OCP\AppFramework\Services\IAppConfig;
 use OCP\BackgroundJob\IJobList;
+use OCP\EventDispatcher\IEventDispatcher;
 use OCP\Server;
 
 final class SettingsService {
@@ -99,12 +102,32 @@ final class SettingsService {
 		'clusterFaces.concurrency',
 	];
 
+	/**
+	 * Progress state written by the background jobs, not configuration
+	 */
+	private const STATE_SETTINGS = [
+		'clusterFaces.status',
+		'faces.status',
+		'imagenet.status',
+		'landmarks.status',
+		'movinet.status',
+		'musicnn.status',
+		'clusterFaces.lastRun',
+		'faces.lastFile',
+		'imagenet.lastFile',
+		'landmarks.lastFile',
+		'movinet.lastFile',
+		'musicnn.lastFile',
+	];
+
 	private IAppConfig $config;
 	private IJobList $jobList;
+	private IEventDispatcher $eventDispatcher;
 
-	public function __construct(IAppConfig $config, IJobList $jobList) {
+	public function __construct(IAppConfig $config, IJobList $jobList, IEventDispatcher $eventDispatcher) {
 		$this->config = $config;
 		$this->jobList = $jobList;
+		$this->eventDispatcher = $eventDispatcher;
 	}
 
 	/**
@@ -158,6 +181,8 @@ final class SettingsService {
 		if (!array_key_exists($key, self::DEFAULTS)) {
 			throw new Exception('Unknown settings key '.$key);
 		}
+		$isConfiguration = !in_array($key, self::STATE_SETTINGS, true);
+		$oldValue = $isConfiguration ? $this->getSetting($key) : null;
 		if ($value === 'true' && $this->config->getAppValueString($key, 'false') === 'false') {
 			// Additional model enabled: Schedule new crawl run for the affected mime types
 			switch ($key) {
@@ -185,6 +210,15 @@ final class SettingsService {
 			$lazy = true;
 		}
 		$this->config->setAppValueString($key, $value, lazy: $lazy);
+
+		// The admin UI saves all settings at once, so only actual changes are logged
+		if ($isConfiguration && $oldValue !== $value) {
+			$this->eventDispatcher->dispatchTyped(AuditEventFactory::create(
+				Operation::SettingChanged,
+				'Recognize setting "%s" was changed to "%s"',
+				['key' => $key, 'value' => $value, 'oldValue' => $oldValue],
+			));
+		}
 	}
 
 	/**
