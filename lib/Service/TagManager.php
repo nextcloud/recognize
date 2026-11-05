@@ -7,6 +7,9 @@
 declare(strict_types=1);
 namespace OCA\Recognize\Service;
 
+use OCA\Recognize\AuditLog\AuditEventFactory;
+use OCA\Recognize\AuditLog\Operation;
+use OCP\EventDispatcher\IEventDispatcher;
 use OCP\SystemTag\ISystemTag;
 use OCP\SystemTag\ISystemTagManager;
 use OCP\SystemTag\ISystemTagObjectMapper;
@@ -17,10 +20,12 @@ final class TagManager {
 
 	private ISystemTagManager $tagManager;
 	private ISystemTagObjectMapper $objectMapper;
+	private IEventDispatcher $eventDispatcher;
 
-	public function __construct(ISystemTagManager $systemTagManager, ISystemTagObjectMapper $objectMapper) {
+	public function __construct(ISystemTagManager $systemTagManager, ISystemTagObjectMapper $objectMapper, IEventDispatcher $eventDispatcher) {
 		$this->tagManager = $systemTagManager;
 		$this->objectMapper = $objectMapper;
+		$this->eventDispatcher = $eventDispatcher;
 	}
 
 	/**
@@ -138,6 +143,13 @@ final class TagManager {
 		foreach ($fileIds as $id) {
 			$this->objectMapper->unassignTags($id, 'files', $tagIds);
 		}
+		if (count($fileIds) > 0) {
+			$this->eventDispatcher->dispatchTyped(AuditEventFactory::create(
+				Operation::ClassificationsReset,
+				'Removed Recognize classification tags from %s files',
+				['fileCount' => count($fileIds)],
+			));
+		}
 	}
 
 	/**
@@ -145,20 +157,40 @@ final class TagManager {
 	 */
 	public function removeEmptyTags(): void {
 		$tags = $this->tagManager->getAllTags();
+		$deletedTagIds = [];
 		foreach ($tags as $tag) {
 			$files = $this->objectMapper->getObjectIdsForTags($tag->getId(), 'files', 1);
 			if (empty($files)) {
 				$this->tagManager->deleteTags($tag->getId());
+				$deletedTagIds[] = $tag->getId();
 			}
 		}
+		$this->logDeletedTags(Operation::EmptyTagsDeleted, 'Deleted %s empty system tags', $deletedTagIds);
 	}
 
 	public function removeTags(array $tagNames) :void {
 		$tags = $this->tagManager->getAllTags();
+		$deletedTagIds = [];
 		foreach ($tags as $tag) {
 			if (in_array($tag->getName(), $tagNames)) {
 				$this->tagManager->deleteTags($tag->getId());
+				$deletedTagIds[] = $tag->getId();
 			}
 		}
+		$this->logDeletedTags(Operation::LegacyTagsDeleted, 'Deleted %s legacy Recognize system tags', $deletedTagIds);
+	}
+
+	/**
+	 * @param list<string> $tagIds
+	 */
+	private function logDeletedTags(Operation $operation, string $message, array $tagIds): void {
+		if (count($tagIds) === 0) {
+			return;
+		}
+		$this->eventDispatcher->dispatchTyped(AuditEventFactory::create(
+			$operation,
+			$message,
+			['count' => count($tagIds), 'tagIds' => $tagIds],
+		));
 	}
 }

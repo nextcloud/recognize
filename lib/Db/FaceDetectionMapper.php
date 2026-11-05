@@ -7,6 +7,8 @@
 declare(strict_types=1);
 namespace OCA\Recognize\Db;
 
+use OCA\Recognize\AuditLog\AuditEventFactory;
+use OCA\Recognize\AuditLog\Operation;
 use OCA\Recognize\Classifiers\TaskProcessing\ImageFaceRecognitionClassifier;
 use OCA\Recognize\Service\FaceClusterAnalyzer;
 use OCA\Recognize\Service\SettingsService;
@@ -15,6 +17,7 @@ use OCP\AppFramework\Db\Entity;
 use OCP\AppFramework\Db\QBMapper;
 use OCP\DB\Exception;
 use OCP\DB\QueryBuilder\IQueryBuilder;
+use OCP\EventDispatcher\IEventDispatcher;
 use OCP\IConfig;
 use OCP\IDBConnection;
 
@@ -24,12 +27,14 @@ use OCP\IDBConnection;
 final class FaceDetectionMapper extends QBMapper {
 	private IConfig $config;
 	private SettingsService $settingsService;
+	private IEventDispatcher $eventDispatcher;
 
-	public function __construct(IDBConnection $db, IConfig $config, SettingsService $settingsService) {
+	public function __construct(IDBConnection $db, IConfig $config, SettingsService $settingsService, IEventDispatcher $eventDispatcher) {
 		parent::__construct($db, 'recognize_face_detections', FaceDetection::class);
 		$this->db = $db;
 		$this->config = $config;
 		$this->settingsService = $settingsService;
+		$this->eventDispatcher = $eventDispatcher;
 	}
 
 	private function getMinDetectionSize(): float {
@@ -91,8 +96,15 @@ final class FaceDetectionMapper extends QBMapper {
 	 */
 	public function deleteAll(): void {
 		$qb = $this->db->getQueryBuilder();
-		$qb->delete('recognize_face_detections')
+		$count = $qb->delete('recognize_face_detections')
 			->executeStatement();
+		if ($count > 0) {
+			$this->eventDispatcher->dispatchTyped(AuditEventFactory::create(
+				Operation::FaceDetectionsDeletedAll,
+				'Deleted all %s Recognize face detections',
+				['count' => $count],
+			));
+		}
 	}
 
 	/**

@@ -16,3 +16,5 @@ use OCP\App\IAppManager;
 \OCP\Server::get(\OC\Files\Node\HookConnector::class)->viewToNode();
 // Do not clear hooks, we need them for our tests!
 // OC_Hook::clear();
+
+require_once __DIR__ . '/AuditLog/AuditLogTestHelper.php';
