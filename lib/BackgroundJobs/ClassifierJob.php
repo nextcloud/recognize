@@ -7,6 +7,7 @@
 declare(strict_types=1);
 namespace OCA\Recognize\BackgroundJobs;
 
+use OCA\Recognize\Classifiers\AbstractTaskProcessingClassifier;
 use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Service\QueueService;
 use OCA\Recognize\Service\SettingsService;
@@ -56,7 +57,7 @@ abstract class ClassifierJob extends TimedJob {
 			return;
 		}
 		$this->logger->debug('Classifying files of storage '.$storageId. ' using '.$model);
-		$batchSize = $taskProcessingMode ? 500 : $this->getBatchSize();
+		$batchSize = $taskProcessingMode ? AbstractTaskProcessingClassifier::BATCH_SIZE : $this->getBatchSize();
 		try {
 			$this->logger->debug('fetching '.$batchSize.' files from '.$model.' queue');
 			$files = $this->queue->getFromQueue($model, $storageId, $rootId, $batchSize);

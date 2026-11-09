@@ -20,6 +20,8 @@ use OCP\TaskProcessing\Task;
 use Psr\Log\LoggerInterface;
 
 abstract class AbstractTaskProcessingClassifier {
+	public const int BATCH_SIZE = 256;
+
 	public function __construct(
 		protected LoggerInterface $logger,
 		protected ITaskProcessingManager $taskProcessingManager,
