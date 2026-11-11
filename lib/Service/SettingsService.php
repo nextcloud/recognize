@@ -194,6 +194,7 @@ final class SettingsService {
 			return null;
 		}
 		try {
+			/** @var array|string|int|float|bool|null $decoded */
 			$decoded = json_decode($vector, true, 512, JSON_THROW_ON_ERROR);
 		} catch (\JsonException $e) {
 			return null;

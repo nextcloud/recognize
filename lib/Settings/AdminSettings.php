@@ -36,7 +36,7 @@ final class AdminSettings implements ISettings {
 		$this->initialState->provideInitialState('tagsEnabled', $tagsEnabled);
 
 		$this->initialState->provideInitialState('recognizeBackendInstalled', $this->settingsService->isRecognizeBackendInstalled());
-		$this->initialState->provideInitialState('faceEmbeddingDimensions', $this->settingsService->getFaceEmbeddingDimensions());
+		$this->initialState->provideInitialState('faceEmbeddingDimensions', $this->settingsService->getFaceEmbeddingDimensions() ?? 0);
 
 		return new TemplateResponse('recognize', 'admin');
 	}
