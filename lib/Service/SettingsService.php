@@ -16,17 +16,21 @@ use OCA\Recognize\Classifiers\Audio\MusicnnClassifier;
 use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
 use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
 use OCA\Recognize\Classifiers\Images\LandmarksClassifier;
+use OCA\Recognize\Classifiers\TaskProcessing\ImageFaceRecognitionClassifier;
 use OCA\Recognize\Classifiers\Video\MovinetClassifier;
 use OCA\Recognize\Exception\Exception;
 use OCP\AppFramework\Services\IAppConfig;
 use OCP\BackgroundJob\IJobList;
+use OCP\DB\Exception as DBException;
 use OCP\EventDispatcher\IEventDispatcher;
+use OCP\IDBConnection;
 use OCP\Server;
 
 final class SettingsService {
 	/**
 	 * App id of the ExApp that provides TaskProcessing classifiers; when installed
-	 * and enabled, taskprocessing mode is on by default.
+	 * and enabled, taskprocessing mode is on by default, unless that would mix
+	 * face embeddings of different models (see getTaskProcessingDefault()).
 	 */
 	public const RECOGNIZE_BACKEND_APP_ID = 'recognize_backend';
 
@@ -123,11 +127,13 @@ final class SettingsService {
 	private IAppConfig $config;
 	private IJobList $jobList;
 	private IEventDispatcher $eventDispatcher;
+	private IDBConnection $db;
 
-	public function __construct(IAppConfig $config, IJobList $jobList, IEventDispatcher $eventDispatcher) {
+	public function __construct(IAppConfig $config, IJobList $jobList, IEventDispatcher $eventDispatcher, IDBConnection $db) {
 		$this->config = $config;
 		$this->jobList = $jobList;
 		$this->eventDispatcher = $eventDispatcher;
+		$this->db = $db;
 	}
 
 	/**
@@ -139,14 +145,61 @@ final class SettingsService {
 			return $this->config->getAppValueString($key, $this->getSetting('tensorflow.purejs') === 'false' ? self::DEFAULTS[$key] : self::PUREJS_DEFAULTS[$key]);
 		}
 		if ($key === 'taskprocessing.enabled') {
-			$default = $this->isRecognizeBackendInstalled() ? 'true' : 'false';
-			return $this->config->getAppValueString($key, $default);
+			$value = $this->config->getAppValueString($key, '');
+			if ($value !== '') {
+				return $value;
+			}
+			return $this->getTaskProcessingDefault() ? 'true' : 'false';
 		}
 		$lazy = false;
 		if (in_array($key, self::LAZY_SETTINGS, true)) {
 			$lazy = true;
 		}
 		return $this->config->getAppValueString($key, self::DEFAULTS[$key], lazy: $lazy);
+	}
+
+	/**
+	 * TaskProcessing mode defaults to on when the recognize_backend ExApp is installed.
+	 * The local face model and the TaskProcessing face model produce embeddings of
+	 * different dimensions that cannot be clustered together, so we don't switch
+	 * the mode implicitly when the existing face detections stem from the local model.
+	 */
+	private function getTaskProcessingDefault(): bool {
+		if (!$this->isRecognizeBackendInstalled()) {
+			return false;
+		}
+		$dimensions = $this->getFaceEmbeddingDimensions();
+		return $dimensions === null || $dimensions === ImageFaceRecognitionClassifier::DIMENSIONS;
+	}
+
+	/**
+	 * Returns the dimensionality of the most recently stored face embedding,
+	 * or null if there are no face detections.
+	 */
+	public function getFaceEmbeddingDimensions(): ?int {
+		try {
+			$qb = $this->db->getQueryBuilder();
+			$qb->select('face_vector')
+				->from('recognize_face_detections')
+				->orderBy('id', 'DESC')
+				->setMaxResults(1);
+			$result = $qb->executeQuery();
+			/** @var string|false|null $vector */
+			$vector = $result->fetchOne();
+			$result->closeCursor();
+		} catch (DBException $e) {
+			return null;
+		}
+		if (!is_string($vector) || $vector === '') {
+			return null;
+		}
+		try {
+			/** @var array|string|int|float|bool|null $decoded */
+			$decoded = json_decode($vector, true, 512, JSON_THROW_ON_ERROR);
+		} catch (\JsonException $e) {
+			return null;
+		}
+		return is_array($decoded) ? count($decoded) : null;
 	}
 
 	/**
