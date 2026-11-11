@@ -13,6 +13,7 @@ use OCA\Recognize\Tests\AuditLog\AuditLogTestHelper;
 use OCP\AppFramework\Services\IAppConfig;
 use OCP\BackgroundJob\IJobList;
 use OCP\EventDispatcher\IEventDispatcher;
+use OCP\IDBConnection;
 use OCP\Log\Audit\CriticalActionPerformedEvent;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -39,7 +40,7 @@ final class SettingsServiceAuditTest extends TestCase {
 			});
 		$this->jobList = $this->createMock(IJobList::class);
 		$this->eventDispatcher = $this->createMock(IEventDispatcher::class);
-		$this->service = new SettingsService($this->config, $this->jobList, $this->eventDispatcher);
+		$this->service = new SettingsService($this->config, $this->jobList, $this->eventDispatcher, $this->createMock(IDBConnection::class));
 	}
 
 	public function testChangedSettingIsLogged(): void {

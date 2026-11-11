@@ -77,6 +77,12 @@
 					{{ t('recognize', 'Use Nextcloud TaskProcessing for classification') }}
 				</NcCheckboxRadioSwitch>
 			</p>
+			<NcNoteCard v-if="faceEmbeddingMismatch" type="warning">
+				{{ settings['taskprocessing.enabled']
+					? t('recognize', 'The existing face detections were created with the local face recognition model, which is incompatible with the face recognition model used in TaskProcessing mode. Faces detected by the two models cannot be grouped into the same people.')
+					: t('recognize', 'The existing face detections were created in TaskProcessing mode, which uses a face recognition model that is incompatible with the local one. Faces detected by the two models cannot be grouped into the same people.') }}
+				{{ t('recognize', 'Use "Reset faces" below and then "Rescan all files" to detect all faces again with the selected backend. Note that this deletes all people and the names users have given them.') }}
+			</NcNoteCard>
 			<p>
 				{{ t('recognize', 'When enabled, Recognize hands files off to a Nextcloud TaskProcessing provider (typically the recognize_backend ExApp) instead of running TensorFlow locally. Hardware checks and Node.js / FFmpeg requirements no longer apply in this mode.') }}
 			</p>
@@ -495,6 +501,10 @@ const SETTINGS = ['tensorflow.cores', 'tensorflow.gpu', 'tensorflow.purejs', 'im
 
 const BOOLEAN_SETTINGS = ['tensorflow.gpu', 'tensorflow.purejs', 'imagenet.enabled', 'landmarks.enabled', 'faces.enabled', 'musicnn.enabled', 'movinet.enabled', 'faces.status', 'imagenet.status', 'landmarks.status', 'movinet.status', 'musicnn.status', 'faces.lastFile', 'imagenet.lastFile', 'landmarks.lastFile', 'movinet.lastFile', 'musicnn.lastFile', 'clusterFaces.status', 'concurrency.enabled', 'taskprocessing.enabled']
 
+// Dimensions of the face embeddings produced by the local model and by the TaskProcessing backend
+const LOCAL_FACE_EMBEDDING_DIMENSIONS = 128
+const TASK_PROCESSING_FACE_EMBEDDING_DIMENSIONS = 512
+
 const MAX_RELATIVE_DATE = 1000 * 60 * 60 * 24 * 7 // one week
 
 export default {
@@ -533,10 +543,20 @@ export default {
 			musicnnTpStats: null,
 			tagsEnabled: null,
 			recognizeBackendInstalled: false,
+			faceEmbeddingDimensions: null,
 		}
 	},
 
 	computed: {
+		faceEmbeddingMismatch() {
+			if (!this.faceEmbeddingDimensions) {
+				return false
+			}
+			const expected = this.settings['taskprocessing.enabled']
+				? TASK_PROCESSING_FACE_EMBEDDING_DIMENSIONS
+				: LOCAL_FACE_EMBEDDING_DIMENSIONS
+			return this.faceEmbeddingDimensions !== expected
+		},
 		readyToClassify() {
 			if (this.cron !== 'cron') {
 				return false
@@ -571,6 +591,7 @@ export default {
 		this.modelsDownloaded = loadState('recognize', 'modelsDownloaded')
 		this.tagsEnabled = loadState('recognize', 'tagsEnabled')
 		this.recognizeBackendInstalled = loadState('recognize', 'recognizeBackendInstalled', false)
+		this.faceEmbeddingDimensions = loadState('recognize', 'faceEmbeddingDimensions', null)
 		this.getCount()
 		this.getAVX()
 		this.getPlatform()
@@ -657,6 +678,7 @@ export default {
 		async onResetFaces() {
 			this.loading = true
 			await axios.get(generateUrl('/apps/recognize/admin/resetFaces'))
+			this.faceEmbeddingDimensions = null
 			this.loading = false
 			this.success = true
 			setTimeout(() => {
