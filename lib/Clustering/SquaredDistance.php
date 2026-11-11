@@ -45,7 +45,11 @@ final class SquaredDistance implements Distance {
 	public function compute(array $a, array $b): float {
 		$distance = 0.0;
 
-		$count = count($a);
+		// Only walk the dimensions both vectors share: vectors of different
+		// lengths (e.g. a truncated embedding row) previously triggered
+		// "Undefined array key" warnings on every comparison while the cron
+		// clustering ran (#1611).
+		$count = min(count($a), count($b));
 		for ($i = 0; $i < $count; $i++) {
 			$diff = (float)$a[$i] - (float)$b[$i];
 			$distance += $diff * $diff;
