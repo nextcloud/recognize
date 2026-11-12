@@ -9,6 +9,7 @@ OC.L10N.register(
     "never" : "neniam",
     "{time} ago" : "antaŭ {time}",
     "Status" : "Stato",
+    "Background jobs" : "Fonaj taskoj",
     "People" : "Homoj",
     "Dog" : "Hundo",
     "Music" : "Muziko",
