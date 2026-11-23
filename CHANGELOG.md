@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [13.2.1] - 2026-11-23
+
+### Fixed
+
+* fix: Warn the admin about mismatched face dimensions
+* fix(clustering): stop undefined-key warnings in SquaredDistance on ragged vectors (thanks to RanaKhan77)
+* fix: Reduce TaskProcessing batch size
+* feat(queue): log clearing queues and scheduling a recrawl to the audit log
+* feat(tags): log deletion of empty and legacy system tags to the audit log
+* feat(reset): log bulk resets of classifications and faces to the audit log
+* feat(settings): log setting changes to the audit log
+* fix(l10n): Update translations from Transifex
+
 ## [13.2.0] - 2026-11-03
 
 ### New
