@@ -148,7 +148,7 @@ final class InstallDeps implements IRepairStep {
 				$isARM = true;
 			}
 		} else {
-			$output->warning('CPU architecture $uname is not supported.');
+			$output->warning("CPU architecture $uname is not supported.");
 			return;
 		}
 
@@ -171,9 +171,13 @@ final class InstallDeps implements IRepairStep {
 		if (!file_exists($binaryPath)) {
 			return null;
 		}
+		$returnCode = 1;
 		try {
-			// Make binary executable
-			chmod($binaryPath, 0755);
+			// Make our own downloaded binary executable; a binary set by the admin (e.g. /usr/bin/node)
+			// usually belongs to root and is already executable, so chmod() on it would only fail with a warning
+			if (!is_executable($binaryPath)) {
+				@chmod($binaryPath, 0755);
+			}
 
 			$cmd = escapeshellcmd($binaryPath) . ' ' . escapeshellarg('--version');
 
