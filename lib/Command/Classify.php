@@ -20,6 +20,7 @@ use OCA\Recognize\Service\StorageService;
 use OCA\Recognize\Service\TagManager;
 use OCP\Files\Config\ICachedMountInfo;
 use OCP\Files\Config\IUserMountCache;
+use OCP\SystemTag\ISystemTag;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -100,16 +101,28 @@ final class Classify extends Command {
 
 			$lastFileId = 0;
 			do {
-				$i = 0;
 				$queues = [
 					ImagenetClassifier::MODEL_NAME => [],
 					ClusteringFaceClassifier::MODEL_NAME => [],
 					MovinetClassifier::MODEL_NAME => [],
 					MusicnnClassifier::MODEL_NAME => [],
 				];
-				foreach ($this->storageService->getFilesInMount($mount['storage_id'], $mount['override_root'], $models, $lastFileId) as $file) {
-					$i++;
+				$files = iterator_to_array(
+					$this->storageService->getFilesInMount($mount['storage_id'], $mount['override_root'], $models, $lastFileId),
+					false
+				);
+				$i = count($files);
+				// Fetch the tags of the whole page at once instead of issuing one query per file
+				$fileIds = array_map(static fn (array $file): string => (string)$file['fileid'], $files);
+				$tagsByFile = $input->getOption('retry') && count($fileIds) > 0
+					? $this->tagManager->getTagsForFiles($fileIds)
+					: [];
+				foreach ($files as $file) {
 					$lastFileId = $file['fileid'];
+					// If the retry flag is set, skip files that already carry the processed tag, for all classifiers
+					if ($input->getOption('retry') && $this->hasProcessedTag($tagsByFile[(string)$file['fileid']] ?? [], $processedTag)) {
+						continue;
+					}
 					$queueFile = new QueueFile();
 					$queueFile->setStorageId($mount['storage_id']);
 					$queueFile->setRootId($mount['root_id']);
@@ -119,14 +132,6 @@ final class Classify extends Command {
 					if ($file['image']) {
 						if (in_array(ClusteringFaceClassifier::MODEL_NAME, $models)) {
 							$queues[ClusteringFaceClassifier::MODEL_NAME][] = $queueFile;
-						}
-					}
-					// if retry flag is set, skip other classifiers for tagged files
-					if ($input->getOption('retry')) {
-						$fileTags = $this->tagManager->getTagsForFiles([(string)$lastFileId]);
-						// check if processed tag is already in the tags
-						if (in_array($processedTag, $fileTags[$lastFileId])) {
-							continue;
 						}
 					}
 					if ($file['image']) {
@@ -165,5 +170,17 @@ final class Classify extends Command {
 			\OC_Util::tearDownFS();
 		}
 		return 0;
+	}
+
+	/**
+	 * @param array<array-key, ISystemTag> $tags
+	 */
+	private function hasProcessedTag(array $tags, ISystemTag $processedTag): bool {
+		foreach ($tags as $tag) {
+			if ($tag->getId() === $processedTag->getId()) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
