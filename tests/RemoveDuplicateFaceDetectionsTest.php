@@ -75,6 +75,21 @@ class RemoveDuplicateFaceDetectionsTest extends TestCase {
 		$this->assertEquals(10 * 10 * 11 - 10 * 10 * 9, (int)$count); // 200
 	}
 
+	public function testDryRunReportsDuplicatesWithoutRemovingThem() : void {
+		$repairStep = Server::get(RemoveDuplicateFaceDetections::class);
+
+		$qb = $this->db->getQueryBuilder();
+		$countBefore = (int)$qb->select($qb->func()->count('*'))->from('recognize_face_detections')->executeQuery()->fetchOne();
+		$this->assertEquals(10 * 10 * 11, $countBefore);
+
+		$duplicates = $repairStep->removeDuplicates(true);
+
+		$this->assertEquals(10 * 10 * 9, $duplicates);
+		$qb = $this->db->getQueryBuilder();
+		$countAfter = (int)$qb->select($qb->func()->count('*'))->from('recognize_face_detections')->executeQuery()->fetchOne();
+		$this->assertEquals($countBefore, $countAfter, 'A dry run must not delete any detections');
+	}
+
 	public function testRepairStepRemovesNearDuplicates() : void {
 		$qb = $this->db->getQueryBuilder();
 		$qb->delete('recognize_face_detections')->executeStatement();

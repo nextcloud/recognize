@@ -117,6 +117,7 @@ The app does not send any sensitive data to cloud providers or similar services.
 		<command>OCA\Recognize\Command\ClearBackgroundJobs</command>
 		<command>OCA\Recognize\Command\RemoveLegacyTags</command>
 		<command>OCA\Recognize\Command\CleanupTags</command>
+		<command>OCA\Recognize\Command\RemoveDuplicateFaces</command>
 		<command>OCA\Recognize\Command\Recrawl</command>
 		<command>OCA\Recognize\Command\DownloadModels</command>
 		<command>OCA\Recognize\Command\Classify</command>
