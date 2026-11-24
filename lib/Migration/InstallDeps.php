@@ -91,9 +91,26 @@ final class InstallDeps implements IRepairStep {
 
 			$binaryPath = $this->config->getAppValueString('node_binary', '', lazy: true);
 
-			$this->runTfjsInstall($binaryPath);
-			$this->runFfmpegInstall($binaryPath);
-			$this->runTfjsGpuInstall($binaryPath);
+			// Repair steps run on every `occ maintenance:repair` and app update. Skip the downloads
+			// when the native bindings are already in place instead of fetching ~150 MB each time.
+			if ($this->hasNativeBinding($this->tfjsPath, 'tfjs_binding.node')) {
+				$output->info('TensorFlow.js CPU binaries are already installed, skipping download.');
+			} else {
+				$this->runTfjsInstall($binaryPath);
+			}
+
+			if ($this->hasNativeBinding($this->tfjsGPUPath, 'tfjs_binding.node')) {
+				$output->info('TensorFlow.js GPU binaries are already installed, skipping download.');
+			} else {
+				$this->runTfjsGpuInstall($binaryPath);
+			}
+
+			if ($this->isFfmpegInstalled()) {
+				$output->info('ffmpeg binary is already installed, skipping download.');
+			} else {
+				$this->runFfmpegInstall($binaryPath);
+			}
+
 			$this->setNodeModulesPermissions();
 			$this->setNiceBinaryPath();
 			$this->setFfmpegBinaryPath();
@@ -101,6 +118,20 @@ final class InstallDeps implements IRepairStep {
 			$output->warning('Failed to automatically install dependencies for recognize. Check the recognize admin panel for potential problems.');
 			$this->logger->error('Failed to automatically install dependencies for recognize. Check the recognize admin panel for potential problems.', ['exception' => $e]);
 		}
+	}
+
+	/**
+	 * Check whether the native TensorFlow.js bindings of a module are already installed.
+	 * The bindings live in node_modules/@tensorflow/tfjs-node{,-gpu}/lib/<napi-version>/tfjs_binding.node.
+	 */
+	private function hasNativeBinding(string $moduleDir, string $bindingName): bool {
+		$bindings = glob($moduleDir . 'lib/*/' . $bindingName);
+		return $bindings !== false && count($bindings) > 0;
+	}
+
+	private function isFfmpegInstalled(): bool {
+		$ffmpeg = $this->ffmpegDir . 'ffmpeg';
+		return is_file($ffmpeg) && is_executable($ffmpeg);
 	}
 
 	protected function setNiceBinaryPath() : void {
