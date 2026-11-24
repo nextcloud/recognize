@@ -15,6 +15,7 @@ use OCA\Recognize\BackgroundJobs\ClassifyLandmarksJob;
 use OCA\Recognize\BackgroundJobs\ClassifyMovinetJob;
 use OCA\Recognize\BackgroundJobs\ClassifyMusicnnJob;
 use OCA\Recognize\BackgroundJobs\ClusterFacesJob;
+use OCA\Recognize\BackgroundJobs\DownloadModelsJob;
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Service\QueueService;
@@ -68,6 +69,25 @@ final class AdminController extends Controller {
 	public function recrawl(): JSONResponse {
 		$this->queue->scheduleRecrawl();
 		return new JSONResponse([]);
+	}
+
+	/**
+	 * Queue the download of the machine learning models. The download runs in a background job
+	 * because it can take a long time and is too large for a single HTTP request.
+	 */
+	public function downloadModels(): JSONResponse {
+		if (file_exists(__DIR__ . '/../../models')) {
+			return new JSONResponse(['downloaded' => true, 'scheduled' => false]);
+		}
+		$this->jobList->add(DownloadModelsJob::class);
+		return new JSONResponse(['downloaded' => false, 'scheduled' => true]);
+	}
+
+	public function modelsStatus(): JSONResponse {
+		return new JSONResponse([
+			'downloaded' => file_exists(__DIR__ . '/../../models'),
+			'scheduled' => $this->jobList->has(DownloadModelsJob::class, null),
+		]);
 	}
 
 	public function resetFaces(): JSONResponse {
