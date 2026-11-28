@@ -27,6 +27,9 @@ final class DownloadModelsJob extends QueuedJob {
 		parent::__construct($time);
 	}
 
+	/**
+	 * @param mixed $argument unused, the job takes no arguments
+	 */
 	protected function run($argument): void {
 		try {
 			$this->downloader->download();

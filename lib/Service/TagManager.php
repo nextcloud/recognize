@@ -96,6 +96,30 @@ final class TagManager {
 	}
 
 	/**
+	 * Returns the ids of the given files that already carry the processed tag.
+	 * Unlike getTagsForFiles() this only resolves tag ids, so the whole batch
+	 * is fetched with a single query instead of one query per file.
+	 *
+	 * @param list<string> $fileIds
+	 * @return list<string>
+	 */
+	public function getProcessedFileIds(array $fileIds): array {
+		if ($fileIds === []) {
+			return [];
+		}
+		$processedTagId = $this->getProcessedTag()->getId();
+		/** @var array<string, string[]> $tagsByFile */
+		$tagsByFile = $this->objectMapper->getTagIdsForObjects($fileIds, 'files');
+		$processedFileIds = [];
+		foreach ($tagsByFile as $fileId => $tagIds) {
+			if (in_array($processedTagId, $tagIds, true)) {
+				$processedFileIds[] = (string)$fileId;
+			}
+		}
+		return $processedFileIds;
+	}
+
+	/**
 	 * @return list<string>
 	 */
 	public function findClassifiedFiles(): array {

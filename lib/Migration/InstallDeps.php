@@ -92,23 +92,24 @@ final class InstallDeps implements IRepairStep {
 			$binaryPath = $this->config->getAppValueString('node_binary', '', lazy: true);
 
 			// Repair steps run on every `occ maintenance:repair` and app update. Skip the downloads
-			// when the native bindings are already in place instead of fetching ~150 MB each time.
+			// when the binaries are already in place instead of fetching ~150 MB each time, and
+			// isolate every step so that one failure cannot prevent the remaining ones.
 			if ($this->hasNativeBinding($this->tfjsPath, 'tfjs_binding.node')) {
 				$output->info('TensorFlow.js CPU binaries are already installed, skipping download.');
 			} else {
-				$this->runTfjsInstall($binaryPath);
+				$this->runInstallStep($output, 'TensorFlow.js CPU binaries', fn () => $this->runTfjsInstall($binaryPath));
 			}
 
 			if ($this->hasNativeBinding($this->tfjsGPUPath, 'tfjs_binding.node')) {
 				$output->info('TensorFlow.js GPU binaries are already installed, skipping download.');
 			} else {
-				$this->runTfjsGpuInstall($binaryPath);
+				$this->runInstallStep($output, 'TensorFlow.js GPU binaries', fn () => $this->runTfjsGpuInstall($binaryPath));
 			}
 
 			if ($this->isFfmpegInstalled()) {
 				$output->info('ffmpeg binary is already installed, skipping download.');
 			} else {
-				$this->runFfmpegInstall($binaryPath);
+				$this->runInstallStep($output, 'ffmpeg binary', fn () => $this->runFfmpegInstall($binaryPath));
 			}
 
 			$this->setNodeModulesPermissions();
@@ -132,6 +133,18 @@ final class InstallDeps implements IRepairStep {
 	private function isFfmpegInstalled(): bool {
 		$ffmpeg = $this->ffmpegDir . 'ffmpeg';
 		return is_file($ffmpeg) && is_executable($ffmpeg);
+	}
+
+	/**
+	 * Run a single install step. A failure is reported but must not abort the
+	 * remaining steps, e.g. a missing GPU must not prevent the ffmpeg install.
+	 */
+	private function runInstallStep(IOutput $output, string $description, callable $step): void {
+		try {
+			$step();
+		} catch (\Throwable $e) {
+			$output->warning('Failed to install ' . $description . ': ' . $e->getMessage());
+		}
 	}
 
 	protected function setNiceBinaryPath() : void {
