@@ -108,7 +108,9 @@ final class TagManager {
 			return [];
 		}
 		$processedTagId = $this->getProcessedTag()->getId();
-		/** @var array<string, string[]> $tagsByFile */
+		// Numeric string keys are cast to int by PHP, so the key type is array-key
+		// even though the mapper documents string keys.
+		/** @var array<array-key, list<string>> $tagsByFile */
 		$tagsByFile = $this->objectMapper->getTagIdsForObjects($fileIds, 'files');
 		$processedFileIds = [];
 		foreach ($tagsByFile as $fileId => $tagIds) {

@@ -29,6 +29,7 @@ use OCP\AppFramework\Services\IAppConfig;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\IJobList;
 use OCP\BackgroundJob\IJobRuns;
+use OCP\BackgroundJob\JobRun;
 use OCP\DB\Exception;
 use OCP\Exceptions\AppConfigTypeConflictException;
 use OCP\IBinaryFinder;
@@ -108,7 +109,9 @@ final class AdminController extends Controller {
 		// count runs that started recently; the download itself is bounded by the
 		// job runner and a day is far beyond any realistic download time.
 		$maxAge = 24 * 3600;
-		foreach ($this->jobRuns->runningJobs() as $jobRun) {
+		/** @var \Generator<int, JobRun> $runningJobs */
+		$runningJobs = $this->jobRuns->runningJobs();
+		foreach ($runningJobs as $jobRun) {
 			if ($jobRun->className === DownloadModelsJob::class
 				&& $jobRun->startedAt->getTimestamp() > $this->timeFactory->getTime() - $maxAge) {
 				return true;
