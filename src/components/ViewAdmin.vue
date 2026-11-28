@@ -14,6 +14,18 @@
 			</NcNoteCard>
 			<NcNoteCard v-else-if="!modelsDownloaded" type="warning">
 				{{ t('recognize', 'The machine learning models still need to be downloaded.') }}
+				<template v-if="modelsDownloadScheduled">
+					<br>
+					{{ t('recognize', 'The download was scheduled and runs in the background. This page updates automatically when the models are available.') }}
+				</template>
+				<template v-else>
+					<br>
+					{{ t('recognize', 'The download is about 1.4 GB. You can also run {command} on the server terminal.', { command: 'occ recognize:download-models' }) }}
+					<br><br>
+					<button class="button" @click="onDownloadModels">
+						{{ t('recognize', 'Download models') }}
+					</button>
+				</template>
 			</NcNoteCard>
 			<NcNoteCard v-if="tagsEnabled" show-alert type="success">
 				{{ t('recognize', 'The systemtags app is enabled.') }}
@@ -477,6 +489,9 @@
 			<p>{{ t('recognize', 'You can delete all tags that no longer have any files associated with them with the following command:') }}</p>
 			<pre><code>occ recognize:cleanup-tags</code></pre>
 			<p>&nbsp;</p>
+			<p>{{ t('recognize', 'To find and remove face detections that describe the same face of the same user in the same file more than once, run the following. Add --dry-run to only count them without changing anything.') }}</p>
+			<pre><code>occ recognize:remove-duplicate-faces --dry-run</code></pre>
+			<p>&nbsp;</p>
 			<p>{{ t('recognize', 'To remove tags that were created by Recognize version 2 from all files run the following on the terminal:') }}</p>
 			<pre><code>occ recognize:remove-legacy-tags</code></pre>
 		</NcSettingsSection>
@@ -531,6 +546,8 @@ export default {
 			ffmpeg: undefined,
 			cron: undefined,
 			modelsDownloaded: null,
+			modelsDownloadScheduled: false,
+			modelsPoll: null,
 			imagenetJobs: null,
 			facesJobs: null,
 			landmarksJobs: null,
@@ -589,6 +606,7 @@ export default {
 	},
 	async created() {
 		this.modelsDownloaded = loadState('recognize', 'modelsDownloaded')
+		this.getModelsStatus()
 		this.tagsEnabled = loadState('recognize', 'tagsEnabled')
 		this.recognizeBackendInstalled = loadState('recognize', 'recognizeBackendInstalled', false)
 		this.faceEmbeddingDimensions = loadState('recognize', 'faceEmbeddingDimensions', null)
@@ -654,7 +672,49 @@ export default {
 		}
 	},
 
+	beforeUnmount() {
+		if (this.modelsPoll) {
+			clearInterval(this.modelsPoll)
+		}
+	},
+
 	methods: {
+		async onDownloadModels() {
+			this.loading = true
+			try {
+				await axios.get(generateUrl('/apps/recognize/admin/downloadModels'))
+				this.modelsDownloadScheduled = true
+				this.startModelsPolling()
+			} catch (e) {
+				this.error = this.t('recognize', 'Failed to schedule the model download')
+			} finally {
+				this.loading = false
+			}
+		},
+		async getModelsStatus() {
+			try {
+				const resp = await axios.get(generateUrl('/apps/recognize/admin/modelsStatus'))
+				this.modelsDownloaded = resp.data.downloaded
+				this.modelsDownloadScheduled = resp.data.scheduled
+				if (!this.modelsDownloaded && this.modelsDownloadScheduled) {
+					this.startModelsPolling()
+				}
+			} catch (e) {
+				console.error(e)
+			}
+		},
+		startModelsPolling() {
+			if (this.modelsPoll) {
+				return
+			}
+			this.modelsPoll = setInterval(async () => {
+				await this.getModelsStatus()
+				if (this.modelsDownloaded || !this.modelsDownloadScheduled) {
+					clearInterval(this.modelsPoll)
+					this.modelsPoll = null
+				}
+			}, 10 * 1000)
+		},
 		async onReset() {
 			this.loading = true
 			await axios.get(generateUrl('/apps/recognize/admin/reset'))

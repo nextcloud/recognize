@@ -70,23 +70,7 @@ final class RemoveDuplicateFaceDetections implements IRepairStep {
 
 	public function run(IOutput $output): void {
 		try {
-			$removed = 0;
-			$lastFileId = -1;
-			while (true) {
-				$upperFileId = $this->findBatchUpperBound($lastFileId);
-				$idsToDelete = $this->findDuplicateIds($lastFileId, $upperFileId);
-				foreach (array_chunk($idsToDelete, self::DELETE_CHUNK_SIZE) as $chunk) {
-					$deleteQuery = $this->db->getQueryBuilder();
-					$deleteQuery->delete('recognize_face_detections')
-						->where($deleteQuery->expr()->in('id', $deleteQuery->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)));
-					$deleteQuery->executeStatement();
-				}
-				$removed += count($idsToDelete);
-				if ($upperFileId === null) {
-					break;
-				}
-				$lastFileId = $upperFileId;
-			}
+			$removed = $this->removeDuplicates();
 			if ($removed > 0) {
 				$output->info('Removed ' . $removed . ' duplicate face detections');
 				$this->logger->info('Removed ' . $removed . ' duplicate face detections');
@@ -95,6 +79,36 @@ final class RemoveDuplicateFaceDetections implements IRepairStep {
 			$output->warning('Failed to automatically remove duplicate face detections for recognize.');
 			throw new \Exception('Failed to automatically remove duplicate face detections', previous: $e);
 		}
+	}
+
+	/**
+	 * Removes face detections that duplicate another detection of the same face in the same file.
+	 *
+	 * @param bool $dryRun Only count the duplicate detections without deleting them
+	 * @return int The number of duplicate detections that were removed (or, in dry-run mode, would be removed)
+	 * @throws \Throwable
+	 */
+	public function removeDuplicates(bool $dryRun = false): int {
+		$removed = 0;
+		$lastFileId = -1;
+		while (true) {
+			$upperFileId = $this->findBatchUpperBound($lastFileId);
+			$idsToDelete = $this->findDuplicateIds($lastFileId, $upperFileId);
+			if (!$dryRun) {
+				foreach (array_chunk($idsToDelete, self::DELETE_CHUNK_SIZE) as $chunk) {
+					$deleteQuery = $this->db->getQueryBuilder();
+					$deleteQuery->delete('recognize_face_detections')
+						->where($deleteQuery->expr()->in('id', $deleteQuery->createNamedParameter($chunk, IQueryBuilder::PARAM_INT_ARRAY)));
+					$deleteQuery->executeStatement();
+				}
+			}
+			$removed += count($idsToDelete);
+			if ($upperFileId === null) {
+				break;
+			}
+			$lastFileId = $upperFileId;
+		}
+		return $removed;
 	}
 
 	/**

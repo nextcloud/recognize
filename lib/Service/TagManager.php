@@ -96,6 +96,32 @@ final class TagManager {
 	}
 
 	/**
+	 * Returns the ids of the given files that already carry the processed tag.
+	 * Unlike getTagsForFiles() this only resolves tag ids, so the whole batch
+	 * is fetched with a single query instead of one query per file.
+	 *
+	 * @param list<string> $fileIds
+	 * @return list<string>
+	 */
+	public function getProcessedFileIds(array $fileIds): array {
+		if ($fileIds === []) {
+			return [];
+		}
+		$processedTagId = $this->getProcessedTag()->getId();
+		// Numeric string keys are cast to int by PHP, so the key type is array-key
+		// even though the mapper documents string keys.
+		/** @var array<array-key, list<string>> $tagsByFile */
+		$tagsByFile = $this->objectMapper->getTagIdsForObjects($fileIds, 'files');
+		$processedFileIds = [];
+		foreach ($tagsByFile as $fileId => $tagIds) {
+			if (in_array($processedTagId, $tagIds, true)) {
+				$processedFileIds[] = (string)$fileId;
+			}
+		}
+		return $processedFileIds;
+	}
+
+	/**
 	 * @return list<string>
 	 */
 	public function findClassifiedFiles(): array {

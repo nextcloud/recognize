@@ -15,6 +15,7 @@ use OCA\Recognize\BackgroundJobs\ClassifyLandmarksJob;
 use OCA\Recognize\BackgroundJobs\ClassifyMovinetJob;
 use OCA\Recognize\BackgroundJobs\ClassifyMusicnnJob;
 use OCA\Recognize\BackgroundJobs\ClusterFacesJob;
+use OCA\Recognize\BackgroundJobs\DownloadModelsJob;
 use OCA\Recognize\Db\FaceClusterMapper;
 use OCA\Recognize\Db\FaceDetectionMapper;
 use OCA\Recognize\Service\QueueService;
@@ -25,7 +26,10 @@ use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\AppFramework\QueryException;
 use OCP\AppFramework\Services\IAppConfig;
+use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\IJobList;
+use OCP\BackgroundJob\IJobRuns;
+use OCP\BackgroundJob\JobRun;
 use OCP\DB\Exception;
 use OCP\Exceptions\AppConfigTypeConflictException;
 use OCP\IBinaryFinder;
@@ -41,8 +45,10 @@ final class AdminController extends Controller {
 	private IAppConfig $config;
 	private FaceDetectionMapper $faceDetections;
 	private IBinaryFinder $binaryFinder;
+	private IJobRuns $jobRuns;
+	private ITimeFactory $timeFactory;
 
-	public function __construct(string $appName, IRequest $request, TagManager $tagManager, IJobList $jobList, SettingsService $settingsService, QueueService $queue, FaceClusterMapper $clusterMapper, FaceDetectionMapper $detectionMapper, IAppConfig $config, FaceDetectionMapper $faceDetections, IBinaryFinder $binaryFinder) {
+	public function __construct(string $appName, IRequest $request, TagManager $tagManager, IJobList $jobList, SettingsService $settingsService, QueueService $queue, FaceClusterMapper $clusterMapper, FaceDetectionMapper $detectionMapper, IAppConfig $config, FaceDetectionMapper $faceDetections, IBinaryFinder $binaryFinder, IJobRuns $jobRuns, ITimeFactory $timeFactory) {
 		parent::__construct($appName, $request);
 		$this->tagManager = $tagManager;
 		$this->jobList = $jobList;
@@ -53,6 +59,8 @@ final class AdminController extends Controller {
 		$this->config = $config;
 		$this->faceDetections = $faceDetections;
 		$this->binaryFinder = $binaryFinder;
+		$this->jobRuns = $jobRuns;
+		$this->timeFactory = $timeFactory;
 	}
 
 	public function reset(): JSONResponse {
@@ -68,6 +76,48 @@ final class AdminController extends Controller {
 	public function recrawl(): JSONResponse {
 		$this->queue->scheduleRecrawl();
 		return new JSONResponse([]);
+	}
+
+	/**
+	 * Queue the download of the machine learning models. The download runs in a background job
+	 * because it can take a long time and is too large for a single HTTP request.
+	 */
+	public function downloadModels(): JSONResponse {
+		if (file_exists(__DIR__ . '/../../models')) {
+			return new JSONResponse(['downloaded' => true, 'scheduled' => false]);
+		}
+		// Queued jobs leave the jobs table as soon as they start, so a running
+		// download has to be detected through the job runs as well.
+		if (!$this->isModelDownloadActive()) {
+			$this->jobList->add(DownloadModelsJob::class);
+		}
+		return new JSONResponse(['downloaded' => false, 'scheduled' => true]);
+	}
+
+	public function modelsStatus(): JSONResponse {
+		return new JSONResponse([
+			'downloaded' => file_exists(__DIR__ . '/../../models'),
+			'scheduled' => $this->isModelDownloadActive(),
+		]);
+	}
+
+	private function isModelDownloadActive(): bool {
+		if ($this->jobList->has(DownloadModelsJob::class, null)) {
+			return true;
+		}
+		// A crashed PHP process can leave a stale "running" entry behind, so only
+		// count runs that started recently; the download itself is bounded by the
+		// job runner and a day is far beyond any realistic download time.
+		$maxAge = 24 * 3600;
+		/** @var \Generator<int, JobRun> $runningJobs */
+		$runningJobs = $this->jobRuns->runningJobs();
+		foreach ($runningJobs as $jobRun) {
+			if ($jobRun->className === DownloadModelsJob::class
+				&& $jobRun->startedAt->getTimestamp() > $this->timeFactory->getTime() - $maxAge) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public function resetFaces(): JSONResponse {

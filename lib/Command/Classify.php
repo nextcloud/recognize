@@ -12,8 +12,8 @@ use OCA\Recognize\Classifiers\Classifier;
 use OCA\Recognize\Classifiers\Images\ClusteringFaceClassifier;
 use OCA\Recognize\Classifiers\Images\ImagenetClassifier;
 use OCA\Recognize\Classifiers\Video\MovinetClassifier;
-use OCA\Recognize\Db\QueueFile;
 use OCA\Recognize\Exception\Exception;
+use OCA\Recognize\Service\ClassificationQueueBuilder;
 use OCA\Recognize\Service\Logger;
 use OCA\Recognize\Service\SettingsService;
 use OCA\Recognize\Service\StorageService;
@@ -42,6 +42,7 @@ final class Classify extends Command {
 		private IUserMountCache $userMountCache,
 		private SettingsService $settings,
 		private ClearBackgroundJobs $clearBackgroundJobs,
+		private ClassificationQueueBuilder $queueBuilder,
 	) {
 		parent::__construct();
 		$this->classifiers[ImagenetClassifier::MODEL_NAME] = $imagenet;
@@ -85,8 +86,6 @@ final class Classify extends Command {
 			MusicnnClassifier::MODEL_NAME,
 		], fn ($modelName) => $this->settings->getSetting($modelName . '.enabled') === 'true'));
 
-		$processedTag = $this->tagManager->getProcessedTag();
-
 		foreach ($this->storageService->getMounts() as $mount) {
 			$this->logger->info('Processing storage ' . $mount['storage_id'] . ' with root ID ' . $mount['override_root']);
 
@@ -100,50 +99,19 @@ final class Classify extends Command {
 
 			$lastFileId = 0;
 			do {
-				$i = 0;
-				$queues = [
-					ImagenetClassifier::MODEL_NAME => [],
-					ClusteringFaceClassifier::MODEL_NAME => [],
-					MovinetClassifier::MODEL_NAME => [],
-					MusicnnClassifier::MODEL_NAME => [],
-				];
-				foreach ($this->storageService->getFilesInMount($mount['storage_id'], $mount['override_root'], $models, $lastFileId) as $file) {
-					$i++;
-					$lastFileId = $file['fileid'];
-					$queueFile = new QueueFile();
-					$queueFile->setStorageId($mount['storage_id']);
-					$queueFile->setRootId($mount['root_id']);
-					$queueFile->setFileId($file['fileid']);
-					$queueFile->setUpdate(false);
-
-					if ($file['image']) {
-						if (in_array(ClusteringFaceClassifier::MODEL_NAME, $models)) {
-							$queues[ClusteringFaceClassifier::MODEL_NAME][] = $queueFile;
-						}
-					}
-					// if retry flag is set, skip other classifiers for tagged files
-					if ($input->getOption('retry')) {
-						$fileTags = $this->tagManager->getTagsForFiles([(string)$lastFileId]);
-						// check if processed tag is already in the tags
-						if (in_array($processedTag, $fileTags[$lastFileId])) {
-							continue;
-						}
-					}
-					if ($file['image']) {
-						if (in_array(ImagenetClassifier::MODEL_NAME, $models)) {
-							$queues[ImagenetClassifier::MODEL_NAME][] = $queueFile;
-						}
-					}
-					if ($file['video']) {
-						if (in_array(MovinetClassifier::MODEL_NAME, $models)) {
-							$queues[MovinetClassifier::MODEL_NAME][] = $queueFile;
-						}
-					}
-					if ($file['audio']) {
-						if (in_array(MusicnnClassifier::MODEL_NAME, $models)) {
-							$queues[MusicnnClassifier::MODEL_NAME][] = $queueFile;
-						}
-					}
+				$files = iterator_to_array(
+					$this->storageService->getFilesInMount($mount['storage_id'], $mount['override_root'], $models, $lastFileId),
+					false
+				);
+				$i = count($files);
+				// Fetch the processed tag state of the whole page with a single query
+				$fileIds = array_map(static fn (array $file): string => (string)$file['fileid'], $files);
+				$processedFileIds = $input->getOption('retry') && count($fileIds) > 0
+					? array_fill_keys($this->tagManager->getProcessedFileIds($fileIds), true)
+					: [];
+				$queues = $this->queueBuilder->build($files, $processedFileIds, $models, $mount['storage_id'], $mount['root_id']);
+				if ($i > 0) {
+					$lastFileId = $files[$i - 1]['fileid'];
 				}
 
 				foreach ($this->classifiers as $modelName => $classifier) {

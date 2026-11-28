@@ -24,6 +24,8 @@ return [
 		['name' => 'admin#reset', 'url' => '/admin/reset', 'verb' => 'GET'],
 		['name' => 'admin#clearAllJobs', 'url' => '/admin/clearJobs', 'verb' => 'GET'],
 		['name' => 'admin#recrawl', 'url' => '/admin/recrawl', 'verb' => 'GET'],
+		['name' => 'admin#downloadModels', 'url' => '/admin/downloadModels', 'verb' => 'GET'],
+		['name' => 'admin#modelsStatus', 'url' => '/admin/modelsStatus', 'verb' => 'GET'],
 		['name' => 'admin#reset_faces', 'url' => '/admin/resetFaces', 'verb' => 'GET'],
 		['name' => 'admin#count', 'url' => '/admin/count', 'verb' => 'GET'],
 		['name' => 'admin#countQueued', 'url' => '/admin/countQueued', 'verb' => 'GET'],
